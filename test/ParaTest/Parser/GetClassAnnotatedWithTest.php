@@ -30,15 +30,15 @@ class GetClassAnnotatedWithTest extends \TestBase
             new ParsedFunction('/**
      * @group fixtures
      * @pizza
-     */', false, 'public', 'testTruth'),
+     */', 'public', 'testTruth'),
             new ParsedFunction('/**
      * @group fixtures
      * @pizza
-     */', false, 'public', 'testFalsehood'),
+     */', 'public', 'testFalsehood'),
             new ParsedFunction('/**
      * @group fixtures
-     */', false, 'public', 'testArrayLength'),
-            new ParsedFunction('', false, 'private', 'helperFunction')
+     */', 'public', 'testArrayLength'),
+            new ParsedFunction('', 'private', 'helperFunction')
         );
         $this->assertEquals($expected, $this->class->getFunctions());
     }

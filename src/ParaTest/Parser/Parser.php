@@ -31,48 +31,25 @@ class Parser
 
     private function buildParsedClass($docBlock, $name)
     {
-        $canPass = array_merge(array(T_ABSTRACT, T_WHITESPACE), self::$visibilityTokens);
+        $continueOn = $tokens = array_merge(array(T_DOC_COMMENT), self::$visibilityTokens);
         $functions = array();
         while(list( , $token) = each($this->tokens)) {
-            //lets look ahead until we find a function
-            if($token[0] === T_DOC_COMMENT) {
-                $abstract = false;
-                $visible = 'public';
-                while(list( , $next) = each($this->tokens)) {
-                    if(array_search($next[0], $canPass) === false) {
-                        if($next[0] === T_FUNCTION) {
-                            while(list( , $string) = each($this->tokens)) {
-                                if($string[0] === T_STRING) {
-                                    $functions[] = new ParsedFunction($token[1], $abstract, $visible, $string[1]);
-                                    break;
-                                }
-                            }
+            $shouldContinue = array_search($token[0], $continueOn) === false;
+            if($shouldContinue) continue;
+            $doc = ($token[0] === T_DOC_COMMENT) ? $token[1] : ''; 
+            $vis = (array_search($token[0], self::$visibilityTokens) !== false) ? $token[1] : ''; 
+            while(list( , $next) = each($this->tokens)) {
+                if($next[0] === T_FUNCTION) {
+                    while(list( , $string) = each($this->tokens)) {
+                        if($string[0] === T_STRING) {
+                            $functions[] = new ParsedFunction($doc, $vis, $string[1]);
+                            break 2;
                         }
-                        break;
-                    } else if ($next[0] === T_ABSTRACT) {
-                        $abstract = true;
-                    } else if (array_search($next[0], self::$visibilityTokens)) {
-                        $visible = $next[1];
                     }
                 }
-            } else if ($token[0] === T_ABSTRACT || array_search($token[0], self::$visibilityTokens) !== false) {
-                $abstract = ($token[0] === T_ABSTRACT); 
-                $visible = 'public';
-                if(array_search($token[0], self::$visibilityTokens) !== false) $visible = $token[1];
-                while(list( , $next) = each($this->tokens)) {
-                    if(array_search($next[0], $canPass) === false) {
-                        if($next[0] === T_FUNCTION) {
-                            while(list( , $string) = each($this->tokens)) {
-                                if($string[0] === T_STRING) {
-                                    $functions[] = new ParsedFunction('', $abstract, $visible, $string[1]);
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    } else if (array_search($next[0], self::$visibilityTokens)) {
-                        $visible = $next[1];
-                    }
+
+                if(array_search($next[0], self::$visibilityTokens) !== false) {
+                    $vis = $next[1];
                 }
             }
         }
