@@ -9,4 +9,9 @@ class ParsedFunction extends ParsedObject
         parent::__construct($doc, $name);
         $this->visibility = $visibility;
     }
+
+    public function getVisibility()
+    {
+        return $this->visibility;
+    }
 }

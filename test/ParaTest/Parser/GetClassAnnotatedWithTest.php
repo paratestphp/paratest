@@ -16,6 +16,12 @@ class GetClassAnnotatedWithTest extends \TestBase
         $this->assertEquals('UnitTestWithClassAnnotationTest', $this->class->getName());
     }
 
+    public function testReturnsNullIfNoAnnotationFound()
+    {
+        $class = $this->parser->getClassAnnotatedWith('hamSandwich');
+        $this->assertNull($class);
+    }
+
     public function testParsedClassHasCompleteDocBlock()
     {
         $this->assertEquals('/**

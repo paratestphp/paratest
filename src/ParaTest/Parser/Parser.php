@@ -21,6 +21,7 @@ class Parser
 
     private function parseClassWithAnnotation($annotation)
     {
+        $class = null;
         while(@(list( , $token) = each($this->tokens)) != null) {
             if($token[0] !== T_DOC_COMMENT || !preg_match("/\@$annotation\b/", $token[1])) continue;
             if($extracted = $this->extractClass()) 
@@ -34,26 +35,23 @@ class Parser
         $continueOn = $tokens = array_merge(array(T_DOC_COMMENT), self::$visibilityTokens);
         $functions = array();
         while(list( , $token) = each($this->tokens)) {
-            $shouldContinue = array_search($token[0], $continueOn) === false;
-            if($shouldContinue) continue;
+            if(array_search($token[0], $continueOn) === false) continue;
             $doc = ($token[0] === T_DOC_COMMENT) ? $token[1] : ''; 
             $vis = (array_search($token[0], self::$visibilityTokens) !== false) ? $token[1] : ''; 
             while(list( , $next) = each($this->tokens)) {
-                if($next[0] === T_FUNCTION) {
-                    while(list( , $string) = each($this->tokens)) {
-                        if($string[0] === T_STRING) {
-                            $functions[] = new ParsedFunction($doc, $vis, $string[1]);
-                            break 2;
-                        }
-                    }
-                }
-
-                if(array_search($next[0], self::$visibilityTokens) !== false) {
-                    $vis = $next[1];
-                }
+                if($next[0] === T_FUNCTION && $functions[] = $this->extractFunction($doc, $vis)) break;
+                if(array_search($next[0], self::$visibilityTokens) !== false) $vis = $next[1];
             }
         }
         return new ParsedClass($docBlock, $name, $functions);
+    }
+
+    private function extractFunction($doc, $vis)
+    {
+        while(list( , $string) = each($this->tokens)) {
+            if($string[0] === T_STRING)
+                return new ParsedFunction($doc, $vis, $string[1]);
+        }
     }
 
     private function extractClass()
