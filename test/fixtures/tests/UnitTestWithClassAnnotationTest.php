@@ -1,11 +1,13 @@
 <?php
 /**
  * @runParallel
+ * @pizzaBox
  */
 class UnitTestWithClassAnnotationTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @group fixtures
+     * @pizza
      */
     public function testTruth()
     {
@@ -14,6 +16,7 @@ class UnitTestWithClassAnnotationTest extends PHPUnit_Framework_TestCase
 
     /**
      * @group fixtures
+     * @pizza
      */
     public function testFalsehood()
     {
@@ -27,16 +30,5 @@ class UnitTestWithClassAnnotationTest extends PHPUnit_Framework_TestCase
     {
         $elems = [1,2,3,4,5];
         $this->assertEquals(5, sizeof($elems));
-    }
-}
-
-class UnitTestWithNoClassAnnotation extends PHPUnit_Framework_TestCase
-{
-    /**
-     * @group fixtures
-     */
-    public function testString()
-    {
-        $this->assertEquals("hello world", $str);
     }
 }

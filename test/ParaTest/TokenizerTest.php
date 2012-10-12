@@ -6,7 +6,7 @@ class TokenizerTest extends \TestBase
 
     public function setUp()
     {
-        $this->tokenizer = new Tokenizer($this->pathToFixture('tests' . DS . 'UnitTestWithMethodAnnotationsTest.php'));
+        $this->tokenizer = new Tokenizer($this->pathToFixture('tests' . DS . 'UnitTestWithClassAnnotationTest.php'));
     }
 
     public function testGetTokensIsNotEmpty()
@@ -17,9 +17,9 @@ class TokenizerTest extends \TestBase
 
     public function testGetFunctionsAnnotatedWithReturnsCorrectFunctions()
     {
-        $funcs = $this->tokenizer->getFunctionsAnnotatedWith('runParallel');
-        $this->assertEquals('testFalsehood', $funcs[0]);
-        $this->assertEquals('testArrayLength', $funcs[1]);
+        $funcs = $this->tokenizer->getFunctionsAnnotatedWith('pizza');
+        $this->assertEquals('testTruth', $funcs[0]);
+        $this->assertEquals('testFalsehood', $funcs[1]);
     }
 
     public function testGetFunctionReturnsAllFunctions()
