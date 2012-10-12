@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" tests="3" assertions="3" failures="1" errors="0" time="0.005895">
+    <testcase name="testTruth" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="7" assertions="1" time="0.001632"/>
+    <testcase name="testFalsehood" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="16" assertions="1" time="0.001157">
+      <failure type="PHPUnit_Framework_ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
+Failed asserting that true is false.
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18
+</failure>
+    </testcase>
+    <testcase name="testArrayLength" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="25" assertions="1" time="0.003106"/>
+  </testsuite>
+</testsuites>

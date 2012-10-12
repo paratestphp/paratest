@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" tests="1" assertions="0" failures="0" errors="1" time="0.002030">
+    <testcase name="testTruth" class="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" line="10" assertions="0" time="0.002030">
+      <error type="Exception">UnitTestWithErrorTest::testTruth
+Exception: Error!!!
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12
+</error>
+    </testcase>
+  </testsuite>
+</testsuites>
