@@ -26,10 +26,20 @@ class GetClassAnnotatedWithTest extends \TestBase
 
     public function testParsedClassHasCollectionOfParsedFunctions()
     {
-        $functions = $this->class->getFunctions();
-        $this->assertEquals('testTruth', $functions[0]->getName());
-        $this->assertEquals('testFalsehood', $functions[1]->getName());
-        $this->assertEquals('testArrayLength', $functions[2]->getName());
-        $this->assertEquals('helperFunction', $functions[3]->getName());
+        $expected = array(
+            new ParsedFunction('/**
+     * @group fixtures
+     * @pizza
+     */', false, 'public', 'testTruth'),
+            new ParsedFunction('/**
+     * @group fixtures
+     * @pizza
+     */', false, 'public', 'testFalsehood'),
+            new ParsedFunction('/**
+     * @group fixtures
+     */', false, 'public', 'testArrayLength'),
+            new ParsedFunction('', false, 'private', 'helperFunction')
+        );
+        $this->assertEquals($expected, $this->class->getFunctions());
     }
 }

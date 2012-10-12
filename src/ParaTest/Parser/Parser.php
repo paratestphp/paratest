@@ -42,7 +42,7 @@ class Parser
                         if($next[0] === T_FUNCTION) {
                             while(list( , $string) = each($this->tokens)) {
                                 if($string[0] === T_STRING) {
-                                    $functions[] = new ParsedFunction($token[0], $abstract, $visible, $string[1]);
+                                    $functions[] = new ParsedFunction($token[1], $abstract, $visible, $string[1]);
                                     break;
                                 }
                             }
@@ -54,9 +54,10 @@ class Parser
                         $visible = $next[1];
                     }
                 }
-            } else {
-                $abstract = false;
+            } else if ($token[0] === T_ABSTRACT || array_search($token[0], $visibility) !== false) {
+                $abstract = ($token[0] === T_ABSTRACT); 
                 $visible = 'public';
+                if(array_search($token[0], $visibility) !== false) $visible = $token[1];
                 while(list( , $next) = each($this->tokens)) {
                     if(array_search($next[0], $canPass) === false) {
                         if($next[0] === T_FUNCTION) {
@@ -68,8 +69,6 @@ class Parser
                             }
                         }
                         break;
-                    } else if ($next[0] === T_ABSTRACT) {
-                        $abstract = true;
                     } else if (array_search($next[0], $visibility)) {
                         $visible = $next[1];
                     }
