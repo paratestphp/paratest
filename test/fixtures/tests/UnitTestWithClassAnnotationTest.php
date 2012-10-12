@@ -31,4 +31,9 @@ class UnitTestWithClassAnnotationTest extends PHPUnit_Framework_TestCase
         $elems = [1,2,3,4,5];
         $this->assertEquals(5, sizeof($elems));
     }
+
+    private function helperFunction()
+    {
+        echo 'I am super helpful';
+    }
 }
