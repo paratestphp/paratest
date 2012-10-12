@@ -1,9 +1,10 @@
-<?php
+<?php namespace Fixtures\Tests;
+
 /**
  * @runParallel
  * @pizzaBox
  */
-class UnitTestWithClassAnnotationTest extends PHPUnit_Framework_TestCase
+class UnitTestWithClassAnnotationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @group fixtures

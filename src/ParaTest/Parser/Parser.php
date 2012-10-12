@@ -2,16 +2,19 @@
 
 class Parser
 {
+    private $src;
     private $tokens;
 
     private static $visibilityTokens = array(T_PUBLIC, T_PRIVATE, T_PROTECTED);
+    private static $namespace = '/\bnamespace\b[\s]+([^;]+);/';
 
-    public function __construct($src)
+    public function __construct($srcPath)
     {
-        if(!file_exists($src))
+        if(!file_exists($srcPath))
             throw new \InvalidArgumentException("file not found");
 
-        $this->tokens = token_get_all(file_get_contents($src));
+        $this->src = file_get_contents($srcPath);
+        $this->tokens = token_get_all($this->src);
     }
 
     public function getClassAnnotatedWith($param)
@@ -36,14 +39,14 @@ class Parser
         $functions = array();
         while(list( , $token) = each($this->tokens)) {
             if(array_search($token[0], $continueOn) === false) continue;
-            $doc = ($token[0] === T_DOC_COMMENT) ? $token[1] : ''; 
+            $doc = ($token[0] === T_DOC_COMMENT) ? $token[1] : null; 
             $vis = (array_search($token[0], self::$visibilityTokens) !== false) ? $token[1] : ''; 
             while(list( , $next) = each($this->tokens)) {
                 if($next[0] === T_FUNCTION && $functions[] = $this->extractFunction($doc, $vis)) break;
                 if(array_search($next[0], self::$visibilityTokens) !== false) $vis = $next[1];
             }
         }
-        return new ParsedClass($docBlock, $name, $functions);
+        return new ParsedClass($docBlock, $name, $this->getNamespace(), $functions);
     }
 
     private function extractFunction($doc, $vis)
@@ -63,6 +66,12 @@ class Parser
 
             if($classDefined && $token[0] === T_STRING) return $token[1];
         }
+    }
+
+    private function getNamespace()
+    {
+        if(preg_match(self::$namespace, $this->src, $matches))
+            return $matches[1];
     }
 }
 

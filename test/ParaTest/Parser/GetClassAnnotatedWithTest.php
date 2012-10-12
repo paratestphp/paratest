@@ -30,6 +30,11 @@ class GetClassAnnotatedWithTest extends \TestBase
  */', $this->class->getDocBlock());
     }
 
+    public function testParsedClassHasNamespace()
+    {
+        $this->assertEquals('Fixtures\\Tests', $this->class->getNamespace());
+    }
+
     public function testParsedClassHasCollectionOfParsedFunctions()
     {
         $expected = array(
@@ -44,7 +49,7 @@ class GetClassAnnotatedWithTest extends \TestBase
             new ParsedFunction('/**
      * @group fixtures
      */', 'public', 'testArrayLength'),
-            new ParsedFunction('', 'private', 'helperFunction')
+            new ParsedFunction(null, 'private', 'helperFunction')
         );
         $this->assertEquals($expected, $this->class->getFunctions());
     }

@@ -10,7 +10,6 @@ class UnitTestWithMethodAnnotationsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @runParallel
      * @group fixtures
      */
     public function testFalsehood()
@@ -19,7 +18,6 @@ class UnitTestWithMethodAnnotationsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @runParallel
      * @group fixtures
      */
     public function testArrayLength()
