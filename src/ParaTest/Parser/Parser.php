@@ -4,6 +4,8 @@ class Parser
 {
     private $tokens;
 
+    private static $visibilityTokens = array(T_PUBLIC, T_PRIVATE, T_PROTECTED);
+
     public function __construct($src)
     {
         if(!file_exists($src))
@@ -29,8 +31,7 @@ class Parser
 
     private function buildParsedClass($docBlock, $name)
     {
-        $visibility = array(T_PUBLIC, T_PRIVATE, T_PROTECTED);
-        $canPass = array_merge(array(T_ABSTRACT, T_WHITESPACE), $visibility);
+        $canPass = array_merge(array(T_ABSTRACT, T_WHITESPACE), self::$visibilityTokens);
         $functions = array();
         while(list( , $token) = each($this->tokens)) {
             //lets look ahead until we find a function
@@ -50,14 +51,14 @@ class Parser
                         break;
                     } else if ($next[0] === T_ABSTRACT) {
                         $abstract = true;
-                    } else if (array_search($next[0], $visibility)) {
+                    } else if (array_search($next[0], self::$visibilityTokens)) {
                         $visible = $next[1];
                     }
                 }
-            } else if ($token[0] === T_ABSTRACT || array_search($token[0], $visibility) !== false) {
+            } else if ($token[0] === T_ABSTRACT || array_search($token[0], self::$visibilityTokens) !== false) {
                 $abstract = ($token[0] === T_ABSTRACT); 
                 $visible = 'public';
-                if(array_search($token[0], $visibility) !== false) $visible = $token[1];
+                if(array_search($token[0], self::$visibilityTokens) !== false) $visible = $token[1];
                 while(list( , $next) = each($this->tokens)) {
                     if(array_search($next[0], $canPass) === false) {
                         if($next[0] === T_FUNCTION) {
@@ -69,7 +70,7 @@ class Parser
                             }
                         }
                         break;
-                    } else if (array_search($next[0], $visibility)) {
+                    } else if (array_search($next[0], self::$visibilityTokens)) {
                         $visible = $next[1];
                     }
                 }
