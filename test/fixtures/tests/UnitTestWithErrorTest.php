@@ -12,5 +12,13 @@ class UnitTestWithErrorTest extends PHPUnit_Framework_TestCase
         throw new Exception("Error!!!");
         $this->assertTrue(true);
     }
+
+    /**
+     * @test
+     */
+    public function isItFalse()
+    {
+        $this->assertFalse(false);
+    }
     
 }

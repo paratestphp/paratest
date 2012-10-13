@@ -20,4 +20,9 @@ abstract class ParsedObject
     {
         return $this->docBlock;
     }
+
+    public function hasAnnotation($anno)
+    {
+        return (bool) preg_match("/@$anno\b/", $this->docBlock);
+    }
 }

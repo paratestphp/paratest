@@ -38,7 +38,7 @@ class PHPUnitRunnerTest extends \TestBase
     public function testLoadDirGetsPathOfAllTests()
     {
         $this->runner->loadDir($this->testDir);
-        $loaded = $this->getObjectValue($this->runner, 'loadedTests');
+        $loaded = $this->getObjectValue($this->runner, 'loadedSuites');
         $this->assertEquals(sort($this->files), sort($loaded));
     }
 
@@ -50,13 +50,42 @@ class PHPUnitRunnerTest extends \TestBase
         $this->runner->loadDir('/path/to/nowhere');
     }
 
-    /*public function testLoadDirStoresParallelSuites()
+    public function testLoadDirStoresParallelSuitesWithPathAsKeys()
     {
         $keys = array(
-            'UnitTestWithClassAnnotationTest',
-            'UnitTestWithErrorTest',
-            'UnitTestInSubLevelTest',
-            'UnitTestInSubSubLevelTest');
+            $this->files[0],
+            $this->files[2],
+            $this->files[3],
+            $this->files[5]);
+
+        $this->runner->loadDir($this->testDir);
+
         $paraSuites = $this->getObjectValue($this->runner, 'parallelSuites');
-    }*/
+        $this->assertEquals($keys, array_keys($paraSuites));
+
+        return $paraSuites;
+    }
+
+    /**
+     * @depends testLoadDirStoresParallelSuitesWithPathAsKeys
+     */
+    public function testFirstParallelSuiteHasCorrectFunctions($paraSuites)
+    {
+        $first = array_shift($paraSuites);
+        $this->assertEquals(3, sizeof($first));
+        $this->assertEquals('testTruth', $first[0]);
+        $this->assertEquals('testFalsehood', $first[1]);
+        $this->assertEquals('testArrayLength', $first[2]);
+    }
+
+    /**
+     * @depends testLoadDirStoresParallelSuitesWithPathAsKeys
+     */
+    public function testSecondParallelSuiteHasCorrectFunctions($paraSuites)
+    {
+        $second = next($paraSuites);
+        $this->assertEquals(2, sizeof($second));
+        $this->assertEquals('testTruth', $second[0]);
+        $this->assertEquals('isItFalse', $second[1]);
+    }
 }
