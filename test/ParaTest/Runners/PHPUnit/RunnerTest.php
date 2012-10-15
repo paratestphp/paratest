@@ -1,4 +1,4 @@
-<?php namespace ParaTest\Runners;
+<?php namespace ParaTest\Runners\PHPUnit;
 
 class PHPUnitRunnerTest extends \TestBase
 {
@@ -8,7 +8,7 @@ class PHPUnitRunnerTest extends \TestBase
 
     public function setUp()
     {
-        $this->runner = new PHPUnitRunner();
+        $this->runner = new Runner();
         $tests = FIXTURES . DS . 'tests';
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
@@ -25,7 +25,7 @@ class PHPUnitRunnerTest extends \TestBase
     public function testConstructor()
     {
         $maxProcs = 4;
-        $runner = new PHPUnitRunner($maxProcs);
+        $runner = new Runner($maxProcs);
         $this->assertEquals(4, $this->getObjectValue($runner, 'maxProcs'));
     }
 
@@ -72,10 +72,11 @@ class PHPUnitRunnerTest extends \TestBase
     public function testFirstParallelSuiteHasCorrectFunctions($paraSuites)
     {
         $first = array_shift($paraSuites);
-        $this->assertEquals(3, sizeof($first));
-        $this->assertEquals('testTruth', $first[0]);
-        $this->assertEquals('testFalsehood', $first[1]);
-        $this->assertEquals('testArrayLength', $first[2]);
+        $functions = $first->getFunctions();
+        $this->assertEquals(3, sizeof($functions));
+        $this->assertEquals('testTruth', $functions[0]->getName());
+        $this->assertEquals('testFalsehood', $functions[1]->getName());
+        $this->assertEquals('testArrayLength', $functions[2]->getName());
     }
 
     /**
@@ -84,8 +85,37 @@ class PHPUnitRunnerTest extends \TestBase
     public function testSecondParallelSuiteHasCorrectFunctions($paraSuites)
     {
         $second = next($paraSuites);
-        $this->assertEquals(2, sizeof($second));
-        $this->assertEquals('testTruth', $second[0]);
-        $this->assertEquals('isItFalse', $second[1]);
+        $functions = $second->getFunctions();
+        $this->assertEquals(2, sizeof($functions));
+        $this->assertEquals('testTruth', $functions[0]->getName());
+        $this->assertEquals('isItFalse', $functions[1]->getName());
+    }
+
+    public function testLoadDirStoresSerialSuitesWithPathAsKeys()
+    {
+        $keys = array(
+            $this->files[1],
+            $this->files[4],
+            $this->files[6]);
+
+        $this->runner->loadDir($this->testDir);
+
+        $serialSuites = $this->getObjectValue($this->runner, 'serialSuites');
+        $this->assertEquals($keys, array_keys($serialSuites));
+
+        return $serialSuites;
+    }
+
+    /**
+     * @depends testLoadDirStoresSerialSuitesWithPathAsKeys
+     */
+    public function testFirstSerialSuiteHasCorrectFunctions($serialSuites)
+    {
+        $first = array_shift($serialSuites);
+        $functions = $first->getFunctions();
+        $this->assertEquals(3, sizeof($functions));
+        $this->assertEquals('testTruth', $functions[0]->getName());
+        $this->assertEquals('testFalsehood', $functions[1]->getName());
+        $this->assertEquals('testArrayLength', $functions[2]->getName());
     }
 }

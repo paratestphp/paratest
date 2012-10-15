@@ -17,6 +17,11 @@ class Parser
         $this->tokens = token_get_all($this->src);
     }
 
+    public function getClass()
+    {
+        return $this->buildParsedClass('', $this->extractClass());
+    }
+
     public function getClassAnnotatedWith($param)
     {
         return $this->parseClassWithAnnotation($param);    

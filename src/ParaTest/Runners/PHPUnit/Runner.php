@@ -1,12 +1,13 @@
-<?php namespace ParaTest\Runners;
+<?php namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Parser\Parser;
 
-class PHPUnitRunner
+class Runner
 {
     protected $maxProcs;
     protected $loadedSuites;
     protected $parallelSuites;
+    protected $serialSuites;
 
     private static $testPattern = '/.+Test.php$/';
     private static $dotPattern = '/([.]+)$/';
@@ -17,6 +18,7 @@ class PHPUnitRunner
         $this->maxProcs = $maxProcs;
         $this->loadedSuites = array();
         $this->parallelSuites = array();
+        $this->serialSuites = array();
     }
 
     public function loadDir($path)
@@ -26,9 +28,10 @@ class PHPUnitRunner
         foreach($files as $file)
             $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file);
         $this->initParallelSuites();
+        $this->initSerialSuites();
     }
 
-    public function tryLoadTests($path)
+    private function tryLoadTests($path)
     {
         if(preg_match(self::$testPattern, $path))
                 $this->loadedSuites[] = $path;
@@ -41,12 +44,24 @@ class PHPUnitRunner
     {
         foreach($this->loadedSuites as $suite) {
             $parser = new Parser($suite);
-            if($class = $parser->getClassAnnotatedWith('runParallel')) {
-                $functions = array_filter($class->getFunctions(), function($fn) {
-                    return preg_match(self::$testMethod, $fn->getName()) || $fn->hasAnnotation('test');
-                });
-                $this->parallelSuites[$suite] = array_map(function($f){return $f->getName();}, $functions);
-            }
+            if($class = $parser->getClassAnnotatedWith('runParallel'))
+                $this->parallelSuites[$suite] = new Suite($suite, $this->getTestFunctions($class));
         }
+    }
+
+    private function initSerialSuites()
+    {
+        foreach($this->loadedSuites as $suite) {
+            $parser = new Parser($suite);
+            if(!array_key_exists($suite, $this->parallelSuites) && $class = $parser->getClass())
+                $this->serialSuites[$suite] = new Suite($suite, $this->getTestFunctions($class));
+        }
+    }
+
+    public function getTestFunctions($class)
+    {
+        return array_filter($class->getFunctions(), function($fn) {
+            return preg_match(self::$testMethod, $fn->getName()) || $fn->hasAnnotation('test');
+        });
     }
 }
