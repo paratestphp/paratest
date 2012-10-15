@@ -9,14 +9,6 @@ class SuiteTest extends \TestBase
         $this->suite = new Suite('/path/to/UnitTest.php', array());
     }
 
-    public function testConstructor()
-    {
-        $pipes = $this->getObjectValue($this->suite, 'pipes');
-        $this->assertEquals(array(), $pipes);
-        $resource = $this->getObjectValue($this->suite, 'resource');
-        $this->assertNull($resource);
-    }
-
     public function testGetTempFileShouldCreateTempFile()
     {
         $file = $this->suite->getTempFile();
@@ -30,10 +22,5 @@ class SuiteTest extends \TestBase
         $fileAgain = $this->suite->getTempFile();
         $this->assertEquals($file, $fileAgain);
         unlink($file);
-    }
-
-    public function testIsDoneReturnsFalseByDefault()
-    {
-        $this->assertFalse(false, $this->suite->isDone());
     }
 }
