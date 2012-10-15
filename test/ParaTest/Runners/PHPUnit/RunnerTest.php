@@ -8,8 +8,8 @@ class PHPUnitRunnerTest extends \TestBase
 
     public function setUp()
     {
-        $this->runner = new Runner();
         $tests = FIXTURES . DS . 'tests';
+        $this->runner = new Runner();
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
             'UnitTestWithClassAnnotationTest.php',
@@ -25,13 +25,15 @@ class PHPUnitRunnerTest extends \TestBase
     public function testConstructor()
     {
         $maxProcs = 4;
-        $runner = new Runner($maxProcs);
+        $runner = new Runner(array('maxProcs' => 4, 'suite' => FIXTURES . DS . 'tests'));
         $this->assertEquals(4, $this->getObjectValue($runner, 'maxProcs'));
+        $this->assertEquals(FIXTURES . DS . 'tests', $this->getObjectValue($runner, 'suite'));
+        
     }
 
-    public function testMaxProcsDefaultsTo5()
+    public function testDefaults()
     {
-        $procs = $this->getObjectValue($this->runner, 'maxProcs');
-        $this->assertEquals(5, $procs);
+        $this->assertEquals(5, $this->getObjectValue($this->runner, 'maxProcs'));
+        $this->assertEquals(getcwd(), $this->getObjectValue($this->runner, 'suite'));
     }
 }

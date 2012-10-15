@@ -16,9 +16,11 @@ function autoload($className)
 
     $srcFile = 'src' . DS . $fileName;
     $testFile = 'test' . DS . $fileName;
+    $integrationFile = 'it' . DS . $fileName;
 
     if(file_exists($srcFile)) require $srcFile;
     if(file_exists($testFile)) require $testFile;
+    if(file_exists($integrationFile)) require $integrationFile;
 }
 
 spl_autoload_register('autoload');

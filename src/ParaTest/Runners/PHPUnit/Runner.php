@@ -3,9 +3,20 @@
 class Runner
 {
     protected $maxProcs;
+    protected $suite;
     
-    public function __construct($maxProcs = 5)
+    public function __construct($opts = array())
     {
-        $this->maxProcs = $maxProcs;
+        $opts = array_merge(self::defaults(), $opts);
+        $this->maxProcs = $opts['maxProcs'];
+        $this->suite = $opts['suite'];
+    }
+
+    private static function defaults()
+    {
+        return array(
+            'maxProcs' => 5,
+            'suite' => getcwd()
+        );
     }
 }

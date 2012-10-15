@@ -19,6 +19,16 @@ class SuiteLoader
         $this->serialSuites = array();
     }
 
+    public function getParallelSuites()
+    {
+        return $this->parallelSuites;
+    }
+
+    public function getSerialSuites()
+    {
+        return $this->serialSuites;
+    }
+
     public function loadDir($path)
     {
         if(!is_dir($path)) throw new \InvalidArgumentException("$path is not a valid directory");
