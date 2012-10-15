@@ -16,6 +16,13 @@ class Runner
         $this->processes = array();
     }
 
+    public function load()
+    {
+        $loader = new SuiteLoader();
+        $loader->loadDir($this->suite);
+        $this->pending = array_merge($this->pending, $loader->getParallelSuites());
+    }
+
     private static function defaults()
     {
         return array(

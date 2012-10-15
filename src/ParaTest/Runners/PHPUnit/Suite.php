@@ -25,7 +25,7 @@ class Suite
     public function getTempFile()
     {
         if(is_null($this->temp))
-            $this->temp = tempnam('/tmp/paratest', sprintf("%s.xml", basename($this->path)));
+            $this->temp = tempnam('/tmp/paratest/', sprintf("%s.xml", basename($this->path)));
         return $this->temp;
     }
 }
