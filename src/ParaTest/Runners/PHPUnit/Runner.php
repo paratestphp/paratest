@@ -1,7 +1,5 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\LogReaders\JUnitXmlLogReader;
-
 class Runner
 {
     protected $maxProcs;

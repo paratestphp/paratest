@@ -8,6 +8,7 @@ class JUnitXmlLogReaderTest_MixedResultsTest extends JUnitXmlLogReaderTest_BaseJ
     protected $expectedTotalFailures = 2;
     protected $expectedTime = '0.007625';
     protected $expectedErrors = 1;
+    protected $expectedSuiteName = 'test/fixtures/tests/';
 
     /**
      * @expectedException   \InvalidArgumentException 

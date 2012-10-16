@@ -8,6 +8,7 @@ class JUnitXmlLogReader
     private $failures;
     private $time;
     private $errors;
+    private $suiteName;
 
     public function __construct($logFile) 
     {
@@ -15,7 +16,7 @@ class JUnitXmlLogReader
             throw new \InvalidArgumentException("Log file $logFile does not exist");
 
         $this->xml = simplexml_load_file($logFile);
-        $this->initTotaledResults();
+        $this->initFromRootSuite();
         $this->initFailures();
         $this->initErrors();
     }
@@ -55,7 +56,12 @@ class JUnitXmlLogReader
         return $this->errors;
     }
 
-    private function initTotaledResults()
+    public function getSuiteName()
+    {
+        return $this->suiteName;
+    }
+
+    private function initFromRootSuite()
     {
         $suite = $this->xml->xpath('/testsuites/testsuite[1]');
         $atts = $suite[0]->attributes();
@@ -63,6 +69,7 @@ class JUnitXmlLogReader
         $this->assertions = (string) $atts['assertions'];
         $this->time = (string) $atts['time'];
         $this->errors = (string) $atts['errors'];
+        $this->suiteName = (string) $atts['name'];
     }
 
     private function initMessages(&$collection, $paths)

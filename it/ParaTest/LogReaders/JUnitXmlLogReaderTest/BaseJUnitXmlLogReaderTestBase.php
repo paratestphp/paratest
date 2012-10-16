@@ -11,6 +11,7 @@ abstract class JUnitXmlLogReaderTest_BaseJUnitXmlLogReaderTestBase extends \Test
     protected $expectedTotalFailures;
     protected $expectedTime;
     protected $expectedErrors;
+    protected $expectedSuiteName;
 
     public function setUp()
     {
@@ -44,4 +45,8 @@ abstract class JUnitXmlLogReaderTest_BaseJUnitXmlLogReaderTestBase extends \Test
         $this->assertEquals($this->expectedErrors, $this->reader->getTotalErrors());
     }
 
+    public function testGetSuiteName()
+    {
+        $this->assertEquals($this->expectedSuiteName, $this->reader->getSuiteName());
+    }
 }
