@@ -22,7 +22,6 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertEquals(FIXTURES . DS . 'tests', $this->getObjectValue($runner, 'suite'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'pending'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'running'));
-        $this->assertEquals(0, $this->getObjectValue($runner, 'time'));
         $this->assertEquals($opts, $this->getObjectValue($runner, 'options'));
     }
 

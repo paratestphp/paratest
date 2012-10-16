@@ -6,7 +6,6 @@ class Runner
     protected $suite;
     protected $pending = array();
     protected $running = array();
-    protected $time = 0;
     protected $options;
     
     public function __construct($opts = array())
@@ -19,11 +18,9 @@ class Runner
 
     public function run()
     {
-        $this->time = microtime(true);
         $this->fillRunQueue();
         while(count($this->running))
             $this->running = array_filter($this->running, array($this, 'suiteIsStillRunning'));
-        $this->time = microtime(true) - $this->time;
     }
 
     public function load()
