@@ -4,20 +4,13 @@ use ParaTest\Parser\Parser;
 
 class SuiteLoader
 {
-    protected $loadedSuites;
-    protected $parallelSuites;
-    protected $serialSuites;
+    protected $loadedSuites = array();
+    protected $parallelSuites = array();
+    protected $serialSuites = array();
 
     private static $testPattern = '/.+Test.php$/';
     private static $dotPattern = '/([.]+)$/';
     private static $testMethod = '/^test/';
-
-    public function __construct()
-    {
-        $this->loadedSuites = array();
-        $this->parallelSuites = array();
-        $this->serialSuites = array();
-    }
 
     public function getParallelSuites()
     {

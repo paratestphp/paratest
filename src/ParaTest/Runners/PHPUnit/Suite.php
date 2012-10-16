@@ -5,7 +5,7 @@ class Suite
     private $path;
     private $functions;
     private $temp;
-    private $pipes;
+    private $pipes = array();
     private $process;
 
     private static $descriptors = array(
@@ -18,7 +18,6 @@ class Suite
     {
         $this->path = $path;
         $this->functions = $functions;
-        $this->pipes = array();
     }
 
     public function getPath()

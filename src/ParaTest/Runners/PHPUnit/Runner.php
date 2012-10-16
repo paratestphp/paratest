@@ -4,9 +4,9 @@ class Runner
 {
     protected $maxProcs;
     protected $suite;
-    protected $pending;
-    protected $running;
-    protected $time;
+    protected $pending = array();
+    protected $running = array();
+    protected $time = 0;
     protected $options;
     
     public function __construct($opts = array())
@@ -14,9 +14,6 @@ class Runner
         $opts = array_merge(self::defaults(), $opts);
         $this->maxProcs = $opts['maxProcs'];
         $this->suite = $opts['suite'];
-        $this->pending = array();
-        $this->running = array();
-        $this->time = 0;
         $this->options = $opts;
     }
 

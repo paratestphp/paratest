@@ -10,7 +10,7 @@ class RunnerTest extends \TestBase
         $this->runner->load();
     }
 
-    public function testLoadShouldPopulatePendingCollection()
+    public function testLoadDirShouldPopulatePendingCollection()
     {
         $loader = new SuiteLoader();
         $loader->loadDir(FIXTURES . DS . 'tests');
