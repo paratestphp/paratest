@@ -20,7 +20,8 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertEquals(4, $this->getObjectValue($runner, 'maxProcs'));
         $this->assertEquals(FIXTURES . DS . 'tests', $this->getObjectValue($runner, 'suite'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'pending'));
-        $this->assertEquals(array(), $this->getObjectValue($runner, 'processes'));
+        $this->assertEquals(array(), $this->getObjectValue($runner, 'running'));
+        $this->assertEquals(0, $this->getObjectValue($runner, 'time'));
     }
 
     public function testDefaults()

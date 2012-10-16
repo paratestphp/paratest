@@ -18,6 +18,7 @@ class UnitTestWithErrorTest extends PHPUnit_Framework_TestCase
      */
     public function isItFalse()
     {
+        sleep(2);
         $this->assertFalse(false);
     }
     
