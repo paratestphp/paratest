@@ -42,9 +42,13 @@ class ResultPrinter
         foreach($this->readers() as $reader)
             $errors = array_merge($errors, $reader->getErrors());
 
-        $errString = sprintf("There was %d error:\n", sizeof($errors));
+        $num = sizeof($errors);
+        $errString = sprintf("There %s %d error%s:\n",
+            ($num == 1) ? 'was' : 'were',
+            $num,
+            ($num == 1) ? '' : 's');
         for($i = 1; $i <= sizeof($errors); $i++)
-            $errString .= sprintf("\n%d) %s", $i, $errors[$i - 1]);
+            $errString .= sprintf("\n%d) %s\n", $i, $errors[$i - 1]);
 
         return $errString;
     }

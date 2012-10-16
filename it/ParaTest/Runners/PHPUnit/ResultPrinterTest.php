@@ -5,11 +5,13 @@ class ResultPrinterTest extends \TestBase
     protected $printer;
     protected $errorSuite;
     protected $failureSuite;
+    protected $otherErrorSuite;
 
     public function setUp()
     {
         $this->printer = new ResultPrinter();
         $this->errorSuite = $this->getSuiteWithResult('single-werror.xml');
+        $this->otherErrorSuite = $this->getSuiteWithResult('single-werror2.xml');
         $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml');
     }
 
@@ -23,19 +25,37 @@ class ResultPrinterTest extends \TestBase
         $this->assertRegExp("/\n\nTime: 0.007925, Memory:[\s][0-9]([.][0-9]{2})?Mb\n\n/", $header);
     }
 
-    public function testGetErrors()
+    public function testGetErrorsSingleError()
     {
         $this->printer->addSuite($this->errorSuite)
                       ->addSuite($this->failureSuite);
 
         $errors = $this->printer->getErrors();
 
-        $regEx  = "/There was 1 error:\n\n";
-        $regEx .= "1\) UnitTestWithErrorTest::testTruth\n";
-        $regEx .= "Exception: Error!!!\n\n";
-        $regEx .= '\/home\/brian\/Projects\/parallel-phpunit\/test\/fixtures\/tests\/UnitTestWithErrorTest.php:12/';
+        $eq  = "There was 1 error:\n\n";
+        $eq .= "1) UnitTestWithErrorTest::testTruth\n";
+        $eq .= "Exception: Error!!!\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
 
-        $this->assertRegExp($regEx, $errors);
+        $this->assertEquals($eq, $errors);
+    }
+
+    public function testGetErrorsMultipleErrors()
+    {
+        $this->printer->addSuite($this->errorSuite)
+                      ->addSuite($this->otherErrorSuite);
+
+        $errors = $this->printer->getErrors();
+
+        $eq  = "There were 2 errors:\n\n";
+        $eq .= "1) UnitTestWithErrorTest::testTruth\n";
+        $eq .= "Exception: Error!!!\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
+        $eq .= "\n2) UnitTestWithOtherErrorTest::testSomeCase\n";
+        $eq .= "Exception: Another Error!!!\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php:12\n";
+
+        $this->assertEquals($eq, $errors);
     }
 
     private function getSuiteWithResult($result)

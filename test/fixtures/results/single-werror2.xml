@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="UnitTestWithOtherErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php" tests="2" assertions="1" failures="0" errors="1" time="0.006054">
+    <testcase name="testSomeCase" class="UnitTestWithOtherErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php" line="10" assertions="0" time="0.001345">
+      <error type="Exception">UnitTestWithOtherErrorTest::testSomeCase
+Exception: Another Error!!!
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php:12
+</error>
+    </testcase>
+    <testcase name="testOnePlusOne" class="UnitTestWithOtherErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php" line="16" assertions="1" time="0.004709"/>
+  </testsuite>
+</testsuites>
