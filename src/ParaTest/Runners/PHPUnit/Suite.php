@@ -45,7 +45,7 @@ class Suite
 
     public function run()
     {
-        $command = sprintf("phpunit --log-junit %s %s", $this->getTempFile(), $this->getPath());
+        $command = sprintf("phpunit --colors --log-junit %s %s", $this->getTempFile(), $this->getPath());
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
         return $this;
     }

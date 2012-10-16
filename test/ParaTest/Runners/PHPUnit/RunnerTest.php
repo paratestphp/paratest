@@ -13,7 +13,8 @@ class PHPUnitRunnerTest extends \TestBase
 
     public function testConstructor()
     {
-        $runner = new Runner(array('maxProcs' => 4, 'suite' => FIXTURES . DS . 'tests'));
+        $opts = array('maxProcs' => 4, 'suite' => FIXTURES . DS . 'tests');
+        $runner = new Runner($opts);
         $loader = new SuiteLoader();
         $loader->loadDir(FIXTURES . DS . 'tests');
 
@@ -22,6 +23,7 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertEquals(array(), $this->getObjectValue($runner, 'pending'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'running'));
         $this->assertEquals(0, $this->getObjectValue($runner, 'time'));
+        $this->assertEquals($opts, $this->getObjectValue($runner, 'options'));
     }
 
     public function testDefaults()

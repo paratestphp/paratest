@@ -9,6 +9,7 @@ class Runner
     protected $pending;
     protected $running;
     protected $time;
+    protected $options;
     
     public function __construct($opts = array())
     {
@@ -18,6 +19,7 @@ class Runner
         $this->pending = array();
         $this->running = array();
         $this->time = 0;
+        $this->options = $opts;
     }
 
     public function run()
