@@ -19,13 +19,6 @@ class RunnerTest extends \TestBase
         $this->assertEquals($loader->getParallelSuites(), $pending);
     }
 
-    public function testRunningTestsPopulatesTime()
-    {
-        $this->runner->run();
-        $time = $this->getObjectValue($this->runner, 'time');
-        $this->assertTrue($time > 0);
-    }
-
     public function testRunningTestsShouldLeaveNoTempFiles()
     {
         $tempdir = sys_get_temp_dir();

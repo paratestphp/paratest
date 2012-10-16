@@ -24,6 +24,15 @@ class ResultPrinterTest extends \TestBase
         $this->assertEquals(array($suite), $this->getObjectValue($this->printer, 'suites'));
     }
 
+    public function testAddSuiteReturnsSelf()
+    {
+        $suite = new Suite('/path/to/ResultSuite.php', array());
+
+        $self = $this->printer->addSuite($suite);
+
+        $this->assertSame($this->printer, $self);
+    }
+
     public function testStartTimerPopulatesTime()
     {
         $this->printer->startTimer();
