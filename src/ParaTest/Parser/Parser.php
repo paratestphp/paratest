@@ -79,9 +79,3 @@ class Parser
             return $matches[1];
     }
 }
-
-//Sausage - PHP testing with saucelabs - parallel testing
-//test sausage
-//testing in parallel and reporting results
-//pick a php winner - make it great
-//behat
