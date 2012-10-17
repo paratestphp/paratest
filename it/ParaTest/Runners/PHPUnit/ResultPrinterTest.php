@@ -6,6 +6,7 @@ class ResultPrinterTest extends \TestBase
     protected $errorSuite;
     protected $failureSuite;
     protected $otherErrorSuite;
+    protected $mixedSuite;
 
     public function setUp()
     {
@@ -13,6 +14,7 @@ class ResultPrinterTest extends \TestBase
         $this->errorSuite = $this->getSuiteWithResult('single-werror.xml');
         $this->otherErrorSuite = $this->getSuiteWithResult('single-werror2.xml');
         $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml');
+        $this->mixedSuite = $this->getSuiteWithResult('mixed-results.xml');
     }
 
     public function testGetHeader()
@@ -56,6 +58,23 @@ class ResultPrinterTest extends \TestBase
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php:12\n";
 
         $this->assertEquals($eq, $errors);
+    }
+
+    public function testGetFailures()
+    {
+        $this->printer->addSuite($this->mixedSuite);
+
+        $failures = $this->printer->getFailures();
+
+        $eq  = "There were 2 failures:\n\n";
+        $eq .= "1) UnitTestWithClassAnnotationTest::testFalsehood\n";
+        $eq .= "Failed asserting that true is false.\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20\n";
+        $eq .= "\n2) UnitTestWithMethodAnnotationsTest::testFalsehood\n";
+        $eq .= "Failed asserting that true is false.\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n";
+
+        $this->assertEquals($eq, $failures);        
     }
 
     private function getSuiteWithResult($result)
