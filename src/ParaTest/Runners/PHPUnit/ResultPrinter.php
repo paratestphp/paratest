@@ -38,10 +38,10 @@ class ResultPrinter
         $tests = $this->accumulate('getTotalTests');
         $assertions = $this->accumulate('getTotalAssertions');
         $failures = $this->accumulate('getTotalFailures');
-        $errors = $this->accumulate('getTotalErrors');        
-        return sprintf(
-                "\nFAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n",
-                $tests, $assertions, $failures, $errors);
+        $errors = $this->accumulate('getTotalErrors');
+        return $this->isSuccessful($failures, $errors)
+                    ? $this->getSuccessFooter($tests, $assertions)
+                    : $this->getFailedFooter($tests, $assertions, $failures, $errors); 
     }
 
     public function getFailures()
@@ -76,6 +76,26 @@ class ResultPrinter
             $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
 
         return $output;
+    }
+
+    private function getFailedFooter($tests, $assertions, $failures, $errors)
+    {
+        $formatString = "\nFAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
+        return sprintf($formatString, $tests, $assertions, $failures, $errors);
+    }
+
+    private function getSuccessFooter($tests, $asserts)
+    {
+        return sprintf("OK (%d test%s, %d assertion%s)\n",
+                       $tests,
+                       ($tests == 1) ? '' : 's',
+                       $asserts,
+                       ($asserts == 1) ? '' : 's');
+    }
+
+    private function isSuccessful($failures, $errors)
+    {
+        return $failures == 0 && $errors == 0;
     }
 
     private function readers()

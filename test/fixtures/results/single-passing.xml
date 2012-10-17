@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="AnotherUnitTestInSubLevelTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/level1/AnotherUnitTestInSubLevelTest.php" tests="3" assertions="3" failures="0" errors="0" time="0.005295">
+    <testcase name="testTruth" class="AnotherUnitTestInSubLevelTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/level1/AnotherUnitTestInSubLevelTest.php" line="7" assertions="1" time="0.001739"/>
+    <testcase name="testFalsehood" class="AnotherUnitTestInSubLevelTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/level1/AnotherUnitTestInSubLevelTest.php" line="15" assertions="1" time="0.000477"/>
+    <testcase name="testArrayLength" class="AnotherUnitTestInSubLevelTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/level1/AnotherUnitTestInSubLevelTest.php" line="23" assertions="1" time="0.003079"/>
+  </testsuite>
+</testsuites>

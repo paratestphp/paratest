@@ -7,6 +7,7 @@ class ResultPrinterTest extends \TestBase
     protected $failureSuite;
     protected $otherErrorSuite;
     protected $mixedSuite;
+    protected $passingSuite;
 
     public function setUp()
     {
@@ -15,6 +16,7 @@ class ResultPrinterTest extends \TestBase
         $this->otherErrorSuite = $this->getSuiteWithResult('single-werror2.xml');
         $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml');
         $this->mixedSuite = $this->getSuiteWithResult('mixed-results.xml');
+        $this->passingSuite = $this->getSuiteWithResult('single-passing.xml');
     }
 
     public function testGetHeader()
@@ -86,6 +88,17 @@ class ResultPrinterTest extends \TestBase
 
         $eq  = "\nFAILURES!\n";
         $eq .= "Tests: 8, Assertions: 6, Failures: 2, Errors: 2.\n";
+
+        $this->assertEquals($eq, $footer);
+    }
+
+    public function testGetFooterWithSuccess()
+    {
+        $this->printer->addSuite($this->passingSuite);
+
+        $footer = $this->printer->getFooter();
+
+        $eq = "OK (3 tests, 3 assertions)\n";
 
         $this->assertEquals($eq, $footer);
     }
