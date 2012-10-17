@@ -77,6 +77,19 @@ class ResultPrinterTest extends \TestBase
         $this->assertEquals($eq, $failures);        
     }
 
+    public function testGetFooterWithFailures()
+    {
+        $this->printer->addSuite($this->errorSuite)
+                      ->addSuite($this->mixedSuite);
+
+        $footer = $this->printer->getFooter();
+
+        $eq  = "\nFAILURES!\n";
+        $eq .= "Tests: 8, Assertions: 6, Failures: 2, Errors: 2.\n";
+
+        $this->assertEquals($eq, $footer);
+    }
+
     private function getSuiteWithResult($result)
     {
         $result = FIXTURES . DS . 'results' . DS . $result;

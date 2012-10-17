@@ -28,12 +28,20 @@ class ResultPrinter
 
     public function getHeader()
     {
-        $totalTime = array_reduce($this->readers(), function($result, $reader){
-            $result += $reader->getTotalTime();
-            return $result;
-        }, 0);
+        $totalTime = $this->accumulate('getTotalTime');
         $peakUsage = memory_get_peak_usage(TRUE) / 1048576;
         return sprintf("\n\nTime: %f, Memory: %4.2fMb\n\n", $totalTime, $peakUsage);
+    }
+
+    public function getFooter()
+    {
+        $tests = $this->accumulate('getTotalTests');
+        $assertions = $this->accumulate('getTotalAssertions');
+        $failures = $this->accumulate('getTotalFailures');
+        $errors = $this->accumulate('getTotalErrors');        
+        return sprintf(
+                "\nFAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n",
+                $tests, $assertions, $failures, $errors);
     }
 
     public function getFailures()
@@ -76,5 +84,13 @@ class ResultPrinter
             foreach($this->suites as $suite)
                 $this->readers[] = new JUnitXmlLogReader($suite->getTempFile());
         return $this->readers;
+    }
+
+    private function accumulate($method)
+    {
+        return array_reduce($this->readers(), function($result, $reader) use($method){
+            $result += $reader->$method();
+            return $result;
+        }, 0);
     }
 }
