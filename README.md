@@ -5,7 +5,7 @@ The objective of ParaTest is to support parallel testing in a variety of PHP tes
 Installation
 ------------
 ### Composer ###
-To install with composer add the following to your `composer.json` files:
+To install with composer add the following to your `composer.json` file:
 ```js
 "require": {
     "brianium/paratest": "dev-master"
@@ -16,7 +16,8 @@ Then from where you have composer installed run `php composer.phar install`
 Usage
 -----
 After installation, the binary can be found at `vendors/bin/paratest`. Usage is as follows:
-`paratest [--maxProcs number] [--path test_directory] [--bootstrap phpunit_bootstrap] [--configuration phpunit_config] [--exclude-group group] [--group group]`
+`paratest [--maxProcs number] [--path test_directory] [--bootstrap phpunit_bootstrap] [--configuration phpunit_config]`
+`[--exclude-group group] [--group group]`
 
 Output
 ------
@@ -26,4 +27,4 @@ Todo
 ----
 * Behat runner
 * Speed up log reading/class parsing
-* Support colors results
+* Support colored results
