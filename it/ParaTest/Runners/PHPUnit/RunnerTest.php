@@ -6,7 +6,7 @@ class RunnerTest extends \TestBase
 
     public function setUp()
     {
-        $this->runner = new Runner(array('suite' => FIXTURES . DS . 'tests'));
+        $this->runner = new Runner(array('path' => FIXTURES . DS . 'tests'));
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles()

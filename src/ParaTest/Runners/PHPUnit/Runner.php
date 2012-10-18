@@ -3,7 +3,7 @@
 class Runner
 {
     protected $maxProcs;
-    protected $suite;
+    protected $path;
     protected $pending = array();
     protected $running = array();
     protected $options;
@@ -14,10 +14,10 @@ class Runner
         foreach(self::defaults() as $opt => $value)
             $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
         $this->maxProcs = $opts['maxProcs'];
-        $this->suite = $opts['suite'];
+        $this->path = $opts['path'];
         $this->options = array_diff_key($opts, array(
             'maxProcs' => $this->maxProcs,
-            'suite' => $this->suite
+            'path' => $this->path
         ));
         $this->printer = new ResultPrinter();
     }
@@ -36,7 +36,7 @@ class Runner
     private function load()
     {
         $loader = new SuiteLoader();
-        $loader->loadDir($this->suite);
+        $loader->loadDir($this->path);
         $this->pending = array_merge($this->pending, $loader->getSuites());
         foreach($this->pending as $pending)
             $this->printer->addSuite($pending);
@@ -62,7 +62,7 @@ class Runner
     {
         return array(
             'maxProcs' => 5,
-            'suite' => getcwd()
+            'path' => getcwd()
         );
     }
 }

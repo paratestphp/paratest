@@ -28,7 +28,7 @@ use ParaTest\Runners\PHPUnit\Runner;
 
 $longOptions = array(
   'maxProcs:',
-  'suite:',
+  'path:',
   'bootstrap:',
   'configuration:',
   'exclude-group:',

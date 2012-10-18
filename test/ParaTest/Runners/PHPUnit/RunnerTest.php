@@ -13,13 +13,13 @@ class PHPUnitRunnerTest extends \TestBase
 
     public function testConstructor()
     {
-        $opts = array('maxProcs' => 4, 'suite' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello');
+        $opts = array('maxProcs' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello');
         $runner = new Runner($opts);
         $loader = new SuiteLoader();
         $loader->loadDir(FIXTURES . DS . 'tests');
 
         $this->assertEquals(4, $this->getObjectValue($runner, 'maxProcs'));
-        $this->assertEquals(FIXTURES . DS . 'tests', $this->getObjectValue($runner, 'suite'));
+        $this->assertEquals(FIXTURES . DS . 'tests', $this->getObjectValue($runner, 'path'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'pending'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'running'));
         //filter out maxProcs and suite
@@ -30,6 +30,6 @@ class PHPUnitRunnerTest extends \TestBase
     public function testDefaults()
     {
         $this->assertEquals(5, $this->getObjectValue($this->runner, 'maxProcs'));
-        $this->assertEquals(getcwd(), $this->getObjectValue($this->runner, 'suite'));
+        $this->assertEquals(getcwd(), $this->getObjectValue($this->runner, 'path'));
     }
 }
