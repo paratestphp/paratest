@@ -32,6 +32,9 @@ class ResultPrinter
         print $this->getErrors();
         print $this->getFailures();
         print $this->getFooter();
+        //remove temporary logs
+        foreach($this->suites as $suite)
+            $suite->deleteFile();
     }
 
     public function getHeader()

@@ -51,9 +51,13 @@ class Suite
 
     public function stop()
     {
+        return proc_close($this->process);
+    }
+
+    public function deleteFile()
+    {
         $outputFile = $this->getTempFile();
         unlink($outputFile);
-        return proc_close($this->process);
     }
 
     public function isDoneRunning()

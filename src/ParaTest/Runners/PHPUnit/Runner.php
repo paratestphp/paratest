@@ -7,6 +7,7 @@ class Runner
     protected $pending = array();
     protected $running = array();
     protected $options;
+    protected $printer;
     
     public function __construct($opts = array())
     {
@@ -14,15 +15,18 @@ class Runner
         $this->maxProcs = $opts['maxProcs'];
         $this->suite = $opts['suite'];
         $this->options = $opts;
+        $this->printer = new ResultPrinter();
     }
 
     public function run()
     {
+        $this->printer->startTimer();
         $this->load();        
         while(count($this->running) || count($this->pending)) {
             $this->fillRunQueue();
             $this->running = array_filter($this->running, array($this, 'suiteIsStillRunning'));
         }
+        $this->printer->printOutput();
     }
 
     private function load()
@@ -30,6 +34,8 @@ class Runner
         $loader = new SuiteLoader();
         $loader->loadDir($this->suite);
         $this->pending = array_merge($this->pending, $loader->getSuites());
+        foreach($this->pending as $pending)
+            $this->printer->addSuite($pending);
     }
 
     private function fillRunQueue()

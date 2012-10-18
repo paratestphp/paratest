@@ -26,9 +26,7 @@ if (!$found) {
 
 use ParaTest\Runners\PHPUnit\Runner;
 
-$opts = getopt("s::m::");
-
-print_r($opts);
+$opts = getopt("s:m:");
 
 $runnerOptions = array(
     'maxProcs' => isset($opts["m"]) ? $opts["m"] : 5,

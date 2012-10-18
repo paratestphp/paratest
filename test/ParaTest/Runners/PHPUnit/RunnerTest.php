@@ -23,6 +23,7 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertEquals(array(), $this->getObjectValue($runner, 'pending'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'running'));
         $this->assertEquals($opts, $this->getObjectValue($runner, 'options'));
+        $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\ResultPrinter', $this->getObjectValue($runner, 'printer'));
     }
 
     public function testDefaults()
