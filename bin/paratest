@@ -26,12 +26,17 @@ if (!$found) {
 
 use ParaTest\Runners\PHPUnit\Runner;
 
-$opts = getopt("s:m:");
-
-$runnerOptions = array(
-    'maxProcs' => isset($opts["m"]) ? $opts["m"] : 5,
-    'suite' => isset($opts["s"]) ? $opts["s"] : getcwd()
+$longOptions = array(
+  'maxProcs=' => NULL,
+  'suite=' => NULL,
+  'bootstrap=' => NULL,
+  'configuration=' => NULL,
+  'exclude-group=' => NULL,
+  'filter=' => NULL,
+  'group=' => NULL
 );
 
-$runner = new Runner($runnerOptions);
+$opts = getopt("", $longOptions);
+
+$runner = new Runner($opts);
 $runner->run();

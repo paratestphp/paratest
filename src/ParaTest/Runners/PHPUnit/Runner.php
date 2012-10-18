@@ -11,10 +11,14 @@ class Runner
     
     public function __construct($opts = array())
     {
-        $opts = array_merge(self::defaults(), $opts);
+        foreach(self::defaults() as $opt => $value)
+            $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
         $this->maxProcs = $opts['maxProcs'];
         $this->suite = $opts['suite'];
-        $this->options = $opts;
+        $this->options = array_diff_key($opts, array(
+            'maxProcs' => $this->maxProcs,
+            'suite' => $this->suite
+        ));
         $this->printer = new ResultPrinter();
     }
 

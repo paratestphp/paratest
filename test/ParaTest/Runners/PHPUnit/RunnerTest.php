@@ -13,7 +13,7 @@ class PHPUnitRunnerTest extends \TestBase
 
     public function testConstructor()
     {
-        $opts = array('maxProcs' => 4, 'suite' => FIXTURES . DS . 'tests');
+        $opts = array('maxProcs' => 4, 'suite' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello');
         $runner = new Runner($opts);
         $loader = new SuiteLoader();
         $loader->loadDir(FIXTURES . DS . 'tests');
@@ -22,7 +22,8 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertEquals(FIXTURES . DS . 'tests', $this->getObjectValue($runner, 'suite'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'pending'));
         $this->assertEquals(array(), $this->getObjectValue($runner, 'running'));
-        $this->assertEquals($opts, $this->getObjectValue($runner, 'options'));
+        //filter out maxProcs and suite
+        $this->assertEquals(array('bootstrap' => 'hello'), $this->getObjectValue($runner, 'options'));
         $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\ResultPrinter', $this->getObjectValue($runner, 'printer'));
     }
 
