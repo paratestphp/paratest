@@ -28,6 +28,8 @@ use ParaTest\Runners\PHPUnit\Runner;
 
 $opts = getopt("s::m::");
 
+print_r($opts);
+
 $runnerOptions = array(
     'maxProcs' => isset($opts["m"]) ? $opts["m"] : 5,
     'suite' => isset($opts["s"]) ? $opts["s"] : getcwd()
