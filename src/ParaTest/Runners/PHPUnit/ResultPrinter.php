@@ -26,6 +26,14 @@ class ResultPrinter
         return $total;
     }
 
+    public function printOutput()
+    {
+        print $this->getHeader();
+        print $this->getErrors();
+        print $this->getFailures();
+        print $this->getFooter();
+    }
+
     public function getHeader()
     {
         $totalTime = $this->accumulate('getTotalTime');
