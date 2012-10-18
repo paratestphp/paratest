@@ -7,20 +7,11 @@ class RunnerTest extends \TestBase
     public function setUp()
     {
         $this->runner = new Runner(array('suite' => FIXTURES . DS . 'tests'));
-        $this->runner->load();
-    }
-
-    public function testLoadDirShouldPopulatePendingCollection()
-    {
-        $loader = new SuiteLoader();
-        $loader->loadDir(FIXTURES . DS . 'tests');
-
-        $pending = $this->getObjectValue($this->runner, 'pending');
-        $this->assertEquals($loader->getParallelSuites(), $pending);
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles()
     {
+        $this->runner->run();
         $tempdir = sys_get_temp_dir();
         $output = glob($tempdir . DS . 'UnitTest*');
         $this->assertTrue(sizeof($output) == 0);

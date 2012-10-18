@@ -18,12 +18,13 @@ class Runner
 
     public function run()
     {
+        $this->load();
         $this->fillRunQueue();
         while(count($this->running))
             $this->running = array_filter($this->running, array($this, 'suiteIsStillRunning'));
     }
 
-    public function load()
+    private function load()
     {
         $loader = new SuiteLoader();
         $loader->loadDir($this->suite);
