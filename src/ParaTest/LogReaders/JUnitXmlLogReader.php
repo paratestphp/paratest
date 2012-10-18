@@ -3,11 +3,11 @@
 class JUnitXmlLogReader
 {
     private $xml;
-    private $tests;
-    private $assertions;
-    private $failures;
-    private $time;
-    private $errors;
+    private $tests = 0;
+    private $assertions = 0;
+    private $failures = array();
+    private $time = 0;
+    private $errors = array();
     private $suiteName;
 
     public function __construct($logFile) 
