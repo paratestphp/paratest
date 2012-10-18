@@ -27,7 +27,7 @@ Running Tests
 -------------
 Unit tests for this project are in the `test/ParaTest` directory and the `it/ParaTest` directory. The bootstrap file is contained in the `test` directory.
 
-To run unit test:
+To run unit tests:
 `phpunit --bootstrap test/bootstrap.php test/ParaTest`
 
 To run integration tests:
