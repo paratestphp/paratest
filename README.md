@@ -11,7 +11,7 @@ To install with composer add the following to your `composer.json` file:
     "brianium/paratest": "dev-master"
 }
 ```
-Then from where you have composer installed run `php composer.phar install`
+Then run `php composer.phar install`
 
 Usage
 -----
