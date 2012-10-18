@@ -17,5 +17,8 @@
             "role": "Lead"
         }
     ],
-    "bin": ["bin/paratest"]
+    "bin": ["bin/paratest"],
+    "autoload": {
+        "psr-0": { "ParaTest": "src/" }
+    }
 }

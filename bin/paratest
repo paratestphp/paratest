@@ -24,4 +24,12 @@ if (!$found) {
     );
 }
 
-echo 'YAY!';
+$opts = getopts("s::m::");
+
+$runnerOptions = array(
+    'maxProcs' => isset($opts["m"]) ? $opts["m"] : 5,
+    'suite' => isset($opts["s"]) ? $opts["s"] : getcwd()
+);
+
+$runner = new ParaTest_Runners_PHPUnit_Runner($runnerOptions);
+$runner->run();
