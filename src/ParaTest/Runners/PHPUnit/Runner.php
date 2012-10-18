@@ -24,8 +24,8 @@ class Runner
 
     public function run()
     {
+        $this->load();
         $this->printer->startTimer();
-        $this->load();        
         while(count($this->running) || count($this->pending)) {
             $this->fillRunQueue();
             $this->running = array_filter($this->running, array($this, 'suiteIsStillRunning'));

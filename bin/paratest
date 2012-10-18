@@ -27,13 +27,13 @@ if (!$found) {
 use ParaTest\Runners\PHPUnit\Runner;
 
 $longOptions = array(
-  'maxProcs=' => NULL,
-  'suite=' => NULL,
-  'bootstrap=' => NULL,
-  'configuration=' => NULL,
-  'exclude-group=' => NULL,
-  'filter=' => NULL,
-  'group=' => NULL
+  'maxProcs:',
+  'suite:',
+  'bootstrap:',
+  'configuration:',
+  'exclude-group:',
+  'filter:',
+  'group:'
 );
 
 $opts = getopt("", $longOptions);
