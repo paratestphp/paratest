@@ -4,22 +4,16 @@ use ParaTest\Parser\Parser;
 
 class SuiteLoader
 {
+    protected $files = array();
     protected $loadedSuites = array();
-    protected $parallelSuites = array();
-    protected $serialSuites = array();
 
     private static $testPattern = '/.+Test.php$/';
     private static $dotPattern = '/([.]+)$/';
     private static $testMethod = '/^test/';
 
-    public function getParallelSuites()
+    public function getSuites()
     {
-        return $this->parallelSuites;
-    }
-
-    public function getSerialSuites()
-    {
-        return $this->serialSuites;
+        return $this->loadedSuites;
     }
 
     public function loadDir($path)
@@ -28,34 +22,24 @@ class SuiteLoader
         $files = scandir($path);
         foreach($files as $file)
             $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file);
-        $this->initParallelSuites();
-        $this->initSerialSuites();
+        $this->initSuites();
     }
 
     private function tryLoadTests($path)
     {
         if(preg_match(self::$testPattern, $path))
-                $this->loadedSuites[] = $path;
+                $this->files[] = $path;
 
         if(!preg_match(self::$dotPattern, $path) && is_dir($path))
             $this->loadDir($path);
     }
 
-    private function initParallelSuites()
+    private function initSuites()
     {
-        foreach($this->loadedSuites as $suite) {
-            $parser = new Parser($suite);
-            if($class = $parser->getClassAnnotatedWith('runParallel'))
-                $this->parallelSuites[$suite] = new Suite($suite, $this->getTestFunctions($class));
-        }
-    }
-
-    private function initSerialSuites()
-    {
-        foreach($this->loadedSuites as $suite) {
-            $parser = new Parser($suite);
-            if(!array_key_exists($suite, $this->parallelSuites) && $class = $parser->getClass())
-                $this->serialSuites[$suite] = new Suite($suite, $this->getTestFunctions($class));
+        foreach($this->files as $path) {
+            $parser = new Parser($path);
+            if($class = $parser->getClass())
+                $this->loadedSuites[$path] = new Suite($path, $this->getTestFunctions($class));
         }
     }
 

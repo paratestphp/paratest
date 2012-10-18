@@ -18,17 +18,18 @@ class Runner
 
     public function run()
     {
-        $this->load();
-        $this->fillRunQueue();
-        while(count($this->running))
+        $this->load();        
+        while(count($this->running) || count($this->pending)) {
+            $this->fillRunQueue();
             $this->running = array_filter($this->running, array($this, 'suiteIsStillRunning'));
+        }
     }
 
     private function load()
     {
         $loader = new SuiteLoader();
         $loader->loadDir($this->suite);
-        $this->pending = array_merge($this->pending, $loader->getParallelSuites());
+        $this->pending = array_merge($this->pending, $loader->getSuites());
     }
 
     private function fillRunQueue()

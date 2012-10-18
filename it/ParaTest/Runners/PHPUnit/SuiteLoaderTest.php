@@ -22,31 +22,16 @@ class SuiteLoaderTest extends \TestBase
         ));
     }
 
-    public function testLoadDirGetsPathOfAllTests()
+    public function testLoadDirGetsPathOfAllTestsWithKeys()
     {
         $this->loader->loadDir($this->testDir);
         $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
-        $this->assertEquals(sort($this->files), sort($loaded));
-    }
-
-    public function testLoadDirStoresParallelSuitesWithPathAsKeys()
-    {
-        $keys = array(
-            $this->files[0],
-            $this->files[2],
-            $this->files[3],
-            $this->files[5]);
-
-        $this->loader->loadDir($this->testDir);
-
-        $paraSuites = $this->getObjectValue($this->loader, 'parallelSuites');
-        $this->assertEquals($keys, array_keys($paraSuites));
-
-        return $paraSuites;
+        $this->assertEquals(sort($this->files), sort(array_keys($loaded)));
+        return $loaded;
     }
 
     /**
-     * @depends testLoadDirStoresParallelSuitesWithPathAsKeys
+     * @depends testLoadDirGetsPathOfAllTestsWithKeys
      */
     public function testFirstParallelSuiteHasCorrectFunctions($paraSuites)
     {
@@ -59,7 +44,7 @@ class SuiteLoaderTest extends \TestBase
     }
 
     /**
-     * @depends testLoadDirStoresParallelSuitesWithPathAsKeys
+     * @depends testLoadDirGetsPathOfAllTestsWithKeys
      */
     public function testSecondParallelSuiteHasCorrectFunctions($paraSuites)
     {
@@ -68,33 +53,5 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals(2, sizeof($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
         $this->assertEquals('isItFalse', $functions[1]->getName());
-    }
-
-    public function testLoadDirStoresSerialSuitesWithPathAsKeys()
-    {
-        $keys = array(
-            $this->files[1],
-            $this->files[4],
-            $this->files[6]);
-
-        $this->loader->loadDir($this->testDir);
-
-        $serialSuites = $this->getObjectValue($this->loader, 'serialSuites');
-        $this->assertEquals($keys, array_keys($serialSuites));
-
-        return $serialSuites;
-    }
-
-    /**
-     * @depends testLoadDirStoresSerialSuitesWithPathAsKeys
-     */
-    public function testFirstSerialSuiteHasCorrectFunctions($serialSuites)
-    {
-        $first = array_shift($serialSuites);
-        $functions = $first->getFunctions();
-        $this->assertEquals(3, sizeof($functions));
-        $this->assertEquals('testTruth', $functions[0]->getName());
-        $this->assertEquals('testFalsehood', $functions[1]->getName());
-        $this->assertEquals('testArrayLength', $functions[2]->getName());
     }
 }
