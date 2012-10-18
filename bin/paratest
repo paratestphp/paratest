@@ -24,7 +24,7 @@ if (!$found) {
     );
 }
 
-$opts = getopts("s::m::");
+$opts = getopt("s::m::");
 
 $runnerOptions = array(
     'maxProcs' => isset($opts["m"]) ? $opts["m"] : 5,
