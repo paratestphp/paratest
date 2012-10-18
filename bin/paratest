@@ -32,7 +32,6 @@ $longOptions = array(
   'bootstrap:',
   'configuration:',
   'exclude-group:',
-  'filter:',
   'group:'
 );
 
