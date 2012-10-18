@@ -17,7 +17,7 @@ Usage
 -----
 After installation, the binary can be found at `vendors/bin/paratest`. Usage is as follows:
 `paratest [--maxProcs number] [--path test_directory] [--bootstrap phpunit_bootstrap] [--configuration phpunit_config]`
-`[--exclude-group group] [--group group]`
+`[--exclude-group group] [--group group] [--phpunit phpunit_binary]`
 
 Output
 ------

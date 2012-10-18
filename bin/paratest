@@ -27,8 +27,9 @@ if (!$found) {
 use ParaTest\Runners\PHPUnit\Runner;
 
 $longOptions = array(
-  'maxProcs:',
+  'processes:',
   'path:',
+  'phpunit',
   'bootstrap:',
   'configuration:',
   'exclude-group:',

@@ -2,8 +2,9 @@
 
 class Runner
 {
-    protected $maxProcs;
+    protected $processes;
     protected $path;
+    protected $phpunit;
     protected $pending = array();
     protected $running = array();
     protected $options;
@@ -13,12 +14,10 @@ class Runner
     {
         foreach(self::defaults() as $opt => $value)
             $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
-        $this->maxProcs = $opts['maxProcs'];
+        $this->processes = $opts['processes'];
         $this->path = $opts['path'];
-        $this->options = array_diff_key($opts, array(
-            'maxProcs' => $this->maxProcs,
-            'path' => $this->path
-        ));
+        $this->phpunit = $opts['phpunit'];
+        $this->options = $this->filterOptions($opts);
         $this->printer = new ResultPrinter();
     }
 
@@ -44,8 +43,8 @@ class Runner
 
     private function fillRunQueue()
     {
-        while(sizeof($this->pending) && sizeof($this->running) < $this->maxProcs)
-            $this->running[] = array_shift($this->pending)->run($this->options);
+        while(sizeof($this->pending) && sizeof($this->running) < $this->processes)
+            $this->running[] = array_shift($this->pending)->run($this->phpunit, $this->options);
     }
 
     private function suiteIsStillRunning($suite)
@@ -58,11 +57,21 @@ class Runner
         return true;
     }
 
+    private function filterOptions($options)
+    {
+        return array_diff_key($options, array(
+            'processes' => $this->processes,
+            'path' => $this->path,
+            'phpunit' => $this->phpunit
+        ));
+    }
+
     private static function defaults()
     {
         return array(
-            'maxProcs' => 5,
-            'path' => getcwd()
+            'processes' => 5,
+            'path' => getcwd(),
+            'phpunit' => 'phpunit'
         );
     }
 }

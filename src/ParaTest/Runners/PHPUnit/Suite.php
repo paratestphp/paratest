@@ -42,10 +42,10 @@ class Suite
         return $this->temp;
     }
 
-    public function run($options = array())
+    public function run($binary, $options = array())
     {
         $options = array_merge($options, array('log-junit' => $this->getTempFile()));
-        $command = $this->getCommandString($options);
+        $command = $this->getCommandString($binary, $options);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
         return $this;
     }
@@ -67,9 +67,9 @@ class Suite
         return !$status['running'];
     }
 
-    private function getCommandString($options = array())
+    private function getCommandString($binary, $options = array())
     {
-        $command = "phpunit";
+        $command = $binary;
         foreach($options as $key => $value) $command .= " --$key %s";
         $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
