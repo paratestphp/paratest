@@ -15,10 +15,9 @@ class JUnitXmlLogReader
         if(!file_exists($logFile))
             throw new \InvalidArgumentException("Log file $logFile does not exist");
 
-        $this->xml = simplexml_load_file($logFile);
-        $this->initFromRootSuite();
-        $this->initFailures();
-        $this->initErrors();
+        $this->xml = @simplexml_load_file($logFile);
+        if($this->xml)
+            $this->initFromXml();
     }
 
     public function getTotalTests()
@@ -59,6 +58,13 @@ class JUnitXmlLogReader
     public function getSuiteName()
     {
         return $this->suiteName;
+    }
+
+    private function initFromXml()
+    {
+        $this->initFromRootSuite();
+        $this->initFailures();
+        $this->initErrors();
     }
 
     private function initFromRootSuite()
