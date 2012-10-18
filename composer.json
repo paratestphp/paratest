@@ -1,0 +1,21 @@
+{
+    "name": "brianium/paratest",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "minimum-stability": "dev",
+    "type": "library",
+    "description": "Parallel testing for PHP",
+    "keywords": ["testing","PHPUnit"],
+    "homepage": "https://github.com/brianium/paratest",
+    "license": "APACHE-2",
+    "authors": [
+        {
+            "name": "Brian Scaturro",
+            "email": "scaturrob@gmail.com",
+            "homepage": "http://jonathanlipps.com",
+            "role": "Lead"
+        }
+    ],
+    "bin": ["bin/paratest"]
+}
