@@ -24,6 +24,8 @@ if (!$found) {
     );
 }
 
+use ParaTest\Runners\PHPUnit\Runner;
+
 $opts = getopt("s::m::");
 
 $runnerOptions = array(
@@ -31,5 +33,5 @@ $runnerOptions = array(
     'suite' => isset($opts["s"]) ? $opts["s"] : getcwd()
 );
 
-$runner = new ParaTest_Runners_PHPUnit_Runner($runnerOptions);
+$runner = new Runner($runnerOptions);
 $runner->run();
