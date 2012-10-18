@@ -45,7 +45,7 @@ class Runner
     private function fillRunQueue()
     {
         while(sizeof($this->pending) && sizeof($this->running) < $this->maxProcs)
-            $this->running[] = array_shift($this->pending)->run();
+            $this->running[] = array_shift($this->pending)->run($this->options);
     }
 
     private function suiteIsStillRunning($suite)

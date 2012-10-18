@@ -42,9 +42,10 @@ class Suite
         return $this->temp;
     }
 
-    public function run()
+    public function run($options = array())
     {
-        $command = sprintf("phpunit --log-junit %s %s", $this->getTempFile(), $this->getPath());
+        $options = array_merge($options, array('log-junit' => $this->getTempFile()));
+        $command = $this->getCommandString($options);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
         return $this;
     }
@@ -64,5 +65,14 @@ class Suite
     {
         $status = proc_get_status($this->process);
         return !$status['running'];
+    }
+
+    private function getCommandString($options = array())
+    {
+        $command = "phpunit";
+        foreach($options as $key => $value) $command .= " $key %s";
+        $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
+        $command = call_user_func_array('sprintf', $args);
+        return $command;
     }
 }
