@@ -2,24 +2,31 @@
 
 class Parser
 {
+    private $path;
     private $src;
-    private $tokens;
+    private $refl;
 
-    private static $visibilityTokens = array(T_PUBLIC, T_PRIVATE, T_PROTECTED);
     private static $namespace = '/\bnamespace\b[\s]+([^;]+);/';
+    private static $class = '/\bclass\b/';
 
     public function __construct($srcPath)
     {
         if(!file_exists($srcPath))
             throw new \InvalidArgumentException("file not found");
 
-        $this->src = file_get_contents($srcPath);
-        $this->tokens = token_get_all($this->src);
+        $this->path = $srcPath;
+        $class = $this->getClassName();
+        require_once($this->path);
+        $this->refl = new \ReflectionClass($class);
     }
 
     public function getClass()
     {
-        return $this->buildParsedClass('', $this->extractClass());
+        return new ParsedClass(
+            $this->refl->getDocComment(), 
+            $this->refl->getName(),
+            $this->refl->getNamespaceName());
+        //return $this->buildParsedClass('', $this->extractClass());
     }
 
     public function getClassAnnotatedWith($param)
@@ -73,9 +80,25 @@ class Parser
         }
     }
 
+    public function getClassName()
+    {
+        $class = str_replace('.php', '', basename($this->path));
+        $namespace = $this->getNamespace();
+        if($namespace)
+            $class = $namespace . '\\' . $class;
+        return $class;
+    }
+
     private function getNamespace()
     {
-        if(preg_match(self::$namespace, $this->src, $matches))
-            return $matches[1];
+        $handle = fopen($this->path, 'r');
+        while($line = fgets($handle)) {
+            if(preg_match(self::$namespace, $line, $matches))
+                return $matches[1];
+            if(preg_match(self::$namespace, $line))
+                break;
+        }
+        fclose($handle);
+        return '';
     }
 }

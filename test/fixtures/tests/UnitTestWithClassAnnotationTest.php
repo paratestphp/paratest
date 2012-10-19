@@ -33,6 +33,14 @@ class UnitTestWithClassAnnotationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(5, sizeof($elems));
     }
 
+    /**
+     * @test
+     */
+    public function itsATest()
+    {
+        $this->assertTrue(true);
+    }
+
     private function helperFunction()
     {
         echo 'I am super helpful';
