@@ -73,6 +73,7 @@ class Suite
         foreach($options as $key => $value) $command .= " --$key %s";
         $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
+        print "\n" . $command;
         return $command;
     }
 }

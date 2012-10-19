@@ -45,8 +45,9 @@ class SuiteLoader
 
     private function getTestFunctions($class)
     {
-        return array_filter($class->getFunctions(), function($fn) {
-            return preg_match(self::$testMethod, $fn->getName()) || $fn->hasAnnotation('test');
+        $pattern = self::$testMethod;
+        return array_filter($class->getFunctions(), function($fn) use($pattern) {
+            return preg_match($pattern, $fn->getName()) || $fn->hasAnnotation('test');
         });
     }
 }

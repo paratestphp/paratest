@@ -22,7 +22,7 @@ class UnitTestWithMethodAnnotationsTest extends PHPUnit_Framework_TestCase
      */
     public function testArrayLength()
     {
-        $elems = [1,2,3,4,5];
+        $elems = array(1,2,3,4,5);
         $this->assertEquals(5, sizeof($elems));
     }
 }
