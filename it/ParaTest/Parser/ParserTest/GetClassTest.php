@@ -34,4 +34,12 @@ class ParserTest_GetClassTest extends \TestBase
         $methods = $this->class->getMethods();
         $this->assertEquals(4, sizeof($methods));                        
     }
+
+    public function testParsedClassWithParentHasCorrectNumberOfTestMethods()
+    {
+        $parser = new Parser(FIXTURES . DS . 'tests' . DS . 'UnitTestWithErrorTest.php');
+        $class = $parser->getClass();
+        $methods = $class->getMethods();
+        $this->assertEquals(4, sizeof($methods));
+    }
 }
