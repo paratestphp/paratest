@@ -15,17 +15,8 @@ function autoload($className)
     $fileName .= str_replace('_', DS, $className) . '.php';
 
     $srcFile = 'src' . DS . $fileName;
-    $testFile = 'test' . DS . $fileName;
-    $integrationFile = 'it' . DS . $fileName;
 
     if(file_exists($srcFile)) require $srcFile;
-    if(file_exists($testFile)) require $testFile;
-    if(file_exists($integrationFile)) require $integrationFile;
+    else require $fileName;
 }
-
 spl_autoload_register('autoload');
-
-define('FIXTURES', __DIR__ . DS . 'fixtures');
-define("PARA_BINARY", dirname(dirname(__FILE__)) . DS . 'bin' . DS . 'paratest');
-
-require_once __DIR__ . DS . 'TestBase.php';
