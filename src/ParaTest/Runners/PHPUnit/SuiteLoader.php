@@ -39,15 +39,7 @@ class SuiteLoader
         foreach($this->files as $path) {
             $parser = new Parser($path);
             if($class = $parser->getClass())
-                $this->loadedSuites[$path] = new Suite($path, $this->getTestFunctions($class));
+                $this->loadedSuites[$path] = new Suite($path, $class->getMethods());
         }
-    }
-
-    private function getTestFunctions($class)
-    {
-        $pattern = self::$testMethod;
-        return array_filter($class->getFunctions(), function($fn) use($pattern) {
-            return preg_match($pattern, $fn->getName()) || $fn->hasAnnotation('test');
-        });
     }
 }
