@@ -66,6 +66,25 @@ class Runner
         ));
     }
 
+    private function getDebug()
+    {
+        $numRunning = sizeof($this->running);
+        $numPending = sizeof($this->pending);
+        $numProcs = $this->processes;
+        return sprintf(
+            "\nRunning: %d\nPending: %d\nProcs: %d\nPath: %s\n\n",
+            $numRunning,
+            $numPending,
+            $numProcs,
+            $this->path);
+    }
+
+    private function logDebug()
+    {
+        $file = __DIR__ . DS . 'log.txt';
+        file_put_contents($file, $this->getDebug(), FILE_APPEND);
+    }
+
     private static function defaults()
     {
         return array(
