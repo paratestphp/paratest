@@ -28,4 +28,10 @@ class ParserTest_GetClassTest extends \TestBase
     {
         $this->assertEquals('Fixtures\\Tests', $this->class->getNamespace());
     }
+
+    public function testParsedClassHasCorrectNumberOfTestMethods()
+    {
+        $methods = $this->class->getMethods();
+        $this->assertEquals(4, sizeof($methods));                        
+    }
 }

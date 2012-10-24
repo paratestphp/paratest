@@ -5,16 +5,16 @@ class ParsedClass extends ParsedObject
     private $namespace;
     private $functions;
 
-    public function __construct($doc, $name, $namespace, $functions = array())
+    public function __construct($doc, $name, $namespace, $methods = array())
     {
         parent::__construct($doc, $name);
         $this->namespace = $namespace;
-        $this->functions = $functions;
+        $this->methods = $methods;
     }
 
-    public function getFunctions()
+    public function getMethods()
     {
-        return $this->functions;
+        return $this->methods;
     }
 
     public function getNamespace()

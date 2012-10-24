@@ -25,62 +25,23 @@ class Parser
         return new ParsedClass(
             $this->refl->getDocComment(), 
             $this->refl->getName(),
-            $this->refl->getNamespaceName());
-        //return $this->buildParsedClass('', $this->extractClass());
+            $this->refl->getNamespaceName(),
+            $this->getMethods());
     }
 
-    public function getClassAnnotatedWith($param)
+    private function getMethods()
     {
-        return $this->parseClassWithAnnotation($param);    
-    }
-
-    private function parseClassWithAnnotation($annotation)
-    {
-        $class = null;
-        while(@(list( , $token) = each($this->tokens)) != null) {
-            if($token[0] !== T_DOC_COMMENT || !preg_match("/\@$annotation\b/", $token[1])) continue;
-            if($extracted = $this->extractClass()) 
-                $class = $this->buildParsedClass($token[1], $extracted);
+        $tests = array();
+        $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
+        foreach($methods as $method) {
+            $fn = new ParsedFunction($method->getDocComment(), 'public', $method->getName());
+            if(preg_match('/^test/', $fn->getName()) || $fn->hasAnnotation('test'))
+                $tests[] = $fn;
         }
-        return $class;
+        return $tests;
     }
 
-    private function buildParsedClass($docBlock, $name)
-    {
-        $continueOn = $tokens = array_merge(array(T_DOC_COMMENT), self::$visibilityTokens);
-        $functions = array();
-        while(list( , $token) = each($this->tokens)) {
-            if(array_search($token[0], $continueOn) === false) continue;
-            $doc = ($token[0] === T_DOC_COMMENT) ? $token[1] : null; 
-            $vis = (array_search($token[0], self::$visibilityTokens) !== false) ? $token[1] : ''; 
-            while(list( , $next) = each($this->tokens)) {
-                if($next[0] === T_FUNCTION && $functions[] = $this->extractFunction($doc, $vis)) break;
-                if(array_search($next[0], self::$visibilityTokens) !== false) $vis = $next[1];
-            }
-        }
-        return new ParsedClass($docBlock, $name, $this->getNamespace(), $functions);
-    }
-
-    private function extractFunction($doc, $vis)
-    {
-        while(list( , $string) = each($this->tokens)) {
-            if($string[0] === T_STRING)
-                return new ParsedFunction($doc, $vis, $string[1]);
-        }
-    }
-
-    private function extractClass()
-    {
-        $classDefined = false;
-        while(@(list( , $token) = each($this->tokens)) != null) {
-            if($token[0] === T_CLASS)
-                $classDefined = true;
-
-            if($classDefined && $token[0] === T_STRING) return $token[1];
-        }
-    }
-
-    public function getClassName()
+    private function getClassName()
     {
         $class = str_replace('.php', '', basename($this->path));
         $namespace = $this->getNamespace();
