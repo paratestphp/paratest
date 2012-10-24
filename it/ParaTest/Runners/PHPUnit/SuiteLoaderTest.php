@@ -51,8 +51,10 @@ class SuiteLoaderTest extends \TestBase
     {
         $second = next($paraSuites);
         $functions = $second->getFunctions();
-        $this->assertEquals(2, sizeof($functions));
+        $this->assertEquals(4, sizeof($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
         $this->assertEquals('isItFalse', $functions[1]->getName());
+        $this->assertEquals('testFalsehood', $functions[2]->getName());
+        $this->assertEquals('testArrayLength', $functions[3]->getName());
     }
 }

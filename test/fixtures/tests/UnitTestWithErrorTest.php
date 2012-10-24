@@ -1,8 +1,11 @@
 <?php
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'UnitTestWithMethodAnnotationsTest.php';
+
 /**
  * @runParallel
  */
-class UnitTestWithErrorTest extends PHPUnit_Framework_TestCase
+class UnitTestWithErrorTest extends UnitTestWithMethodAnnotationsTest
 {
     /**
      * @group fixtures
@@ -20,6 +23,5 @@ class UnitTestWithErrorTest extends PHPUnit_Framework_TestCase
     {
         sleep(2);
         $this->assertFalse(false);
-    }
-    
+    }    
 }
