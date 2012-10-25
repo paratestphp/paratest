@@ -68,5 +68,4 @@ class Runner
         $file = __DIR__ . DS . 'log.txt';
         file_put_contents($file, $this->getDebug(), FILE_APPEND);
     }
-
 }

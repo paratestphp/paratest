@@ -57,4 +57,21 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testFalsehood', $functions[2]->getName());
         $this->assertEquals('testArrayLength', $functions[3]->getName());
     }
+
+    public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
+    {
+        $this->loader->loadDir($this->testDir);
+        $methods = $this->loader->getTestMethods();
+        $this->assertEquals(23, sizeof($methods));
+        return $methods;
+    }
+
+    /**
+     * @depends testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods
+     */
+    public function testTestMethodsShouldBeInstanceOfTestMethod($methods)
+    {
+        foreach($methods as $method)
+            $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\TestMethod', $method);
+    }
 }

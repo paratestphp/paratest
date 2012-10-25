@@ -16,6 +16,14 @@ class SuiteLoader
         return $this->loadedSuites;
     }
 
+    public function getTestMethods()
+    {
+        $methods = array();
+        foreach($this->loadedSuites as $suite)
+            $methods = array_merge($methods, $suite->getFunctions());
+        return $methods;
+    }
+
     public function loadDir($path)
     {
         if(!is_dir($path)) throw new \InvalidArgumentException("$path is not a valid directory");
@@ -39,7 +47,9 @@ class SuiteLoader
         foreach($this->files as $path) {
             $parser = new Parser($path);
             if($class = $parser->getClass())
-                $this->loadedSuites[$path] = new Suite($path, $class->getMethods());
+                $this->loadedSuites[$path] = new Suite($path, array_map(function($fn) use($path) {
+                    return new TestMethod($path, $fn->getName());
+                }, $class->getMethods()));
         }
     }
 }
