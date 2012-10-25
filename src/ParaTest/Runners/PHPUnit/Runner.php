@@ -14,11 +14,16 @@ class Runner
     {
         foreach(self::defaults() as $opt => $value)
             $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
+        $this->initFromOptions($opts);
+        $this->options = $this->filterOptions($opts);
+        $this->printer = new ResultPrinter();
+    }
+
+    private function initFromOptions($opts)
+    {
         $this->processes = $opts['processes'];
         $this->path = $opts['path'];
         $this->phpunit = $opts['phpunit'];
-        $this->options = $this->filterOptions($opts);
-        $this->printer = new ResultPrinter();
     }
 
     public function run()

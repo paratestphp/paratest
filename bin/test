@@ -1,0 +1,12 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT="$DIR/../"
+cd $PROJECT
+TESTPATH="test/ParaTest"
+TYPE=$1
+
+if [ "$TYPE" == "it" ]; then
+    TESTPATH="it/ParaTest"
+fi
+
+phpunit --bootstrap "test/bootstrap.php" --color "$TESTPATH"
