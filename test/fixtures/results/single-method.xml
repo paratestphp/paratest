@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Fixtures\Tests\UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" namespace="Fixtures\Tests" fullPackage="Fixtures.Tests" tests="1" assertions="1" failures="0" errors="0" time="0.004275">
+    <testcase name="testArrayLength" class="Fixtures\Tests\UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="30" assertions="1" time="0.004275"/>
+  </testsuite>
+</testsuites>
