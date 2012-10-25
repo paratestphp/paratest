@@ -2,9 +2,6 @@
 
 class Runner
 {
-    protected $processes;
-    protected $path;
-    protected $phpunit;
     protected $pending = array();
     protected $running = array();
     protected $options;
@@ -12,18 +9,8 @@ class Runner
     
     public function __construct($opts = array())
     {
-        foreach(self::defaults() as $opt => $value)
-            $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
-        $this->initFromOptions($opts);
-        $this->options = $this->filterOptions($opts);
+        $this->options = new Options($opts);
         $this->printer = new ResultPrinter();
-    }
-
-    private function initFromOptions($opts)
-    {
-        $this->processes = $opts['processes'];
-        $this->path = $opts['path'];
-        $this->phpunit = $opts['phpunit'];
     }
 
     public function run()
@@ -40,7 +27,7 @@ class Runner
     private function load()
     {
         $loader = new SuiteLoader();
-        $loader->loadDir($this->path);
+        $loader->loadDir($this->options->path);
         $this->pending = array_merge($this->pending, $loader->getSuites());
         foreach($this->pending as $pending)
             $this->printer->addSuite($pending);
@@ -48,8 +35,9 @@ class Runner
 
     private function fillRunQueue()
     {
-        while(sizeof($this->pending) && sizeof($this->running) < $this->processes)
-            $this->running[] = array_shift($this->pending)->run($this->phpunit, $this->options);
+        $opts = $this->options;
+        while(sizeof($this->pending) && sizeof($this->running) < $opts->processes)
+            $this->running[] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered);
     }
 
     private function suiteIsStillRunning($suite)
@@ -62,20 +50,11 @@ class Runner
         return true;
     }
 
-    private function filterOptions($options)
-    {
-        return array_diff_key($options, array(
-            'processes' => $this->processes,
-            'path' => $this->path,
-            'phpunit' => $this->phpunit
-        ));
-    }
-
     private function getDebug()
     {
         $numRunning = sizeof($this->running);
         $numPending = sizeof($this->pending);
-        $numProcs = $this->processes;
+        $numProcs = $this->options->processes;
         return sprintf(
             "\nRunning: %d\nPending: %d\nProcs: %d\nPath: %s\n\n",
             $numRunning,
@@ -90,12 +69,4 @@ class Runner
         file_put_contents($file, $this->getDebug(), FILE_APPEND);
     }
 
-    private static function defaults()
-    {
-        return array(
-            'processes' => 5,
-            'path' => getcwd(),
-            'phpunit' => 'phpunit'
-        );
-    }
 }
