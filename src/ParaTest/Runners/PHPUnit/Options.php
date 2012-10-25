@@ -5,6 +5,7 @@ class Options
     protected $processes;
     protected $path;
     protected $phpunit;
+    protected $functional;
     protected $filtered;
 
     public function __construct($opts = array())
@@ -15,6 +16,7 @@ class Options
         $this->processes = $opts['processes'];
         $this->path = $opts['path'];
         $this->phpunit = $opts['phpunit'];
+        $this->functional = $opts['functional'];
 
         $this->filtered = $this->filterOptions($opts);
     }
@@ -29,7 +31,8 @@ class Options
         return array(
             'processes' => 5,
             'path' => getcwd(),
-            'phpunit' => 'phpunit'
+            'phpunit' => 'phpunit',
+            'functional' => false
         );
     }
 
@@ -38,7 +41,8 @@ class Options
         return array_diff_key($options, array(
             'processes' => $this->processes,
             'path' => $this->path,
-            'phpunit' => $this->phpunit
+            'phpunit' => $this->phpunit,
+            'functional' => $this->functional
         ));
     }
 
