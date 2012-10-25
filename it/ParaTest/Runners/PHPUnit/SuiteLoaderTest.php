@@ -22,9 +22,17 @@ class SuiteLoaderTest extends \TestBase
         ));
     }
 
+    public function testLoadFileGetsPathOfFile()
+    {
+        $path = FIXTURES . DS . 'tests' . DS . 'UnitTestWithClassAnnotationTest.php';
+        $this->loader->load($path);
+        $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
+        $this->assertEquals($path, array_shift(array_keys($loaded)));
+    }
+
     public function testLoadDirGetsPathOfAllTestsWithKeys()
     {
-        $this->loader->loadDir($this->testDir);
+        $this->loader->load($this->testDir);
         $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
         $this->assertEquals(sort($this->files), sort(array_keys($loaded)));
         return $loaded;
@@ -60,7 +68,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
     {
-        $this->loader->loadDir($this->testDir);
+        $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
         $this->assertEquals(23, sizeof($methods));
         return $methods;

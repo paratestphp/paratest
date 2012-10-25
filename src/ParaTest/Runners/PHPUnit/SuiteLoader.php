@@ -24,13 +24,27 @@ class SuiteLoader
         return $methods;
     }
 
-    public function loadDir($path)
+    public function load($path)
     {
-        if(!is_dir($path)) throw new \InvalidArgumentException("$path is not a valid directory");
+        if(!file_exists($path)) 
+            throw new \InvalidArgumentException("$path is not a valid directory or file");
+        if(is_dir($path))
+            $this->loadDir($path);
+        if(file_exists($path))
+            $this->loadFile($path);
+        $this->initSuites();
+    }
+
+    private function loadDir($path)
+    {
         $files = scandir($path);
         foreach($files as $file)
             $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file);
-        $this->initSuites();
+    }
+
+    private function loadFile($path)
+    {
+        $this->tryLoadTests($path);
     }
 
     private function tryLoadTests($path)

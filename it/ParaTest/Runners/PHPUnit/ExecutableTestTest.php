@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-class SuiteTest extends \TestBase
+class ExecutableTestTest extends \TestBase
 {
     protected $suite;
 

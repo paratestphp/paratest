@@ -27,7 +27,7 @@ class Runner
     private function load()
     {
         $loader = new SuiteLoader();
-        $loader->loadDir($this->options->path);
+        $loader->load($this->options->path);
         $this->pending = array_merge($this->pending, $loader->getSuites());
         foreach($this->pending as $pending)
             $this->printer->addSuite($pending);

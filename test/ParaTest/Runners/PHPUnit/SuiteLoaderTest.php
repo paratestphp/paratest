@@ -14,9 +14,9 @@ class SuiteLoaderTest extends \TestBase
     /**
      * @expectedException   \InvalidArgumentException
      */
-    public function testLoadDirThrowsExceptionWithInvalidPath()
+    public function testLoadThrowsExceptionWithInvalidPath()
     {
-        $this->loader->loadDir('/path/to/nowhere');
+        $this->loader->load('/path/to/nowhere');
     }
 
 }
