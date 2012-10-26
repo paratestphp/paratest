@@ -1,5 +1,6 @@
 <?php
-define('DS', DIRECTORY_SEPARATOR);
+if(!defined('DS'))
+    define('DS', DIRECTORY_SEPARATOR);
 
 //PSR-0 autoloader modified to account for test and src dirs
 function autoload($className)

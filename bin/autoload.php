@@ -1,8 +1,9 @@
 <?php
-define('DS', DIRECTORY_SEPARATOR);
+if(!defined('DS'))
+    define('DS', DIRECTORY_SEPARATOR);
 
 //PSR-0 autoloader modified to account for test and src dirs
-function autoload($className)
+function bin_autoload($className)
 {
     $className = ltrim($className, '\\');
     $fileName  = '';
@@ -19,4 +20,4 @@ function autoload($className)
     if(file_exists($srcFile)) require $srcFile;
     else require $fileName;
 }
-spl_autoload_register('autoload');
+spl_autoload_register('bin_autoload');
