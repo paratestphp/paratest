@@ -12,6 +12,7 @@ class SuiteLoaderTest extends \TestBase
         $tests = FIXTURES . DS . 'tests';
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
+            'LongRunningTest.php',
             'UnitTestWithClassAnnotationTest.php',
             'UnitTestWithMethodAnnotationsTest.php',
             'UnitTestWithErrorTest.php',
@@ -34,7 +35,8 @@ class SuiteLoaderTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
-        $this->assertEquals(sort($this->files), sort(array_keys($loaded)));
+        foreach($this->files as $file)
+            $this->assertArrayHasKey($file, $loaded);
         return $loaded;
     }
 
@@ -45,11 +47,10 @@ class SuiteLoaderTest extends \TestBase
     {
         $first = array_shift($paraSuites);
         $functions = $first->getFunctions();
-        $this->assertEquals(4, sizeof($functions));
-        $this->assertEquals('testTruth', $functions[0]->getName());
-        $this->assertEquals('testFalsehood', $functions[1]->getName());
-        $this->assertEquals('testArrayLength', $functions[2]->getName());
-        $this->assertEquals('itsATest', $functions[3]->getName());
+        $this->assertEquals(3, sizeof($functions));
+        $this->assertEquals('testOne', $functions[0]->getName());
+        $this->assertEquals('testTwo', $functions[1]->getName());
+        $this->assertEquals('testThree', $functions[2]->getName());
     }
 
     /**
@@ -61,16 +62,16 @@ class SuiteLoaderTest extends \TestBase
         $functions = $second->getFunctions();
         $this->assertEquals(4, sizeof($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
-        $this->assertEquals('isItFalse', $functions[1]->getName());
-        $this->assertEquals('testFalsehood', $functions[2]->getName());
-        $this->assertEquals('testArrayLength', $functions[3]->getName());
+        $this->assertEquals('testFalsehood', $functions[1]->getName());
+        $this->assertEquals('testArrayLength', $functions[2]->getName());
+        $this->assertEquals('itsATest', $functions[3]->getName());
     }
 
     public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(23, sizeof($methods));
+        $this->assertEquals(26, sizeof($methods));
         return $methods;
     }
 

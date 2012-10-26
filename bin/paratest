@@ -34,10 +34,13 @@ $longOptions = array(
   'bootstrap:',
   'configuration:',
   'exclude-group:',
-  'group:'
+  'group:',
+  'functional'
 );
 
 $opts = getopt("", $longOptions);
+if(isset($opts['functional']))
+  $opts['functional'] = true;
 
 $runner = new Runner($opts);
 $runner->run();

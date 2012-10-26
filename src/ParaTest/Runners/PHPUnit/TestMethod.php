@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-class TestMethod
+class TestMethod extends ExecutableTest
 {
     protected $path;
     protected $name;
@@ -14,5 +14,11 @@ class TestMethod
     public function getName()
     {
         return $this->name;
+    }
+
+    protected function prepareOptions($options)
+    {
+        $options['filter'] = $this->name;
+        return $options;
     }
 }

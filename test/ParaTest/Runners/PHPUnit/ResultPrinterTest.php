@@ -15,20 +15,20 @@ class ResultPrinterTest extends \TestBase
         $this->assertEquals(0, $this->getObjectValue($this->printer, 'time'));
     }
 
-    public function testAddSuiteShouldAddSuite()
+    public function testAddTestShouldaddTest()
     {
         $suite = new Suite('/path/to/ResultSuite.php', array());
 
-        $this->printer->addSuite($suite);
+        $this->printer->addTest($suite);
 
         $this->assertEquals(array($suite), $this->getObjectValue($this->printer, 'suites'));
     }
 
-    public function testAddSuiteReturnsSelf()
+    public function testAddTestReturnsSelf()
     {
         $suite = new Suite('/path/to/ResultSuite.php', array());
 
-        $self = $this->printer->addSuite($suite);
+        $self = $this->printer->addTest($suite);
 
         $this->assertSame($this->printer, $self);
     }
@@ -40,7 +40,7 @@ class ResultPrinterTest extends \TestBase
         $this->assertTrue($this->getObjectValue($this->printer, 'time') > 0);
     }
 
-    public function testgetTimeReturnsTotalTimeAndResetsTime()
+    public function testGetTimeReturnsTotalTimeAndResetsTime()
     {
         $this->printer->startTimer();
         usleep(10000);

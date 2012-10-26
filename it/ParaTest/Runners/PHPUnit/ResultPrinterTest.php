@@ -21,18 +21,18 @@ class ResultPrinterTest extends \TestBase
 
     public function testGetHeader()
     {
-        $this->printer->addSuite($this->errorSuite)
-                      ->addSuite($this->failureSuite);
+        $this->printer->addTest($this->errorSuite)
+                      ->addTest($this->failureSuite);
 
         $header = $this->printer->getHeader();
 
-        $this->assertRegExp("/\n\nTime: 0.007925, Memory:[\s][0-9]([.][0-9]{2})?Mb\n\n/", $header);
+        $this->assertRegExp("/\n\nTime: 0 seconds, Memory:[\s][0-9]([.][0-9]{2})?Mb\n\n/", $header);
     }
 
     public function testGetErrorsSingleError()
     {
-        $this->printer->addSuite($this->errorSuite)
-                      ->addSuite($this->failureSuite);
+        $this->printer->addTest($this->errorSuite)
+                      ->addTest($this->failureSuite);
 
         $errors = $this->printer->getErrors();
 
@@ -46,8 +46,8 @@ class ResultPrinterTest extends \TestBase
 
     public function testGetErrorsMultipleErrors()
     {
-        $this->printer->addSuite($this->errorSuite)
-                      ->addSuite($this->otherErrorSuite);
+        $this->printer->addTest($this->errorSuite)
+                      ->addTest($this->otherErrorSuite);
 
         $errors = $this->printer->getErrors();
 
@@ -64,7 +64,7 @@ class ResultPrinterTest extends \TestBase
 
     public function testGetFailures()
     {
-        $this->printer->addSuite($this->mixedSuite);
+        $this->printer->addTest($this->mixedSuite);
 
         $failures = $this->printer->getFailures();
 
@@ -81,8 +81,8 @@ class ResultPrinterTest extends \TestBase
 
     public function testGetFooterWithFailures()
     {
-        $this->printer->addSuite($this->errorSuite)
-                      ->addSuite($this->mixedSuite);
+        $this->printer->addTest($this->errorSuite)
+                      ->addTest($this->mixedSuite);
 
         $footer = $this->printer->getFooter();
 
@@ -94,7 +94,7 @@ class ResultPrinterTest extends \TestBase
 
     public function testGetFooterWithSuccess()
     {
-        $this->printer->addSuite($this->passingSuite);
+        $this->printer->addTest($this->passingSuite);
 
         $footer = $this->printer->getFooter();
 

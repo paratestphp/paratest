@@ -28,9 +28,10 @@ class Runner
     {
         $loader = new SuiteLoader();
         $loader->load($this->options->path);
-        $this->pending = array_merge($this->pending, $loader->getSuites());
+        $executables = ($this->options->functional) ? $loader->getTestMethods() : $loader->getSuites();
+        $this->pending = array_merge($this->pending, $executables);
         foreach($this->pending as $pending)
-            $this->printer->addSuite($pending);
+            $this->printer->addTest($pending);
     }
 
     private function fillRunQueue()

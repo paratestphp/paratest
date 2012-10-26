@@ -12,6 +12,8 @@ class RunnerTest extends \TestBase
        2 => array("pipe", "w")
     );
 
+    protected static $testTime = '/Time: (([0-9]+)(?:[.][0-9]+)?)/';
+
     public function setUp()
     {
         $this->runner = new Runner(array('path' => FIXTURES . DS . 'tests'));
@@ -32,13 +34,29 @@ class RunnerTest extends \TestBase
 
     public function testRunningSuitesInParallelIsNotSlower()
     {
-        $time = '/Time: (([0-9])+(?:[.][0-9]+)?)/';
-        preg_match($time, $this->getPhpunitOutput(), $smatches);
-        preg_match($time, $this->getParaTestOutput(), $pmatches);
+        list($stdTime, $paraTime, $msg) = $this->getExecTimes(
+            $this->getPhpunitOutput(),
+            $this->getParaTestOutput());
+        $this->assertTrue($paraTime <= $stdTime, $msg);
+    }
+
+    public function testRunningLongRunningTestInParallelIsFaster()
+    {
+        $this->path = $this->path . DS . 'LongRunningTest.php';
+        list($stdTime, $paraTime, $msg) = $this->getExecTimes(
+            $this->getPhpunitOutput(),
+            $this->getParaTestOutput(true));
+        $this->assertTrue($paraTime < $stdTime, $msg);  
+    }
+
+    protected function getExecTimes($phpunitOut, $paraOut)
+    {
+        preg_match(self::$testTime, $phpunitOut, $smatches);
+        preg_match(self::$testTime, $paraOut, $pmatches);
         $stdTime = $smatches[2];
         $paraTime = $pmatches[2];
         $msg = sprintf("PHPUnit: %s, ParaTest: %s", $stdTime, $paraTime);
-        $this->assertTrue($paraTime <= $stdTime, $msg);
+        return array($stdTime, $paraTime, $msg);
     }
 
     protected function getPhpunitOutput()
@@ -47,9 +65,11 @@ class RunnerTest extends \TestBase
         return $this->getTestOutput($cmd);
     }
 
-    protected function getParaTestOutput()
+    protected function getParaTestOutput($functional = false)
     {
-        $cmd = sprintf("%s --bootstrap %s --path %s", PARA_BINARY, $this->bootstrap, $this->path);
+        $cmd = sprintf("%s --bootstrap %s", PARA_BINARY, $this->bootstrap);
+        if($functional) $cmd .= ' --functional';
+        $cmd .= sprintf(" --path %s", $this->path);
         return $this->getTestOutput($cmd);
     }
 

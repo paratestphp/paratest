@@ -8,7 +8,7 @@ class ResultPrinter
     protected $time = 0;
     protected $readers = array();
 
-    public function addSuite(Suite $suite)
+    public function addTest(ExecutableTest $suite)
     {
         $this->suites[] = $suite;
         return $this;
@@ -21,9 +21,43 @@ class ResultPrinter
 
     public function getTime()
     {
+        if($this->time == 0) return 0;
         $total = microtime(true) - $this->time;
         $this->time = 0;
         return $total;
+    }
+
+    /**
+     * Kudos to Sebastian Bergmann for his PHP_Timer
+     */
+    public function secondsToTimeString($time)
+    {
+        $buffer = '';
+
+        $hours   = sprintf('%02d', ($time >= 3600) ? floor($time / 3600) : 0);
+        $minutes = sprintf(
+                     '%02d',
+                     ($time >= 60)   ? floor($time /   60) - 60 * $hours : 0
+                   );
+        $seconds = sprintf('%02d', $time - 60 * 60 * $hours - 60 * $minutes);
+
+        if ($hours == 0 && $minutes == 0) {
+            $seconds = sprintf('%1d', $seconds);
+
+            $buffer .= $seconds . ' second';
+
+            if ($seconds != '1') {
+                $buffer .= 's';
+            }
+        } else {
+            if ($hours > 0) {
+                $buffer = $hours . ':';
+            }
+
+            $buffer .= $minutes . ':' . $seconds;
+        }
+
+        return $buffer;
     }
 
     public function printOutput()
@@ -37,9 +71,9 @@ class ResultPrinter
 
     public function getHeader()
     {
-        $totalTime = $this->accumulate('getTotalTime');
+        $totalTime = $this->getTime();
         $peakUsage = memory_get_peak_usage(TRUE) / 1048576;
-        return sprintf("\n\nTime: %f, Memory: %4.2fMb\n\n", $totalTime, $peakUsage);
+        return sprintf("\n\nTime: %s, Memory: %4.2fMb\n\n", $this->secondsToTimeString($totalTime), $peakUsage);
     }
 
     public function getFooter()
