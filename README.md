@@ -35,6 +35,11 @@ To run unit tests:
 To run integration tests:
 `phpunit --bootstrap test/bootstrap.php it/ParaTest`
 
+If phpunit is on your path, there are a couply of shortcuts in the `bin` directory.
+
+`bin/test` for unit tests.
+`bin/test it` for integration tests.=.
+
 Todo
 ----
 * Behat runner
