@@ -30,7 +30,7 @@ use ParaTest\Runners\PHPUnit\Runner;
 $longOptions = array(
   'processes:',
   'path:',
-  'phpunit',
+  'phpunit:',
   'bootstrap:',
   'configuration:',
   'exclude-group:',
