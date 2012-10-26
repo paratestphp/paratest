@@ -42,5 +42,9 @@ $opts = getopt("", $longOptions);
 if(isset($opts['functional']))
   $opts['functional'] = true;
 
+//load bootstrap early to ensure included classes are available for run
+if(isset($opts['bootstrap']) && file_exists($opts['bootstrap']))
+  require_once $opts['bootstrap'];
+
 $runner = new Runner($opts);
 $runner->run();
