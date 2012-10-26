@@ -35,8 +35,8 @@ class SuiteLoaderTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
-        foreach($this->files as $file)
-            $this->assertArrayHasKey($file, $loaded);
+        foreach($loaded as $path => $test)
+            $this->assertContains($path, $this->files);
         return $loaded;
     }
 

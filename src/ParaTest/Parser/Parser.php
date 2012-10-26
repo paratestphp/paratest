@@ -22,11 +22,13 @@ class Parser
 
     public function getClass()
     {
-        return new ParsedClass(
-            $this->refl->getDocComment(), 
-            $this->refl->getName(),
-            $this->refl->getNamespaceName(),
-            $this->getMethods());
+        return ($this->refl->isAbstract()) 
+            ? null
+            : new ParsedClass(
+                $this->refl->getDocComment(), 
+                $this->refl->getName(),
+                $this->refl->getNamespaceName(),
+                $this->getMethods());
     }
 
     private function getMethods()
