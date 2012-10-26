@@ -16,12 +16,14 @@ Then run `php composer.phar install`
 Usage
 -----
 After installation, the binary can be found at `vendors/bin/paratest`. Usage is as follows:
-`paratest [--maxProcs number] [--path test_directory] [--bootstrap phpunit_bootstrap] [--configuration phpunit_config]`
-`[--exclude-group group] [--group group] [--phpunit phpunit_binary]`
+`paratest [--processes number] [--path test_directory] [--bootstrap phpunit_bootstrap] [--configuration phpunit_config]`
+`[--exclude-group group] [--group group] [--phpunit phpunit_binary] [--functional]`
+
+The `--functional` switch will tell paratest to run each test method in its own process, rather than each suite.
 
 Output
 ------
-Output is parsed from logged results and output in an identical manner to PHPUnit's text ui. A todo is to speed this process up. XML was chosen because it is supported accross a variety of testing tools. This may cause serial unit tests to run a bit faster, but ParaTest will outperform long running processes (i.e selenium)
+Output is parsed from logged results and output in an identical manner to PHPUnit's text ui. A todo is to speed this process up. XML was chosen because it is supported accross a variety of testing tools. This may cause serial unit tests to run a tiny bit faster, but ParaTest will out perform long running processes (i.e selenium)
 
 Running Tests
 -------------
