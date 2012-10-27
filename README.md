@@ -23,7 +23,7 @@ The `--functional` switch will tell paratest to run each test method in its own 
 
 Output
 ------
-Output is parsed from logged results and output in an identical manner to PHPUnit's text ui. A todo is to speed this process up. XML was chosen because it is supported accross a variety of testing tools. This may cause serial unit tests to run a tiny bit faster, but ParaTest will out perform long running processes (i.e selenium)
+Output is parsed from logged results and output in an identical manner to PHPUnit's text ui. XML was chosen because it is supported accross a variety of testing tools.
 
 Running Tests
 -------------
@@ -45,5 +45,6 @@ For an example of ParaTest out in the wild check out the [example](https://githu
 Todo
 ----
 * Behat runner
-* Speed up log reading/class parsing
+* Speed up log reading file I/O
 * Support colored results
+* Command line usage option
