@@ -38,7 +38,9 @@ To run integration tests:
 If phpunit is on your path, there are a couply of shortcuts in the `bin` directory.
 
 `bin/test` for unit tests.
-`bin/test it` for integration tests.=.
+`bin/test it` for integration tests.
+
+For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).
 
 Todo
 ----
