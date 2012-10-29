@@ -8,5 +8,8 @@ TYPE=$1
 if [ "$TYPE" == "it" ]; then
     TESTPATH="it/ParaTest"
 fi
+if [ "$TYPE" == "functional" ]; then
+    TESTPATH="functional"
+fi
 
 phpunit --bootstrap "test/bootstrap.php" --color "$TESTPATH"

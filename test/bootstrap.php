@@ -30,3 +30,4 @@ define('FIXTURES', __DIR__ . DS . 'fixtures');
 define("PARA_BINARY", dirname(dirname(__FILE__)) . DS . 'bin' . DS . 'paratest');
 
 require_once __DIR__ . DS . 'TestBase.php';
+require_once dirname(__DIR__) . DS . 'functional' . DS . 'FunctionalTestBase.php';
