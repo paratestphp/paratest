@@ -34,9 +34,14 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         $proc = proc_open($cmd, self::$descriptorspec, $pipes); 
         $this->waitForProc($proc);
+        $output = $this->getOutput($pipes);
+        return $output;
+    }
+
+    protected function getOutput($pipes)
+    {
         $output = stream_get_contents($pipes[1]);
         fclose($pipes[1]);
-        proc_close($proc);
         return $output;
     }
 

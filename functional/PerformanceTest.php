@@ -1,6 +1,6 @@
 <?php
 
-class PerformanceTest extends \FunctionalTestBase
+class PerformanceTest extends FunctionalTestBase
 {
     protected static $testTime = '/Time: (([0-9]+)(?:[.][0-9]+)?)/';
 

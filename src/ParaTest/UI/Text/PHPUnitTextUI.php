@@ -1,5 +1,7 @@
 <?php namespace ParaTest\UI\Text;
 
+use ParaTest\Runners\PHPUnit\Runner;
+
 class PHPUnitTextUI
 {
     protected $options = array(
@@ -30,9 +32,27 @@ class PHPUnitTextUI
 
     private $padTo;
 
+    public static function main()
+    {
+        $ui = new PHPUnitTextUI();
+        $opts = $ui->getOptions();
+        if(isset($opts['bootstrap']) && file_exists($opts['bootstrap']))
+            require_once $opts['bootstrap'];
+        $runner = new Runner($opts);
+        $runner->run();
+    }
+
     public function __construct()
     {
         $this->padTo = $this->getPadTo();
+    }
+
+    public function getOptions()
+    {
+        $opts = getopt($this->getAliasString(), array_keys($this->options));
+        if(isset($opts['functional']))
+            $opts['functional'] = true;
+        return $opts;
     }
 
     public function getUsage()
@@ -76,6 +96,14 @@ class PHPUnitTextUI
         while($len++ < $this->padTo)
             $msg = " " . $msg;
         return $msg;
+    }
+
+    private function getAliasString()
+    {
+        $alias = '';
+        foreach($this->options as $key => $info)
+            $alias .= isset($info['alias']) ? $info['alias'] : '';
+        return $alias;
     }
 
     private function getPadTo() {
