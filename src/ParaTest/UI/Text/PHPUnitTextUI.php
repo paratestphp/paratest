@@ -38,8 +38,12 @@ class PHPUnitTextUI
         $opts = $ui->getOptions();
         if(isset($opts['bootstrap']) && file_exists($opts['bootstrap']))
             require_once $opts['bootstrap'];
-        $runner = new Runner($opts);
-        $runner->run();
+        if(empty($opts) || isset($opts['h']) || isset($opts['help'])) {
+            print $ui->getUsage();
+        } else {
+            $runner = new Runner($opts);
+            $runner->run();
+        }
     }
 
     public function __construct()

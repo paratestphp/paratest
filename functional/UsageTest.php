@@ -13,10 +13,28 @@ class UsageTest extends FunctionalTestBase
 
     public function testCallingParaTestWithNoArgsDisplaysUsage()
     {
-        $proc = proc_open(PARA_BINARY, FunctionalTestBase::$descriptorspec, $pipes);
+        $output = $this->getParaTestOutput();
+        $this->assertEquals($this->usage, $output);
+    }
+
+    public function testCallingParaTestWithShortHelpOptionDisplaysUsage()
+    {
+        $output = $this->getParaTestOutput('-h');   
+        $this->assertEquals($this->usage, $output);
+    }
+
+    public function testCallingParaTestWithLongHelpOptionDisplaysUsage()
+    {
+        $output = $this->getParaTestOutput('--help');
+        $this->assertEquals($this->usage, $output);
+    }
+
+    protected function getParaTestOutput($options = '')
+    {
+        $proc = proc_open(PARA_BINARY . ' ' . $options, FunctionalTestBase::$descriptorspec, $pipes);
         $this->waitForProc($proc);
         $output = $this->getOutput($pipes);
         proc_close($proc);
-        $this->assertEquals($this->usage, $output);
+        return $output;
     }
 }
