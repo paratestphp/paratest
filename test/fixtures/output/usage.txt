@@ -1,9 +1,9 @@
 
 Usage: paratest [switches]
 
---processes <number>     The number of phpunit processes to run. Defaults to 5.
---path <file|directory>  The path to a directory or file containing tests. Default to current working directory.
---phpunit <path>         The phpunit binary to execute. Defaults to just "phpunit".
---bootstrap <file>       A bootstrap file to be used by phpunit.
---functional             Run test methods in separate processes, rather than suites.
--h|--help                Print usage information.
+  --processes <number>     The number of phpunit processes to run.
+  --path <file|directory>  The path to a directory or file containing tests.
+  --phpunit <path>         The phpunit binary to execute.
+  --bootstrap <file>       A bootstrap file to be used by phpunit.
+  --functional             Run methods instead of suites in separate processes.
+  -h|--help                Print usage information.

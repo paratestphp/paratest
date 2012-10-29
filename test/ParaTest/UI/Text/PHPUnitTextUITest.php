@@ -30,11 +30,11 @@ class PHPUnitTextUITest extends \TestBase
     public function testOptionsShouldHaveUsageMessagesForValues($options)
     {
         $usageMessages = array(
-            'The number of phpunit processes to run. Defaults to 5.',
-            'The path to a directory or file containing tests. Default to current working directory.',
-            'The phpunit binary to execute. Defaults to just "phpunit".',
+            'The number of phpunit processes to run.',
+            'The path to a directory or file containing tests.',
+            'The phpunit binary to execute.',
             'A bootstrap file to be used by phpunit.',
-            'Run test methods in separate processes, rather than suites.',
+            'Run methods instead of suites in separate processes.',
             'Print usage information.'
         );
         $i = 0;
@@ -84,12 +84,12 @@ class PHPUnitTextUITest extends \TestBase
      */
     public function testGetArgumentUsage($messages)
     {
-        $usage  = sprintf("\n--processes <number>     %s", array_shift($messages));
-        $usage .= sprintf("\n--path <file|directory>  %s", array_shift($messages));
-        $usage .= sprintf("\n--phpunit <path>         %s", array_shift($messages));
-        $usage .= sprintf("\n--bootstrap <file>       %s", array_shift($messages));
-        $usage .= sprintf("\n--functional             %s", array_shift($messages));
-        $usage .= sprintf("\n-h|--help                %s", array_shift($messages));
+        $usage  = sprintf("\n  --processes <number>     %s", array_shift($messages));
+        $usage .= sprintf("\n  --path <file|directory>  %s", array_shift($messages));
+        $usage .= sprintf("\n  --phpunit <path>         %s", array_shift($messages));
+        $usage .= sprintf("\n  --bootstrap <file>       %s", array_shift($messages));
+        $usage .= sprintf("\n  --functional             %s", array_shift($messages));
+        $usage .= sprintf("\n  -h|--help                %s", array_shift($messages));
 
         $this->assertEquals($usage, $this->ui->getArgumentUsage());
         return $usage;
@@ -101,7 +101,7 @@ class PHPUnitTextUITest extends \TestBase
     public function testGetUsage($argUsage)
     {
         $usage  = $this->ui->getBasicUsage();
-        $usage .= $argUsage;
+        $usage .= $argUsage . "\n";
         $this->assertEquals($usage, $this->ui->getUsage());
     }
 }

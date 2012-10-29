@@ -7,22 +7,22 @@ class PHPUnitTextUI
     protected $options = array(
         'processes:' => array(
             'args' => '<number>',
-            'message' => 'The number of phpunit processes to run. Defaults to 5.'
+            'message' => 'The number of phpunit processes to run.'
         ),
         'path:' => array(
             'args' => '<file|directory>',
-            'message' => 'The path to a directory or file containing tests. Default to current working directory.'
+            'message' => 'The path to a directory or file containing tests.'
         ),
         'phpunit:' => array(
             'args' => '<path>',
-            'message' => 'The phpunit binary to execute. Defaults to just "phpunit".'
+            'message' => 'The phpunit binary to execute.'
         ),
         'bootstrap:' => array(
             'args' => '<file>',
             'message' => 'A bootstrap file to be used by phpunit.'
         ),
         'functional' => array(
-            'message' => 'Run test methods in separate processes, rather than suites.'
+            'message' => 'Run methods instead of suites in separate processes.'
         ),
         'help' => array(
             'alias' => 'h',
@@ -61,7 +61,7 @@ class PHPUnitTextUI
 
     public function getUsage()
     {
-        return $this->getBasicUsage() . $this->getArgumentUsage();
+        return $this->getBasicUsage() . $this->getArgumentUsage() . "\n";
     }
 
     public function getBasicUsage()
@@ -75,7 +75,7 @@ class PHPUnitTextUI
         foreach($this->options as $key => $info) {
             $cmd = $this->getCmd($key, $info);
             $arg = $this->getArg($info);
-            $usage .= sprintf("\n%s%s%s", $cmd, $arg, 
+            $usage .= sprintf("\n  %s%s%s", $cmd, $arg, 
                               $this->getMessage($cmd . $arg, $info['message']));
         }
         return $usage;
