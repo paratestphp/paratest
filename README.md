@@ -47,8 +47,3 @@ If phpunit is on your path, there are a couple of shortcuts in the `bin` directo
 `bin/test functional` for functional tests
 
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).
-
-Todo
-----
-* Behat runner
-* Support colored results
