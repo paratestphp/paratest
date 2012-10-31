@@ -12,6 +12,7 @@ class SuiteLoaderTest extends \TestBase
         $tests = FIXTURES . DS . 'tests';
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
+            'GroupsTest.php',
             'LongRunningTest.php',
             'UnitTestWithClassAnnotationTest.php',
             'UnitTestWithMethodAnnotationsTest.php',
@@ -47,10 +48,12 @@ class SuiteLoaderTest extends \TestBase
     {
         $first = array_shift($paraSuites);
         $functions = $first->getFunctions();
-        $this->assertEquals(3, sizeof($functions));
-        $this->assertEquals('testOne', $functions[0]->getName());
-        $this->assertEquals('testTwo', $functions[1]->getName());
-        $this->assertEquals('testThree', $functions[2]->getName());
+        $this->assertEquals(5, sizeof($functions));
+        $this->assertEquals('testTruth', $functions[0]->getName());
+        $this->assertEquals('testFalsehood', $functions[1]->getName());
+        $this->assertEquals('testArrayLength', $functions[2]->getName());
+        $this->assertEquals('testStringLength', $functions[3]->getName());
+        $this->assertEquals('testAddition', $functions[4]->getName());
     }
 
     /**
@@ -60,18 +63,17 @@ class SuiteLoaderTest extends \TestBase
     {
         $second = next($paraSuites);
         $functions = $second->getFunctions();
-        $this->assertEquals(4, sizeof($functions));
-        $this->assertEquals('testTruth', $functions[0]->getName());
-        $this->assertEquals('testFalsehood', $functions[1]->getName());
-        $this->assertEquals('testArrayLength', $functions[2]->getName());
-        $this->assertEquals('itsATest', $functions[3]->getName());
+        $this->assertEquals(3, sizeof($functions));
+        $this->assertEquals('testOne', $functions[0]->getName());
+        $this->assertEquals('testTwo', $functions[1]->getName());
+        $this->assertEquals('testThree', $functions[2]->getName());
     }
 
     public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(26, sizeof($methods));
+        $this->assertEquals(31, sizeof($methods));
         return $methods;
     }
 
