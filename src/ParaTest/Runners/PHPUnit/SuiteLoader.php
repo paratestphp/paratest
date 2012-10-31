@@ -7,7 +7,8 @@ class SuiteLoader
     protected $files = array();
     protected $loadedSuites = array();
 
-    private static $testPattern = '/.+Test.php$/';
+    private static $testPattern = '/.+Test\.php$/';
+    private static $filePattern = '/.+\.php$/';
     private static $dotPattern = '/([.]+)$/';
     private static $testMethod = '/^test/';
 
@@ -33,7 +34,7 @@ class SuiteLoader
 
     public function load($path)
     {
-        if(!file_exists($path)) 
+        if(!file_exists($path))
             throw new \InvalidArgumentException("$path is not a valid directory or file");
         if(is_dir($path))
             $this->loadDir($path);
@@ -51,13 +52,15 @@ class SuiteLoader
 
     private function loadFile($path)
     {
-        $this->tryLoadTests($path);
+        $this->tryLoadTests($path, true);
     }
 
-    private function tryLoadTests($path)
+    private function tryLoadTests($path, $relaxTestPattern = false)
     {
         if(preg_match(self::$testPattern, $path))
-                $this->files[] = $path;
+            $this->files[] = $path;
+        elseif($relaxTestPattern && preg_match(self::$filePattern, $path))
+            $this->files[] = $path;
 
         if(!preg_match(self::$dotPattern, $path) && is_dir($path))
             $this->loadDir($path);
