@@ -14,11 +14,11 @@ class ParsedClass extends ParsedObject
 
     public function getMethods($annotations = array())
     {
-        /*$methods = array_filter($this->methods, function($m) use($annotations){
+        $methods = array_filter($this->methods, function($m) use($annotations){
             foreach($annotations as $a => $v)
-                return $m->hasAnnotation($a, $v)
-        });*/
-        return $this->methods;
+                return $m->hasAnnotation($a, $v);
+        });
+        return $methods ? $methods : $this->methods;
     }
 
     public function getNamespace()
