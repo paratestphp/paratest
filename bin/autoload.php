@@ -2,7 +2,6 @@
 if(!defined('DS'))
     define('DS', DIRECTORY_SEPARATOR);
 
-//PSR-0 autoloader modified to account for test and src dirs
 function bin_autoload($className)
 {
     $className = ltrim($className, '\\');

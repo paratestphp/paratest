@@ -22,10 +22,12 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         return $this->getTestOutput($cmd);
     }
 
-    protected function getParaTestOutput($functional = false)
+    protected function getParaTestOutput($functional = false, $options = array())
     {
         $cmd = sprintf("%s --bootstrap %s", PARA_BINARY, $this->bootstrap);
         if($functional) $cmd .= ' --functional';
+        foreach($options as $switch => $value)
+            $cmd .= sprintf(" --%s%s", $switch, ($value) ? ' ' . $value : '');
         $cmd .= sprintf(" --path %s", $this->path);
         return $this->getTestOutput($cmd);
     }

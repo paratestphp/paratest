@@ -27,6 +27,10 @@ class PHPUnitTextUI
         'help' => array(
             'alias' => 'h',
             'message' => 'Print usage information.'
+        ),
+        'group:' => array(
+            'args' => '...',
+            'message' => 'Only runs tests from the specified group(s).'
         )
     );
 

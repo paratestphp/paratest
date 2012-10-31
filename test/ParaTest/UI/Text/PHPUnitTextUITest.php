@@ -17,7 +17,8 @@ class PHPUnitTextUITest extends \TestBase
           'phpunit:',
           'bootstrap:',
           'functional',
-          'help'
+          'help',
+          'group:'
         );
         $options = $this->getObjectValue($this->ui, 'options');
         $this->assertEquals($optionKeys, array_keys($options));
@@ -35,7 +36,8 @@ class PHPUnitTextUITest extends \TestBase
             'The phpunit binary to execute.',
             'A bootstrap file to be used by phpunit.',
             'Run methods instead of suites in separate processes.',
-            'Print usage information.'
+            'Print usage information.',
+            'Only runs tests from the specified group(s).'
         );
         $i = 0;
         foreach($options as $options => $info) {
@@ -55,9 +57,10 @@ class PHPUnitTextUITest extends \TestBase
             '<number>',
             '<file|directory>',
             '<path>',
-            '<file>'
+            '<file>',
+            '...'
         );
-        $keys = array('processes:', 'path:', 'phpunit:', 'bootstrap:');
+        $keys = array('processes:', 'path:', 'phpunit:', 'bootstrap:', 'group:');
         foreach($keys as $key) {
             $arg = array_shift($args);
             $this->assertEquals($arg, $options[$key]['args']);
@@ -90,6 +93,7 @@ class PHPUnitTextUITest extends \TestBase
         $usage .= sprintf("\n  --bootstrap <file>       %s", array_shift($messages));
         $usage .= sprintf("\n  --functional             %s", array_shift($messages));
         $usage .= sprintf("\n  -h|--help                %s", array_shift($messages));
+        $usage .= sprintf("\n  --group ...              %s", array_shift($messages));
 
         $this->assertEquals($usage, $this->ui->getArgumentUsage());
         return $usage;
