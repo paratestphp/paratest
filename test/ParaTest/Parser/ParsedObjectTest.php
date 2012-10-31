@@ -6,7 +6,7 @@ class ParsedObjectTest extends \TestBase
 
     public function setUp()
     {
-        $this->parsedClass = new ParsedClass("/**\n * @test\n *\/", 'MyClass', 'My\\Name\\Space');
+        $this->parsedClass = new ParsedClass("/**\n * @test\n @group group1\n*\/", 'MyClass', 'My\\Name\\Space');
     }
 
     public function testHasAnnotationReturnsTrueWhenAnnotationPresent()
@@ -18,6 +18,18 @@ class ParsedObjectTest extends \TestBase
     public function testHasAnnotationReturnsFalseWhenAnnotationNotPresent()
     {
         $hasAnnotation = $this->parsedClass->hasAnnotation('pizza');
+        $this->assertFalse($hasAnnotation);
+    }
+
+    public function testHasAnnotationReturnsTrueWhenAnnotationAndValueMatch()
+    {
+        $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group1');
+        $this->assertTrue($hasAnnotation);
+    }
+
+    public function testHasAnnotationReturnsFalseWhenAnnotationAndValueDontMatch()
+    {
+        $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group2');
         $this->assertFalse($hasAnnotation);
     }
 }

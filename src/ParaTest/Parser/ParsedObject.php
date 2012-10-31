@@ -21,8 +21,10 @@ abstract class ParsedObject
         return $this->docBlock;
     }
 
-    public function hasAnnotation($anno)
+    public function hasAnnotation($anno, $value = null)
     {
-        return (bool) preg_match("/@$anno\b/", $this->docBlock);
+        $pattern = sprintf('/@%s%s/', $anno, 
+                           !is_null($value) ? "[\s]+$value" : '\b');
+        return (bool) preg_match($pattern, $this->docBlock);
     }
 }
