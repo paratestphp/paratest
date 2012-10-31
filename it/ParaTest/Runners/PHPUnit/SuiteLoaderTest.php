@@ -32,6 +32,14 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals($path, array_shift(array_keys($loaded)));
     }
 
+    public function testLoadFileShouldLoadFileWhereNameDoesNotEndInTest()
+    {
+        $path = FIXTURES . DS . 'tests' . DS . 'TestOfUnits.php';
+        $this->loader->load($path);
+        $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
+        $this->assertEquals($path, array_shift(array_keys($loaded)));
+    }
+
     public function testLoadDirGetsPathOfAllTestsWithKeys()
     {
         $this->loader->load($this->testDir);

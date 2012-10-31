@@ -57,9 +57,8 @@ class SuiteLoader
 
     private function tryLoadTests($path, $relaxTestPattern = false)
     {
-        if(preg_match(self::$testPattern, $path))
-            $this->files[] = $path;
-        elseif($relaxTestPattern && preg_match(self::$filePattern, $path))
+        $pattern = ($relaxTestPattern) ? 'filePattern' : 'testPattern';
+        if(preg_match(self::$$pattern, $path))
             $this->files[] = $path;
 
         if(!preg_match(self::$dotPattern, $path) && is_dir($path))
