@@ -2,7 +2,9 @@
 
 class OptionsTest extends \TestBase
 {
-    public function testFilteredOptionsShouldContainExtraneousOptions()
+    protected $options;
+
+    public function setUp()
     {
         $unfiltered = array(
             'processes' => 5,
@@ -12,8 +14,24 @@ class OptionsTest extends \TestBase
             'group' => 'group1',
             'bootstrap' => '/path/to/bootstrap'
         );
-        $options = new Options($unfiltered);
-        $this->assertEquals('group1', $options->filtered['group']);
-        $this->assertEquals('/path/to/bootstrap', $options->filtered['bootstrap']);
+        $this->options = new Options($unfiltered);
+    }
+
+    public function testFilteredOptionsShouldContainExtraneousOptions()
+    {
+        $this->assertEquals('group1', $this->options->filtered['group']);
+        $this->assertEquals('/path/to/bootstrap', $this->options->filtered['bootstrap']);
+    }
+
+    public function testAnnotationsReturnsAnnotations()
+    {
+        $this->assertEquals(1, sizeof($this->options->annotations));
+        $this->assertEquals('group1', $this->options->annotations['group']);
+    }
+
+    public function testAnnotationsDefaultsToEmptyArray()
+    {
+        $options = new Options(array());
+        $this->assertEmpty($options->annotations);
     }
 }

@@ -11,6 +11,13 @@ class SuiteLoader
     private static $dotPattern = '/([.]+)$/';
     private static $testMethod = '/^test/';
 
+    public function __construct($options = null)
+    {
+        if($options && !$options instanceof Options)
+            throw new \InvalidArgumentException("SuiteLoader options must be null or of type Options");
+        $this->options = $options;
+    }
+
     public function getSuites()
     {
         return $this->loadedSuites;
@@ -63,7 +70,7 @@ class SuiteLoader
             if($class = $parser->getClass())
                 $this->loadedSuites[$path] = new Suite($path, array_map(function($fn) use($path) {
                     return new TestMethod($path, $fn->getName());
-                }, $class->getMethods()));
+                }, $class->getMethods($this->options ? $this->options->annotations : array())));
         }
     }
 }

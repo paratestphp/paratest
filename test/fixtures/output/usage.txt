@@ -7,3 +7,4 @@ Usage: paratest [switches]
   --bootstrap <file>       A bootstrap file to be used by phpunit.
   --functional             Run methods instead of suites in separate processes.
   -h|--help                Print usage information.
+  --group ...              Only runs tests from the specified group(s).

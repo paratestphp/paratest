@@ -29,6 +29,7 @@ class GroupsTest extends PHPUnit_FrameWork_TestCase
 
     /**
      * @group group2
+     * @group group3
      */
     public function testStringLength()
     {

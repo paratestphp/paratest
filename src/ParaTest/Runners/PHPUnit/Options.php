@@ -7,6 +7,7 @@ class Options
     protected $phpunit;
     protected $functional;
     protected $filtered;
+    protected $annotations = array();
 
     public function __construct($opts = array())
     {
@@ -19,6 +20,7 @@ class Options
         $this->functional = $opts['functional'];
 
         $this->filtered = $this->filterOptions($opts);
+        $this->initAnnotations();
     }
 
     public function __get($var)
@@ -46,4 +48,15 @@ class Options
         ));
     }
 
+    /**
+     * Load options that are represented by annotations
+     * inside of tests i.e @grup group1 = --group group1
+     */
+    protected function initAnnotations()
+    {
+        $annotatedOptions = array('group');
+        foreach($this->filtered as $key => $value)
+            if(array_search($key, $annotatedOptions) !== false)
+                $this->annotations[$key] = $value;
+    }
 }

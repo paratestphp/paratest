@@ -85,4 +85,16 @@ class SuiteLoaderTest extends \TestBase
         foreach($methods as $method)
             $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\TestMethod', $method);
     }
+
+    public function testGetTestMethodsOnlyReturnsMethodsOfGroupIfOptionIsSpecified()
+    {
+        $options = new Options(array('group' => 'group1'));
+        $loader = new SuiteLoader($options);
+        $groupsTest = FIXTURES . DS . 'tests' . DS . 'GroupsTest.php';
+        $loader->load($groupsTest);
+        $methods = $loader->getTestMethods();
+        $this->assertEquals(2, sizeof($methods));
+        $this->assertEquals('testTruth', $methods[0]->getName());
+        $this->assertEquals('testFalsehood', $methods[1]->getName());
+    }
 }
