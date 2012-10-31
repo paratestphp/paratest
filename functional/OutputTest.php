@@ -6,13 +6,13 @@ class OutputTest extends FunctionalTestBase
     {
         $this->path = FIXTURES . DS . "tests" . DS . "UnitTestWithClassAnnotationTest.php";
         $output = $this->getParaTestOutput();
-        $this->assertRegExp('/^\.F\.\./', $output);
+        $this->assertRegExp('/^\n\n\.F\.\./', $output);
     }
 
     public function testInstantFeedbackIsDisplayedWhenFunctional()
     {
         $this->path = FIXTURES . DS . "tests" . DS . "UnitTestWithClassAnnotationTest.php";
         $output = $this->getParaTestOutput(true);
-        $this->assertRegExp('/^[.FE]*/', $output);
+        $this->assertRegExp('/^\n\n[.FE]*/', $output);
     }
 }

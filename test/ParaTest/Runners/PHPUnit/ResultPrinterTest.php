@@ -55,6 +55,6 @@ class ResultPrinterTest extends \TestBase
         $this->printer->start();
         $contents = ob_get_clean();
         $this->assertTrue($this->getObjectValue($this->printer, 'time') > 0);
-        $this->assertEquals("\n", $contents);
+        $this->assertEquals("\n\n", $contents);
     }
 }

@@ -16,7 +16,7 @@ class ResultPrinter
 
     public function start()
     {
-        print "\n";
+        print "\n\n";
         $this->startTimer();
     }
 
