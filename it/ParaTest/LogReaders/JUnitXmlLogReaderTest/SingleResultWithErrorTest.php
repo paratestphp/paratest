@@ -9,6 +9,9 @@ class JUnitXmlLogReaderTest_SingleResultWithErrorTest extends JUnitXmlLogReaderT
     protected $expectedTime = '0.002030';
     protected $expectedErrors = 1;
     protected $expectedSuiteName = 'UnitTestWithErrorTest';
+    protected $expectedTestCases = array(
+        array('pass' => false, 'failures' => 0, 'errors' => 1)
+    );
 
     public function testGetErrors()
     {

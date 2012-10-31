@@ -103,6 +103,14 @@ class ResultPrinterTest extends \TestBase
         $this->assertEquals($eq, $footer);
     }
 
+    public function testPrintFeedbackForMixed()
+    {
+        ob_start();
+        $this->printer->printFeedback($this->mixedSuite);
+        $contents = ob_get_clean();
+        $this->assertEquals('.F.E.F.', $contents);
+    }
+
     private function getSuiteWithResult($result)
     {
         $result = FIXTURES . DS . 'results' . DS . $result;

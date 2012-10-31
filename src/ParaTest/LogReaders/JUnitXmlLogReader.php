@@ -9,6 +9,7 @@ class JUnitXmlLogReader
     private $time = 0;
     private $errors = array();
     private $suiteName;
+    private $testCases = array();
 
     public function __construct($logFile) 
     {
@@ -59,11 +60,17 @@ class JUnitXmlLogReader
         return $this->suiteName;
     }
 
+    public function getTestCases()
+    {
+        return $this->testCases;
+    }
+
     private function initFromXml()
     {
         $this->initFromRootSuite();
         $this->initFailures();
         $this->initErrors();
+        $this->initTestCases();
     }
 
     private function initFromRootSuite()
@@ -101,5 +108,24 @@ class JUnitXmlLogReader
             '/testsuites/testsuite/testsuite/testcase/failure',
             '/testsuites/testsuite/testcase/failure'
         ));
+    }
+
+    private function initTestCases()
+    {
+        $cases = $this->xml->xpath('//testcase');
+        if(sizeof($cases) === 0) return;
+        while(list( , $case) = each($cases))
+            $this->addTestCase($case);
+    }
+
+    private function addTestCase($node)
+    {
+        $failures = $node->xpath("failure");
+        $errors = $node->xpath("error");
+        $this->testCases[] = array(
+            'pass' => (sizeof($failures) + sizeof($errors)) === 0,
+            'failures' => sizeof($failures),
+            'errors' => sizeof($errors)
+        );
     }
 }

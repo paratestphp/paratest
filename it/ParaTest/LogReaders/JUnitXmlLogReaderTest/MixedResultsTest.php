@@ -10,6 +10,16 @@ class JUnitXmlLogReaderTest_MixedResultsTest extends JUnitXmlLogReaderTest_BaseJ
     protected $expectedErrors = 1;
     protected $expectedSuiteName = 'test/fixtures/tests/';
 
+    protected $expectedTestCases = array(
+        array('pass' => true, 'failures' => 0, 'errors' => 0),
+        array('pass' => false, 'failures' => 1, 'errors' => 0),
+        array('pass' => true, 'failures' => 0, 'errors' => 0),
+        array('pass' => false, 'failures' => 0, 'errors' => 1),
+        array('pass' => true, 'failures' => 0, 'errors' => 0),
+        array('pass' => false, 'failures' => 1, 'errors' => 0),
+        array('pass' => true, 'failures' => 0, 'errors' => 0)
+    );
+
     /**
      * @expectedException   \InvalidArgumentException 
      */

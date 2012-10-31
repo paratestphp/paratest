@@ -75,6 +75,13 @@ class ResultPrinter
         $this->clearLogs();
     }
 
+    public function printFeedback(ExecutableTest $test)
+    {
+        $reader = new JUnitXmlLogReader($suite->getTempFile());
+        
+        $this->readers[] = $reader;
+    }
+
     public function getHeader()
     {
         $totalTime = $this->getTime();

@@ -19,7 +19,7 @@ class Runner
         $this->printer->startTimer();
         while(count($this->running) || count($this->pending)) {
             $this->fillRunQueue();
-            $this->running = array_filter($this->running, array($this, 'suiteIsStillRunning'));
+            $this->running = array_filter($this->running, array($this, 'testIsStillRunning'));
         }
         $this->printer->printOutput();
     }
@@ -41,10 +41,10 @@ class Runner
             $this->running[] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered);
     }
 
-    private function suiteIsStillRunning($suite)
+    private function testIsStillRunning($test)
     {
-        if(!$suite->isDoneRunning()) return true;
-        $suite->stop();
+        if(!$test->isDoneRunning()) return true;
+        $test->stop();
         $this->fillRunQueue();
         return false;
     }
