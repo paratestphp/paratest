@@ -24,6 +24,8 @@ class ResultPrinterTest extends \TestBase
         $this->printer->addTest($this->errorSuite)
                       ->addTest($this->failureSuite);
 
+        $this->prepareReaders();
+
         $header = $this->printer->getHeader();
 
         $this->assertRegExp("/\n\nTime: 0 seconds, Memory:[\s][0-9]([.][0-9]{2})?Mb\n\n/", $header);
@@ -33,6 +35,8 @@ class ResultPrinterTest extends \TestBase
     {
         $this->printer->addTest($this->errorSuite)
                       ->addTest($this->failureSuite);
+
+        $this->prepareReaders();
 
         $errors = $this->printer->getErrors();
 
@@ -48,6 +52,8 @@ class ResultPrinterTest extends \TestBase
     {
         $this->printer->addTest($this->errorSuite)
                       ->addTest($this->otherErrorSuite);
+
+        $this->prepareReaders();
 
         $errors = $this->printer->getErrors();
 
@@ -65,6 +71,8 @@ class ResultPrinterTest extends \TestBase
     public function testGetFailures()
     {
         $this->printer->addTest($this->mixedSuite);
+
+        $this->prepareReaders();
 
         $failures = $this->printer->getFailures();
 
@@ -84,6 +92,8 @@ class ResultPrinterTest extends \TestBase
         $this->printer->addTest($this->errorSuite)
                       ->addTest($this->mixedSuite);
 
+        $this->prepareReaders();
+
         $footer = $this->printer->getFooter();
 
         $eq  = "\nFAILURES!\n";
@@ -95,6 +105,8 @@ class ResultPrinterTest extends \TestBase
     public function testGetFooterWithSuccess()
     {
         $this->printer->addTest($this->passingSuite);
+
+        $this->prepareReaders();
 
         $footer = $this->printer->getFooter();
 
@@ -123,5 +135,14 @@ class ResultPrinterTest extends \TestBase
               ->will($this->returnValue($result));
 
         return $suite;
+    }
+
+    private function prepareReaders()
+    {
+        $suites = $this->getObjectValue($this->printer, 'suites');
+        ob_start();
+        foreach($suites as $suite)
+            $this->printer->printFeedback($suite);
+        ob_clean();
     }
 }

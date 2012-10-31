@@ -45,6 +45,7 @@ class Runner
     {
         if(!$test->isDoneRunning()) return true;
         $test->stop();
+        $this->printer->printFeedback($test);
         $this->fillRunQueue();
         return false;
     }

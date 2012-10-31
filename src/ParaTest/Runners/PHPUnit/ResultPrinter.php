@@ -77,8 +77,13 @@ class ResultPrinter
 
     public function printFeedback(ExecutableTest $test)
     {
-        $reader = new JUnitXmlLogReader($suite->getTempFile());
-        
+        $reader = new JUnitXmlLogReader($test->getTempFile());
+        $cases = $reader->getTestCases();
+        foreach($cases as $case) {
+            if($case['pass']) print '.';
+            if($case['errors'] > 0) print 'E';
+            else if ($case['failures'] > 0) print 'F';
+        }
         $this->readers[] = $reader;
     }
 
@@ -103,7 +108,7 @@ class ResultPrinter
     public function getFailures()
     {
         $failures = array();
-        foreach ($this->readers() as $reader)
+        foreach ($this->readers as $reader)
             $failures = array_merge($failures, $reader->getFailures());
 
         return $this->getDefects($failures, 'failure');
@@ -112,7 +117,7 @@ class ResultPrinter
     public function getErrors()
     {
         $errors = array();
-        foreach($this->readers() as $reader)
+        foreach($this->readers as $reader)
             $errors = array_merge($errors, $reader->getErrors());
 
         return $this->getDefects($errors, 'error');
@@ -154,17 +159,9 @@ class ResultPrinter
         return $failures == 0 && $errors == 0;
     }
 
-    private function readers()
-    {
-        if(empty($this->readers))
-            foreach($this->suites as $suite)
-                $this->readers[] = new JUnitXmlLogReader($suite->getTempFile());
-        return $this->readers;
-    }
-
     private function accumulate($method)
     {
-        return array_reduce($this->readers(), function($result, $reader) use($method){
+        return array_reduce($this->readers, function($result, $reader) use($method){
             $result += $reader->$method();
             return $result;
         }, 0);
