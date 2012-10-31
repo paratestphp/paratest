@@ -48,4 +48,13 @@ class ResultPrinterTest extends \TestBase
         $this->assertTrue($total > 0);
         $this->assertEquals(0, $this->getObjectValue($this->printer, 'time'));
     }
+
+    public function testStartBeginsTimerAndPrintsNewLine()
+    {
+        ob_start();
+        $this->printer->start();
+        $contents = ob_get_clean();
+        $this->assertTrue($this->getObjectValue($this->printer, 'time') > 0);
+        $this->assertEquals("\n", $contents);
+    }
 }

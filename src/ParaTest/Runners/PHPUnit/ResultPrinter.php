@@ -14,6 +14,12 @@ class ResultPrinter
         return $this;
     }
 
+    public function start()
+    {
+        print "\n";
+        $this->startTimer();
+    }
+
     public function startTimer()
     {
         $this->time = microtime(true);
