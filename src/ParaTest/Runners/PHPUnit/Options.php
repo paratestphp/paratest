@@ -33,9 +33,27 @@ class Options
         return array(
             'processes' => 5,
             'path' => getcwd(),
-            'phpunit' => 'phpunit',
+            'phpunit' => self::phpunit(),
             'functional' => false
         );
+    }
+
+    /**
+     * Get the path to phpunit
+     * First checks if a Windows batch script is in the composer vendors directory.
+     * Composer automatically handles creating a .bat file, so if on windows this should be the case.
+     * Second look for the phpunit binary under nix
+     * Defaults to phpunit on the users PATH
+     * @return string $phpunit the path to phpunit
+     */
+    protected static function phpunit()
+    {
+        $phpunit  = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+        $phpunit .= $phpunit . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
+        $batch = $phpunit . '.bat';
+        if(file_exists($batch)) return $batch;
+        if(file_exists($phpunit));
+        return 'phpunit';
     }
 
     protected function filterOptions($options)
