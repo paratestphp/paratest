@@ -27,17 +27,15 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadFileGetsPathOfFile()
     {
         $path = FIXTURES . DS . 'tests' . DS . 'UnitTestWithClassAnnotationTest.php';
-        $this->loader->load($path);
-        $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
-        $this->assertEquals($path, array_shift(array_keys($loaded)));
+        $paths = $this->getLoadedPaths($path);
+        $this->assertEquals($path, array_shift($paths));
     }
 
     public function testLoadFileShouldLoadFileWhereNameDoesNotEndInTest()
     {
         $path = FIXTURES . DS . 'tests' . DS . 'TestOfUnits.php';
-        $this->loader->load($path);
-        $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
-        $this->assertEquals($path, array_shift(array_keys($loaded)));
+        $paths = $this->getLoadedPaths($path);
+        $this->assertEquals($path, array_shift($paths));
     }
 
     public function testLoadDirGetsPathOfAllTestsWithKeys()
@@ -104,5 +102,13 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals(2, sizeof($methods));
         $this->assertEquals('testTruth', $methods[0]->getName());
         $this->assertEquals('testFalsehood', $methods[1]->getName());
+    }
+
+    protected function getLoadedPaths($path)
+    {
+        $this->loader->load($path);
+        $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
+        $paths = array_keys($loaded);
+        return $paths;
     }
 }
