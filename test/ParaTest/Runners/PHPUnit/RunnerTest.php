@@ -26,13 +26,4 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertEquals(array('bootstrap' => 'hello'), $options->filtered);
         $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\ResultPrinter', $this->getObjectValue($runner, 'printer'));
     }
-
-    public function testDefaults()
-    {
-        $options = $this->getObjectValue($this->runner, 'options');
-        $this->assertEquals(5, $options->processes);
-        $this->assertEquals(getcwd(), $options->path);
-        $this->assertEquals('phpunit', $options->phpunit);
-        $this->assertFalse($options->functional);
-    }
 }

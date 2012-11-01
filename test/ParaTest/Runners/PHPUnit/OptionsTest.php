@@ -34,4 +34,13 @@ class OptionsTest extends \TestBase
         $options = new Options(array());
         $this->assertEmpty($options->annotations);
     }
+
+    public function testDefaults()
+    {
+        $options = new Options();
+        $this->assertEquals(5, $options->processes);
+        $this->assertEquals(getcwd(), $options->path);
+        $this->assertEquals('phpunit', $options->phpunit);
+        $this->assertFalse($options->functional);
+    }
 }
