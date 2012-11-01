@@ -19,17 +19,17 @@ class UsageTest extends FunctionalTestBase
 
     public function testCallingParaTestWithShortHelpOptionDisplaysUsage()
     {
-        $output = $this->getParaTestOutput('-h');   
+        $output = $this->getParaTestOutput(false, '-h');   
         $this->assertEquals($this->usage, $output);
     }
 
     public function testCallingParaTestWithLongHelpOptionDisplaysUsage()
     {
-        $output = $this->getParaTestOutput('--help');
+        $output = $this->getParaTestOutput(false, '--help');
         $this->assertEquals($this->usage, $output);
     }
 
-    protected function getParaTestOutput($options = '')
+    protected function getParaTestOutput($functional = false, $options = '')
     {
         $proc = proc_open(PARA_BINARY . ' ' . $options, FunctionalTestBase::$descriptorspec, $pipes);
         $this->waitForProc($proc);
