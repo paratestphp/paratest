@@ -49,10 +49,10 @@ class Options
     protected static function phpunit()
     {
         $phpunit  = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
-        $phpunit .= $phpunit . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
+        $phpunit .= DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
         $batch = $phpunit . '.bat';
         if(file_exists($batch)) return $batch;
-        if(file_exists($phpunit));
+        if(file_exists($phpunit)) return $phpunit;
         return 'phpunit';
     }
 
