@@ -16,7 +16,7 @@ class Runner
     public function run()
     {
         $this->load();
-        $this->printer->start();
+        $this->printer->start($this->options);
         while(count($this->running) || count($this->pending)) {
             $this->fillRunQueue();
             $this->running = array_filter($this->running, array($this, 'testIsStillRunning'));

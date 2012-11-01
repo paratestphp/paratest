@@ -14,9 +14,13 @@ class ResultPrinter
         return $this;
     }
 
-    public function start()
+    public function start(Options $options)
     {
-        print "\n\n";
+        printf("\nRunning phpunit in %d process%s with %s%s\n\n",
+               $options->processes,
+               $options->processes > 1 ? 'es' : '',
+               $options->phpunit,
+               $options->functional ? '. Functional mode is on' : '');
         $this->startTimer();
     }
 

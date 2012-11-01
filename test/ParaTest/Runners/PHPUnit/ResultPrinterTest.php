@@ -49,12 +49,36 @@ class ResultPrinterTest extends \TestBase
         $this->assertEquals(0, $this->getObjectValue($this->printer, 'time'));
     }
 
-    public function testStartBeginsTimerAndPrintsNewLine()
+    public function testStartBeginsTimerAndPrintsOptionInfo()
+    {
+        $options = new Options();
+        $contents = $this->getStartOutput($options);
+        $this->assertTrue($this->getObjectValue($this->printer, 'time') > 0);
+        $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\n", $options->phpunit);
+        $this->assertEquals($expected, $contents);
+    }
+
+    public function testStartPrintsOptionInfoWithFunctionalMode()
+    {
+        $options = new Options(array('functional' => true));
+        $contents = $this->getStartOutput($options);
+        $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is on\n\n", $options->phpunit);
+        $this->assertEquals($expected, $contents);
+    }
+
+    public function testStartPrintsOptionInfoWithSingularForOneProcess()
+    {
+        $options = new Options(array('processes' => 1));
+        $contents = $this->getStartOutput($options);
+        $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
+        $this->assertEquals($expected, $contents);
+    }
+
+    protected function getStartOutput(Options $options)
     {
         ob_start();
-        $this->printer->start();
+        $this->printer->start($options);
         $contents = ob_get_clean();
-        $this->assertTrue($this->getObjectValue($this->printer, 'time') > 0);
-        $this->assertEquals("\n\n", $contents);
+        return $contents;
     }
 }
