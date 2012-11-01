@@ -23,6 +23,12 @@ The `--functional` switch will tell paratest to run each test method in its own 
 
 Any switches not officially supported by ParaTest will be passed directly on to PHPUnit.
 
+### Windows ###
+Windows users be sure to use the appropriate batch files.
+An example being:
+
+`vendors\bin\paratest.bat --phpunit vendors\bin\phpunit.bat ...`
+
 Output
 ------
 Output is parsed from logged results and output in an identical manner to PHPUnit's text ui. XML was chosen because it is supported accross a variety of testing tools.
