@@ -6,7 +6,11 @@ class RunnerTest extends \TestBase
 
     public function setUp()
     {
-        $this->runner = new Runner(array('path' => FIXTURES . DS . 'tests'));
+        $this->runner = new Runner(array(
+            'path' => FIXTURES . DS . 'tests',
+            'phpunit' => PHPUNIT,
+            'bootstrap' => BOOTSTRAP
+        ));
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles()
@@ -16,7 +20,7 @@ class RunnerTest extends \TestBase
         $this->runner->run();
         $output = ob_get_clean();
         $tempdir = sys_get_temp_dir();
-        $output = glob($tempdir . DS . 'UnitTest*');
+        $output = glob($tempdir . DS . 'PT_*');
         $this->assertTrue(sizeof($output) == 0);
     }
 }

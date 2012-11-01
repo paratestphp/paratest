@@ -18,13 +18,13 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function getPhpunitOutput()
     {
-        $cmd = sprintf("phpunit --bootstrap %s %s", $this->bootstrap, $this->path);
+        $cmd = sprintf("%s --bootstrap %s %s", PHPUNIT, $this->bootstrap, $this->path);
         return $this->getTestOutput($cmd);
     }
 
     protected function getParaTestOutput($functional = false, $options = array())
     {
-        $cmd = sprintf("%s --bootstrap %s", PARA_BINARY, $this->bootstrap);
+        $cmd = sprintf("%s --bootstrap %s --phpunit %s", PARA_BINARY, $this->bootstrap, PHPUNIT);
         if($functional) $cmd .= ' --functional';
         foreach($options as $switch => $value)
             $cmd .= sprintf(" --%s%s", $switch, ($value) ? ' ' . $value : '');

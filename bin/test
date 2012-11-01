@@ -4,6 +4,7 @@ PROJECT="$DIR/../"
 cd $PROJECT
 TESTPATH="test/ParaTest"
 TYPE=$1
+PHPUNIT="$PROJECT"vendor/bin/phpunit
 
 if [ "$TYPE" == "it" ]; then
     TESTPATH="it/ParaTest"
@@ -12,4 +13,4 @@ if [ "$TYPE" == "functional" ]; then
     TESTPATH="functional"
 fi
 
-phpunit --bootstrap "test/bootstrap.php" --color "$TESTPATH"
+$PHPUNIT --bootstrap "test/bootstrap.php" --color "$TESTPATH"
