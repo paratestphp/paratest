@@ -35,18 +35,20 @@ Output is parsed from logged results and output in an identical manner to PHPUni
 
 Running Tests
 -------------
+ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
+
 Unit tests for this project are in the `test/ParaTest` directory and the `it/ParaTest` directory. The bootstrap file is contained in the `test` directory.
 
 To run unit tests:
-`phpunit --bootstrap test/bootstrap.php test/ParaTest`
+`vendor/bin/phpunit --bootstrap test/bootstrap.php test/ParaTest`
 
 To run integration tests:
-`phpunit --bootstrap test/bootstrap.php it/ParaTest`
+`vendor/bin/phpunit --bootstrap test/bootstrap.php it/ParaTest`
 
 To run functional tests:
-`phpunit --bootstrap test/bootstrap.php functional`
+`vendor/bin/phpunit --bootstrap test/bootstrap.php functional`
 
-If phpunit is on your path, there are a couple of shortcuts in the `bin` directory.
+There are a couple of shortcuts in the `bin` directory as well.
 
 `bin/test` for unit tests.
 `bin/test it` for integration tests.
