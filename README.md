@@ -19,9 +19,9 @@ After installation, the binary can be found at `vendors/bin/paratest`. Usage is 
 `paratest [--processes number] [--path test_directory] [--bootstrap phpunit_bootstrap] `
 `[--phpunit phpunit_binary] [--functional][-h|--help] [--group group]`
 
-The `--functional` switch will tell paratest to run each test method in its own process, rather than each suite.
+The following defaults are used: --processes=5, --path=current directory, --phpunit=vendor/bin/phpunit
 
-Any switches not officially supported by ParaTest will be passed directly on to PHPUnit.
+The `--functional` switch will tell paratest to run each test method in its own process, rather than each suite.
 
 ### Windows ###
 Windows users be sure to use the appropriate batch files.
