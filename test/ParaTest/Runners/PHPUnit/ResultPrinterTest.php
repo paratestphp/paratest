@@ -33,27 +33,10 @@ class ResultPrinterTest extends \TestBase
         $this->assertSame($this->printer, $self);
     }
 
-    public function testStartTimerPopulatesTime()
-    {
-        $this->printer->startTimer();
-
-        $this->assertTrue($this->getObjectValue($this->printer, 'time') > 0);
-    }
-
-    public function testGetTimeReturnsTotalTimeAndResetsTime()
-    {
-        $this->printer->startTimer();
-        usleep(10000);
-        $total = $this->printer->getTime();
-        $this->assertTrue($total > 0);
-        $this->assertEquals(0, $this->getObjectValue($this->printer, 'time'));
-    }
-
-    public function testStartBeginsTimerAndPrintsOptionInfo()
+    public function testStartPrintsOptionInfo()
     {
         $options = new Options();
         $contents = $this->getStartOutput($options);
-        $this->assertTrue($this->getObjectValue($this->printer, 'time') > 0);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\n", $options->phpunit);
         $this->assertEquals($expected, $contents);
     }
