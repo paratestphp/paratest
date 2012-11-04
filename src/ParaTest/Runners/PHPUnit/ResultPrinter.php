@@ -5,8 +5,12 @@ use ParaTest\LogReaders\JUnitXmlLogReader;
 class ResultPrinter
 {
     protected $suites = array();
-    protected $time = 0;
-    protected $readers = array();
+    protected $results;
+
+    public function __construct()
+    {
+        $this->results = new ResultInterpreter();
+    }
 
     public function addTest(ExecutableTest $suite)
     {

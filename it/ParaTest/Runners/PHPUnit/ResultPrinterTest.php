@@ -1,22 +1,13 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-class ResultPrinterTest extends \TestBase
+class ResultPrinterTest extends ResultTester
 {
     protected $printer;
-    protected $errorSuite;
-    protected $failureSuite;
-    protected $otherErrorSuite;
-    protected $mixedSuite;
-    protected $passingSuite;
 
     public function setUp()
     {
+        parent::setUp();
         $this->printer = new ResultPrinter();
-        $this->errorSuite = $this->getSuiteWithResult('single-werror.xml');
-        $this->otherErrorSuite = $this->getSuiteWithResult('single-werror2.xml');
-        $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml');
-        $this->mixedSuite = $this->getSuiteWithResult('mixed-results.xml');
-        $this->passingSuite = $this->getSuiteWithResult('single-passing.xml');
     }
 
     public function testGetHeader()
@@ -121,20 +112,6 @@ class ResultPrinterTest extends \TestBase
         $this->printer->printFeedback($this->mixedSuite);
         $contents = ob_get_clean();
         $this->assertEquals('.F.E.F.', $contents);
-    }
-
-    private function getSuiteWithResult($result)
-    {
-        $result = FIXTURES . DS . 'results' . DS . $result;
-        $suite = $this->getMockBuilder('ParaTest\\Runners\\PHPUnit\\Suite')
-                      ->disableOriginalConstructor()
-                      ->getMock();
-
-        $suite->expects($this->any())
-              ->method('getTempFile')
-              ->will($this->returnValue($result));
-
-        return $suite;
     }
 
     private function prepareReaders()

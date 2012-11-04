@@ -11,8 +11,11 @@ class ResultPrinterTest extends \TestBase
 
     public function testConstructor()
     {
-        $this->assertEquals(array(), $this->getObjectValue($this->printer, 'suites'));        
-        $this->assertEquals(0, $this->getObjectValue($this->printer, 'time'));
+        $this->assertEquals(array(), $this->getObjectValue($this->printer, 'suites'));
+        $this->assertInstanceOf(
+            'ParaTest\\Runners\\PHPUnit\\ResultInterpreter',
+            $this->getObjectValue($this->printer, 'results')
+        );
     }
 
     public function testAddTestShouldaddTest()
