@@ -28,7 +28,7 @@ class ResultPrinter
         \PHP_Timer::start();
     }
 
-    public function printOutput()
+    public function flush()
     {
         print $this->getHeader();
         print $this->getErrors();
@@ -41,12 +41,9 @@ class ResultPrinter
     {
         $reader = new JUnitXmlLogReader($test->getTempFile());
         $cases = $reader->getTestCases();
-        foreach($cases as $case) {
-            if($case['pass']) print '.';
-            if($case['errors'] > 0) print 'E';
-            else if ($case['failures'] > 0) print 'F';
-        }
-        $this->readers[] = $reader;
+        $this->results->addReader($reader);
+        foreach($cases as $case)
+            print $this->results->getCaseStatus($case);
     }
 
     public function getHeader()
@@ -56,30 +53,20 @@ class ResultPrinter
 
     public function getFooter()
     {
-        $tests = $this->accumulate('getTotalTests');
-        $assertions = $this->accumulate('getTotalAssertions');
-        $failures = $this->accumulate('getTotalFailures');
-        $errors = $this->accumulate('getTotalErrors');
-        return $this->isSuccessful($failures, $errors)
-                    ? $this->getSuccessFooter($tests, $assertions)
-                    : $this->getFailedFooter($tests, $assertions, $failures, $errors); 
+        return $this->results->isSuccessful()
+                    ? $this->getSuccessFooter()
+                    : $this->getFailedFooter(); 
     }
 
     public function getFailures()
     {
-        $failures = array();
-        foreach ($this->readers as $reader)
-            $failures = array_merge($failures, $reader->getFailures());
-
+        $failures = $this->results->getFailures();
         return $this->getDefects($failures, 'failure');
     }
 
     public function getErrors()
     {
-        $errors = array();
-        foreach($this->readers as $reader)
-            $errors = array_merge($errors, $reader->getErrors());
-
+        $errors = $this->results->getErrors();
         return $this->getDefects($errors, 'error');
     }
 
@@ -99,32 +86,25 @@ class ResultPrinter
         return $output;
     }
 
-    private function getFailedFooter($tests, $assertions, $failures, $errors)
+    private function getFailedFooter()
     {
         $formatString = "\nFAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
-        return sprintf($formatString, $tests, $assertions, $failures, $errors);
+        return sprintf($formatString, 
+                       $this->results->getTotalTests(), 
+                       $this->results->getTotalAssertions(), 
+                       $this->results->getTotalFailures(), 
+                       $this->results->getTotalErrors());
     }
 
-    private function getSuccessFooter($tests, $asserts)
+    private function getSuccessFooter()
     {
+        $tests = $this->results->getTotalTests();
+        $asserts = $this->results->getTotalAssertions();
         return sprintf("OK (%d test%s, %d assertion%s)\n",
                        $tests,
                        ($tests == 1) ? '' : 's',
                        $asserts,
                        ($asserts == 1) ? '' : 's');
-    }
-
-    private function isSuccessful($failures, $errors)
-    {
-        return $failures == 0 && $errors == 0;
-    }
-
-    private function accumulate($method)
-    {
-        return array_reduce($this->readers, function($result, $reader) use($method){
-            $result += $reader->$method();
-            return $result;
-        }, 0);
     }
 
     private function clearLogs()

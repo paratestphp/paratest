@@ -49,6 +49,24 @@ class ResultInterpreter
         return $failures === 0 && $errors === 0;
     }
 
+    /**
+     * Returns the status indicator for a test case
+     * @param array $case an associative array representing the status of a test case
+     * An example would be
+     * $case = array(
+     *     'pass' => true,
+     *     'errors' => 0,
+     *     'failures' => 0
+     * )
+     * @return string $status a shot indication of the cases pass/fail/error status
+     */
+    public function getCaseStatus($case)
+    {
+        if($case['pass']) return '.';
+        if($case['errors'] > 0) return 'E';
+        else if ($case['failures'] > 0) return 'F';
+    }
+
     private function mergeMessages($method)
     {
         $messages = array();

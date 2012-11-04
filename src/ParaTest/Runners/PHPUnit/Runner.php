@@ -21,7 +21,7 @@ class Runner
             $this->fillRunQueue();
             $this->running = array_filter($this->running, array($this, 'testIsStillRunning'));
         }
-        $this->printer->printOutput();
+        $this->printer->flush();
     }
 
     private function load()
