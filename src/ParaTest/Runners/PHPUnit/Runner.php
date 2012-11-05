@@ -18,7 +18,8 @@ class Runner
         $this->load();
         $this->printer->start($this->options);
         while(count($this->running) || count($this->pending)) {
-            $this->running = array_filter($this->running, array($this, 'testIsStillRunning'));
+            foreach($this->running as $key => $test)
+                if(!$this->testIsStillRunning($test)) unset($this->running[$key]);
             $this->fillRunQueue();
         }
         $this->printer->flush();

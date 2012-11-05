@@ -8,6 +8,8 @@ class Parser
 
     private static $namespace = '/\bnamespace\b[\s]+([^;]+);/';
     private static $class = '/\bclass\b/';
+    private static $testName = '/^test/';
+    private static $testAnnotation = '/@test\b/';
 
     public function __construct($srcPath)
     {
@@ -36,9 +38,8 @@ class Parser
         $tests = array();
         $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
         foreach($methods as $method) {
-            $fn = new ParsedFunction($method->getDocComment(), 'public', $method->getName());
-            if(preg_match('/^test/', $fn->getName()) || $fn->hasAnnotation('test'))
-                $tests[] = $fn;
+            if(preg_match(self::$testName, $method->getName()) || preg_match(self::$testAnnotation, $method->getDocComment()))
+                $tests[] = new ParsedFunction($method->getDocComment(), 'public', $method->getName());
         }
         return $tests;
     }
