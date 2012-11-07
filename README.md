@@ -37,8 +37,6 @@ Running Tests
 -------------
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
 
-Unit tests for this project are in the `test/ParaTest` directory and the `it/ParaTest` directory. The bootstrap file is contained in the `test` directory.
-
 To run unit tests:
 `vendor/bin/phpunit --bootstrap test/bootstrap.php test/ParaTest`
 
@@ -53,5 +51,8 @@ There are a couple of shortcuts in the `bin` directory as well.
 `bin/test` for unit tests.
 `bin/test it` for integration tests.
 `bin/test functional` for functional tests
+
+You can run all tests at once by running phpunit from the project directory.
+`vendor/bin/phpunit`
 
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).
