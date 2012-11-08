@@ -29,6 +29,8 @@ An example being:
 
 `vendors\bin\paratest.bat --phpunit vendors\bin\phpunit.bat ...`
 
+ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests. 
+
 Output
 ------
 Output is parsed from logged results and output in an identical manner to PHPUnit's text ui. XML was chosen because it is supported accross a variety of testing tools.
