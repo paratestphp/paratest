@@ -1,0 +1,30 @@
+<?php namespace ParaTest\Console\Testers;
+
+use Symfony\Component\Console\Command\Command,
+    Symfony\Component\Console\Input\InputDefinition,
+    Symfony\Component\Console\Input\InputOption,
+    Symfony\Component\Console\Input\InputArgument;
+
+class PHPUnitTest extends \TestBase
+{
+    public function testConfigureAddsOptionsAndArgumentsToCommand()
+    {
+        $testCommand = new TestCommand();
+        $definition = new InputDefinition(array(
+            new InputOption('phpunit', null, InputOption::VALUE_OPTIONAL, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'),
+            new InputOption('bootstrap', null, InputOption::VALUE_OPTIONAL, 'The bootstrap file to be used by PHPUnit.'),
+            new InputOption('group', 'g', InputOption::VALUE_OPTIONAL, 'Only runs tests from the specified group(s).'),
+            new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
+        ));
+        $tester = new PHPUnit();
+        $tester->configure($testCommand);
+        $this->assertEquals($definition, $testCommand->getDefinition());
+    }
+}
+
+class TestCommand extends Command 
+{
+    public function __construct() {
+        parent::__construct("testcommand");
+    }
+}
