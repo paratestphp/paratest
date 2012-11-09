@@ -40,7 +40,7 @@ class OptionsTest extends \TestBase
         $options = new Options();
         $this->assertEquals(5, $options->processes);
         $this->assertEquals(getcwd(), $options->path);
-        $this->assertEquals('phpunit', $options->phpunit);
+        $this->assertEquals(PHPUNIT, $options->phpunit);
         $this->assertFalse($options->functional);
     }
 }
