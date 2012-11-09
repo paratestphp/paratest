@@ -27,7 +27,9 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         $cmd = sprintf("%s --bootstrap %s --phpunit %s", PARA_BINARY, $this->bootstrap, PHPUNIT);
         if($functional) $cmd .= ' --functional';
         foreach($options as $switch => $value)
-            $cmd .= sprintf(" --%s%s", $switch, ($value) ? ' ' . $value : '');
+            $cmd .= sprintf(" -%s%s", 
+                           strlen($switch) > 1 ? '-' . $switch : $switch, 
+                           $value ? ' ' . $value : '');
         $cmd .= sprintf(" %s", $this->path);
         return $this->getTestOutput($cmd);
     }

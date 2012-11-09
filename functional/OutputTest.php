@@ -2,9 +2,15 @@
 
 class OutputTest extends FunctionalTestBase
 {
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->path = FIXTURES . DS . "tests" . DS . "UnitTestWithClassAnnotationTest.php";
+    }
+
     public function testInstantFeedbackIsDisplayed()
     {
-        $this->path = FIXTURES . DS . "tests" . DS . "UnitTestWithClassAnnotationTest.php";
         $output = $this->getParaTestOutput();
         $this->assertRegExp(
             '/^\nRunning phpunit in 5 processes with ' . 
@@ -12,10 +18,29 @@ class OutputTest extends FunctionalTestBase
             '\n\n\.F\.\./', $output);
     }
 
-    public function testInstantFeedbackIsDisplayedWhenFunctional()
+    public function testInstantFeedbackIsDisplayedWhenAndFunctionalModeDsiplayed()
     {
-        $this->path = FIXTURES . DS . "tests" . DS . "UnitTestWithClassAnnotationTest.php";
         $output = $this->getParaTestOutput(true);
+        $this->assertFunctionalModeIsOnWithFeedback($output);
+    }
+
+    public function testFunctionalModeIsDisplayedWithShortFunctionalOption()
+    {
+        $output = $this->getParaTestOutput(false, array('f' => ''));
+        $this->assertFunctionalModeIsOnWithFeedback($output);
+    }
+
+    public function testProcCountIsReportedWithShortProcOption()
+    {
+        $output = $this->getParaTestOutput(false, array('p' => '1'));
+        $this->assertRegExp(
+            '/^\nRunning phpunit in 1 process with ' . 
+            $this->getPhpUnitForRegEx() .
+            '\n\n\.F\.\./', $output);
+    }
+
+    protected function assertFunctionalModeIsOnWithFeedback($output)
+    {
         $this->assertRegExp(
             '/^\nRunning phpunit in 5 processes with ' .
             $this->getPhpUnitForRegEx() .
