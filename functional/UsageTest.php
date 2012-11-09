@@ -11,11 +11,11 @@ class UsageTest extends FunctionalTestBase
         $this->usage = file_get_contents($file);
     }
 
-    public function testCallingParaTestWithNoArgsDisplaysUsage()
+    /*public function testCallingParaTestWithNoArgsDisplaysUsage()
     {
         $output = $this->getParaTestOutput();
         $this->assertEquals($this->usage, $output);
-    }
+    }*/
 
     public function testCallingParaTestWithShortHelpOptionDisplaysUsage()
     {

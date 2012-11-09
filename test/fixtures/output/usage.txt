@@ -1,10 +1,14 @@
+Usage:
+ paratest [-p|--processes[="..."]] [-f|--functional] [-h|--help] [--phpunit[="..."]] [--bootstrap[="..."]] [-g|--group[="..."]] [path]
 
-Usage: paratest [switches]
+Arguments:
+ path              The path to a directory or file containing tests. (default:current directory)
 
-  --processes <number>     The number of phpunit processes to run.
-  --path <file|directory>  The path to a directory or file containing tests.
-  --phpunit <path>         The phpunit binary to execute.
-  --bootstrap <file>       A bootstrap file to be used by phpunit.
-  --functional             Run methods instead of suites in separate processes.
-  -h|--help                Print usage information.
-  --group ...              Only runs tests from the specified group(s).
+Options:
+ --processes (-p)  The number of test processes to run. (default: 5)
+ --functional (-f) Run methods instead of suites in separate processes.
+ --help (-h)       Display this help message.
+ --phpunit         The PHPUnit binary to execute. (default: vendor/bin/phpunit)
+ --bootstrap       The bootstrap file to be used by PHPUnit.
+ --group (-g)      Only runs tests from the specified group(s).
+
