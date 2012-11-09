@@ -24,7 +24,8 @@ class PHPUnit extends Tester
         $options = $this->getOptions($input);
         if(isset($options['bootstrap']) && file_exists($options['bootstrap']))
             require_once $options['bootstrap'];
-        $runner = new Runner(array_merge(array('path' => $path), $options));
+        $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
+        $runner = new Runner($options);
         $runner->run();
     }
 }

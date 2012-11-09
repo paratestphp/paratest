@@ -33,7 +33,7 @@ class Options
         return array(
             'processes' => 5,
             'path' => getcwd(),
-            'phpunit' => self::phpunit(),
+            'phpunit' => static::phpunit(),
             'functional' => false
         );
     }
@@ -48,12 +48,25 @@ class Options
      */
     protected static function phpunit()
     {
-        $phpunit  = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
-        $phpunit .= DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
+        $vendor  = static::vendorDir();
+        $phpunit = $vendor . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
         $batch = $phpunit . '.bat';
         if(file_exists($batch)) return $batch;
         if(file_exists($phpunit)) return $phpunit;
         return 'phpunit';
+    }
+
+    /**
+     * Get the path to the vendor directory
+     * First assumes vendor directory is accessible from src (i.e development)
+     * Second assumes vendor directory is accessible within src
+     */
+    protected static function vendorDir()
+    {
+        $vendor = dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'vendor';
+        if(!file_exists($vendor))
+            $vendor = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+        return $vendor;
     }
 
     protected function filterOptions($options)
