@@ -25,6 +25,11 @@ if (!$found) {
     );
 }
 
-use ParaTest\UI\Text\PHPUnitTextUI;
+#use ParaTest\UI\Text\PHPUnitTextUI;
 
-PHPUnitTextUI::main();
+#PHPUnitTextUI::main();
+
+use ParaTest\Console\ParaTestApplication;
+
+$app = new ParaTestApplication();
+$app->run();
