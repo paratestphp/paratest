@@ -25,7 +25,7 @@ class ParaTestCommand extends Command
             ->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->tester->execute($input, $output);
     }
