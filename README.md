@@ -16,12 +16,12 @@ Then run `php composer.phar install`
 Usage
 -----
 After installation, the binary can be found at `vendors/bin/paratest`. Usage is as follows:
-`paratest [--processes number] [--path test_directory] [--bootstrap phpunit_bootstrap] `
-`[--phpunit phpunit_binary] [--functional][-h|--help] [--group group]`
 
-The following defaults are used: --processes=5, --path=current directory, --phpunit=vendor/bin/phpunit
+`
+paratest [-p|--processes[="..."]] [-f|--functional] [-h|--help] [--phpunit[="..."]] [--bootstrap[="..."]] [-g|--group[="..."]] [path]
+`
 
-The `--functional` switch will tell paratest to run each test method in its own process, rather than each suite.
+![ParaTest Usage](https://raw.github.com/brianium/paratest/master/paratest-usage.png "ParaTest Console Usage")
 
 ### Windows ###
 Windows users be sure to use the appropriate batch files.
@@ -30,10 +30,6 @@ An example being:
 `vendors\bin\paratest.bat --phpunit vendors\bin\phpunit.bat ...`
 
 ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests. 
-
-Output
-------
-Output is parsed from logged results and output in an identical manner to PHPUnit's text ui. XML was chosen because it is supported accross a variety of testing tools.
 
 Running Tests
 -------------
