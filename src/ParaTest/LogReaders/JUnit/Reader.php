@@ -44,10 +44,10 @@ class Reader
                 $cb = array('ParaTest\\LogReaders\\JUnit\\Reader', 'caseFromNode');
                 $suite = array_reduce($arr, function($result, $c) use(&$testCases, $cb) {
                     $testCases[] = call_user_func_array($cb, array($c));
-                    $result['name'] = $c['class'];
-                    $result['file'] = $c['file'];
+                    $result['name'] = (string)$c['class'];
+                    $result['file'] = (string)$c['file'];
                     $result['tests'] = $result['tests'] + 1;
-                    $result['assertions'] += $c['assertions'];
+                    $result['assertions'] += (int)$c['assertions'];
                     $result['failures'] += sizeof($c->xpath('failure'));
                     $result['errors'] += sizeof($c->xpath('error'));
                     $result['time'] += floatval($c['time']);
@@ -67,12 +67,19 @@ class Reader
     }
 
     public static function caseFromNode($node) {
-        return new TestCase((string) $node['name'],
+        $case = new TestCase((string) $node['name'],
                             (string) $node['class'],
                             (string) $node['file'],
                             (string) $node['line'],
                             (string) $node['assertions'],
                             (string) $node['time']);
+        $failures = $node->xpath('failure');
+        $errors = $node->xpath('error');
+        while(list( , $fail) = each($failures))
+            $case->addFailure((string)$fail['type'], (string)$fail);
+        while(list( , $err) = each($errors))
+            $case->addError((string)$err['type'], (string)$err);
+        return $case;
     }
 
     public static function suiteFromArray($arr)

@@ -29,9 +29,4 @@ class TestSuite
         $this->time = $time;
         $this->file = $file;
     }
-
-    public function __get($key)
-    {
-        return $this->$key;
-    }
 }

@@ -76,4 +76,30 @@ class ReaderTest extends \TestBase
         $this->assertEquals('1', $first->assertions);
         $this->assertEquals('0.001760', $first->time);
     }
+
+    public function testMixedSuiteCasesLoadFailures()
+    {
+        $suites = $this->mixed->getSuites();
+        $case = $suites[0]->suites[0]->cases[1];
+        $this->assertEquals(1, sizeof($case->failures));
+        $failure = $case->failures[0];
+        $this->assertEquals('PHPUnit_Framework_ExpectationFailedException', $failure['type']);
+        $this->assertEquals("UnitTestWithClassAnnotationTest::testFalsehood
+Failed asserting that true is false.
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20\n", $failure['text']);
+    }
+
+    public function testMixedSuiteCasesLoadErrors()
+    {
+        $suites = $this->mixed->getSuites();
+        $case = $suites[0]->suites[1]->cases[0];
+        $this->assertEquals(1, sizeof($case->errors));
+        $error = $case->errors[0];
+        $this->assertEquals('Exception', $error['type']);
+        $this->assertEquals("UnitTestWithErrorTest::testTruth
+Exception: Error!!!
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n", $error['text']);
+    }
 }
