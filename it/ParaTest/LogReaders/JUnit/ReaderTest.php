@@ -102,4 +102,54 @@ Exception: Error!!!
 
 /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n", $error['text']);
     }
+
+    public function testSingleSuiteShouldConstructRootSuite()
+    {
+        $suites = $this->single->getSuites();
+        $this->assertEquals(1, sizeof($suites));
+        $this->assertEquals('UnitTestWithMethodAnnotationsTest', $suites[0]->name);
+        $this->assertEquals("/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php", $suites[0]->file);
+        $this->assertEquals('3', $suites[0]->tests);
+        $this->assertEquals('3', $suites[0]->assertions);
+        $this->assertEquals('1', $suites[0]->failures);
+        $this->assertEquals('0', $suites[0]->errors);
+        $this->assertEquals('0.005895', $suites[0]->time);
+        return $suites[0];
+    }
+
+    /**
+     * @depends testSingleSuiteShouldConstructRootSuite
+     */
+    public function testSingleSuiteShouldHaveNoChildSuites($suite)
+    {
+        $this->assertEquals(0, sizeof($suite->suites));
+    }
+
+    /**
+     * @depends testSingleSuiteShouldConstructRootSuite
+     */
+    public function testSingleSuiteConstructsTestCases($suite)
+    {
+        $this->assertEquals(3, sizeof($suite->cases));
+        $first = $suite->cases[0];
+        $this->assertEquals('testTruth', $first->name);
+        $this->assertEquals('UnitTestWithMethodAnnotationsTest', $first->class);
+        $this->assertEquals('/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php', $first->file);
+        $this->assertEquals('7', $first->line);
+        $this->assertEquals('1', $first->assertions);
+        $this->assertEquals('0.001632', $first->time);
+    }
+
+    public function testSingleSuiteCasesLoadFailures()
+    {
+        $suites = $this->single->getSuites();
+        $case = $suites[0]->cases[1];
+        $this->assertEquals(1, sizeof($case->failures));
+        $failure = $case->failures[0];
+        $this->assertEquals('PHPUnit_Framework_ExpectationFailedException', $failure['type']);
+        $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood
+Failed asserting that true is false.
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n", $failure['text']);
+    }
 }

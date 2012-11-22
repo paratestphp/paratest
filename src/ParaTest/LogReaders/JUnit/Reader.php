@@ -29,39 +29,41 @@ class Reader
     {
         $nodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
         $this->isSingle = sizeof($nodes) === 0;
-        if(!$this->isSingle) {
-            $node = current($this->xml->xpath("/testsuites/testsuite"));
-            $this->suites[] = static::suiteFromNode($node);
-            $caseNodes = $this->xml->xpath('//testcase');
-            $cases = array();
-            while(list( , $node) = each($caseNodes)) {
-                $case = $node;
-                if(!isset($cases[(string)$node['file']])) $cases[(string)$node['file']] = array();
-                $cases[(string)$node['file']][] = $node;
-            }
-            foreach($cases as $file => $arr) {
-                $testCases = array();
-                $cb = array('ParaTest\\LogReaders\\JUnit\\Reader', 'caseFromNode');
-                $suite = array_reduce($arr, function($result, $c) use(&$testCases, $cb) {
-                    $testCases[] = call_user_func_array($cb, array($c));
-                    $result['name'] = (string)$c['class'];
-                    $result['file'] = (string)$c['file'];
-                    $result['tests'] = $result['tests'] + 1;
-                    $result['assertions'] += (int)$c['assertions'];
-                    $result['failures'] += sizeof($c->xpath('failure'));
-                    $result['errors'] += sizeof($c->xpath('error'));
-                    $result['time'] += floatval($c['time']);
-                    return $result;
-                }, array('name' => '',
-                         'file' => '',
-                         'tests' => 0,
-                         'assertions' => 0,
-                         'failures' => 0,
-                         'errors' => 0,
-                         'time' => 0));
+        $node = current($this->xml->xpath("/testsuites/testsuite"));
+        $this->suites[] = static::suiteFromNode($node);
+        $caseNodes = $this->xml->xpath('//testcase');
+        $cases = array();
+        while(list( , $node) = each($caseNodes)) {
+            $case = $node;
+            if(!isset($cases[(string)$node['file']])) $cases[(string)$node['file']] = array();
+            $cases[(string)$node['file']][] = $node;
+        }
+        foreach($cases as $file => $arr) {
+            $testCases = array();
+            $cb = array('ParaTest\\LogReaders\\JUnit\\Reader', 'caseFromNode');
+            $suite = array_reduce($arr, function($result, $c) use(&$testCases, $cb) {
+                $testCases[] = call_user_func_array($cb, array($c));
+                $result['name'] = (string)$c['class'];
+                $result['file'] = (string)$c['file'];
+                $result['tests'] = $result['tests'] + 1;
+                $result['assertions'] += (int)$c['assertions'];
+                $result['failures'] += sizeof($c->xpath('failure'));
+                $result['errors'] += sizeof($c->xpath('error'));
+                $result['time'] += floatval($c['time']);
+                return $result;
+            }, array('name' => '',
+                     'file' => '',
+                     'tests' => 0,
+                     'assertions' => 0,
+                     'failures' => 0,
+                     'errors' => 0,
+                     'time' => 0));
+            if(!$this->isSingle) {
                 $suite = $this->suiteFromArray($suite);
                 $suite->cases = $testCases;
                 $this->suites[0]->suites[] = $suite;
+            } else {
+                $this->suites[0]->cases = $testCases;
             }
         }
     }
@@ -100,6 +102,7 @@ class Reader
                              (string) $node['assertions'],
                              (string) $node['failures'],
                              (string) $node['errors'],
-                             (string) $node['time']);
+                             (string) $node['time'],
+                             (string) $node['file']);
     }
 }
