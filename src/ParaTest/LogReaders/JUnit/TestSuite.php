@@ -29,4 +29,26 @@ class TestSuite
         $this->time = $time;
         $this->file = $file;
     }
+
+    public static function suiteFromArray($arr)
+    {
+        return new TestSuite($arr['name'],
+                             $arr['tests'],
+                             $arr['assertions'],
+                             $arr['failures'],
+                             $arr['errors'],
+                             $arr['time'],
+                             $arr['file']);
+    }
+
+    public static function suiteFromNode(\SimpleXMLElement $node) 
+    {
+        return new TestSuite((string) $node['name'],
+                             (string) $node['tests'],
+                             (string) $node['assertions'],
+                             (string) $node['failures'],
+                             (string) $node['errors'],
+                             (string) $node['time'],
+                             (string) $node['file']);
+    }
 }

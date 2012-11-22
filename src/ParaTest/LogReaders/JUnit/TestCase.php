@@ -45,4 +45,20 @@ class TestCase
             'text' => $text
         );
     }
+
+    public static function caseFromNode(\SimpleXMLElement $node) {
+        $case = new TestCase((string) $node['name'],
+                            (string) $node['class'],
+                            (string) $node['file'],
+                            (string) $node['line'],
+                            (string) $node['assertions'],
+                            (string) $node['time']);
+        $failures = $node->xpath('failure');
+        $errors = $node->xpath('error');
+        while(list( , $fail) = each($failures))
+            $case->addFailure((string)$fail['type'], (string)$fail);
+        while(list( , $err) = each($errors))
+            $case->addError((string)$err['type'], (string)$err);
+        return $case;
+    }
 }

@@ -6,6 +6,14 @@ class Reader
     protected $isSingle = false;
     protected $suites = array();
 
+    protected static $defaultSuite = array('name' => '',
+                                           'file' => '',
+                                           'tests' => 0,
+                                           'assertions' => 0,
+                                           'failures' => 0,
+                                           'errors' => 0,
+                                           'time' => 0);
+
     public function __construct($logFile) 
     {
         if(!file_exists($logFile))
@@ -27,10 +35,54 @@ class Reader
 
     protected function init()
     {
-        $nodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
-        $this->isSingle = sizeof($nodes) === 0;
-        $node = current($this->xml->xpath("/testsuites/testsuite"));
-        $this->suites[] = static::suiteFromNode($node);
+        $this->initSuite();
+        $cases = $this->getCaseNodes();
+        foreach($cases as $file => $nodeArray)
+            $this->initSuiteFromCases($nodeArray);
+    }
+
+    /**
+     * Uses an array of testcase nodes to build a suite
+     * @param array $nodeArray an array of SimpleXMLElement nodes representing testcase elements
+     */
+    protected function initSuiteFromCases($nodeArray)
+    {
+        $testCases = array();
+        $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
+        if(!$this->isSingle) $this->addSuite($properties, $testCases);
+        else $this->suites[0]->cases = $testCases;
+    }
+
+    protected function addSuite($properties, $testCases)
+    {
+        $suite = TestSuite::suiteFromArray($properties);
+        $suite->cases = $testCases;
+        $this->suites[0]->suites[] = $suite;
+    }
+
+    /**
+     * Fold an array of testcase nodes into a suite array
+     * @param array $nodeArray an array of testcase nodes
+     * @param array $testCases an array reference. Individual testcases will be placed here.
+     */
+    protected function caseNodesToSuiteProperties($nodeArray, &$testCases = array())
+    {
+        $cb = array('ParaTest\\LogReaders\\JUnit\\TestCase', 'caseFromNode');
+        return array_reduce($nodeArray, function($result, $c) use(&$testCases, $cb) {
+            $testCases[] = call_user_func_array($cb, array($c));
+            $result['name'] = (string)$c['class'];
+            $result['file'] = (string)$c['file'];
+            $result['tests'] = $result['tests'] + 1;
+            $result['assertions'] += (int)$c['assertions'];
+            $result['failures'] += sizeof($c->xpath('failure'));
+            $result['errors'] += sizeof($c->xpath('error'));
+            $result['time'] += floatval($c['time']);
+            return $result;
+        }, static::$defaultSuite);
+    }
+
+    protected function getCaseNodes()
+    {
         $caseNodes = $this->xml->xpath('//testcase');
         $cases = array();
         while(list( , $node) = each($caseNodes)) {
@@ -38,71 +90,14 @@ class Reader
             if(!isset($cases[(string)$node['file']])) $cases[(string)$node['file']] = array();
             $cases[(string)$node['file']][] = $node;
         }
-        foreach($cases as $file => $arr) {
-            $testCases = array();
-            $cb = array('ParaTest\\LogReaders\\JUnit\\Reader', 'caseFromNode');
-            $suite = array_reduce($arr, function($result, $c) use(&$testCases, $cb) {
-                $testCases[] = call_user_func_array($cb, array($c));
-                $result['name'] = (string)$c['class'];
-                $result['file'] = (string)$c['file'];
-                $result['tests'] = $result['tests'] + 1;
-                $result['assertions'] += (int)$c['assertions'];
-                $result['failures'] += sizeof($c->xpath('failure'));
-                $result['errors'] += sizeof($c->xpath('error'));
-                $result['time'] += floatval($c['time']);
-                return $result;
-            }, array('name' => '',
-                     'file' => '',
-                     'tests' => 0,
-                     'assertions' => 0,
-                     'failures' => 0,
-                     'errors' => 0,
-                     'time' => 0));
-            if(!$this->isSingle) {
-                $suite = $this->suiteFromArray($suite);
-                $suite->cases = $testCases;
-                $this->suites[0]->suites[] = $suite;
-            } else {
-                $this->suites[0]->cases = $testCases;
-            }
-        }
+        return $cases;
     }
 
-    public static function caseFromNode($node) {
-        $case = new TestCase((string) $node['name'],
-                            (string) $node['class'],
-                            (string) $node['file'],
-                            (string) $node['line'],
-                            (string) $node['assertions'],
-                            (string) $node['time']);
-        $failures = $node->xpath('failure');
-        $errors = $node->xpath('error');
-        while(list( , $fail) = each($failures))
-            $case->addFailure((string)$fail['type'], (string)$fail);
-        while(list( , $err) = each($errors))
-            $case->addError((string)$err['type'], (string)$err);
-        return $case;
-    }
-
-    public static function suiteFromArray($arr)
+    protected function initSuite()
     {
-        return new TestSuite($arr['name'],
-                             $arr['tests'],
-                             $arr['assertions'],
-                             $arr['failures'],
-                             $arr['errors'],
-                             $arr['time'],
-                             $arr['file']);
-    }
-
-    public static function suiteFromNode($node) 
-    {
-        return new TestSuite((string) $node['name'],
-                             (string) $node['tests'],
-                             (string) $node['assertions'],
-                             (string) $node['failures'],
-                             (string) $node['errors'],
-                             (string) $node['time'],
-                             (string) $node['file']);
+        $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
+        $this->isSingle = sizeof($suiteNodes) === 0;
+        $node = current($this->xml->xpath("/testsuites/testsuite"));
+        $this->suites[] = TestSuite::suiteFromNode($node);
     }
 }
