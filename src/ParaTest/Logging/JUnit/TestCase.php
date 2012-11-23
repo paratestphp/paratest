@@ -42,7 +42,7 @@ class TestCase
     {
         $this->{$collName}[] = array(
             'type' => $type,
-            'text' => $text
+            'text' => trim($text)
         );
     }
 

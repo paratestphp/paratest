@@ -45,10 +45,23 @@ class Reader
             return $this->getNumericValue($property);
         if(preg_match(self::$messageMethod, $method, $matches) && $type = strtolower($matches[1]))
             return $this->getMessages($type);
-
     }
 
-    public function getNumericValue($property)
+    public function getFeedback()
+    {
+        $feedback = '';
+        $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach($suites as $suite) {
+            foreach($suite->cases as $case) {
+                if($case->failures) $feedback .= 'F';
+                else if ($case->errors) $feedback .= 'E';
+                else $feedback .= '.';
+            }
+        }
+        return $feedback;
+    }
+
+    protected function getNumericValue($property)
     {
        return ($property === 'time') 
               ? floatval($this->suites[0]->$property)

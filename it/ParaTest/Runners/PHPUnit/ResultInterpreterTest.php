@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\LogReaders\JUnitXmlLogReader;
+use ParaTest\Logging\JUnit\Reader;
 
 class ResultInterpreterTest extends ResultTester
 {
@@ -84,7 +84,7 @@ Failed asserting that true is false.
 
     protected function getReader($suiteName)
     {
-        return new JUnitXmlLogReader($this->$suiteName->getTempFile());
+        return new Reader($this->$suiteName->getTempFile());
 
     }
 }

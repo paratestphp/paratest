@@ -28,27 +28,9 @@ class ResultInterpreterTest extends \TestBase
         $this->assertSame($self, $this->interpreter);
     }
 
-    public function testGetCaseStatusWherePassing()
-    {
-        $case = array('pass' => true, 'errors' => 0, 'failures' => 0);
-        $this->assertEquals('.', $this->interpreter->getCaseStatus($case));
-    }
-
-    public function testGetCaseStatusWhereErrorsPresent()
-    {
-        $case = array('pass' => false, 'errors' => 2, 'failures' => 1);
-        $this->assertEquals('E', $this->interpreter->getCaseStatus($case));
-    }
-
-    public function testGetCaseStatusWhereFailuresPresentAndNoErrors()
-    {
-        $case = array('pass' => false, 'errors' => 0, 'failures' => 2);
-        $this->assertEquals('F', $this->interpreter->getCaseStatus($case));
-    }
-
     protected function getMockReader()
     {
-        return $this->getMockBuilder('ParaTest\\LogReaders\\JUnitXmlLogReader')
+        return $this->getMockBuilder('ParaTest\\Logging\\JUnit\\Reader')
                     ->disableOriginalConstructor()
                     ->getMock();
     }

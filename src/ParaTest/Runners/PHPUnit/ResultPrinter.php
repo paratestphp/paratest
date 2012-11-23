@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\LogReaders\JUnitXmlLogReader;
+use ParaTest\Logging\JUnit\Reader;
 
 class ResultPrinter
 {
@@ -39,11 +39,9 @@ class ResultPrinter
 
     public function printFeedback(ExecutableTest $test)
     {
-        $reader = new JUnitXmlLogReader($test->getTempFile());
-        $cases = $reader->getTestCases();
+        $reader = new Reader($test->getTempFile());
         $this->results->addReader($reader);
-        foreach($cases as $case)
-            print $this->results->getCaseStatus($case);
+        print $reader->getFeedback();
     }
 
     public function getHeader()

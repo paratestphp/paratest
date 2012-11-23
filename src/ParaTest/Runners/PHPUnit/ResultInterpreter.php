@@ -1,12 +1,12 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\LogReaders\JUnitXmlLogReader;
+use ParaTest\Logging\JUnit\Reader;
 
 class ResultInterpreter
 {
     protected $readers = array();
 
-    public function addReader(JUnitXmlLogReader $reader)
+    public function addReader(Reader $reader)
     {
         $this->readers[] = $reader;
         return $this;
@@ -47,24 +47,6 @@ class ResultInterpreter
         $failures = $this->getTotalFailures();
         $errors = $this->getTotalErrors();
         return $failures === 0 && $errors === 0;
-    }
-
-    /**
-     * Returns the status indicator for a test case
-     * @param array $case an associative array representing the status of a test case
-     * An example would be
-     * $case = array(
-     *     'pass' => true,
-     *     'errors' => 0,
-     *     'failures' => 0
-     * )
-     * @return string $status a shot indication of the cases pass/fail/error status
-     */
-    public function getCaseStatus($case)
-    {
-        if($case['pass']) return '.';
-        if($case['errors'] > 0) return 'E';
-        else if ($case['failures'] > 0) return 'F';
     }
 
     private function mergeMessages($method)
