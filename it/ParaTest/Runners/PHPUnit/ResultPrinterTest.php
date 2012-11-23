@@ -2,12 +2,14 @@
 
 class ResultPrinterTest extends ResultTester
 {
+    protected $interpreter;
     protected $printer;
 
     public function setUp()
     {
         parent::setUp();
-        $this->printer = new ResultPrinter();
+        $this->interpreter = new ResultInterpreter();
+        $this->printer = new ResultPrinter($this->interpreter);
     }
 
     public function testGetHeader()

@@ -3,10 +3,12 @@
 class ResultPrinterTest extends \TestBase
 {
     protected $printer;
+    protected $interpreter;
 
     public function setUp()
     {
-        $this->printer = new ResultPrinter();
+        $this->interpreter = new ResultInterpreter();
+        $this->printer = new ResultPrinter($this->interpreter);
     }
 
     public function testConstructor()

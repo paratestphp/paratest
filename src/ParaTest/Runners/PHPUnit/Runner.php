@@ -5,12 +5,14 @@ class Runner
     protected $pending = array();
     protected $running = array();
     protected $options;
+    protected $interpreter;
     protected $printer;
     
     public function __construct($opts = array())
     {
         $this->options = new Options($opts);
-        $this->printer = new ResultPrinter();
+        $this->interpreter = new ResultInterpreter();
+        $this->printer = new ResultPrinter($this->interpreter);
     }
 
     public function run()

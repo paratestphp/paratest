@@ -7,9 +7,9 @@ class ResultPrinter
     protected $suites = array();
     protected $results;
 
-    public function __construct()
+    public function __construct(ResultInterpreter $results)
     {
-        $this->results = new ResultInterpreter();
+        $this->results = $results;
     }
 
     public function addTest(ExecutableTest $suite)
