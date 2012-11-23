@@ -152,4 +152,56 @@ Failed asserting that true is false.
 
 /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n", $failure['text']);
     }
+
+    public function testMixedGetTotals()
+    {
+        $this->assertEquals(7, $this->mixed->getTotalTests());
+        $this->assertEquals(6, $this->mixed->getTotalAssertions());
+        $this->assertEquals(2, $this->mixed->getTotalFailures());
+        $this->assertEquals(1, $this->mixed->getTotalErrors());
+        $this->assertEquals(0.007625, $this->mixed->getTotalTime());
+    }
+
+    public function testSingleGetTotals()
+    {
+        $this->assertEquals(3, $this->single->getTotalTests());
+        $this->assertEquals(3, $this->single->getTotalAssertions());
+        $this->assertEquals(1, $this->single->getTotalFailures());
+        $this->assertEquals(0, $this->single->getTotalErrors());
+        $this->assertEquals(0.005895, $this->single->getTotalTime());
+    }
+
+    public function testMixedGetFailureMessages()
+    {
+        $failures = $this->mixed->getFailures();
+        $this->assertEquals(2, sizeof($failures));
+        $this->assertEquals("UnitTestWithClassAnnotationTest::testFalsehood
+Failed asserting that true is false.
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20\n", $failures[0]);
+        $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood
+Failed asserting that true is false.
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n", $failures[1]);
+    }
+
+    public function testMixedGetErrorMessages()
+    {
+        $errors = $this->mixed->getErrors();
+        $this->assertEquals(1, sizeof($errors));
+        $this->assertEquals("UnitTestWithErrorTest::testTruth
+Exception: Error!!!
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n", $errors[0]);
+    }
+
+    public function testSingleGetMessages()
+    {
+        $failures = $this->single->getFailures();
+        $this->assertEquals(1, sizeof($failures));
+        $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood
+Failed asserting that true is false.
+
+/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n", $failures[0]);
+    }
 }
