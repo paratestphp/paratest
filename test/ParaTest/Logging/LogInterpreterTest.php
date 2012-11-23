@@ -28,6 +28,15 @@ class ResultInterpreterTest extends \TestBase
         $this->assertSame($self, $this->interpreter);
     }
 
+    public function testGetReaders()
+    {
+        $reader = $this->getMockReader();
+        $this->interpreter->addReader($reader);
+        $readers = $this->interpreter->getReaders();
+        $this->assertEquals(1, sizeof($readers));
+        $this->assertSame($reader, $readers[0]);
+    }
+
     protected function getMockReader()
     {
         return $this->getMockBuilder('ParaTest\\Logging\\JUnit\\Reader')

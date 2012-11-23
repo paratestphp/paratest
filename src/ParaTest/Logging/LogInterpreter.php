@@ -12,6 +12,11 @@ class LogInterpreter
         return $this;
     }
 
+    public function getReaders()
+    {
+        return $this->readers;
+    }
+
     public function getErrors()
     {
         return $this->mergeMessages('getErrors');
