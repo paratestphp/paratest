@@ -1,8 +1,8 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
 
-class ResultInterpreter
+class LogInterpreter
 {
     protected $readers = array();
 

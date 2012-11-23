@@ -1,5 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Logging\LogInterpreter;
+
 class ResultPrinterTest extends \TestBase
 {
     protected $printer;
@@ -7,7 +9,7 @@ class ResultPrinterTest extends \TestBase
 
     public function setUp()
     {
-        $this->interpreter = new ResultInterpreter();
+        $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
     }
 
@@ -15,7 +17,7 @@ class ResultPrinterTest extends \TestBase
     {
         $this->assertEquals(array(), $this->getObjectValue($this->printer, 'suites'));
         $this->assertInstanceOf(
-            'ParaTest\\Runners\\PHPUnit\\ResultInterpreter',
+            'ParaTest\\Logging\\LogInterpreter',
             $this->getObjectValue($this->printer, 'results')
         );
     }

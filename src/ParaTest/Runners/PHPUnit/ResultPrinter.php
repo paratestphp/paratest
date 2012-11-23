@@ -1,5 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Logging\LogInterpreter;
 use ParaTest\Logging\JUnit\Reader;
 
 class ResultPrinter
@@ -7,7 +8,7 @@ class ResultPrinter
     protected $suites = array();
     protected $results;
 
-    public function __construct(ResultInterpreter $results)
+    public function __construct(LogInterpreter $results)
     {
         $this->results = $results;
     }

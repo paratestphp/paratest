@@ -1,5 +1,8 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Logging\LogInterpreter;
+use ParaTest\ResultTester;
+
 class ResultPrinterTest extends ResultTester
 {
     protected $interpreter;
@@ -8,7 +11,7 @@ class ResultPrinterTest extends ResultTester
     public function setUp()
     {
         parent::setUp();
-        $this->interpreter = new ResultInterpreter();
+        $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
     }
 

@@ -1,5 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Logging\LogInterpreter;
+
 class Runner
 {
     protected $pending = array();
@@ -11,7 +13,7 @@ class Runner
     public function __construct($opts = array())
     {
         $this->options = new Options($opts);
-        $this->interpreter = new ResultInterpreter();
+        $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
     }
 

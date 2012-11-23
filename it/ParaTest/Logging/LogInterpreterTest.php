@@ -1,15 +1,16 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\ResultTester;
 
-class ResultInterpreterTest extends ResultTester
+class LogInterpreterTest extends ResultTester
 {
     protected $interpreter;
 
     public function setUp()
     {
         parent::setUp();
-        $this->interpreter = new ResultInterpreter();
+        $this->interpreter = new LogInterpreter();
         $this->interpreter->addReader($this->getReader('mixedSuite'))
                           ->addReader($this->getReader('passingSuite'));
     }
@@ -36,14 +37,14 @@ class ResultInterpreterTest extends ResultTester
 
     public function testIsSuccessfulReturnsFalseIfFailuresPresentAndNoErrors()
     {
-        $interpreter = new ResultInterpreter();
+        $interpreter = new LogInterpreter();
         $interpreter->addReader($this->getReader('failureSuite'));
         $this->assertFalse($interpreter->isSuccessful());
     }
 
     public function testIsSuccessfulReturnsFalseIfErrorsPresentAndNoFailures()
     {
-        $interpreter = new ResultInterpreter();
+        $interpreter = new LogInterpreter();
         $interpreter->addReader($this->getReader('errorSuite'));
         $this->assertFalse($interpreter->isSuccessful());
     }
@@ -55,7 +56,7 @@ class ResultInterpreterTest extends ResultTester
 
     public function testIsSuccessfulReturnsTrueIfNoErrorsOrFailures()
     {
-        $interpreter = new ResultInterpreter();
+        $interpreter = new LogInterpreter();
         $interpreter->addReader($this->getReader('passingSuite'));
         $this->assertTrue($interpreter->isSuccessful());
     }

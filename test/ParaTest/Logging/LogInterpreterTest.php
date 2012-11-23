@@ -1,4 +1,4 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php namespace ParaTest\Logging;
 
 class ResultInterpreterTest extends \TestBase
 {
@@ -6,7 +6,7 @@ class ResultInterpreterTest extends \TestBase
 
     public function setUp()
     {
-        $this->interpreter = new ResultInterpreter();
+        $this->interpreter = new LogInterpreter();
     }
 
     public function testConstructor()

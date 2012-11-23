@@ -1,4 +1,4 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php namespace ParaTest;
 
 abstract class ResultTester extends \TestBase
 {
