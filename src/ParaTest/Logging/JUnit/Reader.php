@@ -1,4 +1,4 @@
-<?php namespace ParaTest\Logging\Readers\JUnit;
+<?php namespace ParaTest\Logging\JUnit;
 
 class Reader
 {
@@ -67,7 +67,7 @@ class Reader
      */
     protected function caseNodesToSuiteProperties($nodeArray, &$testCases = array())
     {
-        $cb = array('ParaTest\\Logging\\Readers\\JUnit\\TestCase', 'caseFromNode');
+        $cb = array('ParaTest\\Logging\\JUnit\\TestCase', 'caseFromNode');
         return array_reduce($nodeArray, function($result, $c) use(&$testCases, $cb) {
             $testCases[] = call_user_func_array($cb, array($c));
             $result['name'] = (string)$c['class'];

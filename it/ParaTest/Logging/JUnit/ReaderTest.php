@@ -1,5 +1,5 @@
 <?php
-namespace ParaTest\Logging\Readers\JUnit;
+namespace ParaTest\Logging\JUnit;
 
 class ReaderTest extends \TestBase
 {

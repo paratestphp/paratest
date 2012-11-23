@@ -1,4 +1,4 @@
-<?php namespace ParaTest\Logging\Readers\JUnit;
+<?php namespace ParaTest\Logging\JUnit;
 
 class TestSuite
 {
