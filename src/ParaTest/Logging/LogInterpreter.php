@@ -1,8 +1,9 @@
 <?php namespace ParaTest\Logging;
 
-use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\Reader,
+    ParaTest\Logging\MetaProvider;
 
-class LogInterpreter
+class LogInterpreter extends MetaProvider
 {
     protected $readers = array();
 
@@ -17,34 +18,16 @@ class LogInterpreter
         return $this->readers;
     }
 
-    public function getErrors()
+    protected function getNumericValue($property)
     {
-        return $this->mergeMessages('getErrors');
+       return ($property === 'time') 
+              ? floatval($this->accumulate('getTotalTime'))
+              : intval($this->accumulate('getTotal' . ucfirst($property)));
     }
 
-    public function getFailures()
+    protected function getMessages($type)
     {
-        return $this->mergeMessages('getFailures');
-    }
-
-    public function getTotalTests()
-    {
-        return $this->accumulate('getTotalTests');
-    }
-
-    public function getTotalAssertions()
-    {
-        return $this->accumulate('getTotalAssertions');
-    }
-
-    public function getTotalFailures()
-    {
-        return $this->accumulate('getTotalFailures');
-    }
-
-    public function getTotalErrors()
-    {
-        return $this->accumulate('getTotalErrors');
+        return $this->mergeMessages('get' . ucfirst($type));
     }
 
     public function isSuccessful()
