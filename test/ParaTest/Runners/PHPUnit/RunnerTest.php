@@ -24,6 +24,7 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertTrue($options->functional);
         //filter out processes and path and phpunit
         $this->assertEquals(array('bootstrap' => 'hello'), $options->filtered);
+        $this->assertInstanceOf('ParaTest\\Logging\\LogInterpreter', $this->getObjectValue($runner, 'interpreter'));
         $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\ResultPrinter', $this->getObjectValue($runner, 'printer'));
     }
 }

@@ -29,12 +29,13 @@ class ParaTestCommandTest extends \TestBase
     public function testConfiguredDefinitionWithPHPUnitTester()
     {
         $expected = new InputDefinition(array(
-            new InputOption('processes', 'p', InputOption::VALUE_OPTIONAL, 'The number of test processes to run.', 5),
+            new InputOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 5),
             new InputOption('functional', 'f', InputOption::VALUE_NONE, 'Run methods instead of suites in separate processes.'),
             new InputOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.'),
-            new InputOption('phpunit', null, InputOption::VALUE_OPTIONAL, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'),
-            new InputOption('bootstrap', null, InputOption::VALUE_OPTIONAL, 'The bootstrap file to be used by PHPUnit.'),
-            new InputOption('group', 'g', InputOption::VALUE_OPTIONAL, 'Only runs tests from the specified group(s).'),
+            new InputOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'),
+            new InputOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.'),
+            new InputOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).'),
+            new InputOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.'),
             new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
         ));
         $definition = $this->command->getDefinition();
