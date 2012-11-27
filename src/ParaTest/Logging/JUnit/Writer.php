@@ -7,6 +7,7 @@ class Writer
     protected $name;
     protected $outputPath;
     protected $interpreter;
+    protected $document;
 
     protected static $suiteAttrs = '/name|(?:test|assertion|failure|error)s|time|file/';
     protected static $caseAttrs = '/name|class|file|line|assertions|time/';
@@ -25,6 +26,7 @@ class Writer
         $this->name = $name;
         $this->outputPath = $outputPath;
         $this->interpreter = $interpreter;
+        $this->document = new \DOMDocument("1.0", "UTF-8");
     }
 
     public function getName()
@@ -40,30 +42,18 @@ class Writer
     public function getXml()
     {
         $suites = $this->interpreter->flattenCases();
-        $document = new \DOMDocument("1.0", "UTF-8");
-        $root = $this->getSuiteRoot($document, $suites);
+        $root = $this->getSuiteRoot($suites);
         foreach($suites as $suite) {
-            $snode = $this->appendSuite($document, $root, $suite);
-            foreach($suite->cases as $case) {
-                $cnode = $this->appendCase($document, $snode, $case);
-                foreach($case->failures as $failure) {
-                    $fnode = $document->createElement("failure", $failure["text"] . "\n");
-                    $fnode->setAttribute('type', $failure['type']);
-                    $cnode->appendChild($fnode);
-                }
-                foreach($case->errors as $error) {
-                    $enode = $document->createElement("error", $error["text"] . "\n");
-                    $enode->setAttribute('type', $error['type']);
-                    $cnode->appendChild($enode);
-                }
-            }
+            $snode = $this->appendSuite($root, $suite);
+            foreach($suite->cases as $case)
+                $cnode = $this->appendCase($snode, $case);
         }
-        return $document->saveXML();
+        return $this->document->saveXML();
     }
 
-    protected function appendSuite($document, $root, TestSuite $suite)
+    protected function appendSuite($root, TestSuite $suite)
     {
-        $suiteNode = $document->createElement("testsuite");
+        $suiteNode = $this->document->createElement("testsuite");
         $vars = get_object_vars($suite);
         foreach($vars as $name => $value) {
             if(preg_match(static::$suiteAttrs, $name))
@@ -73,24 +63,33 @@ class Writer
         return $suiteNode;
     }
 
-    protected function appendCase($document, $suiteNode, TestCase $case)
+    protected function appendCase($suiteNode, TestCase $case)
     {
-        $caseNode = $document->createElement("testcase");
+        $caseNode = $this->document->createElement("testcase");
         $vars = get_object_vars($case);
-        foreach($vars as $name => $value) {
-            if(preg_match(static::$caseAttrs, $name))
-                $caseNode->setAttribute($name, $value);
-        }
+        foreach($vars as $name => $value)
+            if(preg_match(static::$caseAttrs, $name)) $caseNode->setAttribute($name, $value);
         $suiteNode->appendChild($caseNode);
+        $this->appendDefects($caseNode, $case->failures, 'failure');
+        $this->appendDefects($caseNode, $case->errors, 'error');
         return $caseNode;
     }
 
-    protected function getSuiteRoot($document, $suites)
+    protected function appendDefects($caseNode, $defects, $type)
     {
-        $testsuites = $document->createElement("testsuites");
-        $document->appendChild($testsuites);
+        foreach($defects as $defect) {
+            $defectNode = $this->document->createElement($type, $defect['text'] . "\n");
+            $defectNode->setAttribute('type', $defect['type']);
+            $caseNode->appendChild($defectNode);
+        }
+    }
+
+    protected function getSuiteRoot($suites)
+    {
+        $testsuites = $this->document->createElement("testsuites");
+        $this->document->appendChild($testsuites);
         if(sizeof($suites) == 1) return $testsuites;
-        $rootSuite = $document->createElement('testsuite');
+        $rootSuite = $this->document->createElement('testsuite');
         $attrs = $this->getSuiteRootAttributes($suites);
         foreach($attrs as $attr => $value)
             $rootSuite->setAttribute($attr, $value);
