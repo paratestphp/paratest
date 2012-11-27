@@ -31,11 +31,16 @@ class ResultPrinter
 
     public function flush()
     {
+        $this->printResults();
+        $this->clearLogs();
+    }
+
+    public function printResults()
+    {
         print $this->getHeader();
         print $this->getErrors();
         print $this->getFailures();
         print $this->getFooter();
-        $this->clearLogs();
     }
 
     public function printFeedback(ExecutableTest $test)

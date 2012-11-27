@@ -8,6 +8,8 @@ class Reader extends MetaProvider
     protected $isSingle = false;
     protected $suites = array();
 
+    protected $logFile;
+
     protected static $defaultSuite = array('name' => '',
                                            'file' => '',
                                            'tests' => 0,
@@ -21,7 +23,8 @@ class Reader extends MetaProvider
         if(!file_exists($logFile))
             throw new \InvalidArgumentException("Log file $logFile does not exist");
 
-        $this->xml = simplexml_load_file($logFile);
+        $this->logFile = $logFile;
+        $this->xml = simplexml_load_file($this->logFile);
         $this->init();
     }
 
@@ -47,6 +50,11 @@ class Reader extends MetaProvider
             }
         }
         return $feedback;
+    }
+
+    public function removeLog()
+    {
+        unlink($this->logFile);
     }
 
     protected function init()

@@ -1,6 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\Logging\LogInterpreter;
+use ParaTest\Logging\LogInterpreter,
+    ParaTest\Logging\JUnit\Writer;
 
 class Runner
 {
@@ -26,7 +27,16 @@ class Runner
                 if(!$this->testIsStillRunning($test)) unset($this->running[$key]);
             $this->fillRunQueue();
         }
-        $this->printer->flush();
+        $this->complete();
+    }
+
+    private function complete()
+    {
+        $this->printer->printResults();
+        $this->log();
+        $readers = $this->interpreter->getReaders();
+        foreach($readers as $reader)
+            $reader->removeLog();
     }
 
     private function load()
@@ -37,6 +47,14 @@ class Runner
         $this->pending = array_merge($this->pending, $executables);
         foreach($this->pending as $pending)
             $this->printer->addTest($pending);
+    }
+
+    private function log()
+    {
+        if(!isset($this->options->filtered['log-junit'])) return;
+        $output = $this->options->filtered['log-junit'];
+        $writer = new Writer($this->interpreter, $this->options->path);
+        $writer->write($output);
     }
 
     private function fillRunQueue()

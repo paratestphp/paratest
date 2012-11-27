@@ -3,14 +3,15 @@ namespace ParaTest\Logging\JUnit;
 
 class ReaderTest extends \TestBase
 {
+    protected $mixedPath;
     protected $mixed;
     protected $single;
 
     public function setUp()
     {
-        $mixed = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
+        $this->mixedPath = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
         $single = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
-        $this->mixed = new Reader($mixed);
+        $this->mixed = new Reader($this->mixedPath);
         $this->single = new Reader($single);
     }
 
@@ -209,5 +210,15 @@ Failed asserting that true is false.
     {
         $feedback = $this->mixed->getFeedback();
         $this->assertEquals('.F.E.F.', $feedback);
+    }
+
+    public function testRemoveLog()
+    {
+        $contents = file_get_contents($this->mixedPath);
+        $tmp = FIXTURES . DS . 'results' . DS . 'dummy.xml';
+        file_put_contents($tmp, $contents);
+        $reader = new Reader($tmp);
+        $reader->removeLog();
+        $this->assertFalse(file_exists($tmp));
     }
 }

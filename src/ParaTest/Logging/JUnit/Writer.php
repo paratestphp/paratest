@@ -5,7 +5,6 @@ use ParaTest\Logging\LogInterpreter;
 class Writer
 {
     protected $name;
-    protected $outputPath;
     protected $interpreter;
     protected $document;
 
@@ -20,13 +19,12 @@ class Writer
                                     );
 
     public function __construct(LogInterpreter $interpreter,
-                                $outputPath,
                                 $name = '')
     {
         $this->name = $name;
-        $this->outputPath = $outputPath;
         $this->interpreter = $interpreter;
         $this->document = new \DOMDocument("1.0", "UTF-8");
+        $this->document->formatOutput = true;
     }
 
     public function getName()
@@ -49,6 +47,11 @@ class Writer
                 $cnode = $this->appendCase($snode, $case);
         }
         return $this->document->saveXML();
+    }
+
+    public function write($path)
+    {
+        file_put_contents($path, $this->getXml());
     }
 
     protected function appendSuite($root, TestSuite $suite)
