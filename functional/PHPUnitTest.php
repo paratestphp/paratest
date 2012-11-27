@@ -48,6 +48,39 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testDefaultSettingsWithoutBootstrap()
+    {
+        chdir(PARATEST_ROOT);
+        $result = $this->paratest();
+        $this->assertResults($result);
+    }
+
+    public function testLoggingXmlOfDirectory()
+    {
+        chdir(PARATEST_ROOT);
+        $output = FIXTURES . DS . 'logs' . DS . 'functional-directory.xml';
+        $result = $this->paratest(array(
+            'log-junit' => $output
+        ));
+        $this->assertResults($result);
+        $this->assertTrue(file_exists($output));
+        if(file_exists($output)) unlink($output);
+    }
+
+    public function testLoggingXmlOfSingleFile()
+    {
+        chdir(PARATEST_ROOT);
+        $output = FIXTURES . DS . 'logs' . DS . 'functional-file.xml';
+        $this->path = FIXTURES . DS . 'tests' . DS . 'GroupsTest.php';
+        $result = $this->paratest(array(
+            'log-junit' => $output,
+            'bootstrap' => BOOTSTRAP
+        ));
+        $this->assertRegExp("/OK \(5 tests, 5 assertions\)/", $result);
+        $this->assertTrue(file_exists($output));
+        if(file_exists($output)) unlink($output);
+    }
+
     public function testFullyConfiguredRunAssumingCurrentDirectory()
     {
         $this->path = '';
@@ -60,13 +93,6 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertRegExp('/Running phpunit in 6 processes/', $results);
         $this->assertRegExp('/Functional mode is on/i', $results);
         $this->assertResults($results);
-    }
-
-    public function testDefaultSettingsWithoutBootstrap()
-    {
-        chdir(PARATEST_ROOT);
-        $result = $this->paratest();
-        $this->assertResults($result);
     }
 
     protected function assertResults($results)

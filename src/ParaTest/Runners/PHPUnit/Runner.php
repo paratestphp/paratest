@@ -33,6 +33,7 @@ class Runner
     private function complete()
     {
         $this->printer->printResults();
+        $this->interpreter->rewind();
         $this->log();
         $readers = $this->interpreter->getReaders();
         foreach($readers as $reader)

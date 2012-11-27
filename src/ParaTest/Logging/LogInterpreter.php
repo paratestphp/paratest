@@ -8,6 +8,11 @@ class LogInterpreter extends MetaProvider
 {
     protected $readers = array();
 
+    public function rewind()
+    {
+        reset($this->readers);
+    }
+
     public function addReader(Reader $reader)
     {
         $this->readers[] = $reader;

@@ -26,7 +26,7 @@ class RunnerTest extends \TestBase
         $this->assertTrue(sizeof($output) == 0);
     }
 
-    public function testLogJUnitCreatsXmlFile()
+    public function testLogJUnitCreatesXmlFile()
     {
         $outputPath = FIXTURES . DS . 'logs' . DS . 'test-output.xml';
         $this->options['log-junit'] = $outputPath;
@@ -35,6 +35,20 @@ class RunnerTest extends \TestBase
         $runner->run();
         ob_end_clean();
         $this->assertTrue(file_exists($outputPath));
+        $this->assertXml($outputPath);
         if(file_exists($outputPath)) unlink($outputPath);
+    }
+
+    public function assertXml($path)
+    {
+        $doc = simplexml_load_file($path);
+        $suites = $doc->xpath('//testsuite');
+        $cases = $doc->xpath('//testcase');
+        $failures = $doc->xpath('//failure');
+        $errors = $doc->xpath('//error');
+        $this->assertEquals(10, sizeof($suites));
+        $this->assertEquals(31, sizeof($cases));
+        $this->assertEquals(4, sizeof($failures));
+        $this->assertEquals(1, sizeof($errors));
     }
 }
