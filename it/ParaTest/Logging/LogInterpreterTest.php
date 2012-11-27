@@ -83,9 +83,36 @@ Failed asserting that true is false.
         $this->assertEquals($failures, $this->interpreter->getFailures());
     }
 
+    public function testGetCasesReturnsAllCases()
+    {
+        $cases = $this->interpreter->getCases();
+        $this->assertEquals(10, sizeof($cases));
+    }
+
+    public function testFlattenCasesReturnsCorrectNumberOfSuites()
+    {
+        $suites = $this->interpreter->flattenCases();
+        $this->assertEquals(4, sizeof($suites));
+        return $suites;
+    }
+
+    /**
+     * @depends testFlattenCasesReturnsCorrectNumberOfSuites
+     */
+    public function testFlattenedSuiteHasCorrectTotals($suites)
+    {
+        $first = $suites[0];
+        $this->assertEquals("UnitTestWithClassAnnotationTest", $first->name);
+        $this->assertEquals("/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php", $first->file);
+        $this->assertEquals('3', $first->tests);
+        $this->assertEquals('3', $first->assertions);
+        $this->assertEquals('1', $first->failures);
+        $this->assertEquals('0', $first->errors);
+        $this->assertEquals('0.006109', $first->time);
+    }
+
     protected function getReader($suiteName)
     {
         return new Reader($this->$suiteName->getTempFile());
-
     }
 }
