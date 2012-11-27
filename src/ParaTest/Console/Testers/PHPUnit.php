@@ -12,10 +12,10 @@ class PHPUnit extends Tester
     public function configure(Command $command)
     {
         $command
-            ->addOption('phpunit', null, InputOption::VALUE_OPTIONAL, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>')
-            ->addOption('bootstrap', null, InputOption::VALUE_OPTIONAL, 'The bootstrap file to be used by PHPUnit.')
-            ->addOption('group', 'g', InputOption::VALUE_OPTIONAL, 'Only runs tests from the specified group(s).')
-            ->addOption('log-junit', null, InputOption::VALUE_OPTIONAL, 'Log test execution in JUnit XML format to file.')
+            ->addOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>')
+            ->addOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.')
+            ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).')
+            ->addOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.')
             ->addArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>');
     }
 
