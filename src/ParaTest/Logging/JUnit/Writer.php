@@ -32,11 +32,6 @@ class Writer
         return $this->name;
     }
 
-    public function getOutputPath()
-    {
-        return $this->outputPath;
-    }
-
     public function getXml()
     {
         $suites = $this->interpreter->flattenCases();
