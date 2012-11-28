@@ -55,6 +55,14 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($result);
     }
 
+    public function testDefaultSettingsWithSpecifiedPath()
+    {
+        chdir(PARATEST_ROOT);
+        $this->path = '';
+        $result = $this->paratest(array('path' => 'test/fixtures/tests'));
+        $this->assertResults($result);
+    }
+
     public function testLoggingXmlOfDirectory()
     {
         chdir(PARATEST_ROOT);
@@ -83,16 +91,20 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testFullyConfiguredRunAssumingCurrentDirectory()
     {
+        $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';
         $this->path = '';
         $results = $this->paratest(array(
             'bootstrap' => BOOTSTRAP,
             'phpunit' => PHPUNIT,
             'f' => '',
-            'p' => '6'
+            'p' => '6',
+            'log-junit' => $output
         ));
         $this->assertRegExp('/Running phpunit in 6 processes/', $results);
         $this->assertRegExp('/Functional mode is on/i', $results);
         $this->assertResults($results);
+        $this->assertTrue(file_exists($output));
+        if(file_exists($output)) unlink($output);
     }
 
     protected function assertResults($results)

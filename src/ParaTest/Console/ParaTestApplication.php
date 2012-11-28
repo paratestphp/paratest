@@ -36,7 +36,7 @@ class ParaTestApplication extends Application
         ));
     }
 
-    public function getCommandName()
+    public function getCommandName(InputInterface $input)
     {
         return 'paratest';
     }
