@@ -59,7 +59,7 @@ class Parser
         while($line = fgets($handle)) {
             if(preg_match(self::$namespace, $line, $matches))
                 return $matches[1];
-            if(preg_match(self::$namespace, $line))
+            if(preg_match(self::$class, $line))
                 break;
         }
         fclose($handle);
