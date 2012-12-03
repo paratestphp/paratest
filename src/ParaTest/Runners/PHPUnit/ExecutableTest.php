@@ -6,6 +6,7 @@ abstract class ExecutableTest
     protected $pipes = array();
     protected $temp;
     protected $process;
+    protected $status;
 
     protected static $descriptors = array(
         0 => array('pipe', 'r'),
@@ -46,10 +47,27 @@ abstract class ExecutableTest
         unlink($outputFile);
     }
 
+    /**
+     * Weather or not the process has finished running
+     * This function updates the member variable $status
+     * for such cases when the status must be cached, i.e
+     * when the exit code must be fetched, but subsequent
+     * calls would overwrite the exit code with a meaningless
+     * code.
+     */
     public function isDoneRunning()
     {
-        $status = proc_get_status($this->process);
-        return !$status['running'];
+        $this->status = proc_get_status($this->process);
+        return !$this->status['running'];
+    }
+
+    /**
+     * Called after a polling context to retrieve 
+     * the exit code of the phpunit process
+     */
+    public function getExitCode()
+    {
+        return $this->status['exitcode'];
     }
 
     public function run($binary, $options = array())

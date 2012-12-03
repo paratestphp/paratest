@@ -24,7 +24,7 @@ class ParaTestApplication extends Application
     public function doRun(InputInterface $input, OutputInterface $output)
     {
         $this->add(new ParaTestCommand(new PHPUnit()));
-        parent::doRun($input, $output);
+        return parent::doRun($input, $output);
     }
 
     public function getDefinition()

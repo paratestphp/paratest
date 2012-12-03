@@ -89,6 +89,33 @@ class PHPUnitTest extends FunctionalTestBase
         if(file_exists($output)) unlink($output);
     }
 
+    public function testSuccessfulRunHasExitCode0()
+    {
+        $this->path = FIXTURES . DS . 'tests' . DS . 'GroupsTest.php';
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP
+        ));
+        $this->assertEquals(0, $this->getExitCode());
+    }
+
+    public function testFailedRunHasExitCode1()
+    {
+        $this->path = FIXTURES . DS . 'tests' . DS . 'TestOfUnits.php';
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP
+        ));
+        $this->assertEquals(1, $this->getExitCode());
+    }
+
+    public function testRunWithErrorsHasExitCode2()
+    {
+        $this->path = FIXTURES . DS . 'tests' . DS . 'UnitTestWithErrorTest.php';
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP
+        ));
+        $this->assertEquals(2, $this->getExitCode());
+    }
+
     public function testFullyConfiguredRunAssumingCurrentDirectory()
     {
         $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';
@@ -104,6 +131,8 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertRegExp('/Functional mode is on/i', $results);
         $this->assertResults($results);
         $this->assertTrue(file_exists($output));
+        //the highest exit code presented should be what is returned
+        $this->assertEquals(2, $this->getExitCode());
         if(file_exists($output)) unlink($output);
     }
 
@@ -115,10 +144,23 @@ Tests: 31, Assertions: 30, Failures: 4, Errors: 1./", $results);
 
     protected function paratest($options = array())
     {
-       $cmd = PARA_BINARY;
-       foreach($options as $switch => $value)
-           $cmd .= ' ' . $this->getOption($switch, $value);
-       $cmd .= ' ' . $this->path;
-       return $this->getTestOutput($cmd);
+        $cmd = $this->getCmd($options);
+        return $this->getTestOutput($cmd);
+    }
+
+    protected function paratestProc($options = array())
+    {
+        $cmd = $this->getCmd($options);
+        $proc = $this->getFinishedProc($cmd, $pipes);
+        return $proc;
+    }
+
+    protected function getCmd($options = array())
+    {
+        $cmd = PARA_BINARY;
+        foreach($options as $switch => $value)
+            $cmd .= ' ' . $this->getOption($switch, $value);
+        $cmd .= ' ' . $this->path;
+        return $cmd;
     }
 }

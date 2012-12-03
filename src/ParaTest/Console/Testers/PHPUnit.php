@@ -22,12 +22,18 @@ class PHPUnit extends Tester
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $runner = new Runner($this->getRunnerOptions($input));
+        $runner->run();
+        return $runner->getExitCode();
+    }
+
+    protected function getRunnerOptions(InputInterface $input)
+    {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
         if(isset($options['bootstrap']) && file_exists($options['bootstrap']))
             require_once $options['bootstrap'];
         $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
-        $runner = new Runner($options);
-        $runner->run();
+        return $options;
     }
 }

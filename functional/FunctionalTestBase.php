@@ -4,6 +4,8 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 {
     protected $bootstrap;
     protected $path;
+    protected $exitCode = -1;
+
     protected static $descriptorspec = array(
        0 => array("pipe", "r"),
        1 => array("pipe", "w"),
@@ -41,10 +43,17 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function getTestOutput($cmd)
     {
-        $proc = proc_open($cmd, self::$descriptorspec, $pipes); 
-        $this->waitForProc($proc);
+        $proc = $this->getFinishedProc($cmd, $pipes);
         $output = $this->getOutput($pipes);
         return $output;
+    }
+
+    protected function getFinishedProc($cmd, &$pipes)
+    {
+        $pipes = array();
+        $proc = proc_open($cmd, self::$descriptorspec, $pipes); 
+        $this->waitForProc($proc);
+        return $proc;
     }
 
     protected function getOutput($pipes)
@@ -57,7 +66,14 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function waitForProc($proc)
     {
         $status = proc_get_status($proc);
-        while($status['running'])
+        while($status['running']) {
             $status = proc_get_status($proc);
+            $this->exitCode = $status['exitcode'];
+        }
+    }
+
+    protected function getExitCode()
+    {
+        return $this->exitCode;
     }
 }

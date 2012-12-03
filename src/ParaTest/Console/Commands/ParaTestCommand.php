@@ -27,6 +27,6 @@ class ParaTestCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->tester->execute($input, $output);
+        return $this->tester->execute($input, $output);
     }
 }

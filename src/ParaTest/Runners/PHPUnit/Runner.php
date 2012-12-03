@@ -10,6 +10,7 @@ class Runner
     protected $options;
     protected $interpreter;
     protected $printer;
+    protected $exitcode = -1;
     
     public function __construct($opts = array())
     {
@@ -28,6 +29,11 @@ class Runner
             $this->fillRunQueue();
         }
         $this->complete();
+    }
+
+    public function getExitCode()
+    {
+        return $this->exitcode;
     }
 
     private function complete()
@@ -68,6 +74,9 @@ class Runner
     private function testIsStillRunning($test)
     {
         if(!$test->isDoneRunning()) return true;
+        $exit = $test->getExitCode();
+        if($exit > $this->exitcode)
+            $this->exitcode = $exit;
         $test->stop();
         $this->printer->printFeedback($test);
         return false;
