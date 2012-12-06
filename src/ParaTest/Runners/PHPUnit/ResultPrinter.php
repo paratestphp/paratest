@@ -47,7 +47,7 @@ class ResultPrinter
     public function printFeedback(ExecutableTest $test)
     {
         if (self::PHPUNIT_FATAL_ERROR === $test->getExitCode()) {
-            throw new \Exception($test->stderr);
+            throw new \Exception($test->getStderr());
         } else {
             $reader = new Reader($test->getTempFile());
         }
