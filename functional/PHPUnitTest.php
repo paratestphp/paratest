@@ -116,6 +116,15 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals(2, $this->getExitCode());
     }
 
+    public function testRunWithFatalErrorsHasExitCode255()
+    {
+        $this->path = FIXTURES . DS . 'tests' . DS . 'UnitTestWithFatalErrorTest.php';
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP
+        ));
+        $this->assertEquals(255, $this->getExitCode());
+    }
+
     public function testFullyConfiguredRunAssumingCurrentDirectory()
     {
         $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';

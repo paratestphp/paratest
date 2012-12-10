@@ -7,6 +7,7 @@ abstract class ResultTester extends \TestBase
     protected $otherErrorSuite;
     protected $mixedSuite;
     protected $passingSuite;
+    protected $fatalSuite;
 
     public function setUp()
     {
@@ -15,6 +16,14 @@ abstract class ResultTester extends \TestBase
         $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml');
         $this->mixedSuite = $this->getSuiteWithResult('mixed-results.xml');
         $this->passingSuite = $this->getSuiteWithResult('single-passing.xml');
+
+        $this->fatalSuite = $this->getSuiteWithResult('empty.xml');
+        $this->fatalSuite->expects($this->any())
+            ->method('getExitCode')
+            ->will($this->returnValue(255));
+        $this->fatalSuite->expects($this->any())
+            ->method('getStderr')
+            ->will($this->returnValue('PHPUnit failed fataly'));
     }
 
     protected function getSuiteWithResult($result)
