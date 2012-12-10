@@ -7,6 +7,7 @@ abstract class ExecutableTest
     protected $temp;
     protected $process;
     protected $status;
+    protected $stderr;
 
     protected static $descriptors = array(
         0 => array('pipe', 'r'),
@@ -36,8 +37,15 @@ abstract class ExecutableTest
         return $this->temp;
     }
 
+    public function getStderr()
+    {
+        return $this->stderr;
+    }
+
     public function stop()
     {
+        $pipes = $this->getPipes();
+        $this->stderr = stream_get_contents($pipes[2]);
         return proc_close($this->process);
     }
 
