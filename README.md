@@ -1,5 +1,6 @@
 ParaTest
 ========
+[![Build Status](https://secure.travis-ci.org/brianium/paratest.png?branch=master)](https://travis-ci.org/brianium/paratest)
 The objective of ParaTest is to support parallel testing in a variety of PHP testing tools. Currently only PHPUnit is supported.
 
 Installation
