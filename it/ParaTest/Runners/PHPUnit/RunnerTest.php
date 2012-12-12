@@ -17,13 +17,15 @@ class RunnerTest extends \TestBase
 
     public function testRunningTestsShouldLeaveNoTempFiles()
     {
+        $tempdir = sys_get_temp_dir();
+        $countBefore = glob($tempdir . DS . 'PT_*');
         //dont want the output mucking up the test results
         ob_start();
         $this->runner->run();
         ob_end_clean();
-        $tempdir = sys_get_temp_dir();
-        $output = glob($tempdir . DS . 'PT_*');
-        $this->assertTrue(sizeof($output) == 0);
+        $countAfter = glob($tempdir . DS . 'PT_*');
+        $differenceCount = count($countBefore) - count($countAfter);
+        $this->assertEquals(0, $differenceCount);
     }
 
     public function testLogJUnitCreatesXmlFile()
