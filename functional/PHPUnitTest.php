@@ -118,7 +118,7 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testRunWithFatalErrorsHasExitCode255()
     {
-        $this->path = FIXTURES . DS . 'tests' . DS . 'UnitTestWithFatalErrorTest.php';
+        $this->path = FIXTURES . DS . 'fatalTests' . DS . 'UnitTestWithFatalErrorTest.php';
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ));
