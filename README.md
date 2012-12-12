@@ -14,6 +14,7 @@ To install with composer add the following to your `composer.json` file:
 ```
 Then run `php composer.phar install`
 
+
 Usage
 -----
 After installation, the binary can be found at `vendors/bin/paratest`. Usage is as follows:
@@ -24,7 +25,6 @@ paratest [-p|--processes="..."] [-f|--functional] [-h|--help] [--phpunit="..."]
 `
 [--bootstrap="..."] [-g|--group="..."] [--log-junit="..."] [--path="..."] [path]
 `
-
 
 ![ParaTest Usage](https://raw.github.com/brianium/paratest/master/paratest-usage.png "ParaTest Console Usage")
 
