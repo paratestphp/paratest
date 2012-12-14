@@ -24,8 +24,7 @@ class RunnerTest extends \TestBase
         $this->runner->run();
         ob_end_clean();
         $countAfter = count(glob($tempdir . DS . 'PT_*'));
-        $differenceCount = count($countBefore) - count($countAfter);
-        $this->assertEquals(0, $countAfter - $countBefore, "Test Runner failed to clean up the 'PT_*' directories in " . $tempdir);
+        $this->assertEquals($countAfter, $countBefore, "Test Runner failed to clean up the 'PT_*' file in " . $tempdir);
     }
 
     public function testLogJUnitCreatesXmlFile()
