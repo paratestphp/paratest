@@ -116,13 +116,23 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals(2, $this->getExitCode());
     }
 
-    public function testRunWithFatalErrorsHasExitCode255()
+    public function testRunWithFatalErrorsHasExitCode1()
     {
         $this->path = FIXTURES . DS . 'fatalTests' . DS . 'UnitTestWithFatalErrorTest.php';
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ));
-        $this->assertEquals(255, $this->getExitCode());
+        $this->assertEquals(1, $this->getExitCode());
+    }
+
+    public function testRunWithFatalErrorOutputsError()
+    {
+        $this->path = FIXTURES . DS . 'fatalTests' . DS . 'UnitTestWithFatalErrorTest.php';
+        $pipes = array();
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP
+        ), $pipes);
+        $this->assertContains('Maximum function nesting level of', stream_get_contents($pipes[2]));
     }
 
     public function testFullyConfiguredRunAssumingCurrentDirectory()
@@ -157,7 +167,7 @@ Tests: 31, Assertions: 30, Failures: 4, Errors: 1./", $results);
         return $this->getTestOutput($cmd);
     }
 
-    protected function paratestProc($options = array())
+    protected function paratestProc($options = array(), &$pipes = array())
     {
         $cmd = $this->getCmd($options);
         $proc = $this->getFinishedProc($cmd, $pipes);

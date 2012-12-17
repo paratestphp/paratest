@@ -12,7 +12,7 @@ class UnitTestWithFatalErrorTest extends UnitTestWithMethodAnnotationsTest
      */
     public function testTruth()
     {
-        I will fail fataly because this is not a php statement.
+        return $this->testTruth();
     }
 
     /**
