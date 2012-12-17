@@ -5,6 +5,7 @@ use ParaTest\Logging\JUnit\Reader;
 
 class ResultPrinter
 {
+    const PHPUNIT_FATAL_ERROR = 255;
     protected $suites = array();
     protected $results;
 
@@ -45,7 +46,11 @@ class ResultPrinter
 
     public function printFeedback(ExecutableTest $test)
     {
-        $reader = new Reader($test->getTempFile());
+        if (self::PHPUNIT_FATAL_ERROR === $test->getExitCode()) {
+            throw new \Exception($test->getStderr());
+        } else {
+            $reader = new Reader($test->getTempFile());
+        }
         $this->results->addReader($reader);
         print $reader->getFeedback();
     }

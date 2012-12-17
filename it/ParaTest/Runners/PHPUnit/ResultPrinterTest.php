@@ -111,6 +111,15 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals($eq, $footer);
     }
 
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage PHPUnit failed fataly
+     */
+    public function testExceptionIfPHPUnitFailedFataly()
+    {
+        $this->printer->printFeedback($this->fatalSuite);
+    }
+
     public function testPrintFeedbackForMixed()
     {
         ob_start();
