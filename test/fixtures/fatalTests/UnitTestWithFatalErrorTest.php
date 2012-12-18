@@ -12,7 +12,11 @@ class UnitTestWithFatalErrorTest extends UnitTestWithMethodAnnotationsTest
      */
     public function testTruth()
     {
-        return $this->testTruth();
+        $fatal = function () {
+            inexistent();
+        };
+
+        $fatal();
     }
 
     /**
