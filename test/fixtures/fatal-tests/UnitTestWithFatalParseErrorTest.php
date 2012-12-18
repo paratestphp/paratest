@@ -5,7 +5,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'tests
 /**
  * @runParallel
  */
-class UnitTestWithFatalErrorTest extends UnitTestWithMethodAnnotationsTest
+class UnitTestWithFatalParseErrorTest extends UnitTestWithMethodAnnotationsTest
 {
     /**
      * @group fixtures

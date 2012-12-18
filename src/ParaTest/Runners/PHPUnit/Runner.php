@@ -5,6 +5,8 @@ use ParaTest\Logging\LogInterpreter,
 
 class Runner
 {
+    const PHPUNIT_FATAL_ERROR = 255;
+
     protected $pending = array();
     protected $running = array();
     protected $options;
@@ -74,11 +76,18 @@ class Runner
     private function testIsStillRunning($test)
     {
         if(!$test->isDoneRunning()) return true;
+        $this->setExitCode($test);
+        $test->stop();
+        if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
+            throw new \Exception($test->getStderr());
+        $this->printer->printFeedback($test);
+        return false;
+    }
+
+    private function setExitCode(ExecutableTest $test)
+    {
         $exit = $test->getExitCode();
         if($exit > $this->exitcode)
             $this->exitcode = $exit;
-        $test->stop();
-        $this->printer->printFeedback($test);
-        return false;
     }
 }

@@ -116,13 +116,32 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals(2, $this->getExitCode());
     }
 
-    public function testRunWithFatalErrorsHasExitCode255()
+    public function testRunWithFatalParseErrorsHasExitCode255()
     {
-        $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalErrorTest.php';
+        $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalParseErrorTest.php';
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ));
         $this->assertEquals(255, $this->getExitCode());
+    }
+
+    public function testRunWithFatalRuntimeErrorsHasExitCode1()
+    {
+        $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalFunctionErrorTest.php';
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP
+        ));
+        $this->assertEquals(1, $this->getExitCode());
+    }
+
+    public function testRunWithFatalRuntimeErrorOutputsError()
+    {
+        $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalFunctionErrorTest.php';
+        $pipes = array();
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP
+        ), $pipes);
+        $this->assertContains('Call to undefined function inexistent', stream_get_contents($pipes[2]));
     }
 
     public function testFullyConfiguredRunAssumingCurrentDirectory()
@@ -157,7 +176,7 @@ Tests: 31, Assertions: 30, Failures: 4, Errors: 1./", $results);
         return $this->getTestOutput($cmd);
     }
 
-    protected function paratestProc($options = array())
+    protected function paratestProc($options = array(), &$pipes = array())
     {
         $cmd = $this->getCmd($options);
         $proc = $this->getFinishedProc($cmd, $pipes);

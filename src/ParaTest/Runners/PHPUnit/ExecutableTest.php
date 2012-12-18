@@ -7,6 +7,7 @@ abstract class ExecutableTest
     protected $temp;
     protected $process;
     protected $status;
+    protected $stderr;
 
     protected static $descriptors = array(
         0 => array('pipe', 'r'),
@@ -36,8 +37,14 @@ abstract class ExecutableTest
         return $this->temp;
     }
 
+    public function getStderr()
+    {
+        return $this->stderr;
+    }
+
     public function stop()
     {
+        $this->initStreams();
         return proc_close($this->process);
     }
 
@@ -76,6 +83,12 @@ abstract class ExecutableTest
         $command = $this->getCommandString($binary, $options);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
         return $this;
+    }
+
+    protected function initStreams()
+    {
+        $pipes = $this->getPipes();
+        $this->stderr = stream_get_contents($pipes[2]);
     }
 
     /**
