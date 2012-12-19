@@ -69,6 +69,12 @@ class Options
         return $vendor;
     }
 
+    /**
+     * Filter options to distinguish between paratest
+     * internal options and any other options
+     * @param array $options
+     * @return array
+     */
     protected function filterOptions($options)
     {
         return array_diff_key($options, array(

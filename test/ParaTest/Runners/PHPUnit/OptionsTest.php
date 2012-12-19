@@ -12,8 +12,9 @@ class OptionsTest extends \TestBase
             'phpunit' => 'phpunit',
             'functional' => true,
             'group' => 'group1',
-            'bootstrap' => '/path/to/bootstrap'
-        );
+            'bootstrap' => '/path/to/bootstrap',
+            'configuration' => '/path/to/configuration'
+        ); 
         $this->options = new Options($unfiltered);
     }
 
@@ -21,6 +22,7 @@ class OptionsTest extends \TestBase
     {
         $this->assertEquals('group1', $this->options->filtered['group']);
         $this->assertEquals('/path/to/bootstrap', $this->options->filtered['bootstrap']);
+        $this->assertEquals('/path/to/configuration', $this->options->filtered['configuration']);
     }
 
     public function testAnnotationsReturnsAnnotations()

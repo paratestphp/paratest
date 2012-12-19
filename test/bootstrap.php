@@ -16,6 +16,7 @@ if(file_exists($phpunit_path . '.bat'))
 define("PHPUNIT", $phpunit_path);
 
 define('BOOTSTRAP', __FILE__);
+define('PHPUNIT_CONFIGURATION', dirname(__DIR__) . DS . 'phpunit.xml.dist');
 
 require_once __DIR__ . DS . 'TestBase.php';
 require_once dirname(__DIR__) . DS . 'functional' . DS . 'FunctionalTestBase.php';
