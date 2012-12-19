@@ -28,6 +28,12 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testFunctionalWithConfiguration()
+    {
+        $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'functional' => ''));
+        $this->assertResults($results);
+    }
+
     public function testFunctionalWithBootstrapUsingShortOption()
     {
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'f' => ''));
