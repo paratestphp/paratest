@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-class SuiteLoaderTest extends \TestBase
+class SuiteLoaderIntegrationTest extends \TestBase
 {
     protected $loader;
     protected $files;

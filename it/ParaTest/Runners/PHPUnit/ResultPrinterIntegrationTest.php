@@ -3,7 +3,7 @@
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\ResultTester;
 
-class ResultPrinterTest extends ResultTester
+class ResultPrinterIntegrationTest extends ResultTester
 {
     protected $interpreter;
     protected $printer;

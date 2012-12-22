@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-class RunnerTest extends \TestBase
+class RunnerIntegrationTest extends \TestBase
 {
     protected $runner;
     protected $options;
