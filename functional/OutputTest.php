@@ -15,7 +15,14 @@ class OutputTest extends FunctionalTestBase
         $this->assertRegExp(
             '/^\nRunning phpunit in 5 processes with ' . 
             $this->getPhpUnitForRegEx() .
+            '\n\nConfiguration read from ' . str_replace('/', '\\/', getcwd() . DS . 'phpunit\.xml\.dist') .
             '\n\n\.F\.\./', $output);
+    }
+
+    public function testMessagePrintedWhenInvalidConfigFileSupplied()
+    {
+        $output = $this->getParaTestOutput(false, array('configuration' => 'nope.xml'));
+        $this->assertRegExp('/^Could not read "nope\.xml"\.\n$/', $output);
     }
 
     public function testInstantFeedbackIsDisplayedWhenAndFunctionalModeDsiplayed()
@@ -36,6 +43,7 @@ class OutputTest extends FunctionalTestBase
         $this->assertRegExp(
             '/^\nRunning phpunit in 1 process with ' . 
             $this->getPhpUnitForRegEx() .
+            '\n\nConfiguration read from ' . str_replace('/', '\\/', getcwd() . DS . 'phpunit\.xml\.dist') .
             '\n\n\.F\.\./', $output);
     }
 

@@ -13,8 +13,7 @@ class OptionsTest extends \TestBase
             'phpunit' => 'phpunit',
             'functional' => true,
             'group' => 'group1',
-            'bootstrap' => '/path/to/bootstrap',
-            'configuration' => '/path/to/configuration'
+            'bootstrap' => '/path/to/bootstrap'
         ); 
         $this->options = new Options($this->unfiltered);
         $this->cleanUpConfigurations();
@@ -24,7 +23,6 @@ class OptionsTest extends \TestBase
     {
         $this->assertEquals('group1', $this->options->filtered['group']);
         $this->assertEquals('/path/to/bootstrap', $this->options->filtered['bootstrap']);
-        $this->assertEquals('/path/to/configuration', $this->options->filtered['configuration']);
     }
 
     public function testAnnotationsReturnsAnnotations()
@@ -48,40 +46,55 @@ class OptionsTest extends \TestBase
         $this->assertFalse($options->functional);
     }
 
-    public function testGetConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd()
+    public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd()
     {
-        chdir(__DIR__);
         file_put_contents('phpunit.xml', 'XML!!!');
-        unset($this->unfiltered['configuration']);
+        $this->unfiltered['path'] = getcwd();
         $options = new Options($this->unfiltered);
-        $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->getConfiguration());
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']);
     }
 
-    public function testGetConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd()
+    public function testConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd()
     {
-        chdir(__DIR__);
         file_put_contents('phpunit.xml.dist', 'XML!!!');
-        unset($this->unfiltered['configuration']);
+        $this->unfiltered['path'] = getcwd();
         $options = new Options($this->unfiltered);
-        $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->getConfiguration());
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->filtered['configuration']);
     }
 
-    public function testGetConfigurationShouldReturnSpecifiedConfigurationIfFileExists()
+    public function testConfigurationShouldReturnSpecifiedConfigurationIfFileExists()
     {
-        chdir(__DIR__);
         file_put_contents('myconfig.xml', 'XML!!!');
         $this->unfiltered['configuration'] = 'myconfig.xml';
+        $this->unfiltered['path'] = getcwd();
         $options = new Options($this->unfiltered);
-        $expected = $options->filtered['configuration'];
 
-        $this->assertEquals($expected, $options->getConfiguration());
+        $this->assertEquals(__DIR__ . DS . 'myconfig.xml', $options->filtered['configuration']);
     }
 
-    public function testGetConfigurationShouldReturnNullIfSpecifiedFileDoesNotExist()
+    public function testConfigurationShouldBeSetEvenIfFileDoesNotExist()
     {
-        $this->assertNull($this->options->getConfiguration());
+        $this->unfiltered['path'] = getcwd();
+        $this->unfiltered['configuration'] = '/path/to/config';
+        $options = new Options($this->unfiltered);
+        $this->assertEquals('/path/to/config', $options->filtered['configuration']);
     }
 
+    public function testConfigurationKeyIsNotPresentIfNoConfigGiven()
+    {
+        $this->unfiltered['path'] = getcwd();
+        $options = new Options($this->unfiltered);
+        $this->assertFalse(array_key_exists('configuration', $options->filtered));
+    }
+
+    /**
+     * Sets the current working directory to this source
+     * directory so we can test configuration details without
+     * using ParaTest's own configuration
+     *
+     * Performs any cleanup to make sure no config files are
+     * present when a test starts
+     */
     protected function cleanUpConfigurations()
     {
         chdir(__DIR__);

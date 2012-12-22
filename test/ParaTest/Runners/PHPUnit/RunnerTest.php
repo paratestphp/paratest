@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-class PHPUnitRunnerTest extends \TestBase
+class RunnerTest extends \TestBase
 {
     protected $runner;
     protected $files;
@@ -24,7 +24,7 @@ class PHPUnitRunnerTest extends \TestBase
         $this->assertEquals(-1, $this->getObjectValue($runner, 'exitcode'));
         $this->assertTrue($options->functional);
         //filter out processes and path and phpunit
-        $this->assertEquals(array('bootstrap' => 'hello'), $options->filtered);
+        $this->assertEquals(array('bootstrap' => 'hello', 'configuration' => getcwd() . DS . 'phpunit.xml.dist'), $options->filtered);
         $this->assertInstanceOf('ParaTest\\Logging\\LogInterpreter', $this->getObjectValue($runner, 'interpreter'));
         $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\ResultPrinter', $this->getObjectValue($runner, 'printer'));
     }

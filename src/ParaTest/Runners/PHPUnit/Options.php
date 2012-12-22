@@ -28,15 +28,6 @@ class Options
         return $this->$var;
     }
 
-    public function getConfiguration()
-    {
-        if(isset($this->filtered['configuration']) && file_exists($this->filtered['configuration']))
-            return $this->filtered['configuration'];
-        if(file_exists('phpunit.xml'))
-            return realpath('phpunit.xml');
-        if(file_exists('phpunit.xml.dist'))
-            return realpath('phpunit.xml.dist');
-    }
 
     protected static function defaults()
     {
@@ -87,17 +78,37 @@ class Options
      */
     protected function filterOptions($options)
     {
-        return array_diff_key($options, array(
+        $filtered = array_diff_key($options, array(
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
             'functional' => $this->functional
         ));
+        if($configuration = $this->getConfiguration($filtered))
+            $filtered['configuration'] = $configuration;
+        return $filtered;
+    }
+
+    /**
+     * Take an array of filtered options and return a
+     * configuration path
+     *
+     * @param $filtered
+     * @return string|null
+     */
+    protected function getConfiguration($filtered)
+    {
+        if(isset($filtered['configuration']))
+            return file_exists($filtered['configuration']) ? realpath($filtered['configuration']) : $filtered['configuration'];
+        if(file_exists('phpunit.xml'))
+            return realpath('phpunit.xml');
+        if(file_exists('phpunit.xml.dist'))
+            return realpath('phpunit.xml.dist');
     }
 
     /**
      * Load options that are represented by annotations
-     * inside of tests i.e @grup group1 = --group group1
+     * inside of tests i.e @group group1 = --group group1
      */
     protected function initAnnotations()
     {

@@ -23,6 +23,7 @@ class Runner
 
     public function run()
     {
+        $this->verifyConfiguration();
         $this->load();
         $this->printer->start($this->options);
         while(count($this->running) || count($this->pending)) {
@@ -36,6 +37,14 @@ class Runner
     public function getExitCode()
     {
         return $this->exitcode;
+    }
+
+    private function verifyConfiguration()
+    {
+        if (isset($this->options->filtered['configuration']) && !file_exists($this->options->filtered['configuration'])) {
+            $this->printer->println(sprintf('Could not read "%s".', $this->options->filtered['configuration']));
+            exit(1);
+        }
     }
 
     private function complete()

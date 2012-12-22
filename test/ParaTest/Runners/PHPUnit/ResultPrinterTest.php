@@ -11,6 +11,9 @@ class ResultPrinterTest extends \TestBase
     {
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
+        chdir(__DIR__);
+        if(file_exists('myconfig.xml'))
+            unlink('myconfig.xml');
     }
 
     public function testConstructor()
@@ -45,6 +48,17 @@ class ResultPrinterTest extends \TestBase
         $options = new Options();
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\n", $options->phpunit);
+        $this->assertEquals($expected, $contents);
+    }
+
+    public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
+    {
+        file_put_contents('myconfig.xml', 'XML!!!');
+        $options = new Options(array('configuration' => 'myconfig.xml'));
+        $contents = $this->getStartOutput($options);
+        $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\nConfiguration read from %s\n\n",
+                            $options->phpunit,
+                            __DIR__ . DS . 'myconfig.xml');
         $this->assertEquals($expected, $contents);
     }
 

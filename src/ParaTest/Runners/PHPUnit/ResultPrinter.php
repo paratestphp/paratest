@@ -26,7 +26,14 @@ class ResultPrinter
                $options->processes > 1 ? 'es' : '',
                $options->phpunit,
                $options->functional ? '. Functional mode is on' : '');
+        if(isset($options->filtered['configuration']))
+            printf("Configuration read from %s\n\n", $options->filtered['configuration']);
         \PHP_Timer::start();
+    }
+
+    public function println($string)
+    {
+        print("$string\n");
     }
 
     public function flush()
