@@ -28,6 +28,16 @@ class Options
         return $this->$var;
     }
 
+    public function getConfiguration()
+    {
+        if(isset($this->filtered['configuration']) && file_exists($this->filtered['configuration']))
+            return $this->filtered['configuration'];
+        if(file_exists('phpunit.xml'))
+            return realpath('phpunit.xml');
+        if(file_exists('phpunit.xml.dist'))
+            return realpath('phpunit.xml.dist');
+    }
+
     protected static function defaults()
     {
         return array(
