@@ -51,7 +51,7 @@ class OptionsTest extends \TestBase
         file_put_contents('phpunit.xml', 'XML!!!');
         $this->unfiltered['path'] = getcwd();
         $options = new Options($this->unfiltered);
-        $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']);
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']->getPath());
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd()
@@ -59,7 +59,7 @@ class OptionsTest extends \TestBase
         file_put_contents('phpunit.xml.dist', 'XML!!!');
         $this->unfiltered['path'] = getcwd();
         $options = new Options($this->unfiltered);
-        $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->filtered['configuration']);
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->filtered['configuration']->getPath());
     }
 
     public function testConfigurationShouldReturnSpecifiedConfigurationIfFileExists()
@@ -69,7 +69,7 @@ class OptionsTest extends \TestBase
         $this->unfiltered['path'] = getcwd();
         $options = new Options($this->unfiltered);
 
-        $this->assertEquals(__DIR__ . DS . 'myconfig.xml', $options->filtered['configuration']);
+        $this->assertEquals(__DIR__ . DS . 'myconfig.xml', $options->filtered['configuration']->getPath());
     }
 
     public function testConfigurationShouldBeSetEvenIfFileDoesNotExist()
@@ -77,7 +77,7 @@ class OptionsTest extends \TestBase
         $this->unfiltered['path'] = getcwd();
         $this->unfiltered['configuration'] = '/path/to/config';
         $options = new Options($this->unfiltered);
-        $this->assertEquals('/path/to/config', $options->filtered['configuration']);
+        $this->assertEquals('/path/to/config', $options->filtered['configuration']->getPath());
     }
 
     public function testConfigurationKeyIsNotPresentIfNoConfigGiven()

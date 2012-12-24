@@ -24,7 +24,8 @@ class RunnerTest extends \TestBase
         $this->assertEquals(-1, $this->getObjectValue($runner, 'exitcode'));
         $this->assertTrue($options->functional);
         //filter out processes and path and phpunit
-        $this->assertEquals(array('bootstrap' => 'hello', 'configuration' => getcwd() . DS . 'phpunit.xml.dist'), $options->filtered);
+        $config = new Configuration(getcwd() . DS . 'phpunit.xml.dist');
+        $this->assertEquals(array('bootstrap' => 'hello', 'configuration' => $config), $options->filtered);
         $this->assertInstanceOf('ParaTest\\Logging\\LogInterpreter', $this->getObjectValue($runner, 'interpreter'));
         $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\ResultPrinter', $this->getObjectValue($runner, 'printer'));
     }

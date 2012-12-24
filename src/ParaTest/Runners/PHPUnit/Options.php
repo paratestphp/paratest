@@ -84,8 +84,8 @@ class Options
             'phpunit' => $this->phpunit,
             'functional' => $this->functional
         ));
-        if($configuration = $this->getConfiguration($filtered))
-            $filtered['configuration'] = $configuration;
+        if($configuration = $this->getConfigurationPath($filtered))
+            $filtered['configuration'] = new Configuration($configuration);
         return $filtered;
     }
 
@@ -96,7 +96,7 @@ class Options
      * @param $filtered
      * @return string|null
      */
-    protected function getConfiguration($filtered)
+    protected function getConfigurationPath($filtered)
     {
         if(isset($filtered['configuration']))
             return file_exists($filtered['configuration']) ? realpath($filtered['configuration']) : $filtered['configuration'];

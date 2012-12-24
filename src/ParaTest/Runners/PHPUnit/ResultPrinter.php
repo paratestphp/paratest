@@ -27,7 +27,7 @@ class ResultPrinter
                $options->phpunit,
                $options->functional ? '. Functional mode is on' : '');
         if(isset($options->filtered['configuration']))
-            printf("Configuration read from %s\n\n", $options->filtered['configuration']);
+            printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
         \PHP_Timer::start();
     }
 
