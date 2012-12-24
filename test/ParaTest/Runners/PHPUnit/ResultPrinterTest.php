@@ -53,7 +53,7 @@ class ResultPrinterTest extends \TestBase
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
     {
-        file_put_contents('myconfig.xml', 'XML!!!');
+        file_put_contents('myconfig.xml', '<root />');
         $options = new Options(array('configuration' => 'myconfig.xml'));
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\nConfiguration read from %s\n\n",
