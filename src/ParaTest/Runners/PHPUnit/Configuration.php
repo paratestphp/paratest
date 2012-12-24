@@ -13,4 +13,9 @@ class Configuration
     {
         return $this->path;
     }
+
+    public function __toString()
+    {
+        return $this->path;
+    }
 }
