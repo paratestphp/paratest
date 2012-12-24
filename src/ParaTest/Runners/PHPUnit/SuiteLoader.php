@@ -32,8 +32,9 @@ class SuiteLoader
         return $methods;
     }
 
-    public function load($path)
+    public function load($path = '')
     {
+        $path = $path ?: $this->options->path;
         if(!file_exists($path))
             throw new \InvalidArgumentException("$path is not a valid directory or file");
         if(is_dir($path))

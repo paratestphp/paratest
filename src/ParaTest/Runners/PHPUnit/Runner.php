@@ -59,8 +59,8 @@ class Runner
 
     private function load()
     {
-        $loader = new SuiteLoader();
-        $loader->load($this->options->path);
+        $loader = new SuiteLoader($this->options);
+        $loader->load();
         $executables = ($this->options->functional) ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
         foreach($this->pending as $pending)
