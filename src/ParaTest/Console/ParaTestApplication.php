@@ -30,9 +30,7 @@ class ParaTestApplication extends Application
     public function getDefinition()
     {
         return new InputDefinition(array(
-            new InputOption('--help',    '-h', InputOption::VALUE_NONE, 'Display this help message.'),
-            new InputOption('--verbose', '-v', InputOption::VALUE_NONE, 'Increase verbosity of exceptions.'),
-            new InputOption('--version', '-V', InputOption::VALUE_NONE, 'Display this behat version.'),
+            new InputOption('--help',    '-h', InputOption::VALUE_NONE, 'Display this help message.')
         ));
     }
 

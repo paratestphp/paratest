@@ -2,6 +2,7 @@
 
 use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputOption,
+    Symfony\Component\Console\Input\ArrayInput,
     Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputInterface,
     Symfony\Component\Console\Output\OutputInterface,
@@ -9,6 +10,8 @@ use Symfony\Component\Console\Command\Command,
 
 class PHPUnit extends Tester
 {
+    protected $command;
+
     public function configure(Command $command)
     {
         $command
@@ -19,13 +22,31 @@ class PHPUnit extends Tester
             ->addOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.')
             ->addArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.');
+        $this->command = $command;
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        if(!$this->hasPath($input))
+            $this->displayHelp($input, $output);
         $runner = new Runner($this->getRunnerOptions($input));
         $runner->run();
         return $runner->getExitCode();
+    }
+
+    protected function displayHelp(InputInterface $input, OutputInterface $output)
+    {
+        $help = $this->command->getApplication()->find('help');
+        $input = new ArrayInput(array('command_name' => 'paratest'));
+        $help->run($input, $output);
+        exit(0);
+    }
+
+    protected function hasPath(InputInterface $input)
+    {
+        $argument = $input->getArgument('path');
+        $option = $input->getOption('path');
+        return $argument || $option;
     }
 
     protected function getRunnerOptions(InputInterface $input)

@@ -156,10 +156,17 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertContains('Call to undefined function inexistent', stream_get_contents($pipes[2]));
     }
 
-    public function testFullyConfiguredRunAssumingCurrentDirectory()
+    public function testRunWithoutPathArgumentDisplaysUsage()
+    {
+        $this->path = '';
+        $result = $this->paratest();
+        $usage = file_get_contents(FIXTURES . DS . 'output' . DS . 'usage.txt');
+        $this->assertEquals($usage, $result);
+    }
+
+    public function testFullyConfiguredRun()
     {
         $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';
-        $this->path = '';
         $results = $this->paratest(array(
             'bootstrap' => BOOTSTRAP,
             'phpunit' => PHPUNIT,
