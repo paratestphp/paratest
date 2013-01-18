@@ -30,7 +30,7 @@ class ParaTestApplication extends Application
     public function getDefinition()
     {
         return new InputDefinition(array(
-            new InputOption('--help',    '-h', InputOption::VALUE_NONE, 'Display this help message.')
+            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message.')
         ));
     }
 
