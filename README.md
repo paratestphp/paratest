@@ -34,7 +34,37 @@ An example being:
 
 `vendors\bin\paratest.bat --phpunit vendors\bin\phpunit.bat ...`
 
-ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests. 
+ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests.
+
+PHPUnit Xml Config Support
+--------------------------
+When running PHPUnit tests, ParaTest will automatically pass the phpunit.xml or phpunit.dist.xml to the phpunit runner
+via the --configuration switch. ParaTest also allows the configuration path to be specified manually.
+
+ParaTest will rely on the `testsuites` node of phpunit's config xml to handle loading of suites.
+
+The following phpunit config file is used for ParaTest's test cases.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="../bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+        >
+    <testsuites>
+        <testsuite name="ParaTest Fixtures">
+            <directory>./tests/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
+```
 
 Running Tests
 -------------
