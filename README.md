@@ -38,10 +38,10 @@ ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/ac
 
 PHPUnit Xml Config Support
 --------------------------
-When running PHPUnit tests, ParaTest will automatically pass the phpunit.xml or phpunit.dist.xml to the phpunit runner
+When running PHPUnit tests, ParaTest will automatically pass the phpunit.xml or phpunit.xml.dist to the phpunit runner
 via the --configuration switch. ParaTest also allows the configuration path to be specified manually.
 
-ParaTest will rely on the `testsuites` node of phpunit's config xml to handle loading of suites.
+ParaTest will rely on the `testsuites` node of phpunit's xml configuration to handle loading of suites.
 
 The following phpunit config file is used for ParaTest's test cases.
 
