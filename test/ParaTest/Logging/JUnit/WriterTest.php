@@ -2,7 +2,7 @@
 
 use ParaTest\Logging\LogInterpreter;
 
-class WriteTest extends \TestBase
+class WriterTest extends \TestBase
 {
     protected $writer;
     protected $interpreter;

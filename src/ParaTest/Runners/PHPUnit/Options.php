@@ -33,7 +33,7 @@ class Options
     {
         return array(
             'processes' => 5,
-            'path' => getcwd(),
+            'path' => '',
             'phpunit' => static::phpunit(),
             'functional' => false
         );

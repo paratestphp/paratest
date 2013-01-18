@@ -34,14 +34,22 @@ class SuiteLoader
 
     public function load($path = '')
     {
-        $path = $path ?: $this->options->path;
-        if(!file_exists($path))
-            throw new \InvalidArgumentException("$path is not a valid directory or file");
-        if(is_dir($path))
-            $this->loadDir($path);
-        if(file_exists($path))
-            $this->loadFile($path);
+        if($path) $this->loadPath($path);
+        else if($suites = $this->options->filtered['configuration']->getSuites())
+            foreach($suites as $name => $path)
+                $this->loadPath($path);
         $this->initSuites();
+    }
+
+    private function loadPath($path)
+    {
+        $path = $path ? : $this->options->path;
+        if (!file_exists($path))
+            throw new \InvalidArgumentException("$path is not a valid directory or file");
+        if (is_dir($path))
+            $this->loadDir($path);
+        if (file_exists($path))
+            $this->loadFile($path);
     }
 
     private function loadDir($path)

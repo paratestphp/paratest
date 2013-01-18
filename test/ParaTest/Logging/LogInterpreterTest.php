@@ -1,6 +1,6 @@
 <?php namespace ParaTest\Logging;
 
-class ResultInterpreterTest extends \TestBase
+class LogInterpreterTest extends \TestBase
 {
     protected $interpreter;
 
