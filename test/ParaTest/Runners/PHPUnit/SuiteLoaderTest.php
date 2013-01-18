@@ -7,6 +7,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function setUp()
     {
+        chdir(__DIR__);
         $this->options = new Options(array('group' => 'group1'));
         $this->loader = new SuiteLoader($this->options);
     }
@@ -38,4 +39,21 @@ class SuiteLoaderTest extends \TestBase
         $this->loader->load('/path/to/nowhere');
     }
 
+    /**
+     * @expectedException   \RuntimeException
+     * @expectedExceptionMessage No path or configuration provided
+     */
+    public function testLoadBarePathWithNoPathAndNoConfiguration()
+    {
+        $this->loader->load();
+    }
+
+    public function testLoadSuiteFromConfig()
+    {
+        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunit.xml.dist'));
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+        $this->assertEquals(10, sizeof($files));
+    }
 }

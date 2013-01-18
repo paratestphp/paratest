@@ -23,8 +23,9 @@ class Configuration
         if(!$this->xml) return null;
         $suites = array();
         $nodes = $this->xml->xpath('//testsuite');
+        $path = dirname($this->path) . DIRECTORY_SEPARATOR;
         while(list(, $node) = each($nodes))
-            $suites[(string)$node['name']] = realpath((string)$node->directory);
+            $suites[(string)$node['name']] = realpath($path . (string)$node->directory);
         return $suites;
     }
 

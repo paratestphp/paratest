@@ -34,10 +34,12 @@ class SuiteLoader
 
     public function load($path = '')
     {
+        $configuration = @$this->options->filtered['configuration'] ?: new Configuration('');
         if($path) $this->loadPath($path);
-        else if($suites = $this->options->filtered['configuration']->getSuites())
+        else if($suites = $configuration->getSuites())
             foreach($suites as $name => $path)
                 $this->loadPath($path);
+        if(!$this->files) throw new \RuntimeException("No path or configuration provided");
         $this->initSuites();
     }
 
@@ -48,7 +50,7 @@ class SuiteLoader
             throw new \InvalidArgumentException("$path is not a valid directory or file");
         if (is_dir($path))
             $this->loadDir($path);
-        if (file_exists($path))
+        else if (file_exists($path))
             $this->loadFile($path);
     }
 
