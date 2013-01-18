@@ -2,7 +2,6 @@
 
 use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\ArrayInput,
     Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputInterface,
     Symfony\Component\Console\Output\OutputInterface,
@@ -32,14 +31,6 @@ class PHPUnit extends Tester
         $runner = new Runner($this->getRunnerOptions($input));
         $runner->run();
         return $runner->getExitCode();
-    }
-
-    protected function displayHelp(InputInterface $input, OutputInterface $output)
-    {
-        $help = $this->command->getApplication()->find('help');
-        $input = new ArrayInput(array('command_name' => 'paratest'));
-        $help->run($input, $output);
-        exit(0);
     }
 
     protected function hasPath(InputInterface $input)
