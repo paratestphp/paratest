@@ -23,10 +23,28 @@ class Configuration
         if(!$this->xml) return null;
         $suites = array();
         $nodes = $this->xml->xpath('//testsuite');
-        $path = dirname($this->path) . DIRECTORY_SEPARATOR;
         while(list(, $node) = each($nodes))
-            $suites[(string)$node['name']] = realpath($path . (string)$node->directory);
+            $suites[(string)$node['name']] = $this->getSuitePath((string)$node->directory);
         return $suites;
+    }
+
+    public function getConfigDir()
+    {
+        return dirname($this->path) . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * Returns a suite path relative to the config file
+     *
+     * @param $path
+     * @return string
+     * @throws \RuntimeException
+     */
+    public function getSuitePath($path)
+    {
+        $real = realpath($this->getConfigDir() . $path);
+        if($real) return $real;
+        throw new \RuntimeException("Suite path $path could not be found");
     }
 
     public function __toString()

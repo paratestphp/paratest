@@ -56,4 +56,15 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
         $this->assertEquals(10, sizeof($files));
     }
+
+    /**
+     * @expectedException   \RuntimeException
+     * @expectedExceptionMessage Suite path ./nope/ could not be found
+     */
+    public function testLoadSuiteFromConfigWithBadSuitePath()
+    {
+        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunitbad.xml.dist'));
+        $loader = new SuiteLoader($options);
+        $loader->load();
+    }
 }

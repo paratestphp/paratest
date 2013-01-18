@@ -183,6 +183,14 @@ class PHPUnitTest extends FunctionalTestBase
         if(file_exists($output)) unlink($output);
     }
 
+    public function testUsingDefaultLoadedConfiguration()
+    {
+        chdir(FIXTURES);
+        $this->path = '';
+        $results = $this->paratest(array('f' => ''));
+        $this->assertResults($results);
+    }
+
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
