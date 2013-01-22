@@ -26,7 +26,7 @@ class PHPUnit extends Tester
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        if(!$this->canFindConfig() && !$this->hasPath($input))
+        if(!$this->canFindConfig($input) && !$this->hasPath($input))
             $this->displayHelp($input, $output);
         $runner = new Runner($this->getRunnerOptions($input));
         $runner->run();
@@ -40,9 +40,13 @@ class PHPUnit extends Tester
         return $argument || $option;
     }
 
-    protected function canFindConfig()
+    protected function canFindConfig(InputInterface $input)
     {
         $cwd = getcwd() . DIRECTORY_SEPARATOR;
+
+        if($input->hasOption('configuration') && file_exists($input->getOption('configuration')))
+            return true;
+
         return file_exists($cwd . 'phpunit.xml.dist') || file_exists($cwd . 'phpunit.xml');
     }
 

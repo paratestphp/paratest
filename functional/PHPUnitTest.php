@@ -22,6 +22,14 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testWithConfigurationInDirWithoutConfigFile()
+    {
+        chdir(dirname(FIXTURES));
+        $this->path = '';
+        $results = $this->paratest(array('configuration' => FIXTURES . DS . 'phpunit.xml.dist'));
+        $this->assertResults($results);
+    }
+
     public function testFunctionalWithBootstrap()
     {
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'functional' => ''));
