@@ -30,6 +30,14 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testWithConfigurationThatDoesNotExist()
+    {
+        chdir(dirname(FIXTURES));
+        $this->path = '';
+        $results = $this->paratest(array('configuration' => FIXTURES . DS . 'phpunit.xml.disto'));
+        $this->assertRegExp('/Could not read ".*phpunit.xml.disto"./', $results);
+    }
+
     public function testFunctionalWithBootstrap()
     {
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'functional' => ''));
@@ -167,6 +175,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testRunWithoutPathArgumentDisplaysUsage()
     {
         $this->path = '';
+        chdir(dirname(FIXTURES));
         $result = $this->paratest();
         $usage = file_get_contents(FIXTURES . DS . 'output' . DS . 'usage.txt');
         $this->assertEquals($usage, $result);
