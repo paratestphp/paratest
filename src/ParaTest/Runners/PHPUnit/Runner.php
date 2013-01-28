@@ -30,6 +30,7 @@ class Runner
             foreach($this->running as $key => $test)
                 if(!$this->testIsStillRunning($test)) unset($this->running[$key]);
             $this->fillRunQueue();
+            usleep(10000);
         }
         $this->complete();
     }
