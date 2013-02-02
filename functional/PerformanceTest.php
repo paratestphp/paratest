@@ -9,6 +9,27 @@ class PerformanceTest extends FunctionalTestBase
         list($stdTime, $paraTime, $msg) = $this->getExecTimes(
             $this->getPhpunitOutput(),
             $this->getParaTestOutput());
+        var_dump($stdTime, $paraTime);
+        $this->assertTrue($paraTime <= $stdTime, $msg);
+    }
+
+    public function testRunningSuitesWithLongBootstrapsInParallelIsNotSlower()
+    {
+        $this->bootstrap = dirname(FIXTURES) . DS . 'slow_bootstrap.php';
+        list($stdTime, $paraTime, $msg) = $this->getExecTimes(
+            $this->getPhpunitOutput(),
+            $this->getParaTestOutput());
+        var_dump($stdTime, $paraTime);
+        $this->assertTrue($paraTime <= $stdTime, $msg);
+    }
+
+    public function testRunningLotsOfShortTestsIsNotSlower()
+    {
+        $this->path = FIXTURES . DS . 'small-tests';
+        list($stdTime, $paraTime, $msg) = $this->getExecTimes(
+            $this->getPhpunitOutput(),
+            $this->getParaTestOutput());
+        var_dump($stdTime, $paraTime);
         $this->assertTrue($paraTime <= $stdTime, $msg);
     }
 
