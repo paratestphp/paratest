@@ -78,8 +78,10 @@ class Runner
     private function fillRunQueue()
     {
         $opts = $this->options;
+        $phpunit = $opts->phpunit;
+        $phpunit = realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
         while(sizeof($this->pending) && sizeof($this->running) < $opts->processes)
-            $this->running[] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered);
+            $this->running[] = array_shift($this->pending)->run($phpunit, $opts->filtered);
     }
 
     private function testIsStillRunning($test)
@@ -88,6 +90,7 @@ class Runner
         $this->setExitCode($test);
         $test->stop();
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
+            error_log('STDERR: ' . $test->getStderr());
             throw new \Exception($test->getStderr());
         $this->printer->printFeedback($test);
         return false;

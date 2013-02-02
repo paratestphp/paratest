@@ -1,0 +1,23 @@
+- the worker code should be extracted from the functional test
+- new tests must be passed to existing workers instead
+- if a worker crashes, it should be respawned
+There were 5 failures:
+
+
+
+3) PHPUnitTest::testRunWithFatalRuntimeErrorOutputsError
+Failed asserting that '
+
+               
+  [Exception]  
+               
+               
+
+
+paratest [-p|--processes="..."] [-f|--functional] [-h|--help] [--phpunit="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."] [--path="..."] [path]
+
+
+' contains "Call to undefined function inexistent".
+
+/home/giorgio/code/paratest/functional/PHPUnitTest.php:172
+

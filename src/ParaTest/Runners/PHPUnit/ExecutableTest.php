@@ -81,7 +81,10 @@ abstract class ExecutableTest
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
         $command = $this->getCommandString($binary, $options);
+        file_put_contents('log.txt', $command."\n", FILE_APPEND);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
+        fwrite($this->pipes[0], $command . "\n");
+        fwrite($this->pipes[0], 'EXIT' . "\n");
         return $this;
     }
 
@@ -104,6 +107,7 @@ abstract class ExecutableTest
     protected function getCommandString($binary, $options = array())
     {
         $command = $binary;
+        $command .= ' --no-globals-backup';
         foreach($options as $key => $value) $command .= " --$key %s";
         $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);

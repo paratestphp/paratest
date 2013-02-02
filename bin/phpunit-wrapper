@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+//require_once __DIR__ . '/../vendor/bin/phpunit';
+
+require_once __DIR__ . '/../vendor/autoload.php';
+// assign $_SERVER['argv']
+$commands = fopen('php://stdin', 'r');
+$lastExitCode = 0;
+while (true) {
+    if (feof($commands)) {
+        exit($lastExitCode);
+    }
+    $command = (fgets($commands));
+    $command = rtrim($command);
+    if ($command === 'EXIT') {
+        exit($lastExitCode);
+    }
+    echo "Executing: $command\n";
+    $_SERVER['argv'] = explode(' ', $command);
+    $lastExitCode = PHPUnit_TextUI_Command::main(false);
+}
