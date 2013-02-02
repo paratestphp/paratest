@@ -26,6 +26,7 @@ class PerformanceTest extends FunctionalTestBase
     public function testRunningLotsOfShortTestsIsNotSlower()
     {
         $this->path = FIXTURES . DS . 'small-tests';
+        exec("php {$this->path}/generate.php 100", $output);
         list($stdTime, $paraTime, $msg) = $this->getExecTimes(
             $this->getPhpunitOutput(),
             $this->getParaTestOutput());
@@ -44,11 +45,18 @@ class PerformanceTest extends FunctionalTestBase
 
     protected function getExecTimes($phpunitOut, $paraOut)
     {
-        preg_match(self::$testTime, $phpunitOut, $smatches);
-        preg_match(self::$testTime, $paraOut, $pmatches);
-        $stdTime = $smatches[2];
-        $paraTime = $pmatches[2];
+        $stdTime = $this->getExecTime($phpunitOut);
+        $paraTime = $this->getExecTime($paraOut);
         $msg = sprintf("PHPUnit: %s, ParaTest: %s", $stdTime, $paraTime);
         return array($stdTime, $paraTime, $msg);
+    }
+
+    private function getExecTime($output)
+    {
+        preg_match(self::$testTime, $output, $matches);
+        if (!isset($matches[2])) {
+            throw new RuntimeException("Cannot parse output: $output");
+        } 
+        return $matches[2];
     }
 }

@@ -44,6 +44,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getTestOutput($cmd)
     {
         $proc = $this->getFinishedProc($cmd, $pipes);
+        $this->checkErrors($cmd, $pipes);
         $output = $this->getOutput($pipes);
         return $output;
     }
@@ -54,6 +55,15 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         $proc = proc_open($cmd, self::$descriptorspec, $pipes); 
         $this->waitForProc($proc);
         return $proc;
+    }
+
+    protected function checkErrors($cmd, $pipes)
+    {
+        $errors = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        if ($errors) {
+            throw new RuntimeException("`$cmd` has a non-empty STDERR");
+        }
     }
 
     protected function getOutput($pipes)
