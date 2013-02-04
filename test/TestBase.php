@@ -54,7 +54,7 @@ class TestBase extends PHPUnit_Framework_TestCase
         return self::_callMethod($class, $methodName, $args);
     }
 
-    static protected function _callMethod($objectOrClassName, $methodName, $args = null)
+    protected static function _callMethod($objectOrClassName, $methodName, $args = null)
     {
         $isStatic = is_string($objectOrClassName);
 
