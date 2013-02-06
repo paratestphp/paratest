@@ -5,3 +5,4 @@ chromedriver.log
 vendor
 composer.lock
 .idea
+nbproject
