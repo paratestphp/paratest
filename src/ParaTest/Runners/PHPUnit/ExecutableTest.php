@@ -81,7 +81,6 @@ abstract class ExecutableTest
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
         $command = $this->getCommandString($binary, $options);
-        file_put_contents('log.txt', $command."\n", FILE_APPEND);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
         fwrite($this->pipes[0], $command . "\n");
         fwrite($this->pipes[0], 'EXIT' . "\n");

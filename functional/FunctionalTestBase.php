@@ -44,7 +44,6 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getTestOutput($cmd)
     {
         $proc = $this->getFinishedProc($cmd, $pipes);
-        $this->checkErrors($cmd, $pipes);
         $output = $this->getOutput($pipes);
         return $output;
     }

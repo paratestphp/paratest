@@ -90,8 +90,7 @@ class Runner
         $this->setExitCode($test);
         $test->stop();
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
-            error_log('STDERR: ' . $test->getStderr());
-            throw new \Exception($test->getStderr());
+            throw new \Exception($test->getStderr(), $test->getExitCode());
         $this->printer->printFeedback($test);
         return false;
     }
