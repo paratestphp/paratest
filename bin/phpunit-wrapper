@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+echo "Worker starting\n";
 //require_once __DIR__ . '/../vendor/bin/phpunit';
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -11,6 +12,9 @@ while (true) {
         exit($lastExitCode);
     }
     $command = (fgets($commands));
+    if ($command === false) {
+        exit($lastExitCode);
+    }
     $command = rtrim($command);
     if ($command === 'EXIT') {
         exit($lastExitCode);
@@ -18,4 +22,5 @@ while (true) {
     echo "Executing: $command\n";
     $_SERVER['argv'] = explode(' ', $command);
     $lastExitCode = PHPUnit_TextUI_Command::main(false);
+    echo "FINISHED\n";
 }

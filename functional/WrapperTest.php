@@ -36,6 +36,30 @@ class WrapperTest extends FunctionalTestBase
         $this->assertJUnitLogIsValid($testLog);
     }
 
+    public function testTellsWhenItsFinished()
+    {
+        $testLog = '/tmp/test.xml';
+        $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
+        $bin = 'bin/phpunit-wrapper';
+        $pipes = array();
+        $proc = proc_open($bin, self::$descriptorspec, $pipes); 
+        fwrite($pipes[0], $testCmd . "\n");
+        fwrite($pipes[0], "EXIT\n");
+        fclose($pipes[0]);
+
+        $this->waitForProc($proc);
+
+        $tellsUsItHasFinished = false;
+        while ($line = fgets($pipes[1])) {
+            if (strstr($line, "FINISHED\n")) {
+                $tellsUsItHasFinished = true;
+            }
+        }
+        $this->assertTrue($tellsUsItHasFinished);
+
+        $this->assertJUnitLogIsValid($testLog);
+    }
+
     public function testCanExecuteMultiplePHPUnitCommands()
     {
         $bin = 'bin/phpunit-wrapper';
@@ -57,7 +81,6 @@ class WrapperTest extends FunctionalTestBase
 
         $this->assertJUnitLogIsValid($testLog);
         $this->assertJUnitLogIsValid($testLog2);
-
     }
 
     protected static $descriptorspec = array(

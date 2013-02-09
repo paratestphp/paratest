@@ -11,9 +11,13 @@ abstract class MetaProvider
     public function __call($method, $args)
     {
         if(preg_match(self::$totalMethod, $method, $matches) && $property = strtolower($matches[1]))
+        {
             return $this->getNumericValue($property);
+        }
         if(preg_match(self::$messageMethod, $method, $matches) && $type = strtolower($matches[1]))
+        {
             return $this->getMessages($type);
+        }
     }
 
     protected function getNumericValue($property)

@@ -1,7 +1,7 @@
 - the worker code should be extracted from the functional test
-- new tests must be passed to existing workers instead
+-- WrapperTest should use Worker instead of directly the process
+-- the Runner should use Worker plus many ExecutableTest
 - if a worker crashes, it should be respawned
-There were 5 failures:
 
 
 

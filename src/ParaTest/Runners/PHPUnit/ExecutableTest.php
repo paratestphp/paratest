@@ -77,14 +77,51 @@ abstract class ExecutableTest
         return $this->status['exitcode'];
     }
 
-    public function run($binary, $options = array())
+    public function run($binary, $options = array(), $tempFile)
+    {
+        $command = $this->command($binary, $options);
+        var_dump("Executing new worker: $command\n");
+        $this->process = proc_open($command, self::$descriptors, $this->pipes);
+        $this->work($command, $tempFile);
+        return $this;
+    }
+
+    public function command($binary, $options)
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
         $command = $this->getCommandString($binary, $options);
-        $this->process = proc_open($command, self::$descriptors, $this->pipes);
+        return $command;
+    }
+
+    public function work($command, $tempFile)
+    {
+        $this->cachedFreedom = null;
+        $this->temp = $tempFile;
         fwrite($this->pipes[0], $command . "\n");
+    }
+
+    public function isFree()
+    {
+        if ($this->cachedFreedom !== null) {
+            return $this->cachedFreedom;
+        }
+        stream_set_blocking($this->pipes[1], 0);
+        while ($line = fgets($this->pipes[1])) {
+            // !== false?
+            // due to colors is not an exact match
+            if (strstr($line, "FINISHED\n")) {
+                $this->cachedFreedom = true;
+                return true;
+            }
+        }
+        stream_set_blocking($this->pipes[1], 1);
+        $this->cachedFreedom = false;
+        return false;
+    }
+
+    public function terminate()
+    {
         fwrite($this->pipes[0], 'EXIT' . "\n");
-        return $this;
     }
 
     protected function initStreams()

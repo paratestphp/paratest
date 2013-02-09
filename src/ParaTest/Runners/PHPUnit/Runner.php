@@ -26,11 +26,36 @@ class Runner
         $this->verifyConfiguration();
         $this->load();
         $this->printer->start($this->options);
-        while(count($this->running) || count($this->pending)) {
-            foreach($this->running as $key => $test)
-                if(!$this->testIsStillRunning($test)) unset($this->running[$key]);
-            $this->fillRunQueue();
+        $opts = $this->options;
+        $phpunit = realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
+        for ($i = 0; $i < $opts->processes; $i++) {
+            $pending = array_shift($this->pending);
+            $worker = $pending->run($phpunit, $opts->filtered, $pending->getTempFile());
+            $this->workers[] = $worker;
         }
+        echo "Set up " . count($this->workers) . " workers\n";
+        while(count($this->pending)) {
+            sleep(1);
+            echo "Checking workers\n";
+            foreach($this->workers as $key => $test) {
+                if($free = $test->isFree()) {
+                    $this->printer->printFeedback($test);
+                    echo "Worker $key is free, assigning to it.\n";
+                    $pending = array_shift($this->pending);
+                    if (!$pending) {
+                        break;
+                    }
+                    $test->work($pending->command($phpunit, $opts->filtered), $pending->getTempFile());
+                }
+                echo "$key is free: " . var_export($free, true) . "\n";
+            }
+        }
+        echo "Terminating workers\n";
+        foreach ($this->workers as $process) {
+            $process->terminate();
+        }
+        echo "Waiting for all processes to finish.\n";
+        sleep(20);
         $this->complete();
     }
 
@@ -75,6 +100,7 @@ class Runner
         $writer->write($output);
     }
 
+    /**
     private function fillRunQueue()
     {
         $opts = $this->options;
@@ -94,6 +120,7 @@ class Runner
         $this->printer->printFeedback($test);
         return false;
     }
+     */
 
     private function setExitCode(ExecutableTest $test)
     {
