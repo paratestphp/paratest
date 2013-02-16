@@ -48,7 +48,6 @@ class Worker
         $tellsUsItHasFinished = false;
         stream_set_blocking($this->pipes[1], 1);
         while ($line = fgets($this->pipes[1])) {
-            var_dump($line);
             if (strstr($line, "FINISHED\n")) {
                 $tellsUsItHasFinished = true;
                 $this->inExecution--;
@@ -65,7 +64,6 @@ class Worker
     {
         stream_set_blocking($this->pipes[1], 0);
         while ($line = fgets($this->pipes[1])) {
-            error_log($line);
             if (strstr($line, "FINISHED\n")) {
                 $this->inExecution--;
             }

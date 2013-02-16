@@ -39,7 +39,6 @@ class WrapperRunner
             sleep(1);
             echo "Checking workers\n";
             foreach($this->workers as $key => $worker) {
-                echo "Checking worker $key\n";
                 if($worker->isFree()) {
                     echo "Worker $key is free, assigning to it.\n";
                     if (isset($worker->tempFile)) {
@@ -64,7 +63,6 @@ class WrapperRunner
         echo "Waiting for workers termination\n";
         foreach ($this->workers as $worker) {
             $worker->waitForStop();
-            echo "Exited with: $worker->exitCode\n";
                     if (isset($worker->tempFile)) {
                         echo "Reading temp file: $worker->tempFile\n";
                         $this->printer->printFeedbackFromFile($worker->tempFile);
@@ -95,7 +93,6 @@ class WrapperRunner
         $this->log();
         $readers = $this->interpreter->getReaders();
         foreach($readers as $reader) {
-            echo "Reader\n";
             $reader->removeLog();
         }
     }
