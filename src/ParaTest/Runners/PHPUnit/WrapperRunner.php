@@ -27,7 +27,7 @@ class WrapperRunner
         $this->load();
         $this->printer->start($this->options);
         $opts = $this->options;
-        $phpunit = $opts->phpunit;
+        $phpunit = $opts->phpunit . ' --no-globals-backup';
                     var_dump(count($this->pending));
         for ($i = 0; $i < $opts->processes; $i++) {
             $worker = new Worker();

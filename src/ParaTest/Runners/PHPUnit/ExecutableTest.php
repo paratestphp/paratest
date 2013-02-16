@@ -77,51 +77,17 @@ abstract class ExecutableTest
         return $this->status['exitcode'];
     }
 
-    public function run($binary, $options = array(), $tempFile)
+    public function run($binary, $options = array())
     {
         $command = $this->command($binary, $options);
-        var_dump("Executing new worker: $command\n");
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
-        $this->work($command, $tempFile);
         return $this;
     }
 
-    public function command($binary, $options)
+    public function command($binary, $options = array())
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
-        $command = $this->getCommandString($binary, $options);
-        return $command;
-    }
-
-    public function work($command, $tempFile)
-    {
-        $this->cachedFreedom = null;
-        $this->temp = $tempFile;
-        fwrite($this->pipes[0], $command . "\n");
-    }
-
-    public function isFree()
-    {
-        if ($this->cachedFreedom !== null) {
-            return $this->cachedFreedom;
-        }
-        stream_set_blocking($this->pipes[1], 0);
-        while ($line = fgets($this->pipes[1])) {
-            // !== false?
-            // due to colors is not an exact match
-            if (strstr($line, "FINISHED\n")) {
-                $this->cachedFreedom = true;
-                return true;
-            }
-        }
-        stream_set_blocking($this->pipes[1], 1);
-        $this->cachedFreedom = false;
-        return false;
-    }
-
-    public function terminate()
-    {
-        fwrite($this->pipes[0], 'EXIT' . "\n");
+        return $this->getCommandString($binary, $options);
     }
 
     protected function initStreams()
@@ -143,7 +109,6 @@ abstract class ExecutableTest
     protected function getCommandString($binary, $options = array())
     {
         $command = $binary;
-        $command .= ' --no-globals-backup';
         foreach($options as $key => $value) $command .= " --$key %s";
         $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
