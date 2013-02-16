@@ -82,7 +82,8 @@ class Options
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
-            'functional' => $this->functional
+            'functional' => $this->functional,
+            'runner' => $this->runner
         ));
         if($configuration = $this->getConfigurationPath($filtered))
             $filtered['configuration'] = new Configuration($configuration);

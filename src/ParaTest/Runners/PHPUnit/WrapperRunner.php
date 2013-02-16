@@ -27,11 +27,11 @@ class WrapperRunner
         $this->load();
         $this->printer->start($this->options);
         $opts = $this->options;
-        $phpunit = realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
+        $phpunit = $opts->phpunit;
+                    var_dump(count($this->pending));
         for ($i = 0; $i < $opts->processes; $i++) {
-            $pending = array_shift($this->pending);
             $worker = new Worker();
-           // $pending->run($phpunit, $opts->filtered, $pending->getTempFile());
+            $worker->start();
             $this->workers[] = $worker;
         }
         echo "Set up " . count($this->workers) . " workers\n";
@@ -39,24 +39,39 @@ class WrapperRunner
             sleep(1);
             echo "Checking workers\n";
             foreach($this->workers as $key => $worker) {
-                if($free = $worker->isFree()) {
-                    $this->printer->printFeedback($worker);
+                echo "Checking worker $key\n";
+                if($worker->isFree()) {
                     echo "Worker $key is free, assigning to it.\n";
+                    if (isset($worker->tempFile)) {
+                        echo "1Reading temp file: $worker->tempFile\n";
+                        $this->printer->printFeedbackFromFile($worker->tempFile);
+                        unset($worker->tempFile);
+                    }
                     $pending = array_shift($this->pending);
                     if (!$pending) {
                         break;
                     }
-                    $worker->run($pending->command($phpunit, $opts->filtered));
+                    $worker->execute($pending->command($phpunit, $opts->filtered));
+                    $worker->tempFile = $pending->getTempFile();
                 }
-                echo "$key is free: " . var_export($free, true) . "\n";
             }
         }
+
         echo "Terminating workers\n";
-        foreach ($this->workers as $process) {
-            $process->terminate();
+        foreach ($this->workers as $worker) {
+            $worker->stop();
+        }
+        echo "Waiting for workers termination\n";
+        foreach ($this->workers as $worker) {
+            $worker->waitForStop();
+            echo "Exited with: $worker->exitCode\n";
+                    if (isset($worker->tempFile)) {
+                        echo "Reading temp file: $worker->tempFile\n";
+                        $this->printer->printFeedbackFromFile($worker->tempFile);
+                        unset($worker->tempFile);
+                    }
         }
         echo "Waiting for all processes to finish.\n";
-//        sleep(20);
         $this->complete();
     }
 

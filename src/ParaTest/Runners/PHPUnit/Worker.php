@@ -21,8 +21,17 @@ class Worker
 
     public function execute($testCmd)
     {
+        $this->checkStarted();
+        echo $testCmd, "\n";
         fwrite($this->pipes[0], $testCmd . "\n");
         $this->inExecution++;
+    }
+
+    private function checkStarted()
+    {
+        if ($this->pipes === null) {
+            throw new \RuntimeException("You have to start the Worker first!");
+        }
     }
 
     public function stop()
@@ -56,7 +65,7 @@ class Worker
     {
         stream_set_blocking($this->pipes[1], 0);
         while ($line = fgets($this->pipes[1])) {
-            var_dump($line);
+            error_log($line);
             if (strstr($line, "FINISHED\n")) {
                 $this->inExecution--;
             }
