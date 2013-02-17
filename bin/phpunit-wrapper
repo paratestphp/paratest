@@ -17,6 +17,7 @@ while (true) {
     }
     $command = rtrim($command);
     if ($command === 'EXIT') {
+        echo "EXITED\n";
         exit($lastExitCode);
     }
     echo "Executing: $command\n";

@@ -31,8 +31,8 @@ class WorkerTest extends \TestBase
         $worker = new Worker();
         $worker->start();
         $worker->execute($testCmd);
+
         $worker->stop();
-        
         $worker->waitForStop();
 
         $this->assertJUnitLogIsValid($testLog);
@@ -63,6 +63,19 @@ class WorkerTest extends \TestBase
 
         $worker->waitForFinishedJob();
         $this->assertTrue($worker->isFree());
+    }
+
+    public function testTellsWhenItsStopped()
+    {
+        $worker = new Worker();
+        $this->assertFalse($worker->isRunning());
+
+        $worker->start();
+        $this->assertTrue($worker->isRunning());
+
+        $worker->stop();
+        $worker->waitForStop();
+        $this->assertFalse($worker->isRunning());
     }
 
     public function testCanExecuteMultiplePHPUnitCommands()

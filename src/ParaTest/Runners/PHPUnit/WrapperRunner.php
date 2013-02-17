@@ -28,21 +28,28 @@ class WrapperRunner
         $this->printer->start($this->options);
         $opts = $this->options;
         $phpunit = $opts->phpunit . ' --no-globals-backup';
-                    var_dump(count($this->pending));
         for ($i = 0; $i < $opts->processes; $i++) {
             $worker = new Worker();
             $worker->start();
+            $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
-        echo "Set up " . count($this->workers) . " workers\n";
-        while(count($this->pending)) {
-            sleep(1);
-            echo "Checking workers\n";
-            foreach($this->workers as $key => $worker) {
+        $modified = $this->streams;
+        $write = array();
+        $except = array();
+        while(count($this->pending) 
+            && stream_select($modified, $write, $except, 1)) {
+            foreach($modified as $modifiedStream) {
+                $found = null;
+                foreach ($this->streams as $index => $stream) {
+                    if ($modifiedStream == $stream) {
+                        $found = $index;
+                        break;
+                    }
+                }
+                $worker = $this->workers[$found];
                 if($worker->isFree()) {
-                    echo "Worker $key is free, assigning to it.\n";
                     if (isset($worker->tempFile)) {
-                        echo "1Reading temp file: $worker->tempFile\n";
                         $this->printer->printFeedbackFromFile($worker->tempFile);
                         unset($worker->tempFile);
                     }
@@ -54,22 +61,43 @@ class WrapperRunner
                     $worker->tempFile = $pending->getTempFile();
                 }
             }
+            $modified = $this->streams;
+            $write = array();
+            $except = array();
         }
 
-        echo "Terminating workers\n";
         foreach ($this->workers as $worker) {
             $worker->stop();
         }
-        echo "Waiting for workers termination\n";
-        foreach ($this->workers as $worker) {
-            $worker->waitForStop();
-                    if (isset($worker->tempFile)) {
-                        echo "Reading temp file: $worker->tempFile\n";
-                        $this->printer->printFeedbackFromFile($worker->tempFile);
-                        unset($worker->tempFile);
+        $toStop = $this->workers;
+        while (count($toStop) > 0) {
+            $modified = array();
+            foreach ($toStop as $index => $worker) {
+                $modified[$index] = $this->streams[$index];
+            }
+            $write = array();
+            $except = array();
+            $new = stream_select($modified, $write, $except, 1);
+            if ($new === 0) {
+                continue;
+            }
+            if ($new === false) {
+                throw new \RuntimeException("stream_select() returned an error.");
+            }
+            foreach($modified as $modifiedStream) {
+                $found = null;
+                foreach ($this->streams as $index => $stream) {
+                    if ($modifiedStream == $stream) {
+                        $found = $index;
+                        break;
                     }
+                }
+                $worker = $this->workers[$found];
+                if (!$worker->isRunning()) {
+                    unset($toStop[$found]);
+                }
+            }
         }
-        echo "Waiting for all processes to finish.\n";
         $this->complete();
     }
 

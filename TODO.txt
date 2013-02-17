@@ -1,7 +1,8 @@
-- the worker code should be extracted from the functional test
--- WrapperTest should use Worker instead of directly the process
--- the Runner should use Worker plus many ExecutableTest
+correctness
 - if a worker crashes, it should be respawned
+
+performance
+- extract Pool object, to manage all the Workers collectively with stream_select()
 
 
 

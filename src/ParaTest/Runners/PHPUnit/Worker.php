@@ -9,6 +9,7 @@ class Worker
        1 => array("pipe", "w"),
        2 => array("pipe", "w")
     );
+    private $isRunning = false;
 
     public function start()
     {
@@ -17,12 +18,18 @@ class Worker
         $this->proc = proc_open($bin, self::$descriptorspec, $pipes); 
         $this->pipes = $pipes;
         $this->inExecution = 0;
+        $this->isRunning = true;
+        $this->chunks = '';
     } 
+
+    public function stdout()
+    {
+        return $this->pipes[1];
+    }
 
     public function execute($testCmd)
     {
         $this->checkStarted();
-        echo $testCmd, "\n";
         fwrite($this->pipes[0], $testCmd . "\n");
         $this->inExecution++;
     }
@@ -40,6 +47,10 @@ class Worker
         fclose($this->pipes[0]);
     }
 
+    /**
+     * This is an utility function for tests.
+     * Refactor or write it only in the test case.
+     */
     public function waitForFinishedJob()
     {
         if ($this->inExecution == 0) {
@@ -59,15 +70,9 @@ class Worker
         }
     }
 
-
     public function isFree()
     {
-        stream_set_blocking($this->pipes[1], 0);
-        while ($line = fgets($this->pipes[1])) {
-            if (strstr($line, "FINISHED\n")) {
-                $this->inExecution--;
-            }
-        }
+        $this->updateStateFromAvailableOutput();
         return $this->inExecution == 0;
     }
 
@@ -78,6 +83,40 @@ class Worker
             // busy loop! wait for something to be written on pipes[1]
             $status = proc_get_status($this->proc);
             $this->exitCode = $status['exitcode'];
+        }
+    }
+
+    public function isRunning()
+    {
+        $this->updateStateFromAvailableOutput();
+        return $this->isRunning;
+    }
+
+    /**
+     * Have to read even incomplete lines to play nice with stream_select()
+     * Otherwise it would continue to non-block because there are bytes to be read,
+     * but fgets() won't pick them up.
+     */
+    private function updateStateFromAvailableOutput()
+    {
+        if (isset($this->pipes[1])) {
+            stream_set_blocking($this->pipes[1], 0);
+            while ($chunk = fread($this->pipes[1], 4096)) {
+                $this->chunks .= $chunk;
+            }
+            $lines = explode("\n", $this->chunks);
+            $this->chunks = $lines[count($lines) - 1];
+            unset($lines[count($lines) - 1]);
+            foreach ($lines as $line) {
+                $line .= "\n";
+                if (strstr($line, "FINISHED\n")) {
+                    $this->inExecution--;
+                }
+                if (strstr($line, "EXITED\n")) {
+                    $this->isRunning = false;
+                }
+            }
+            stream_set_blocking($this->pipes[1], 1);
         }
     }
 }
