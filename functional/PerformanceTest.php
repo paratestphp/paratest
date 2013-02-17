@@ -75,13 +75,15 @@ class PerformanceTest extends FunctionalTestBase
     {
         $this->markTestIncomplete("Currently the execution times are comparable.");
         $this->path = FIXTURES . DS . 'small-tests';
-        $this->createSmallTests(500);
+        $this->createSmallTests(200);
         list($stdTime, $paraTime, $msg) = $this->getExecTimes(
             $this->getPhpunitOutput(),
             $this->getParaTestOutput(false, array(
                 'runner' => 'WrapperRunner',
             ))
         );
+        vaR_dump($stdTime);
+        vaR_dump($paraTime);
         $this->assertTrue($paraTime <= $stdTime, $msg);
     }
 
