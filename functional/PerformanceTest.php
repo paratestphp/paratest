@@ -7,14 +7,7 @@ class PerformanceTest extends FunctionalTestBase
     public function setUp()
     {
         parent::setUp();
-        foreach (glob(FIXTURES . '/small-tests/FastUnit*Test.php') as $generatedFile) {
-            unlink($generatedFile);
-        }
-    }
-
-    private function createSmallTests($number)
-    {
-        exec("php {$this->path}/generate.php $number", $output);
+        $this->deleteSmallTests();
     }
 
     public function testRunningSuitesInParallelIsNotSlower()

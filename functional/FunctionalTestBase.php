@@ -86,4 +86,17 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         return $this->exitCode;
     }
+
+    protected function createSmallTests($number)
+    {
+        exec("php {$this->path}/generate.php $number", $output);
+    }
+
+    protected function deleteSmallTests()
+    {
+        foreach (glob(FIXTURES . '/small-tests/FastUnit*Test.php') as $generatedFile) {
+            unlink($generatedFile);
+        }
+    }
+
 }
