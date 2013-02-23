@@ -14,6 +14,7 @@ To install with composer add the following to your `composer.json` file:
 }
 ```
 Then run `php composer.phar install`
+The `display_errors` php.ini directive must be set to `stderr` to run the test suite.
 
 
 Usage
