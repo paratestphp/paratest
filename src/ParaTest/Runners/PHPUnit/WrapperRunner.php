@@ -25,9 +25,6 @@ class WrapperRunner
     {
         $this->verifyConfiguration();
         $this->load();
-        foreach ($this->pending as $pending) {
-            echo "Pending temp file: {$pending->getTempFile()}\n";
-        }
         $this->printer->start($this->options);
         $opts = $this->options;
         $phpunit = $opts->phpunit . ' --no-globals-backup';
@@ -54,7 +51,6 @@ class WrapperRunner
                 if($worker->isFree()) {
                     if (isset($worker->tempFile)) {
                         $this->printer->printFeedbackFromFile($worker->tempFile);
-                        echo "Temp file: $worker->tempFile\n";
                         unset($worker->tempFile);
                     }
                     $pending = array_shift($this->pending);
@@ -99,7 +95,6 @@ class WrapperRunner
                 $worker = $this->workers[$found];
                 if (!$worker->isRunning()) {
                     if (isset($worker->tempFile)) {
-                        echo "Temp file: $worker->tempFile\n";
                         $this->printer->printFeedbackFromFile($worker->tempFile);
                         unset($worker->tempFile);
                     }

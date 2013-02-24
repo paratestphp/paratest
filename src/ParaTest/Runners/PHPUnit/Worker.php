@@ -3,23 +3,26 @@ namespace ParaTest\Runners\PHPUnit;
 
 class Worker
 {
-    private $pipes;
     private static $descriptorspec = array(
        0 => array("pipe", "r"),
        1 => array("pipe", "w"),
        2 => array("pipe", "w")
     );
+    private $proc;
+    private $pipes;
+    private $inExecution = 0;
     private $isRunning = false;
+    private $exitCode = null;
+    private $commands = array();
+    private $chunks = '';
 
     public function start()
     {
-        $bin = 'bin/phpunit-wrapper';
+        $bin = 'exec bin/phpunit-wrapper';
         $pipes = array();
         $this->proc = proc_open($bin, self::$descriptorspec, $pipes); 
         $this->pipes = $pipes;
-        $this->inExecution = 0;
         $this->isRunning = true;
-        $this->chunks = '';
     } 
 
     public function stdout()
@@ -30,6 +33,7 @@ class Worker
     public function execute($testCmd)
     {
         $this->checkStarted();
+        $this->commands[] = $testCmd;
         fwrite($this->pipes[0], $testCmd . "\n");
         $this->inExecution++;
     }
@@ -72,24 +76,58 @@ class Worker
 
     public function isFree()
     {
+        $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
         return $this->inExecution == 0;
     }
 
+    /**
+     * @deprecated
+     * This function consumes a lot of CPU while waiting for 
+     * the worker to finish. Use it only in testing paratest
+     * itself.
+     */
     public function waitForStop()
     {
         $status = proc_get_status($this->proc);
         while($status['running']) {
-            // busy loop! wait for something to be written on pipes[1]
             $status = proc_get_status($this->proc);
-            $this->exitCode = $status['exitcode'];
+            $this->setExitCode($status);
+        }
+    }
+
+    private function setExitCode($status)
+    {
+        if (!$status['running']) {
+            if ($this->exitCode === null) {
+                $this->exitCode = $status['exitcode'];
+            }
         }
     }
 
     public function isRunning()
     {
+        $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
         return $this->isRunning;
+    }
+
+    public function isCrashed()
+    {
+        $this->updateStateFromAvailableOutput();
+        $status = proc_get_status($this->proc);
+        $this->setExitCode($status);
+        if ($this->exitCode === null) {
+            return false;
+        }
+        return $this->exitCode != 0;
+    }
+
+    private function checkNotCrashed()
+    {
+        if ($this->isCrashed()) {
+            throw new \RuntimeException("This worker has crashed. Last executed command: " . end($this->commands));
+        }
     }
 
     /**
