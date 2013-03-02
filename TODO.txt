@@ -1,6 +1,5 @@
 correctness
-- if a worker crashes, it should be respawned
-- executing on 1000 small-tests gives 995 as a result
+- if a worker crashes, it should be respawned. Right now it fails the entire suite.
 
 performance
-- extract Pool object, to manage all the Workers collectively with stream_select()
+- extract Pool object, to manage all the Workers and their streams
