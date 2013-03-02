@@ -21,6 +21,16 @@ class WrapperRunner
         $this->printer = new ResultPrinter($this->interpreter);
     }
 
+    private function startWorkers($number)
+    {
+        for ($i = 0; $i < $number; $i++) {
+            $worker = new Worker();
+            $worker->start();
+            $this->streams[] = $worker->stdout();
+            $this->workers[] = $worker;
+        }
+    }
+
     public function run()
     {
         $this->verifyConfiguration();
@@ -28,12 +38,7 @@ class WrapperRunner
         $this->printer->start($this->options);
         $opts = $this->options;
         $phpunit = $opts->phpunit . ' --no-globals-backup';
-        for ($i = 0; $i < $opts->processes; $i++) {
-            $worker = new Worker();
-            $worker->start();
-            $this->streams[] = $worker->stdout();
-            $this->workers[] = $worker;
-        }
+        $this->startWorkers($opts->processes);
         $modified = $this->streams;
         $write = array();
         $except = array();

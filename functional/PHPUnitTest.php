@@ -24,7 +24,6 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testWithWrapperRunner()
     {
-        $this->markTestIncomplete("Has to be able to work even with Workers being crashed");
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'runner' => 'WrapperRunner'));
         $this->assertResults($results);
     }
