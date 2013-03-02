@@ -12,7 +12,6 @@ class WrapperRunner
     protected $options;
     protected $interpreter;
     protected $printer;
-    protected $exitcode = -1;
     
     public function __construct($opts = array())
     {
@@ -21,98 +20,17 @@ class WrapperRunner
         $this->printer = new ResultPrinter($this->interpreter);
     }
 
-    private function startWorkers($number)
-    {
-        for ($i = 0; $i < $number; $i++) {
-            $worker = new Worker();
-            $worker->start();
-            $this->streams[] = $worker->stdout();
-            $this->workers[] = $worker;
-        }
-    }
-
     public function run()
     {
         $this->verifyConfiguration();
         $this->load();
         $this->printer->start($this->options);
-        $opts = $this->options;
-        $phpunit = $opts->phpunit . ' --no-globals-backup';
-        $this->startWorkers($opts->processes);
-        $modified = $this->streams;
-        $write = array();
-        $except = array();
-        while(count($this->pending) 
-            && stream_select($modified, $write, $except, 1)) {
-            foreach($modified as $modifiedStream) {
-                $found = null;
-                foreach ($this->streams as $index => $stream) {
-                    if ($modifiedStream == $stream) {
-                        $found = $index;
-                        break;
-                    }
-                }
-                $worker = $this->workers[$found];
-                if($worker->isFree()) {
-                    if (isset($worker->tempFile)) {
-                        $this->printer->printFeedbackFromFile($worker->tempFile);
-                        unset($worker->tempFile);
-                    }
-                    $pending = array_shift($this->pending);
-                    if (!$pending) {
-                        break;
-                    }
-                    $worker->execute($pending->command($phpunit, $opts->filtered));
-                    $worker->tempFile = $pending->getTempFile();
-                }
-            }
-            $modified = $this->streams;
-            $write = array();
-            $except = array();
-        }
 
-        foreach ($this->workers as $worker) {
-            $worker->stop();
-        }
-        $toStop = $this->workers;
-        while (count($toStop) > 0) {
-            $modified = array();
-            foreach ($toStop as $index => $worker) {
-                $modified[$index] = $this->streams[$index];
-            }
-            $write = array();
-            $except = array();
-            $new = stream_select($modified, $write, $except, 1);
-            if ($new === 0) {
-                continue;
-            }
-            if ($new === false) {
-                throw new \RuntimeException("stream_select() returned an error.");
-            }
-            foreach($modified as $modifiedStream) {
-                $found = null;
-                foreach ($this->streams as $index => $stream) {
-                    if ($modifiedStream == $stream) {
-                        $found = $index;
-                        break;
-                    }
-                }
-                $worker = $this->workers[$found];
-                if (!$worker->isRunning()) {
-                    if (isset($worker->tempFile)) {
-                        $this->printer->printFeedbackFromFile($worker->tempFile);
-                        unset($worker->tempFile);
-                    }
-                    unset($toStop[$found]);
-                }
-            }
-        }
+        $this->startWorkers();
+        $this->assignAllPendingTests();
+        $this->sendStopMessages();
+        $this->waitForAllToFinish();
         $this->complete();
-    }
-
-    public function getExitCode()
-    {
-        return $this->exitcode;
     }
 
     private function verifyConfiguration()
@@ -121,6 +39,109 @@ class WrapperRunner
             $this->printer->println(sprintf('Could not read "%s".', $this->options->filtered['configuration']));
             exit(1);
         }
+    }
+
+    private function load()
+    {
+        $loader = new SuiteLoader($this->options);
+        $loader->load($this->options->path);
+        $executables = ($this->options->functional) ? $loader->getTestMethods() : $loader->getSuites();
+        $this->pending = array_merge($this->pending, $executables);
+        foreach($this->pending as $pending)
+            $this->printer->addTest($pending);
+    }
+
+    private function startWorkers($number)
+    {
+        for ($i = 0; $i < $this->options->processes; $i++) {
+            $worker = new Worker();
+            $worker->start();
+            $this->streams[] = $worker->stdout();
+            $this->workers[] = $worker;
+        }
+    }
+
+    private function assignAllPendingTests()
+    {
+        $phpunit = $this->options->phpunit . ' --no-globals-backup';
+        $phpunitOptions = $this->options->filtered;
+        while(count($this->pending) 
+            && $this->waitForStreamsToChange($this->streams)) {
+            foreach($this->progressedWorkers() as $worker) {
+                if($worker->isFree()) {
+                    $worker->printFeedback($this->printer);
+                    $pending = array_shift($this->pending);
+                    $worker->assign($pending, $phpunit, $phpunitOptions);
+                }
+            }
+        }
+    }
+
+    private function sendStopMessages()
+    {
+        foreach ($this->workers as $worker) {
+            $worker->stop();
+        }
+    }
+
+    private function waitForAllToFinish()
+    {
+        $toStop = $this->workers;
+        while (count($toStop) > 0) {
+            $toCheck = $this->streamsOf($toStop);
+            $new = $this->waitForStreamsToChange($toCheck);
+            foreach ($this->progressedWorkers() as $index => $worker) {
+                if (!$worker->isRunning()) {
+                    $worker->printFeedback($this->printer);
+                    unset($toStop[$index]);
+                }
+            }
+        }
+    }
+
+    // put on WorkersPool
+    private function waitForStreamsToChange($modified)
+    {
+        $write = array();
+        $except = array();
+        $result = stream_select($modified, $write, $except, 1);
+        if ($result === false) {
+            throw new \RuntimeException("stream_select() returned an error while waiting for all workers to finish.");
+        }
+        $this->modified = $modified;
+        return $result;
+    }
+
+    // put on WorkersPool
+    private function progressedWorkers()
+    {
+        $result = array();
+        foreach($this->modified as $modifiedStream) {
+            $found = null;
+            foreach ($this->streams as $index => $stream) {
+                if ($modifiedStream == $stream) {
+                    $found = $index;
+                    break;
+                }
+            }
+            $result[$found] = $this->workers[$found];
+        }
+        $this->modified = array();
+        return $result;
+    }
+
+    /**
+     * Returns the output streams of a subset of workers.
+     * @param array    keys are positions in $this->workers
+     * @return array
+     */
+    private function streamsOf($workers)
+    {
+        $streams = array();
+        foreach (array_keys($workers) as $index) {
+            $streams[$index] = $this->streams[$index];
+        }
+        return $streams;
     }
 
     private function complete()
@@ -134,15 +155,6 @@ class WrapperRunner
         }
     }
 
-    private function load()
-    {
-        $loader = new SuiteLoader($this->options);
-        $loader->load($this->options->path);
-        $executables = ($this->options->functional) ? $loader->getTestMethods() : $loader->getSuites();
-        $this->pending = array_merge($this->pending, $executables);
-        foreach($this->pending as $pending)
-            $this->printer->addTest($pending);
-    }
 
     private function log()
     {
@@ -160,15 +172,7 @@ class WrapperRunner
         $test->stop();
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
             throw new \Exception($test->getStderr(), $test->getExitCode());
-        $this->printer->printFeedback($test);
         return false;
-    }
-
-    private function setExitCode(ExecutableTest $test)
-    {
-        $exit = $test->getExitCode();
-        if($exit > $this->exitcode)
-            $this->exitcode = $exit;
     }
      */
 }

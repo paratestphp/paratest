@@ -39,6 +39,20 @@ class Worker
         $this->inExecution++;
     }
 
+    public function assign(ExecutableTest $test, $phpunit, $phpunitOptions)
+    {
+        $this->execute($test->command($phpunit, $phpunitOptions));
+        $this->tempFile = $test->getTempFile();
+    }
+
+    public function printFeedback($printer)
+    {
+        if (isset($this->tempFile)) {
+            $printer->printFeedbackFromFile($this->tempFile);
+            unset($this->tempFile);
+        }
+    }
+
     public function isStarted()
     {
         return $this->proc !== null && $this->pipes !== null;
