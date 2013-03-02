@@ -103,7 +103,7 @@ abstract class ExecutableTest
 
     protected function getCommandString($binary, $options = array())
     {
-        $command = $binary;
+        $command = 'PARATEST=1 ' . $binary;
         foreach($options as $key => $value) $command .= " --$key %s";
         $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
