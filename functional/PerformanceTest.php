@@ -15,7 +15,6 @@ class PerformanceTest extends FunctionalTestBase
         list($stdTime, $paraTime, $msg) = $this->getExecTimes(
             $this->getPhpunitOutput(),
             $this->getParaTestOutput());
-        var_dump($stdTime, $paraTime);
         $this->assertTrue($paraTime <= $stdTime, $msg);
     }
 
@@ -75,8 +74,6 @@ class PerformanceTest extends FunctionalTestBase
                 'runner' => 'WrapperRunner',
             ))
         );
-        vaR_dump($stdTime);
-        vaR_dump($paraTime);
         $this->assertTrue($paraTime <= $stdTime, $msg);
     }
 

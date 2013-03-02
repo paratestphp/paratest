@@ -38,9 +38,14 @@ class Worker
         $this->inExecution++;
     }
 
+    public function isStarted()
+    {
+        return $this->proc !== null && $this->pipes !== null;
+    }
+
     private function checkStarted()
     {
-        if ($this->pipes === null) {
+        if (!$this->isStarted()) {
             throw new \RuntimeException("You have to start the Worker first!");
         }
     }
@@ -115,6 +120,9 @@ class Worker
     public function isCrashed()
     {
         $this->updateStateFromAvailableOutput();
+        if (!$this->isStarted()) {
+            return false;
+        }
         $status = proc_get_status($this->proc);
         $this->setExitCode($status);
         if ($this->exitCode === null) {
