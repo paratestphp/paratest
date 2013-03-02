@@ -1,10 +1,8 @@
 #!/usr/bin/env php
 <?php
 echo "Worker starting\n";
-//require_once __DIR__ . '/../vendor/bin/phpunit';
 
 require_once __DIR__ . '/../vendor/autoload.php';
-// assign $_SERVER['argv']
 $commands = fopen('php://stdin', 'r');
 $lastExitCode = 0;
 while (true) {
@@ -22,6 +20,11 @@ while (true) {
     }
     echo "Executing: $command\n";
     $_SERVER['argv'] = explode(' ', $command);
+
+    while (!preg_match('|/phpunit|', $_SERVER['argv'][0])) {
+        array_shift($_SERVER['argv']);
+    } 
+
     $lastExitCode = PHPUnit_TextUI_Command::main(false);
     echo "FINISHED\n";
 }
