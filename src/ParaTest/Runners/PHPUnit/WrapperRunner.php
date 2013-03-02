@@ -51,7 +51,7 @@ class WrapperRunner
             $this->printer->addTest($pending);
     }
 
-    private function startWorkers($number)
+    private function startWorkers()
     {
         for ($i = 0; $i < $this->options->processes; $i++) {
             $worker = new Worker();
@@ -162,6 +162,11 @@ class WrapperRunner
         $output = $this->options->filtered['log-junit'];
         $writer = new Writer($this->interpreter, $this->options->path);
         $writer->write($output);
+    }
+
+    public function getExitCode()
+    {
+        return 0;
     }
 
     /**
