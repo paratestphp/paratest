@@ -36,6 +36,13 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertRegexp('/OK \(\d+ test/', $results);
     }
 
+    public function testParatestEnvironmentVariableWithWrapperRunner()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner'));
+        $this->assertRegexp('/OK \(\d+ test/', $results);
+    }
+
     public function testWithConfigurationInDirWithoutConfigFile()
     {
         chdir(dirname(FIXTURES));

@@ -148,15 +148,6 @@ class WrapperRunner
     }
 
     /**
-    private function fillRunQueue()
-    {
-        $opts = $this->options;
-        $phpunit = $opts->phpunit;
-        $phpunit = realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
-        while(sizeof($this->pending) && sizeof($this->running) < $opts->processes)
-            $this->running[] = array_shift($this->pending)->run($phpunit, $opts->filtered);
-    }
-
     private function testIsStillRunning($test)
     {
         if(!$test->isDoneRunning()) return true;

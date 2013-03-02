@@ -15,10 +15,11 @@ class Worker
     private $exitCode = null;
     private $commands = array();
     private $chunks = '';
+    private $alreadyReadOutput = '';
 
     public function start()
     {
-        $bin = 'exec bin/phpunit-wrapper';
+        $bin = 'exec ' . realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
         $pipes = array();
         $this->proc = proc_open($bin, self::$descriptorspec, $pipes); 
         $this->pipes = $pipes;
@@ -134,8 +135,18 @@ class Worker
     private function checkNotCrashed()
     {
         if ($this->isCrashed()) {
-            throw new \RuntimeException("This worker has crashed. Last executed command: " . end($this->commands));
+            throw new \RuntimeException("This worker has crashed. Last executed command: " . end($this->commands) . PHP_EOL
+                . "Output:" . PHP_EOL
+                . "----------------------" . PHP_EOL
+                . $this->alreadyReadOutput . PHP_EOL
+                . "----------------------" . PHP_EOL
+                . $this->readAllStderr());
         }
+    }
+
+    private function readAllStderr()
+    {
+        return stream_get_contents($this->pipes[2]);
     }
 
     /**
@@ -149,10 +160,14 @@ class Worker
             stream_set_blocking($this->pipes[1], 0);
             while ($chunk = fread($this->pipes[1], 4096)) {
                 $this->chunks .= $chunk;
+                $this->alreadyReadOutput .= $chunk;
             }
             $lines = explode("\n", $this->chunks);
+            // last element is not a complete line,
+            // becomes part of a line completed later
             $this->chunks = $lines[count($lines) - 1];
             unset($lines[count($lines) - 1]);
+            // delivering complete lines to this Worker
             foreach ($lines as $line) {
                 $line .= "\n";
                 if (strstr($line, "FINISHED\n")) {
