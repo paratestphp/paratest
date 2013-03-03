@@ -25,7 +25,8 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithWrapperRunner()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'runner' => 'WrapperRunner'));
-        $this->assertResults($results);
+        $this->assertRegExp("/FAILURES!
+Tests: 33, Assertions: 36, Failures: 4, Errors: 1./", $results);
     }
 
     public function testParatestEnvironmentVariable()
@@ -244,7 +245,7 @@ class PHPUnitTest extends FunctionalTestBase
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
-Tests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
+Tests: 33, Assertions: 31, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())

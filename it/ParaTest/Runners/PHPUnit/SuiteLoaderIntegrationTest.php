@@ -89,7 +89,7 @@ class SuiteLoaderIntegrationTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(32, sizeof($methods));
+        $this->assertEquals(33, sizeof($methods));
         return $methods;
     }
 

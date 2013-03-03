@@ -53,9 +53,9 @@ class WrapperRunner
 
     private function startWorkers()
     {
-        for ($i = 0; $i < $this->options->processes; $i++) {
+        for ($token = 1; $token <= $this->options->processes; $token++) {
             $worker = new Worker();
-            $worker->start();
+            $worker->start($token);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
