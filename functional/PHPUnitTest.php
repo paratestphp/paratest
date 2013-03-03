@@ -189,7 +189,20 @@ class PHPUnitTest extends FunctionalTestBase
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ), $pipes);
-        $this->assertContains('Call to undefined function inexistent', stream_get_contents($pipes[2]));
+        $stderr = stream_get_contents($pipes[2]);
+        $this->assertContains('Call to undefined function inexistent', $stderr);
+    }
+
+    public function testRunWithFatalRuntimeErrorWithTheWrapperRunnerOutputsError()
+    {
+        $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalFunctionErrorTest.php';
+        $pipes = array();
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP,
+            'runner' => 'WrapperRunner'
+        ), $pipes);
+        $stderr = stream_get_contents($pipes[2]);
+        $this->assertContains('Call to undefined function inexistent', $stderr);
     }
 
     public function testRunWithoutPathArgumentDisplaysUsage()
