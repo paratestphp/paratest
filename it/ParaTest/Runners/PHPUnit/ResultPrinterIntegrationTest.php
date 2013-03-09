@@ -125,13 +125,32 @@ class ResultPrinterIntegrationTest extends ResultTester
         $this->assertEquals('.F.E.F.', $contents);
     }
 
-    /*public function testPrintFeedbackForMoreThan100Suites()
+    public function testPrintFeedbackForMoreThan100Suites()
     {
+        //add tests
         for ($i = 0; $i < 40; $i++)
             $this->printer->addTest($this->passingSuite);
+
+        //start the printer so boundaries are established
+        ob_start();
+        $this->printer->start(new Options());
+        ob_clean();
+
+        //get the feedback string
+        ob_start();
         for ($i = 0; $i < 40; $i++)
             $this->printer->printFeedback($this->passingSuite);
-    }*/
+        $feedback = ob_get_clean();
+
+        //assert it is as expected
+        $expected = '';
+        for($i = 0; $i < 63; $i++)
+            $expected .= '.';
+        $expected .= "  63 / 120 ( 52%)\n";
+        for($i = 0; $i < 57; $i++)
+            $expected .= '.';
+        $this->assertEquals($expected, $feedback);
+    }
 
     private function prepareReaders()
     {

@@ -65,32 +65,6 @@ class Reader extends MetaProvider
             $this->initSuiteFromCases($nodeArray);
     }
 
-    protected function getCaseFeedback($case, $totalCases, $casesProcessed)
-    {
-        $feedback = '';
-        if ($case->failures)
-            $feedback .= 'F';
-        else if ($case->errors)
-            $feedback .= 'E';
-        else
-            $feedback .= '.';
-
-        /*$casesProcessed = \ParaTest\Runners\PHPUnit\ResultPrinter::$casesProcessed;
-        $totalCases = \ParaTest\Runners\PHPUnit\ResultPrinter::$totalCases;*/
-        $percent = floor(($casesProcessed * 100) / $totalCases);
-        if (($casesProcessed % 100) == 0 && $casesProcessed != 0) {
-            $feedback .= sprintf(
-                ' %' . strlen($totalCases) . 'd / %' .
-                    strlen($totalCases) . 'd (%3s%%)',
-
-                $casesProcessed,
-                $totalCases,
-                $percent
-            ) . PHP_EOL;
-        }
-        return $feedback;
-    }
-
     /**
      * Uses an array of testcase nodes to build a suite
      * @param array $nodeArray an array of SimpleXMLElement nodes representing testcase elements

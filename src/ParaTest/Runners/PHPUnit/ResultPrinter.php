@@ -10,6 +10,8 @@ class ResultPrinter
     protected $numTestsWidth;
     protected $maxColumn;
     protected $totalCases = 0;
+    protected $column = 0;
+    protected $casesProcessed = 0;
 
     public function __construct(LogInterpreter $results)
     {
@@ -38,8 +40,9 @@ class ResultPrinter
         \PHP_Timer::start();
     }
 
-    public function println($string)
+    public function println($string = "")
     {
+        $this->column = 0;
         print("$string\n");
     }
 
@@ -61,7 +64,19 @@ class ResultPrinter
     {
         $reader = new Reader($test->getTempFile());
         $this->results->addReader($reader);
-        print implode('', $reader->getFeedback());
+        $feedbackItems = $reader->getFeedback();
+        foreach ($feedbackItems as $item)
+            $this->printFeedbackItem($item);
+    }
+
+    protected function printFeedbackItem($item)
+    {
+        print $item;
+        $this->column++;
+        $this->casesProcessed++;
+        if ($this->column == $this->maxColumn) {
+            $this->printProgress();
+        }
     }
 
     public function getHeader()
@@ -107,6 +122,20 @@ class ResultPrinter
             $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
 
         return $output;
+    }
+
+    protected function printProgress()
+    {
+        printf(
+            ' %' . $this->numTestsWidth . 'd / %' .
+                $this->numTestsWidth . 'd (%3s%%)',
+
+            $this->casesProcessed,
+            $this->totalCases,
+            floor(($this->casesProcessed / $this->totalCases) * 100)
+        );
+
+        $this->println();
     }
 
     private function getFailedFooter()
