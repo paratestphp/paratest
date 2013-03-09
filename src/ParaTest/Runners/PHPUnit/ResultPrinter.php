@@ -7,6 +7,8 @@ class ResultPrinter
 {
     protected $suites = array();
     protected $results;
+    public static $casesProcessed = 0;
+    public static $totalCases = 0;
 
     public function __construct(LogInterpreter $results)
     {
@@ -16,6 +18,7 @@ class ResultPrinter
     public function addTest(ExecutableTest $suite)
     {
         $this->suites[] = $suite;
+        self::$totalCases = self::$totalCases + count($suite->getFunctions());
         return $this;
     }
 
