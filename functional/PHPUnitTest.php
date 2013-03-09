@@ -175,7 +175,6 @@ class PHPUnitTest extends FunctionalTestBase
     public function testRunWithoutPathArgumentDisplaysUsage()
     {
         $this->path = '';
-        chdir(dirname(FIXTURES));
         $result = $this->paratest();
         $usage = file_get_contents(FIXTURES . DS . 'output' . DS . 'usage.txt');
         $this->assertEquals($usage, $result);
@@ -203,7 +202,6 @@ class PHPUnitTest extends FunctionalTestBase
     public function testUsingDefaultLoadedConfiguration()
     {
         chdir(FIXTURES);
-        $this->path = '';
         $results = $this->paratest(array('f' => ''));
         $this->assertResults($results);
     }
