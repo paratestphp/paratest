@@ -28,7 +28,7 @@ class ResultPrinterIntegrationTest extends ResultTester
 
         $header = $this->printer->getHeader();
 
-        $this->assertRegExp("/\n\nTime: [0-9]+ seconds?, Memory:[\s][0-9]([.][0-9]{2})?Mb\n\n/", $header);
+        $this->assertRegExp("/\n\nTime: [0-9]+ seconds?, Memory:[\s][0-9]+([.][0-9]{2})?Mb\n\n/", $header);
     }
 
     public function testGetErrorsSingleError()
