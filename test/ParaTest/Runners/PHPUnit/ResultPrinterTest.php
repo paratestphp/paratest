@@ -52,6 +52,20 @@ class ResultPrinterTest extends \TestBase
         $this->assertEquals($expected, $contents);
     }
 
+    public function testStartSetsWidthAndMaxColumn()
+    {
+        $funcs = array();
+        for($i = 0; $i < 120; $i++)
+            $funcs[] = new ParsedFunction('doc', 'public', 'function' . $i);
+        $suite = new Suite('/path', $funcs);
+        $this->printer->addTest($suite);
+        $this->getStartOutput(new Options());
+        $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
+        $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
+        $this->assertEquals(3, $numTestsWidth);
+        $this->assertEquals(63, $maxColumn);
+    }
+
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
     {
         file_put_contents('myconfig.xml', '<root />');

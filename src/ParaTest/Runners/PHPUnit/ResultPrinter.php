@@ -7,7 +7,8 @@ class ResultPrinter
 {
     protected $suites = array();
     protected $results;
-    protected $casesProcessed = 0;
+    protected $numTestsWidth;
+    protected $maxColumn;
     protected $totalCases = 0;
 
     public function __construct(LogInterpreter $results)
@@ -25,6 +26,8 @@ class ResultPrinter
 
     public function start(Options $options)
     {
+        $this->numTestsWidth = strlen((string) $this->totalCases);
+        $this->maxColumn = 69 - (2 * $this->numTestsWidth);
         printf("\nRunning phpunit in %d process%s with %s%s\n\n",
                $options->processes,
                $options->processes > 1 ? 'es' : '',
