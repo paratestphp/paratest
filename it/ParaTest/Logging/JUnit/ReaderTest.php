@@ -211,7 +211,7 @@ Failed asserting that true is false.
         $totalCases = 7;
         $casesProcessed = 0;
         $feedback = $this->mixed->getFeedback($totalCases, $casesProcessed);
-        $this->assertEquals('.F.E.F.', $feedback);
+        $this->assertEquals(array('.', 'F', '.', 'E', '.', 'F', '.'), $feedback);
     }
 
     public function testRemoveLog()

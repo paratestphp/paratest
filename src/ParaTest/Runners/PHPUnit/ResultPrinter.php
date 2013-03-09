@@ -58,7 +58,7 @@ class ResultPrinter
     {
         $reader = new Reader($test->getTempFile());
         $this->results->addReader($reader);
-        print $reader->getFeedback($this->totalCases, $this->casesProcessed);
+        print implode('', $reader->getFeedback());
     }
 
     public function getHeader()

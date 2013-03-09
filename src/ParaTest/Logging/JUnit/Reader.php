@@ -38,14 +38,15 @@ class Reader extends MetaProvider
         return $this->suites;
     }
 
-    public function getFeedback($totalCases = 0, $casesProcessed = 0)
+    public function getFeedback()
     {
-        $feedback = '';
+        $feedback = array();
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach($suites as $suite) {
             foreach($suite->cases as $case) {
-                $casesProcessed++;
-                $feedback .= $this->getCaseFeedback($case, $totalCases, $casesProcessed);
+                if($case->failures) $feedback[] = 'F';
+                else if ($case->errors) $feedback[] = 'E';
+                else $feedback[] = '.';
             }
         }
         return $feedback;

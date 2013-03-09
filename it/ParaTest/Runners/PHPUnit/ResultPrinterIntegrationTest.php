@@ -125,6 +125,14 @@ class ResultPrinterIntegrationTest extends ResultTester
         $this->assertEquals('.F.E.F.', $contents);
     }
 
+    /*public function testPrintFeedbackForMoreThan100Suites()
+    {
+        for ($i = 0; $i < 40; $i++)
+            $this->printer->addTest($this->passingSuite);
+        for ($i = 0; $i < 40; $i++)
+            $this->printer->printFeedback($this->passingSuite);
+    }*/
+
     private function prepareReaders()
     {
         $suites = $this->getObjectValue($this->printer, 'suites');
