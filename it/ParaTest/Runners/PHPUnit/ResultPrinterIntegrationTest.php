@@ -13,12 +13,14 @@ class ResultPrinterIntegrationTest extends ResultTester
         parent::setUp();
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
+        $this->mockFunctions($this->errorSuite, 1);
+        $this->mockFunctions($this->failureSuite, 3);
+        $this->mockFunctions($this->mixedSuite, 7);
+        $this->mockFunctions($this->passingSuite, 3);
     }
 
     public function testGetHeader()
     {
-        $this->mockFunctions($this->errorSuite, 1);
-        $this->mockFunctions($this->failureSuite, 3);
         $this->printer->addTest($this->errorSuite)
                       ->addTest($this->failureSuite);
 
@@ -68,6 +70,7 @@ class ResultPrinterIntegrationTest extends ResultTester
 
     public function testGetFailures()
     {
+
         $this->printer->addTest($this->mixedSuite);
 
         $this->prepareReaders();
@@ -115,6 +118,7 @@ class ResultPrinterIntegrationTest extends ResultTester
 
     public function testPrintFeedbackForMixed()
     {
+        $this->printer->addTest($this->mixedSuite);
         ob_start();
         $this->printer->printFeedback($this->mixedSuite);
         $contents = ob_get_clean();

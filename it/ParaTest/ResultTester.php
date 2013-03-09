@@ -41,7 +41,7 @@ abstract class ResultTester extends \TestBase
             $funcs[] = new ParsedFunction('doc', 'public', 'func' + $i);
             $i++;
         }
-        $mockSuite->expects($this->once())
+        $mockSuite->expects($this->any())
                   ->method('getFunctions')
                   ->will($this->returnValue($funcs));
     }
