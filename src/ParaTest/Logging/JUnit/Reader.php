@@ -38,41 +38,15 @@ class Reader extends MetaProvider
         return $this->suites;
     }
 
-    public function getFeedback()
+    public function getFeedback($totalCases = 0, $casesProcessed = 0)
     {
         $feedback = '';
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach($suites as $suite) {
             foreach($suite->cases as $case) {
-                \ParaTest\Runners\PHPUnit\ResultPrinter::$casesProcessed++;
-                $feedback .= $this->getCaseFeedback($case);
+                $casesProcessed++;
+                $feedback .= $this->getCaseFeedback($case, $totalCases, $casesProcessed);
             }
-        }
-        return $feedback;
-    }
-
-    function getCaseFeedback($case)
-    {
-        $feedback = '';
-        if ($case->failures)
-            $feedback .= 'F';
-        else if ($case->errors)
-            $feedback .= 'E';
-        else
-            $feedback .= '.';
-
-        $casesProcessed = \ParaTest\Runners\PHPUnit\ResultPrinter::$casesProcessed;
-        $totalCases = \ParaTest\Runners\PHPUnit\ResultPrinter::$totalCases;
-        $percent = floor(($casesProcessed * 100) / $totalCases);
-        if (($casesProcessed % 100) == 0) {
-            $feedback .= sprintf(
-                ' %' . strlen($totalCases) . 'd / %' .
-                       strlen($totalCases) . 'd (%3s%%)',
-
-                $casesProcessed,
-                $totalCases,
-                $percent
-              ) . PHP_EOL;
         }
         return $feedback;
     }
@@ -88,6 +62,32 @@ class Reader extends MetaProvider
         $cases = $this->getCaseNodes();
         foreach($cases as $file => $nodeArray)
             $this->initSuiteFromCases($nodeArray);
+    }
+
+    protected function getCaseFeedback($case, $totalCases, $casesProcessed)
+    {
+        $feedback = '';
+        if ($case->failures)
+            $feedback .= 'F';
+        else if ($case->errors)
+            $feedback .= 'E';
+        else
+            $feedback .= '.';
+
+        /*$casesProcessed = \ParaTest\Runners\PHPUnit\ResultPrinter::$casesProcessed;
+        $totalCases = \ParaTest\Runners\PHPUnit\ResultPrinter::$totalCases;*/
+        $percent = floor(($casesProcessed * 100) / $totalCases);
+        if (($casesProcessed % 100) == 0) {
+            $feedback .= sprintf(
+                ' %' . strlen($totalCases) . 'd / %' .
+                    strlen($totalCases) . 'd (%3s%%)',
+
+                $casesProcessed,
+                $totalCases,
+                $percent
+            ) . PHP_EOL;
+        }
+        return $feedback;
     }
 
     /**
