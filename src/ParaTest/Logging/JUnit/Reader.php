@@ -44,7 +44,6 @@ class Reader extends MetaProvider
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach($suites as $suite) {
             foreach($suite->cases as $case) {
-                $casesProcessed++;
                 $feedback .= $this->getCaseFeedback($case, $totalCases, $casesProcessed);
             }
         }
@@ -77,7 +76,7 @@ class Reader extends MetaProvider
         /*$casesProcessed = \ParaTest\Runners\PHPUnit\ResultPrinter::$casesProcessed;
         $totalCases = \ParaTest\Runners\PHPUnit\ResultPrinter::$totalCases;*/
         $percent = floor(($casesProcessed * 100) / $totalCases);
-        if (($casesProcessed % 100) == 0) {
+        if (($casesProcessed % 100) == 0 && $casesProcessed != 0) {
             $feedback .= sprintf(
                 ' %' . strlen($totalCases) . 'd / %' .
                     strlen($totalCases) . 'd (%3s%%)',
