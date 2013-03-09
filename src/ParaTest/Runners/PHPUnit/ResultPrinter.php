@@ -18,7 +18,8 @@ class ResultPrinter
     public function addTest(ExecutableTest $suite)
     {
         $this->suites[] = $suite;
-        $this->totalCases = $this->totalCases + count($suite->getFunctions());
+        $increment = method_exists($suite, 'getFunctions') ? count($suite->getFunctions()) : 1;
+        $this->totalCases = $this->totalCases + $increment;
         return $this;
     }
 
@@ -82,6 +83,11 @@ class ResultPrinter
     {
         $errors = $this->results->getErrors();
         return $this->getDefects($errors, 'error');
+    }
+
+    public function getTotalCases()
+    {
+        return $this->totalCases;
     }
 
     protected function getDefects($defects = array(), $type)
