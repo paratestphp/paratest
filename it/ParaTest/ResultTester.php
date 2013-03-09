@@ -1,5 +1,7 @@
 <?php namespace ParaTest;
 
+use ParaTest\Parser\ParsedFunction;
+
 abstract class ResultTester extends \TestBase
 {
     protected $errorSuite;
@@ -17,7 +19,7 @@ abstract class ResultTester extends \TestBase
         $this->passingSuite = $this->getSuiteWithResult('single-passing.xml');
     }
 
-    protected function getSuiteWithResult($result)
+    public function getSuiteWithResult($result)
     {
         $result = FIXTURES . DS . 'results' . DS . $result;
         $suite = $this->getMockBuilder('ParaTest\\Runners\\PHPUnit\\Suite')
@@ -29,5 +31,18 @@ abstract class ResultTester extends \TestBase
               ->will($this->returnValue($result));
 
         return $suite;
+    }
+
+    public function mockFunctions($mockSuite, $numFuncs)
+    {
+        $i = 0;
+        $funcs = array();
+        while ($i < $numFuncs) {
+            $funcs[] = new ParsedFunction('doc', 'public', 'func' + $i);
+            $i++;
+        }
+        $mockSuite->expects($this->once())
+                  ->method('getFunctions')
+                  ->will($this->returnValue($funcs));
     }
 }

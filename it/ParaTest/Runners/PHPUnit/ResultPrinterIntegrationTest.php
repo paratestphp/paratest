@@ -17,6 +17,8 @@ class ResultPrinterIntegrationTest extends ResultTester
 
     public function testGetHeader()
     {
+        $this->mockFunctions($this->errorSuite, 1);
+        $this->mockFunctions($this->failureSuite, 3);
         $this->printer->addTest($this->errorSuite)
                       ->addTest($this->failureSuite);
 

@@ -7,8 +7,8 @@ class ResultPrinter
 {
     protected $suites = array();
     protected $results;
-    public static $casesProcessed = 0;
-    public static $totalCases = 0;
+    protected $casesProcessed = 0;
+    protected $totalCases = 0;
 
     public function __construct(LogInterpreter $results)
     {
@@ -18,7 +18,7 @@ class ResultPrinter
     public function addTest(ExecutableTest $suite)
     {
         $this->suites[] = $suite;
-        self::$totalCases = self::$totalCases + count($suite->getFunctions());
+        $this->totalCases = $this->totalCases + count($suite->getFunctions());
         return $this;
     }
 
@@ -57,7 +57,7 @@ class ResultPrinter
     {
         $reader = new Reader($test->getTempFile());
         $this->results->addReader($reader);
-        print $reader->getFeedback();
+        print $reader->getFeedback($this->totalCases, $this->casesProcessed);
     }
 
     public function getHeader()

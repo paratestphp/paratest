@@ -44,6 +44,7 @@ class Reader extends MetaProvider
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach($suites as $suite) {
             foreach($suite->cases as $case) {
+                $casesProcessed++;
                 $feedback .= $this->getCaseFeedback($case, $totalCases, $casesProcessed);
             }
         }
