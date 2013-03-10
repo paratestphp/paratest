@@ -24,7 +24,8 @@ class Reader extends MetaProvider
             throw new \InvalidArgumentException("Log file $logFile does not exist");
 
         $this->logFile = $logFile;
-        $this->xml = simplexml_load_file($this->logFile);
+		$logFileContents = file_get_contents($this->logFile);
+		$this->xml = new \SimpleXMLElement($logFileContents);
         $this->init();
     }
 
