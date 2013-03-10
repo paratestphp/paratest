@@ -79,10 +79,15 @@ abstract class ExecutableTest
 
     public function run($binary, $options = array())
     {
-        $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
-        $command = $this->getCommandString($binary, $options);
+        $command = $this->command($binary, $options);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
         return $this;
+    }
+
+    public function command($binary, $options = array())
+    {
+        $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
+        return $this->getCommandString($binary, $options);
     }
 
     protected function initStreams()
@@ -103,7 +108,7 @@ abstract class ExecutableTest
 
     protected function getCommandString($binary, $options = array())
     {
-        $command = $binary;
+        $command = 'PARATEST=1 ' . $binary;
         foreach($options as $key => $value) $command .= " --$key %s";
         $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);

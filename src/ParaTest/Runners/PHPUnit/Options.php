@@ -18,6 +18,7 @@ class Options
         $this->path = $opts['path'];
         $this->phpunit = $opts['phpunit'];
         $this->functional = $opts['functional'];
+        $this->runner = $opts['runner'];
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -35,7 +36,8 @@ class Options
             'processes' => 5,
             'path' => '',
             'phpunit' => static::phpunit(),
-            'functional' => false
+            'functional' => false,
+            'runner' => 'Runner',
         );
     }
 
@@ -82,7 +84,8 @@ class Options
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
-            'functional' => $this->functional
+            'functional' => $this->functional,
+            'runner' => $this->runner
         ));
         if($configuration = $this->getConfigurationPath($filtered))
             $filtered['configuration'] = new Configuration($configuration);

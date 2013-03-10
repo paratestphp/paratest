@@ -78,6 +78,13 @@ class ResultPrinter
             $this->printProgress();
     }
 
+    public function printFeedbackFromFile($file)
+    {
+        $reader = new Reader($file);
+        $this->results->addReader($reader);
+        print $reader->getFeedback();
+    }
+
     public function getHeader()
     {
         return "\n\n" . \PHP_Timer::resourceUsage() . "\n\n";

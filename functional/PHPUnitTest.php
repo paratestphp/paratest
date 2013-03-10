@@ -22,6 +22,27 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testWithWrapperRunner()
+    {
+        $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'runner' => 'WrapperRunner'));
+        $this->assertRegExp("/FAILURES!
+Tests: 33, Assertions: 36, Failures: 4, Errors: 1./", $results);
+    }
+
+    public function testParatestEnvironmentVariable()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP));
+        $this->assertRegexp('/OK \(\d+ test/', $results);
+    }
+
+    public function testParatestEnvironmentVariableWithWrapperRunner()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner'));
+        $this->assertRegexp('/OK \(\d+ test/', $results);
+    }
+
     public function testWithConfigurationInDirWithoutConfigFile()
     {
         chdir(dirname(FIXTURES));
@@ -169,7 +190,20 @@ class PHPUnitTest extends FunctionalTestBase
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ), $pipes);
-        $this->assertContains('Call to undefined function inexistent', stream_get_contents($pipes[2]));
+        $stderr = stream_get_contents($pipes[2]);
+        $this->assertContains('Call to undefined function inexistent', $stderr);
+    }
+
+    public function testRunWithFatalRuntimeErrorWithTheWrapperRunnerOutputsError()
+    {
+        $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalFunctionErrorTest.php';
+        $pipes = array();
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP,
+            'runner' => 'WrapperRunner'
+        ), $pipes);
+        $stderr = stream_get_contents($pipes[2]);
+        $this->assertContains('Call to undefined function inexistent', $stderr);
     }
 
     /**
@@ -212,7 +246,7 @@ class PHPUnitTest extends FunctionalTestBase
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
-Tests: 31, Assertions: 30, Failures: 4, Errors: 1./", $results);
+Tests: 33, Assertions: 31, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())

@@ -26,13 +26,26 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function getParaTestOutput($functional = false, $options = array())
     {
+        $cmd = $this->buildCommand($functional, $options);
+        return $this->getTestOutput($cmd);
+    }
+
+    protected function getParaTestErrors($functional = false, $options = array())
+    {
+        $cmd = $this->buildCommand($functional, $options);
+        return $this->getTestErrors($cmd);
+    }
+
+    protected function buildCommand($functional, $options)
+    {
         $cmd = sprintf("%s --bootstrap %s --phpunit %s", PARA_BINARY, $this->bootstrap, PHPUNIT);
         if($functional) $cmd .= ' --functional';
-        foreach($options as $switch => $value)
+        foreach($options as $switch => $value) {
             $cmd .= sprintf(" %s", 
                            $this->getOption($switch, $value));
+        }
         $cmd .= sprintf(" %s", $this->path);
-        return $this->getTestOutput($cmd);
+        return $cmd;
     }
 
     protected function getOption($switch, $value) {
@@ -44,8 +57,13 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getTestOutput($cmd)
     {
         $proc = $this->getFinishedProc($cmd, $pipes);
-        $output = $this->getOutput($pipes);
-        return $output;
+        return $this->getOutput($pipes);
+    }
+
+    protected function getTestErrors($cmd)
+    {
+        $proc = $this->getFinishedProc($cmd, $pipes);
+        return $this->getErrors($pipes);
     }
 
     protected function getFinishedProc($cmd, &$pipes)
@@ -56,11 +74,27 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         return $proc;
     }
 
+    protected function checkErrors($cmd, $pipes)
+    {
+        $errors = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        if ($errors) {
+            throw new RuntimeException("`$cmd` has a non-empty STDERR");
+        }
+    }
+
     protected function getOutput($pipes)
     {
         $output = stream_get_contents($pipes[1]);
         fclose($pipes[1]);
         return $output;
+    }
+
+    protected function getErrors($pipes)
+    {
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        return $stderr;
     }
 
     protected function waitForProc($proc)
@@ -76,4 +110,17 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         return $this->exitCode;
     }
+
+    protected function createSmallTests($number)
+    {
+        exec("php {$this->path}/generate.php $number", $output);
+    }
+
+    protected function deleteSmallTests()
+    {
+        foreach (glob(FIXTURES . '/small-tests/FastUnit*Test.php') as $generatedFile) {
+            unlink($generatedFile);
+        }
+    }
+
 }

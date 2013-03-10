@@ -24,6 +24,9 @@ class Reader extends MetaProvider
             throw new \InvalidArgumentException("Log file $logFile does not exist");
 
         $this->logFile = $logFile;
+        if (filesize($logFile) == 0) {
+            throw new \InvalidArgumentException("Log file $logFile is empty. This means a PHPUnit process has crashed.");
+        }
         $this->xml = simplexml_load_file($this->logFile);
         $this->init();
     }
