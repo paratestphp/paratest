@@ -79,7 +79,7 @@ abstract class ExecutableTest
 
     public function run($binary, $options = array())
     {
-        $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
+        $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
         $command = $this->getCommandString($binary, $options);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
         return $this;
