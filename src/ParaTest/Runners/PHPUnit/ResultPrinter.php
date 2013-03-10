@@ -74,9 +74,8 @@ class ResultPrinter
         print $item;
         $this->column++;
         $this->casesProcessed++;
-        if ($this->column == $this->maxColumn) {
+        if ($this->column == $this->maxColumn)
             $this->printProgress();
-        }
     }
 
     public function getHeader()
