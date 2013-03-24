@@ -19,7 +19,11 @@ class Worker
 
     public function start($wrapperBinary, $token = 1)
     {
-        $bin = "TEST_TOKEN=$token exec $wrapperBinary";
+        $bin = '';
+        if (is_numeric($token)) {
+            $bin .= "TEST_TOKEN=$token ";
+        }
+        $bin .= "exec $wrapperBinary";
         $pipes = array();
         $this->proc = proc_open($bin, self::$descriptorspec, $pipes); 
         $this->pipes = $pipes;

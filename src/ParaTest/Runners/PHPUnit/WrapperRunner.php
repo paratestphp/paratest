@@ -54,8 +54,13 @@ class WrapperRunner
     private function startWorkers()
     {
         $wrapper = realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
-        for ($token = 1; $token <= $this->options->processes; $token++) {
+        for ($i = 1; $i <= $this->options->processes; $i++) {
             $worker = new Worker();
+            if ($this->options->noTestTokens) {
+                $token = null;
+            } else {
+                $token = $i;
+            }
             $worker->start($wrapper, $token);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
