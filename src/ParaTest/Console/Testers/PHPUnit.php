@@ -60,9 +60,20 @@ class PHPUnit extends Tester
     {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
-        if(isset($options['bootstrap']) && file_exists($options['bootstrap']))
-            require_once $options['bootstrap'];
+        if(isset($options['bootstrap']) && file_exists($options['bootstrap'])) {
+            $this->requireBootstrap($options['bootstrap']);
+        }
         $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
         return $options;
+    }
+
+    /**
+     * This function limits the scope affected by the bootstrap,
+     * so that $options variable defined in it doesn't break
+     * this object's configuration.
+     */
+    private function requireBootstrap($file)
+    {
+        require_once $file;
     }
 }
