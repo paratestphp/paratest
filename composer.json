@@ -22,7 +22,7 @@
             "role": "Lead"
         }
     ],
-    "bin": ["bin/paratest", "bin/phpunit-wrapper"],
+    "bin": ["bin/paratest"],
     "autoload": {
         "psr-0": { "ParaTest": ["src/", "test/", "it/"] }
     }
