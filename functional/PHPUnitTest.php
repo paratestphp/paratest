@@ -43,6 +43,14 @@ Tests: 33, Assertions: 36, Failures: 4, Errors: 1./", $results);
         $this->assertRegexp('/OK \(\d+ test/', $results);
     }
 
+    public function testParatestEnvironmentVariableWithWrapperRunnerandWithoutTestTokens()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0));
+        $this->markTestIncomplete('When the standard runner will pass the token, this test will become green');
+        $this->assertRegexp('/FAILURES \(\d+ test/', $results);
+    }
+
     public function testWithConfigurationInDirWithoutConfigFile()
     {
         chdir(dirname(FIXTURES));

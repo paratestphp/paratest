@@ -19,6 +19,7 @@ class Options
         $this->phpunit = $opts['phpunit'];
         $this->functional = $opts['functional'];
         $this->runner = $opts['runner'];
+        $this->noTestTokens = $opts['no-test-tokens'];
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -38,6 +39,7 @@ class Options
             'phpunit' => static::phpunit(),
             'functional' => false,
             'runner' => 'Runner',
+            'no-test-tokens' => false,
         );
     }
 
@@ -85,7 +87,8 @@ class Options
             'path' => $this->path,
             'phpunit' => $this->phpunit,
             'functional' => $this->functional,
-            'runner' => $this->runner
+            'runner' => $this->runner,
+            'no-test-tokens' => $this->noTestTokens,
         ));
         if($configuration = $this->getConfigurationPath($filtered))
             $filtered['configuration'] = new Configuration($configuration);

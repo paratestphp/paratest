@@ -1,5 +1,5 @@
 Usage:
- paratest [-p|--processes="..."] [-f|--functional] [-h|--help] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."] [--path="..."] [path]
+ paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."] [--path="..."] [path]
 
 Arguments:
  path                 The path to a directory or file containing tests. (default: current directory)
@@ -7,6 +7,7 @@ Arguments:
 Options:
  --processes (-p)     The number of test processes to run. (default: 5)
  --functional (-f)    Run methods instead of suites in separate processes.
+ --no-test-tokens     Disable TEST_TOKEN environment variables. (default: variable is set)
  --help (-h)          Display this help message.
  --phpunit            The PHPUnit binary to execute. (default: vendor/bin/phpunit)
  --runner             Runner or WrapperRunner. (default: Runner)
