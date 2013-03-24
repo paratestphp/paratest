@@ -17,9 +17,9 @@ class Worker
     private $chunks = '';
     private $alreadyReadOutput = '';
 
-    public function start($token = 1)
+    public function start($wrapperBinary, $token = 1)
     {
-        $bin = "TEST_TOKEN=$token exec " . realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
+        $bin = "TEST_TOKEN=$token exec $wrapperBinary";
         $pipes = array();
         $this->proc = proc_open($bin, self::$descriptorspec, $pipes); 
         $this->pipes = $pipes;

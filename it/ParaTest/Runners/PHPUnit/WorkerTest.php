@@ -9,6 +9,7 @@ class WorkerTest extends \TestBase
         parent::setUp();
         $this->path = FIXTURES . DS . 'tests';
         $this->bootstrap = dirname(FIXTURES) . DS . 'bootstrap.php';
+        $this->phpunitWrapper = PARATEST_ROOT . '/bin/phpunit-wrapper';
     }
 
     public function tearDown()
@@ -29,7 +30,7 @@ class WorkerTest extends \TestBase
         $testLog = '/tmp/test.xml';
         $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
         $worker = new Worker();
-        $worker->start();
+        $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
 
         $worker->stop();
@@ -43,7 +44,7 @@ class WorkerTest extends \TestBase
         $testLog = '/tmp/test.xml';
         $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
         $worker = new Worker();
-        $worker->start();
+        $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
         $worker->waitForFinishedJob();
 
@@ -55,7 +56,7 @@ class WorkerTest extends \TestBase
         $testLog = '/tmp/test.xml';
         $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
         $worker = new Worker();
-        $worker->start();
+        $worker->start($this->phpunitWrapper);
         $this->assertTrue($worker->isFree());
 
         $worker->execute($testCmd);
@@ -70,7 +71,7 @@ class WorkerTest extends \TestBase
         $worker = new Worker();
         $this->assertFalse($worker->isRunning());
 
-        $worker->start();
+        $worker->start($this->phpunitWrapper);
         $this->assertTrue($worker->isRunning());
 
         $worker->stop();
@@ -83,7 +84,7 @@ class WorkerTest extends \TestBase
         $bin = 'bin/phpunit-wrapper';
 
         $worker = new Worker();
-        $worker->start();
+        $worker->start($this->phpunitWrapper);
 
         $testLog = '/tmp/test.xml';
         $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
