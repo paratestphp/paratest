@@ -66,8 +66,8 @@ class WrapperRunner
     {
         $phpunit = $this->options->phpunit . ' --no-globals-backup';
         $phpunitOptions = $this->options->filtered;
-        while(count($this->pending) 
-            && $this->waitForStreamsToChange($this->streams)) {
+        while(count($this->pending)) {
+            $this->waitForStreamsToChange($this->streams);
             foreach($this->progressedWorkers() as $worker) {
                 if($worker->isFree()) {
                     $worker->printFeedback($this->printer);
