@@ -55,7 +55,7 @@ class WrapperRunner
     {
         for ($token = 1; $token <= $this->options->processes; $token++) {
             $worker = new Worker();
-            $worker->start($token);
+            $worker->start($this->options->phpunit . '-wrapper', $token);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
