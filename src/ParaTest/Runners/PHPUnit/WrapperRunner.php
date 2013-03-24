@@ -53,9 +53,10 @@ class WrapperRunner
 
     private function startWorkers()
     {
+        $wrapper = realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
         for ($token = 1; $token <= $this->options->processes; $token++) {
             $worker = new Worker();
-            $worker->start($this->options->phpunit . '-wrapper', $token);
+            $worker->start($wrapper, $token);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
