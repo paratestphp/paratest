@@ -55,13 +55,15 @@ class PHPUnit extends Tester
         $cwd = getcwd() . DIRECTORY_SEPARATOR;
 
         if($input->getOption('configuration'))
-            return $input->getOption('configuration');
+            $configFilename = $input->getOption('configuration');
         elseif(file_exists($cwd . 'phpunit.xml.dist'))
-            return new Configuration($cwd . 'phpunit.xml.dist');
+            $configFilename = $cwd . 'phpunit.xml.dist';
         elseif(file_exists($cwd . 'phpunit.xml'))
-            return new Configuration($cwd . 'phpunit.xml');
+            $configFilename = $cwd . 'phpunit.xml';
         else
             return false;
+		
+		return new Configuration($configFilename);
     }
 
     /**
