@@ -62,8 +62,8 @@ class PHPUnit extends Tester
             $configFilename = $cwd . 'phpunit.xml';
         else
             return false;
-		
-		return new Configuration($configFilename);
+        
+        return new Configuration($configFilename);
     }
 
     /**

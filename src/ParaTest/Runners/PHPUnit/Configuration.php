@@ -20,10 +20,10 @@ class Configuration
      */
     public function getBootstrap()
     {
-		if($this->xml)
-			return (string)$this->xml->attributes()->bootstrap;
-		else
-			return '';
+        if($this->xml)
+            return (string)$this->xml->attributes()->bootstrap;
+        else
+            return '';
     }
 
     public function getPath()
