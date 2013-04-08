@@ -77,9 +77,10 @@ class PHPUnit extends Tester
         $options = $this->getOptions($input);
         if($this->hasConfig($input) && !isset($options['bootstrap']))
         {
-            if($phpUnitBootstrap = $this->getConfig($input)->getBootstrap())
+            $config = $this->getConfig($input);
+            if($config->getBootstrap())
             {
-                $options['bootstrap'] = $phpUnitBootstrap;
+                $options['bootstrap'] = $config->getConfigDir() . $config->getBootstrap();
             }
         }
         if(isset($options['bootstrap']))
