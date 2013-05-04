@@ -35,6 +35,7 @@ abstract class ExecutableTest
     {
         if(is_null($this->temp))
             $this->temp = tempnam(sys_get_temp_dir(), "PT_");
+
         return $this->temp;
     }
 
@@ -46,6 +47,7 @@ abstract class ExecutableTest
     public function stop()
     {
         $this->initStreams();
+
         return proc_close($this->process);
     }
 
@@ -66,6 +68,7 @@ abstract class ExecutableTest
     public function isDoneRunning()
     {
         $this->status = proc_get_status($this->process);
+
         return !$this->status['running'];
     }
 
@@ -84,6 +87,7 @@ abstract class ExecutableTest
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->getCommandString($binary, $options, $environmentVariables);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
+
         return $this;
     }
 
@@ -95,7 +99,7 @@ abstract class ExecutableTest
 
     /**
      * A template method that can be overridden to add necessary options for a test
-     * @param array $options the options that are passed to the run method
+     * @param  array $options the options that are passed to the run method
      * @return array $options the prepared options
      */
     protected function prepareOptions($options)
@@ -112,6 +116,7 @@ abstract class ExecutableTest
         foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
         $args = array_merge(array("$environmentVariablePrefix$command %s"), array_values($environmentVariables), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
+
         return $command;
     }
 

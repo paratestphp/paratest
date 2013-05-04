@@ -28,9 +28,9 @@ class Runner
         $this->verifyConfiguration();
         $this->load();
         $this->printer->start($this->options);
-        while(count($this->running) || count($this->pending)) {
+        while (count($this->running) || count($this->pending)) {
             foreach($this->running as $key => $test)
-                if(!$this->testIsStillRunning($test)) {
+                if (!$this->testIsStillRunning($test)) {
                     unset($this->running[$key]);
                     $this->releaseToken($key);
                 }
@@ -84,7 +84,7 @@ class Runner
     private function fillRunQueue()
     {
         $opts = $this->options;
-        while(sizeof($this->pending) && sizeof($this->running) < $opts->processes) {
+        while (sizeof($this->pending) && sizeof($this->running) < $opts->processes) {
             $token = $this->getNextAvailableToken();
             if ($token !== false) {
                 $this->acquireToken($token);
@@ -101,6 +101,7 @@ class Runner
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
             throw new \Exception($test->getStderr());
         $this->printer->printFeedback($test);
+
         return false;
     }
 
@@ -124,6 +125,7 @@ class Runner
         for ($i=0; $i< count($this->tokens); $i++) {
             if ($this->tokens[$i]) return $i;
         }
+
         return false;
     }
 

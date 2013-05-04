@@ -23,6 +23,7 @@ class ResultPrinter
         $this->suites[] = $suite;
         $increment = method_exists($suite, 'getFunctions') ? count($suite->getFunctions()) : 1;
         $this->totalCases = $this->totalCases + $increment;
+
         return $this;
     }
 
@@ -87,18 +88,20 @@ class ResultPrinter
     {
         return $this->results->isSuccessful()
                     ? $this->getSuccessFooter()
-                    : $this->getFailedFooter(); 
+                    : $this->getFailedFooter();
     }
 
     public function getFailures()
     {
         $failures = $this->results->getFailures();
+
         return $this->getDefects($failures, 'failure');
     }
 
     public function getErrors()
     {
         $errors = $this->results->getErrors();
+
         return $this->getDefects($errors, 'error');
     }
 
@@ -140,10 +143,11 @@ class ResultPrinter
     private function getFailedFooter()
     {
         $formatString = "\nFAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
-        return sprintf($formatString, 
-                       $this->results->getTotalTests(), 
-                       $this->results->getTotalAssertions(), 
-                       $this->results->getTotalFailures(), 
+
+        return sprintf($formatString,
+                       $this->results->getTotalTests(),
+                       $this->results->getTotalAssertions(),
+                       $this->results->getTotalFailures(),
                        $this->results->getTotalErrors());
     }
 
@@ -151,6 +155,7 @@ class ResultPrinter
     {
         $tests = $this->results->getTotalTests();
         $asserts = $this->results->getTotalAssertions();
+
         return sprintf("OK (%d test%s, %d assertion%s)\n",
                        $tests,
                        ($tests == 1) ? '' : 's',

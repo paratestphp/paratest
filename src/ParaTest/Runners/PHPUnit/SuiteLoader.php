@@ -29,6 +29,7 @@ class SuiteLoader
         $methods = array();
         foreach($this->loadedSuites as $suite)
             $methods = array_merge($methods, $suite->getFunctions());
+
         return $methods;
     }
 
@@ -78,10 +79,10 @@ class SuiteLoader
 
     private function initSuites()
     {
-        foreach($this->files as $path) {
+        foreach ($this->files as $path) {
             $parser = new Parser($path);
             if($class = $parser->getClass())
-                $this->loadedSuites[$path] = new Suite($path, array_map(function($fn) use($path) {
+                $this->loadedSuites[$path] = new Suite($path, array_map(function($fn) use ($path) {
                     return new TestMethod($path, $fn->getName());
                 }, $class->getMethods($this->options ? $this->options->annotations : array())));
         }
