@@ -22,6 +22,13 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testParatestEnvironmentVariable()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP));
+        $this->assertRegexp('/OK \(\d+ test/', $results);
+    }
+
     public function testWithConfigurationInDirWithoutConfigFile()
     {
         chdir(dirname(FIXTURES));
@@ -212,7 +219,7 @@ class PHPUnitTest extends FunctionalTestBase
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
-Tests: 31, Assertions: 30, Failures: 4, Errors: 1./", $results);
+Tests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())
