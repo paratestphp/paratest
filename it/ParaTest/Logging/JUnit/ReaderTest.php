@@ -208,8 +208,10 @@ Failed asserting that true is false.
 
     public function testMixedGetFeedback()
     {
-        $feedback = $this->mixed->getFeedback();
-        $this->assertEquals('.F.E.F.', $feedback);
+        $totalCases = 7;
+        $casesProcessed = 0;
+        $feedback = $this->mixed->getFeedback($totalCases, $casesProcessed);
+        $this->assertEquals(array('.', 'F', '.', 'E', '.', 'F', '.'), $feedback);
     }
 
     public function testRemoveLog()

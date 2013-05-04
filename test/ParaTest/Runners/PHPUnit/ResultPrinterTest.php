@@ -1,6 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
+use ParaTest\Parser\ParsedFunction;
 
 class ResultPrinterTest extends \TestBase
 {
@@ -51,6 +52,20 @@ class ResultPrinterTest extends \TestBase
         $this->assertEquals($expected, $contents);
     }
 
+    public function testStartSetsWidthAndMaxColumn()
+    {
+        $funcs = array();
+        for($i = 0; $i < 120; $i++)
+            $funcs[] = new ParsedFunction('doc', 'public', 'function' . $i);
+        $suite = new Suite('/path', $funcs);
+        $this->printer->addTest($suite);
+        $this->getStartOutput(new Options());
+        $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
+        $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
+        $this->assertEquals(3, $numTestsWidth);
+        $this->assertEquals(63, $maxColumn);
+    }
+
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
     {
         file_put_contents('myconfig.xml', '<root />');
@@ -76,6 +91,23 @@ class ResultPrinterTest extends \TestBase
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
         $this->assertEquals($expected, $contents);
+    }
+
+    public function testAddSuiteAddsFunctionCountToTotalTestCases()
+    {
+        $suite = new Suite('/path', array(
+            new ParsedFunction('doc', 'public', 'funcOne'),
+            new ParsedFunction('doc', 'public', 'funcTwo')
+        ));
+        $this->printer->addTest($suite);
+        $this->assertEquals(2, $this->printer->getTotalCases());
+    }
+
+    public function testAddTestMethodIncrementsCountByOne()
+    {
+        $method = new TestMethod('/path', 'testThisMethod');
+        $this->printer->addTest($method);
+        $this->assertEquals(1, $this->printer->getTotalCases());
     }
 
     protected function getStartOutput(Options $options)

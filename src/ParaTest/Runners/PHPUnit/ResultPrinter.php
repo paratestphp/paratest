@@ -7,6 +7,11 @@ class ResultPrinter
 {
     protected $suites = array();
     protected $results;
+    protected $numTestsWidth;
+    protected $maxColumn;
+    protected $totalCases = 0;
+    protected $column = 0;
+    protected $casesProcessed = 0;
 
     public function __construct(LogInterpreter $results)
     {
@@ -16,11 +21,15 @@ class ResultPrinter
     public function addTest(ExecutableTest $suite)
     {
         $this->suites[] = $suite;
+        $increment = method_exists($suite, 'getFunctions') ? count($suite->getFunctions()) : 1;
+        $this->totalCases = $this->totalCases + $increment;
         return $this;
     }
 
     public function start(Options $options)
     {
+        $this->numTestsWidth = strlen((string) $this->totalCases);
+        $this->maxColumn = 69 - (2 * $this->numTestsWidth);
         printf("\nRunning phpunit in %d process%s with %s%s\n\n",
                $options->processes,
                $options->processes > 1 ? 'es' : '',
@@ -31,8 +40,9 @@ class ResultPrinter
         \PHP_Timer::start();
     }
 
-    public function println($string)
+    public function println($string = "")
     {
+        $this->column = 0;
         print("$string\n");
     }
 
@@ -54,7 +64,18 @@ class ResultPrinter
     {
         $reader = new Reader($test->getTempFile());
         $this->results->addReader($reader);
-        print $reader->getFeedback();
+        $feedbackItems = $reader->getFeedback();
+        foreach ($feedbackItems as $item)
+            $this->printFeedbackItem($item);
+    }
+
+    protected function printFeedbackItem($item)
+    {
+        print $item;
+        $this->column++;
+        $this->casesProcessed++;
+        if ($this->column == $this->maxColumn)
+            $this->printProgress();
     }
 
     public function getHeader()
@@ -81,6 +102,11 @@ class ResultPrinter
         return $this->getDefects($errors, 'error');
     }
 
+    public function getTotalCases()
+    {
+        return $this->totalCases;
+    }
+
     protected function getDefects($defects = array(), $type)
     {
         $count = sizeof($defects);
@@ -95,6 +121,20 @@ class ResultPrinter
             $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
 
         return $output;
+    }
+
+    protected function printProgress()
+    {
+        printf(
+            ' %' . $this->numTestsWidth . 'd / %' .
+                $this->numTestsWidth . 'd (%3s%%)',
+
+            $this->casesProcessed,
+            $this->totalCases,
+            floor(($this->casesProcessed / $this->totalCases) * 100)
+        );
+
+        $this->println();
     }
 
     private function getFailedFooter()

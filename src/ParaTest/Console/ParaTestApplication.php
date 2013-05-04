@@ -11,7 +11,7 @@ use Symfony\Component\Console\Application,
 class ParaTestApplication extends Application
 {
     const NAME = 'ParaTest';
-    const VERSION = '0.4.2';
+    const VERSION = '0.4.4';
 
     public function __construct()
     {

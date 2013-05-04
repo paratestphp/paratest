@@ -24,10 +24,11 @@ class Reader extends MetaProvider
             throw new \InvalidArgumentException("Log file $logFile does not exist");
 
         $this->logFile = $logFile;
-        if (filesize($logFile) == 0) {
-            throw new \InvalidArgumentException("Log file $logFile is empty. This means a PHPUnit process has crashed.");
+        if (filesize($this->logFile) == 0) {
+            throw new \InvalidArgumentException("Log file $this->logFile is empty. This means a PHPUnit process has crashed.");
         }
-        $this->xml = simplexml_load_file($this->logFile);
+        $logFileContents = file_get_contents($this->logFile);
+        $this->xml = new \SimpleXMLElement($logFileContents);
         $this->init();
     }
 
@@ -43,13 +44,13 @@ class Reader extends MetaProvider
 
     public function getFeedback()
     {
-        $feedback = '';
+        $feedback = array();
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach($suites as $suite) {
             foreach($suite->cases as $case) {
-                if($case->failures) $feedback .= 'F';
-                else if ($case->errors) $feedback .= 'E';
-                else $feedback .= '.';
+                if($case->failures) $feedback[] = 'F';
+                else if ($case->errors) $feedback[] = 'E';
+                else $feedback[] = '.';
             }
         }
         return $feedback;

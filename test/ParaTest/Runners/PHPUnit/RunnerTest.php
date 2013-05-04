@@ -34,4 +34,47 @@ class RunnerTest extends \TestBase
     {
         $this->assertEquals(-1, $this->runner->getExitCode());
     }
+
+    public function testConstructorAssignsTokens()
+    {
+        $opts = array('processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true);
+        $runner = new Runner($opts);
+        $tokens = $this->getObjectValue($runner, 'tokens');
+        $this->assertEquals(4, count($tokens));
+    }
+
+    public function testGetsNextAvailableTokenReturnsTokenIdentifier()
+    {
+        $tokens = array(0 => false, 1 => false, 2 => true, 3 => false);
+        $opts = array('processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true);
+        $runner = new Runner($opts);
+        $this->setObjectValue($runner, 'tokens', $tokens);
+
+        $token = $this->call($runner, 'getNextAvailableToken');
+        $this->assertEquals(2, $token);
+    }
+
+    public function testGetNextAvailableTokenReturnsFalseWhenNoTokensAreAvailable()
+    {
+        $tokens = array(0 => false, 1 => false, 2 => false, 3 => false);
+        $opts = array('processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true);
+        $runner = new Runner($opts);
+        $this->setObjectValue($runner, 'tokens', $tokens);
+
+        $token = $this->call($runner, 'getNextAvailableToken');
+        $this->assertTrue($token === false);
+    }
+
+    public function testReleaseTokenMakesTokenAvailable()
+    {
+        $tokens = array(0 => false, 1 => false, 2 => false, 3 => false);
+        $opts = array('processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true);
+        $runner = new Runner($opts);
+        $this->setObjectValue($runner, 'tokens', $tokens);
+
+        $this->assertFalse($tokens[1]);
+        $this->call($runner, 'releaseToken', 1);
+        $tokens = $this->getObjectValue($runner, 'tokens');
+        $this->assertTrue($tokens[1]);
+    }
 }
