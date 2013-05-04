@@ -107,25 +107,11 @@ abstract class ExecutableTest
     {
         $environmentVariables['PARATEST'] = 1;
 
-        $environmentVariablePrefix = '';
-        foreach($environmentVariables as $key => $value) {
-            $environmentVariablePrefix .= "$key=%s ";
-        }
-
-        $command = $binary;
-        foreach($options as $key => $value) {
-            $command .= " --$key %s";
-        }
-
-        $args = array_merge(
-            array("$environmentVariablePrefix$command %s"),
-            array_values($environmentVariables),
-            array_values($options), 
-            array($this->getPath())
-        );
-        $command = call_user_func_array('sprintf', $args);
-
-        return $command;
+        return CommandBuilder::fromBinary($binary)
+            ->withEnvironmentVariables($environmentVariables)
+            ->withOptions($options)
+            ->withPath($this->getPath())
+            ->build();
     }
 
     public function getToken()
