@@ -16,6 +16,16 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testWithBootstrapThatDoesNotExist()
+    {
+        $bootstrap = '/fileThatDoesNotExist.php';
+        
+        $this->paratest(array('bootstrap' => $bootstrap));
+        $this->assertEquals(1, $this->getExitCode(), 'Unexpected exit code');
+        $this->assertContains('[RuntimeException]', $this->getErrorOutput(), 'Expected exception name not found in output');
+        $this->assertContains(sprintf('Bootstrap specified but could not be found (%s)', $bootstrap), $this->getErrorOutput(), 'Expected error message not found in output');
+    }
+
     public function testWithJustConfiguration()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION));
