@@ -124,5 +124,4 @@ abstract class ExecutableTest
     {
         if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];
     }
->>>>>>> master
 }
