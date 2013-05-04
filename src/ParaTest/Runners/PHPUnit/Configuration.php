@@ -37,7 +37,8 @@ class Configuration
         $suites = array();
         $nodes = $this->xml->xpath('//testsuite');
         while(list(, $node) = each($nodes))
-            $suites[(string)$node['name']] = $this->getSuitePath((string)$node->directory);
+            $suites[(string) $node['name']] = $this->getSuitePath((string) $node->directory);
+
         return $suites;
     }
 

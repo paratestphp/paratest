@@ -16,6 +16,12 @@ class TestBase extends PHPUnit_Framework_TestCase
         return $prop->getValue($object);
     }
 
+    protected function setObjectValue($object, $property, $value)
+    {
+        $prop = $this->getAccessibleProperty($object, $property);
+        return $prop->setValue($object, $value);
+    }
+
     private function getAccessibleProperty($object, $property)
     {
         $refl = new \ReflectionObject($object);

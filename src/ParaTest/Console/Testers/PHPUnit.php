@@ -75,29 +75,32 @@ class PHPUnit extends Tester
     {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
-        if($this->hasConfig($input) && !isset($options['bootstrap']))
-        {
+
+        if($this->hasConfig($input) && !isset($options['bootstrap'])) {
             $config = $this->getConfig($input);
             if($config->getBootstrap())
-            {
                 $options['bootstrap'] = $config->getConfigDir() . $config->getBootstrap();
-            }
         }
-        if(isset($options['bootstrap']))
-        {
+        if(isset($options['bootstrap'])) {
             if(file_exists($options['bootstrap']))
-            {
-                require_once $options['bootstrap'];
-            }
+                $this->requireBootstrap($options['bootstrap']);
             else
-            {
                 throw new \RuntimeException(
                     sprintf('Bootstrap specified but could not be found (%s)',
-                        $options['bootstrap']));
-            }
+                    $options['bootstrap']));
         }
-        
+
         $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
         return $options;
+    }
+
+    /**
+     * This function limits the scope affected by the bootstrap,
+     * so that $options variable defined in it doesn't break
+     * this object's configuration.
+     */
+    private function requireBootstrap($file)
+    {
+        require_once $file;
     }
 }

@@ -28,7 +28,6 @@ class Options
         return $this->$var;
     }
 
-
     protected static function defaults()
     {
         return array(
@@ -54,6 +53,7 @@ class Options
         $batch = $phpunit . '.bat';
         if(file_exists($batch)) return $batch;
         if(file_exists($phpunit)) return $phpunit;
+
         return 'phpunit';
     }
 
@@ -67,13 +67,14 @@ class Options
         $vendor = dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'vendor';
         if(!file_exists($vendor))
             $vendor = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+
         return $vendor;
     }
 
     /**
      * Filter options to distinguish between paratest
      * internal options and any other options
-     * @param array $options
+     * @param  array $options
      * @return array
      */
     protected function filterOptions($options)
@@ -86,6 +87,7 @@ class Options
         ));
         if($configuration = $this->getConfigurationPath($filtered))
             $filtered['configuration'] = new Configuration($configuration);
+
         return $filtered;
     }
 
@@ -99,10 +101,13 @@ class Options
     protected function getConfigurationPath($filtered)
     {
         if(isset($filtered['configuration']))
+
             return file_exists($filtered['configuration']) ? realpath($filtered['configuration']) : $filtered['configuration'];
         if(file_exists('phpunit.xml'))
+
             return realpath('phpunit.xml');
         if(file_exists('phpunit.xml.dist'))
+
             return realpath('phpunit.xml.dist');
     }
 

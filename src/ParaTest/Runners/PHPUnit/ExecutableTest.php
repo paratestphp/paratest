@@ -8,6 +8,7 @@ abstract class ExecutableTest
     protected $process;
     protected $status;
     protected $stderr;
+    protected $token;
 
     protected static $descriptors = array(
         0 => array('pipe', 'r'),
@@ -34,6 +35,7 @@ abstract class ExecutableTest
     {
         if(is_null($this->temp))
             $this->temp = tempnam(sys_get_temp_dir(), "PT_");
+
         return $this->temp;
     }
 
@@ -45,6 +47,7 @@ abstract class ExecutableTest
     public function stop()
     {
         $this->initStreams();
+
         return proc_close($this->process);
     }
 
@@ -65,11 +68,12 @@ abstract class ExecutableTest
     public function isDoneRunning()
     {
         $this->status = proc_get_status($this->process);
+
         return !$this->status['running'];
     }
 
     /**
-     * Called after a polling context to retrieve 
+     * Called after a polling context to retrieve
      * the exit code of the phpunit process
      */
     public function getExitCode()
@@ -77,11 +81,13 @@ abstract class ExecutableTest
         return $this->status['exitcode'];
     }
 
-    public function run($binary, $options = array())
+    public function run($binary, $options = array(), $environmentVariables = array())
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
-        $command = $this->getCommandString($binary, $options);
+        $this->handleEnvironmentVariables($environmentVariables);
+        $command = $this->getCommandString($binary, $options, $environmentVariables);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
+
         return $this;
     }
 
@@ -93,7 +99,7 @@ abstract class ExecutableTest
 
     /**
      * A template method that can be overridden to add necessary options for a test
-     * @param array $options the options that are passed to the run method
+     * @param  array $options the options that are passed to the run method
      * @return array $options the prepared options
      */
     protected function prepareOptions($options)
@@ -101,12 +107,26 @@ abstract class ExecutableTest
         return $options;
     }
 
-    protected function getCommandString($binary, $options = array())
+    protected function getCommandString($binary, $options = array(), $environmentVariables = array())
     {
         $command = $binary;
+        $environmentVariablePrefix = '';
+
         foreach($options as $key => $value) $command .= " --$key %s";
-        $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
+        foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
+        $args = array_merge(array("$environmentVariablePrefix$command %s"), array_values($environmentVariables), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
+
         return $command;
+    }
+
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    protected function handleEnvironmentVariables($environmentVariables)
+    {
+        if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];
     }
 }
