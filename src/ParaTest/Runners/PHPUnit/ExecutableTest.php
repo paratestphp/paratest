@@ -105,13 +105,26 @@ abstract class ExecutableTest
 
     protected function getCommandString($binary, $options = array(), $environmentVariables = array())
     {
-        $command = 'PARATEST=1 ' . $binary;
-        $environmentVariablePrefix = '';
+        $environmentVariables['PARATEST'] = 1;
 
-        foreach($options as $key => $value) $command .= " --$key %s";
-        foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
-        $args = array_merge(array("$environmentVariablePrefix$command %s"), array_values($environmentVariables), array_values($options), array($this->getPath()));
+        $environmentVariablePrefix = '';
+        foreach($environmentVariables as $key => $value) {
+            $environmentVariablePrefix .= "$key=%s ";
+        }
+
+        $command = $binary;
+        foreach($options as $key => $value) {
+            $command .= " --$key %s";
+        }
+
+        $args = array_merge(
+            array("$environmentVariablePrefix$command %s"),
+            array_values($environmentVariables),
+            array_values($options), 
+            array($this->getPath())
+        );
         $command = call_user_func_array('sprintf', $args);
+
         return $command;
     }
 

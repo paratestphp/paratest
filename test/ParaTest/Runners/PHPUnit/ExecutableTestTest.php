@@ -30,7 +30,7 @@ class ExecutableTestTest extends \TestBase
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals('/usr/bin/phpunit --bootstrap test/bootstrap.php pathToFile', $command);
+        $this->assertContains('/usr/bin/phpunit --bootstrap test/bootstrap.php pathToFile', $command);
     }
 
     public function testGetCommandStringIncludesEnvironmentVariables()
