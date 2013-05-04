@@ -13,12 +13,14 @@ class Runner
     protected $interpreter;
     protected $printer;
     protected $exitcode = -1;
-    
+    protected $tokens = array();
+
     public function __construct($opts = array())
     {
         $this->options = new Options($opts);
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
+        $this->initTokens();
     }
 
     public function run()
@@ -28,7 +30,10 @@ class Runner
         $this->printer->start($this->options);
         while(count($this->running) || count($this->pending)) {
             foreach($this->running as $key => $test)
-                if(!$this->testIsStillRunning($test)) unset($this->running[$key]);
+                if(!$this->testIsStillRunning($test)) {
+                    unset($this->running[$key]);
+                    $this->releaseToken($key);
+                }
             $this->fillRunQueue();
             usleep(10000);
         }
@@ -79,8 +84,13 @@ class Runner
     private function fillRunQueue()
     {
         $opts = $this->options;
-        while(sizeof($this->pending) && sizeof($this->running) < $opts->processes)
-            $this->running[] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered);
+        while(sizeof($this->pending) && sizeof($this->running) < $opts->processes) {
+            $token = $this->getNextAvailableToken();
+            if ($token !== false) {
+                $this->acquireToken($token);
+                $this->running[$token] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, array('TEST_TOKEN' => $token));
+            }
+        }
     }
 
     private function testIsStillRunning($test)
@@ -99,5 +109,31 @@ class Runner
         $exit = $test->getExitCode();
         if($exit > $this->exitcode)
             $this->exitcode = $exit;
+    }
+
+    protected function initTokens()
+    {
+        $this->tokens = array();
+        for ($i=0; $i< $this->options->processes; $i++) {
+            $this->tokens[$i] = true;
+        }
+    }
+
+    protected function getNextAvailableToken()
+    {
+        for ($i=0; $i< count($this->tokens); $i++) {
+            if ($this->tokens[$i]) return $i;
+        }
+        return false;
+    }
+
+    protected function releaseToken($tokenIdentifier)
+    {
+        $this->tokens[$tokenIdentifier] = true;
+    }
+
+    protected function acquireToken($tokenIdentifier)
+    {
+        $this->tokens[$tokenIdentifier] = false;
     }
 }
