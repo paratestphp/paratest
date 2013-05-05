@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputInterface,
     Symfony\Component\Console\Output\OutputInterface,
+    ParaTest\Runners\PHPUnit\Configuration,
     ParaTest\Runners\PHPUnit\Runner;
 
 class PHPUnit extends Tester
@@ -42,21 +43,53 @@ class PHPUnit extends Tester
 
     protected function hasConfig(InputInterface $input)
     {
+        return (false !== $this->getConfig($input));
+    }
+
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @return \ParaTest\Runners\PHPUnit\Configuration|boolean
+     */
+    protected function getConfig(InputInterface $input)
+    {
         $cwd = getcwd() . DIRECTORY_SEPARATOR;
 
         if($input->getOption('configuration'))
-            return true;
-
-        return file_exists($cwd . 'phpunit.xml.dist') || file_exists($cwd . 'phpunit.xml');
+            $configFilename = $input->getOption('configuration');
+        elseif(file_exists($cwd . 'phpunit.xml.dist'))
+            $configFilename = $cwd . 'phpunit.xml.dist';
+        elseif(file_exists($cwd . 'phpunit.xml'))
+            $configFilename = $cwd . 'phpunit.xml';
+        else
+            return false;
+        
+        return new Configuration($configFilename);
     }
 
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @return array
+     * @throws \RuntimeException
+     */
     protected function getRunnerOptions(InputInterface $input)
     {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
-        if(isset($options['bootstrap']) && file_exists($options['bootstrap'])) {
-            $this->requireBootstrap($options['bootstrap']);
+
+        if($this->hasConfig($input) && !isset($options['bootstrap'])) {
+            $config = $this->getConfig($input);
+            if($config->getBootstrap())
+                $options['bootstrap'] = $config->getConfigDir() . $config->getBootstrap();
         }
+        if(isset($options['bootstrap'])) {
+            if(file_exists($options['bootstrap']))
+                $this->requireBootstrap($options['bootstrap']);
+            else
+                throw new \RuntimeException(
+                    sprintf('Bootstrap specified but could not be found (%s)',
+                    $options['bootstrap']));
+        }
+
         $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
         return $options;
     }

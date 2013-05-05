@@ -12,6 +12,19 @@ class Configuration
         if(file_exists($path))
             $this->xml = simplexml_load_file($path);
     }
+    
+    /**
+     * Get the bootstrap PHPUnit configuration attribute
+     * 
+     * @return string The bootstrap attribute or empty string if not set
+     */
+    public function getBootstrap()
+    {
+        if($this->xml)
+            return (string)$this->xml->attributes()->bootstrap;
+        else
+            return '';
+    }
 
     public function getPath()
     {

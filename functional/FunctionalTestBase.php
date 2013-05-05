@@ -5,6 +5,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected $bootstrap;
     protected $path;
     protected $exitCode = -1;
+    private   $errorOutput;
 
     protected static $descriptorspec = array(
        0 => array("pipe", "r"),
@@ -16,12 +17,23 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         $this->path = FIXTURES . DS . 'tests';
         $this->bootstrap = dirname(FIXTURES) . DS . 'bootstrap.php';
+        $this->errorOutput = '';
     }
 
     protected function getPhpunitOutput()
     {
         $cmd = sprintf("%s --bootstrap %s %s", PHPUNIT, $this->bootstrap, $this->path);
         return $this->getTestOutput($cmd);
+    }
+    
+    protected function setErrorOutput($errorOutput)
+    {
+        return $this->errorOutput = $errorOutput;
+    }
+    
+    protected function getErrorOutput()
+    {
+        return $this->errorOutput;
     }
 
     protected function getParaTestOutput($functional = false, $options = array())
@@ -45,6 +57,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         $proc = $this->getFinishedProc($cmd, $pipes);
         $output = $this->getOutput($pipes);
+        $this->setErrorOutput(stream_get_contents($pipes[2]));
         return $output;
     }
 
