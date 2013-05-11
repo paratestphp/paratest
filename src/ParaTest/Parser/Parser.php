@@ -8,6 +8,7 @@ class Parser
 
     private static $namespace = '/\bnamespace\b[\s]+([^;]+);/';
     private static $class = '/\bclass\b/';
+    private static $className = '/\bclass\b\s+([^\s]+)\s+extends/Usi';
     private static $testName = '/^test/';
     private static $testAnnotation = '/@test\b/';
 
@@ -47,10 +48,22 @@ class Parser
     private function getClassName()
     {
         $class = str_replace('.php', '', basename($this->path));
+        $class = $this->parseClassName($class);
         $namespace = $this->getNamespace();
         if($namespace)
             $class = $namespace . '\\' . $class;
         return $class;
+    }
+
+    private function parseClassName($fallbackClassName)
+    {
+        $handle = fopen($this->path, 'r');
+        while($line = fgets($handle)) {
+            if(preg_match(self::$className, $line, $matches))
+                return $matches[1];
+        }
+        fclose($handle);
+        return $fallbackClassName;
     }
 
     private function getNamespace()
