@@ -17,13 +17,21 @@ class RunnerIntegrationTest extends \TestBase
 
     public function testRunningTestsShouldLeaveNoTempFiles()
     {
-        $tempdir = sys_get_temp_dir();
+        $original_tempdir = sys_get_temp_dir();
+        $tempdir = rtrim($original_tempdir, '/') . '/testRunningTestsShouldLeaveNoTempFiles';
+        @mkdir($tempdir);
+        putenv('TMPDIR=' . $tempdir);
+
         $countBefore = count(glob($tempdir . DS . 'PT_*'));
         //dont want the output mucking up the test results
         ob_start();
         $this->runner->run();
         ob_end_clean();
         $countAfter = count(glob($tempdir . DS . 'PT_*'));
+
+        @rmdir($tempdir);
+        putenv('TMPDIR=' . $original_tempdir);
+
         $this->assertEquals($countAfter, $countBefore, "Test Runner failed to clean up the 'PT_*' file in " . $tempdir);
     }
 
