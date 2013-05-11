@@ -13,6 +13,7 @@ class SuiteLoaderIntegrationTest extends \TestBase
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
             'GroupsTest.php',
+            'LegacyNamespaceTest.php',
             'LongRunningTest.php',
             'UnitTestWithClassAnnotationTest.php',
             'UnitTestWithMethodAnnotationsTest.php',
@@ -69,6 +70,17 @@ class SuiteLoaderIntegrationTest extends \TestBase
     {
         $second = next($paraSuites);
         $functions = $second->getFunctions();
+        $this->assertEquals(0, sizeof($functions));
+    }
+
+    /**
+     * @depends testLoadDirGetsPathOfAllTestsWithKeys
+     */
+    public function testThirdParallelSuiteHasCorrectFunctions($paraSuites)
+    {
+        next($paraSuites);
+        $third = next($paraSuites);
+        $functions = $third->getFunctions();
         $this->assertEquals(3, sizeof($functions));
         $this->assertEquals('testOne', $functions[0]->getName());
         $this->assertEquals('testTwo', $functions[1]->getName());
