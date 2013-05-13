@@ -4,6 +4,8 @@ class RunnerIntegrationTest extends \TestBase
 {
     protected $runner;
     protected $options;
+    protected $originalTempDir;
+    protected $tempDir;
 
     public function setUp()
     {
@@ -13,18 +15,20 @@ class RunnerIntegrationTest extends \TestBase
             'bootstrap' => BOOTSTRAP
         );
         $this->runner = new Runner($this->options);
+        $this->originalTempDir = sys_get_temp_dir();
+        $this->changeTempDir();
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles()
     {
-        $tempdir = sys_get_temp_dir();
-        $countBefore = count(glob($tempdir . DS . 'PT_*'));
+        $countBefore = count(glob($this->tempDir . DS . 'PT_*'));
         //dont want the output mucking up the test results
         ob_start();
         $this->runner->run();
         ob_end_clean();
-        $countAfter = count(glob($tempdir . DS . 'PT_*'));
-        $this->assertEquals($countAfter, $countBefore, "Test Runner failed to clean up the 'PT_*' file in " . $tempdir);
+        $countAfter = count(glob($this->tempDir . DS . 'PT_*'));
+
+        $this->assertEquals($countAfter, $countBefore, "Test Runner failed to clean up the 'PT_*' file in " . $this->tempDir);
     }
 
     public function testLogJUnitCreatesXmlFile()
@@ -51,5 +55,26 @@ class RunnerIntegrationTest extends \TestBase
         $this->assertEquals(31, sizeof($cases));
         $this->assertEquals(4, sizeof($failures));
         $this->assertEquals(1, sizeof($errors));
+    }
+
+    /**
+     * creates a test-specific temp dir inside the systems temp dir
+     */
+    protected function changeTempDir()
+    {
+        $this->tempDir = rtrim($this->originalTempDir, '/') . '/' . $this->getName(false);
+        if (!file_exists($this->tempDir)) {
+            mkdir($this->tempDir);
+        }
+        putenv('TMPDIR=' . $this->tempDir);
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+        putenv('TMPDIR=' . $this->originalTempDir);
+        if (file_exists($this->tempDir)) {
+            rmdir($this->tempDir);
+        }
     }
 }
