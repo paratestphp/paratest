@@ -39,7 +39,7 @@ class SuiteLoader
         else if($suites = $configuration->getSuites())
             foreach($suites as $name => $path)
                 $this->loadPath($path);
-        if(!$this->files) throw new \RuntimeException("No path or configuration provided");
+        if(!$this->files) throw new \RuntimeException("No path or configuration provided (tests must end with Test.php)");
         $this->initSuites();
     }
 
