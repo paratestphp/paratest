@@ -41,7 +41,7 @@ class SuiteLoaderTest extends \TestBase
 
     /**
      * @expectedException   \RuntimeException
-     * @expectedExceptionMessage No path or configuration provided
+     * @expectedExceptionMessage No path or configuration provided (tests must end with Test.php)
      */
     public function testLoadBarePathWithNoPathAndNoConfiguration()
     {
