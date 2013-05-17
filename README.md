@@ -71,13 +71,13 @@ Running Tests
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
 
 To run unit tests:
-`vendor/bin/phpunit --bootstrap test/bootstrap.php test/ParaTest`
+`vendor/bin/phpunit test/ParaTest`
 
 To run integration tests:
-`vendor/bin/phpunit --bootstrap test/bootstrap.php it/ParaTest`
+`vendor/bin/phpunit it/ParaTest`
 
 To run functional tests:
-`vendor/bin/phpunit --bootstrap test/bootstrap.php functional`
+`vendor/bin/phpunit functional`
 
 There are a couple of shortcuts in the `bin` directory as well.
 
