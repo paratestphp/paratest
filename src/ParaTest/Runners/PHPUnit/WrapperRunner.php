@@ -6,12 +6,15 @@ use ParaTest\Logging\LogInterpreter,
 class WrapperRunner
 {
     const PHPUNIT_FATAL_ERROR = 255;
+    const PHPUNIT_FAILURES = 1;
+    const PHPUNIT_ERRORS = 2;
 
     protected $pending = array();
     protected $running = array();
     protected $options;
     protected $interpreter;
     protected $printer;
+    protected $exitcode = 0;
     
     public function __construct($opts = array())
     {
@@ -152,6 +155,7 @@ class WrapperRunner
 
     private function complete()
     {
+        $this->setExitCode();
         $this->printer->printResults();
         $this->interpreter->rewind();
         $this->log();
@@ -172,7 +176,17 @@ class WrapperRunner
 
     public function getExitCode()
     {
-        return 0;
+        return $this->exitcode;
+    }
+
+    private function setExitCode()
+    {
+        if ($this->interpreter->getTotalFailures()) {
+            $this->exitcode = self::PHPUNIT_FAILURES;
+        }
+        if ($this->interpreter->getTotalErrors()) {
+            $this->exitcode = self::PHPUNIT_ERRORS;
+        }
     }
 
     /**
