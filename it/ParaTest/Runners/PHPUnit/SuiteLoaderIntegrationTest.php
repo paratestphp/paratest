@@ -12,6 +12,7 @@ class SuiteLoaderIntegrationTest extends \TestBase
         $tests = FIXTURES . DS . 'tests';
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
+            'EnvironmentTest.php',
             'GroupsTest.php',
             'LegacyNamespaceTest.php',
             'LongRunningTest.php',
@@ -53,7 +54,7 @@ class SuiteLoaderIntegrationTest extends \TestBase
      */
     public function testFirstParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        $first = array_shift($paraSuites);
+        $first = $this->byClassName('GroupsTest', $paraSuites);
         $functions = $first->getFunctions();
         $this->assertEquals(5, sizeof($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
@@ -68,7 +69,7 @@ class SuiteLoaderIntegrationTest extends \TestBase
      */
     public function testSecondParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        $second = next($paraSuites);
+        $second = $this->byClassName('LegacyNamespaceTest', $paraSuites);
         $functions = $second->getFunctions();
         $this->assertEquals(0, sizeof($functions));
     }
@@ -78,8 +79,7 @@ class SuiteLoaderIntegrationTest extends \TestBase
      */
     public function testThirdParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        next($paraSuites);
-        $third = next($paraSuites);
+        $third = $this->byClassName('LongRunningTest', $paraSuites);
         $functions = $third->getFunctions();
         $this->assertEquals(3, sizeof($functions));
         $this->assertEquals('testOne', $functions[0]->getName());
@@ -87,11 +87,20 @@ class SuiteLoaderIntegrationTest extends \TestBase
         $this->assertEquals('testThree', $functions[2]->getName());
     }
 
+    private function byClassName($name, array $suites)
+    {
+        foreach ($suites as $path => $suite) {
+            if (preg_match("|/{$name}.php$|", $path)) {
+                return $suite;
+            }
+        }
+    }
+
     public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(31, sizeof($methods));
+        $this->assertEquals(33, sizeof($methods));
         return $methods;
     }
 

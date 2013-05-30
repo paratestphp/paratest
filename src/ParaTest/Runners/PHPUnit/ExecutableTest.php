@@ -83,12 +83,16 @@ abstract class ExecutableTest
 
     public function run($binary, $options = array(), $environmentVariables = array())
     {
-        $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
         $this->handleEnvironmentVariables($environmentVariables);
-        $command = $this->getCommandString($binary, $options, $environmentVariables);
+        $command = $this->command($binary, $options);
         $this->process = proc_open($command, self::$descriptors, $this->pipes);
-
         return $this;
+    }
+
+    public function command($binary, $options = array())
+    {
+        $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
+        return $this->getCommandString($binary, $options);
     }
 
     protected function initStreams()
@@ -109,14 +113,13 @@ abstract class ExecutableTest
 
     protected function getCommandString($binary, $options = array(), $environmentVariables = array())
     {
+        //Identify paratest as the test runner
+        $environmentVariablePrefix = 'PARATEST=1 ';
         $command = $binary;
-        $environmentVariablePrefix = '';
-
         foreach($options as $key => $value) $command .= " --$key %s";
         foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
         $args = array_merge(array("$environmentVariablePrefix$command %s"), array_values($environmentVariables), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
-
         return $command;
     }
 

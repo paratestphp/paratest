@@ -65,18 +65,14 @@ class ResultPrinter
     {
         $reader = new Reader($test->getTempFile());
         $this->results->addReader($reader);
-        $feedbackItems = $reader->getFeedback();
-        foreach ($feedbackItems as $item)
-            $this->printFeedbackItem($item);
+        $this->printFromReader($reader);
     }
 
-    protected function printFeedbackItem($item)
+    public function printFeedbackFromFile($file)
     {
-        print $item;
-        $this->column++;
-        $this->casesProcessed++;
-        if ($this->column == $this->maxColumn)
-            $this->printProgress();
+        $reader = new Reader($file);
+        $this->results->addReader($reader);
+        $this->printFromReader($reader);
     }
 
     public function getHeader()
@@ -138,6 +134,22 @@ class ResultPrinter
         );
 
         $this->println();
+    }
+
+    protected function printFeedbackItem($item)
+    {
+        print $item;
+        $this->column++;
+        $this->casesProcessed++;
+        if ($this->column == $this->maxColumn)
+            $this->printProgress();
+    }
+
+    protected function printFromReader(Reader $reader)
+    {
+        $feedbackItems = $reader->getFeedback();
+        foreach ($feedbackItems as $item)
+            $this->printFeedbackItem($item);
     }
 
     private function getFailedFooter()

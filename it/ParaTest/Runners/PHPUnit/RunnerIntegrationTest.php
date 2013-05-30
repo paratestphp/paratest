@@ -51,8 +51,8 @@ class RunnerIntegrationTest extends \TestBase
         $cases = $doc->xpath('//testcase');
         $failures = $doc->xpath('//failure');
         $errors = $doc->xpath('//error');
-        $this->assertEquals(10, sizeof($suites));
-        $this->assertEquals(31, sizeof($cases));
+        $this->assertEquals(11, sizeof($suites));
+        $this->assertEquals(33, sizeof($cases));
         $this->assertEquals(4, sizeof($failures));
         $this->assertEquals(1, sizeof($errors));
     }

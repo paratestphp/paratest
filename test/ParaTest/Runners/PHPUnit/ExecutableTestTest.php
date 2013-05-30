@@ -30,7 +30,7 @@ class ExecutableTestTest extends \TestBase
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals('/usr/bin/phpunit --bootstrap test/bootstrap.php pathToFile', $command);
+        $this->assertEquals('PARATEST=1 /usr/bin/phpunit --bootstrap test/bootstrap.php pathToFile', $command);
     }
 
     public function testGetCommandStringIncludesEnvironmentVariables()
@@ -40,7 +40,7 @@ class ExecutableTestTest extends \TestBase
         $environmentVariables = array('TEST_TOKEN' => 3, 'APPLICATION_ENVIRONMENT_VAR' => 'abc');
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options, $environmentVariables);
 
-        $this->assertEquals('TEST_TOKEN=3 APPLICATION_ENVIRONMENT_VAR=abc /usr/bin/phpunit --bootstrap test/bootstrap.php pathToFile', $command);
+        $this->assertEquals('PARATEST=1 TEST_TOKEN=3 APPLICATION_ENVIRONMENT_VAR=abc /usr/bin/phpunit --bootstrap test/bootstrap.php pathToFile', $command);
     }
 
     public function testHandleEnvironmentVariablesAssignsToken()
