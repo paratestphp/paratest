@@ -268,10 +268,30 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testEachTestRunsExactlyOnceOnChainDependencyOnFunctionalMode()
+    {
+        $this->path = FIXTURES . DS . "tests" . DS . "DependsOnChain.php";
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'f' => ''));
+        $this->assertOkResults($results, 5, 5);
+    }
+
+    public function testEachTestRunsExactlyOnceOnSameDependencyOnFunctionalMode()
+    {
+        $this->path = FIXTURES . DS . "tests" . DS . "DependsOnSame.php";
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'f' => ''));
+        $this->assertOkResults($results, 3, 3);
+    }
+
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
 Tests: 34, Assertions: 37, Failures: 4, Errors: 1./", $results);
+    }
+
+    protected function assertOkResults($results, $tests, $assertions)
+    {
+        $regex = sprintf("/OK \(%d tests, %d assertions\)/", $tests, $assertions);
+        $this->assertRegExp($regex, $results);
     }
 
     protected function paratest($options = array())
