@@ -1,10 +1,13 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Parser\Parser;
+use Symfony\Component\Finder\Finder;
 
 class SuiteLoader
 {
     protected $files = array();
+
+    /** @var Suite[] */
     protected $loadedSuites = array();
 
     private static $testPattern = '/.+Test\.php$/';
@@ -36,10 +39,13 @@ class SuiteLoader
     public function load($path = '')
     {
         $configuration = @$this->options->filtered['configuration'] ?: new Configuration('');
-        if($path) $this->loadPath($path);
-        else if($suites = $configuration->getSuites())
-            foreach($suites as $name => $path)
+        if ($path) {
+            $this->loadPath($path);
+        } else if ($suites = $configuration->getSuites()) {
+            foreach($suites as $path) {
                 $this->loadPath($path);
+            }
+        }
         if(!$this->files) throw new \RuntimeException("No path or configuration provided (tests must end with Test.php)");
         $this->initSuites();
     }
@@ -47,19 +53,30 @@ class SuiteLoader
     private function loadPath($path)
     {
         $path = $path ? : $this->options->path;
-        if (!file_exists($path))
-            throw new \InvalidArgumentException("$path is not a valid directory or file");
-        if (is_dir($path))
+
+        if ($path instanceof Finder) {
             $this->loadDir($path);
-        else if (file_exists($path))
-            $this->loadFile($path);
+        } else {
+            if (!file_exists($path)) {
+                throw new \InvalidArgumentException("$path is not a valid directory or file");
+            }
+            if (is_dir($path)) {
+                $finder = new Finder();
+                $path = $finder->files()->in($path);
+                $this->loadDir($path);
+            } else if (file_exists($path)) {
+                $this->loadFile($path);
+            }
+        }
     }
 
-    private function loadDir($path)
+    private function loadDir(Finder $path)
     {
-        $files = scandir($path);
-        foreach($files as $file)
-            $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file);
+        $path->files();
+        /** @var \SplFileInfo $file */
+        foreach($path as $file) {
+            $this->tryLoadTests($file->getRealPath());
+        }
     }
 
     private function loadFile($path)

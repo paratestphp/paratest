@@ -37,11 +37,10 @@ class ConfigurationTest extends \TestBase
     /**
      * @depends testSuitesContainSuiteNameAtKey
      */
-    public function testSuitesContainPathAsValue($suites)
+    public function testSuitesContainFinderAsValue($suites)
     {
-        $basePath = getcwd() . DS;
-        $this->assertEquals($basePath . 'test' . DS . 'ParaTest', $suites["ParaTest Unit Tests"]);
-        $this->assertEquals($basePath . 'it' . DS . 'ParaTest', $suites["ParaTest Integration Tests"]);
-        $this->assertEquals($basePath . 'functional', $suites["ParaTest Functional Tests"]);
+        $this->assertInstanceOf('Symfony\\Component\\Finder\\Finder', $suites["ParaTest Unit Tests"]);
+        $this->assertInstanceOf('Symfony\\Component\\Finder\\Finder', $suites["ParaTest Integration Tests"]);
+        $this->assertInstanceOf('Symfony\\Component\\Finder\\Finder', $suites["ParaTest Functional Tests"]);
     }
 }

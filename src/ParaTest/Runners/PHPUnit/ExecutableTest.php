@@ -86,7 +86,8 @@ abstract class ExecutableTest
         $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->getCommandString($binary, $options, $environmentVariables);
-        $this->process = proc_open($command, self::$descriptors, $this->pipes);
+        // variables_order must include E for $_ENV processing.
+        $this->process = proc_open($command, self::$descriptors, $this->pipes, null, $_ENV + $environmentVariables);
 
         return $this;
     }
@@ -107,14 +108,12 @@ abstract class ExecutableTest
         return $options;
     }
 
-    protected function getCommandString($binary, $options = array(), $environmentVariables = array())
+    protected function getCommandString($binary, $options = array())
     {
         $command = $binary;
-        $environmentVariablePrefix = '';
 
         foreach($options as $key => $value) $command .= " --$key %s";
-        foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
-        $args = array_merge(array("$environmentVariablePrefix$command %s"), array_values($environmentVariables), array_values($options), array($this->getPath()));
+        $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
 
         return $command;

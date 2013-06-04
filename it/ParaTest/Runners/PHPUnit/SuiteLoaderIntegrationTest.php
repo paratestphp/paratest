@@ -79,6 +79,11 @@ class SuiteLoaderIntegrationTest extends \TestBase
     public function testThirdParallelSuiteHasCorrectFunctions($paraSuites)
     {
         next($paraSuites);
+        next($paraSuites);
+        next($paraSuites);
+        next($paraSuites);
+        next($paraSuites);
+
         $third = next($paraSuites);
         $functions = $third->getFunctions();
         $this->assertEquals(3, sizeof($functions));
