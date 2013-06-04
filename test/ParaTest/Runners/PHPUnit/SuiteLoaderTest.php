@@ -28,7 +28,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testOptionsMustBeInstanceOfOptionsIfNotNull()
     {
-        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));        
+        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));
     }
 
     /**
@@ -55,6 +55,15 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
         $this->assertEquals(11, sizeof($files));
+    }
+
+    public function testLoadSuiteFromConfigWithPlaceholderedPath()
+    {
+        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunitplace.xml.dist'));
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+        $this->assertEquals(4, sizeof($files));
     }
 
     /**
