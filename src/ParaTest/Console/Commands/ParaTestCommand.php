@@ -1,13 +1,16 @@
 <?php namespace ParaTest\Console\Commands;
 
-use Symfony\Component\Console\Command\Command,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    ParaTest\Console\Testers\Tester;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use ParaTest\Console\Testers\Tester;
 
 class ParaTestCommand extends Command
 {
+    /**
+     * @var \ParaTest\Console\Testers\Tester
+     */
     protected $tester;
 
     public function __construct(Tester $tester)
@@ -17,6 +20,9 @@ class ParaTestCommand extends Command
         $this->tester->configure($this);
     }
 
+    /**
+     * Ubiquitous configuration options for ParaTest
+     */
     protected function configure()
     {
         $this
@@ -25,6 +31,13 @@ class ParaTestCommand extends Command
             ->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.');
     }
 
+    /**
+     * Executes the specified tester
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|mixed|null
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         return $this->tester->execute($input, $output);

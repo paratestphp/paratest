@@ -1,17 +1,34 @@
 <?php namespace ParaTest\Console\Testers;
 
-use Symfony\Component\Console\Command\Command,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    ParaTest\Runners\PHPUnit\Configuration,
-    ParaTest\Runners\PHPUnit\Runner;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use ParaTest\Runners\PHPUnit\Configuration;
+use ParaTest\Runners\PHPUnit\Runner;
 
+/**
+ * Class PHPUnit
+ *
+ * Creates the interface for PHPUnit testing
+ *
+ * @package ParaTest\Console\Testers
+ */
 class PHPUnit extends Tester
 {
+    /**
+     * @var \ParaTest\Console\Commands\ParaTestCommand
+     */
     protected $command;
 
+    /**
+     * Configures the ParaTestCommand with PHPUnit specific
+     * definitions
+     *
+     * @param Command $command
+     * @return mixed
+     */
     public function configure(Command $command)
     {
         $command
@@ -25,6 +42,14 @@ class PHPUnit extends Tester
         $this->command = $command;
     }
 
+    /**
+     * Executes the PHPUnit Runner. Will Display help if no config and no path
+     * supplied
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|mixed
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         if(!$this->hasConfig($input) && !$this->hasPath($input))
@@ -34,6 +59,13 @@ class PHPUnit extends Tester
         return $runner->getExitCode();
     }
 
+    /**
+     * Returns whether or not a test path has been supplied
+     * via option or regular input
+     *
+     * @param InputInterface $input
+     * @return bool
+     */
     protected function hasPath(InputInterface $input)
     {
         $argument = $input->getArgument('path');
@@ -41,6 +73,12 @@ class PHPUnit extends Tester
         return $argument || $option;
     }
 
+    /**
+     * Is there a PHPUnit xml configuration present
+     *
+     * @param InputInterface $input
+     * @return bool
+     */
     protected function hasConfig(InputInterface $input)
     {
         return (false !== $this->getConfig($input));

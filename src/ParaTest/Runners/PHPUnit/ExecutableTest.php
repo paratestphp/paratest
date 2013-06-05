@@ -2,14 +2,67 @@
 
 abstract class ExecutableTest
 {
+    /**
+     * The path to the test to run
+     *
+     * @var string
+     */
     protected $path;
+
+    /**
+     * A collection of input/output streams
+     * belonging to the tests process
+     *
+     * @var array
+     */
     protected $pipes = array();
+
+    /**
+     * A path to the temp file created
+     * for this test
+     *
+     * @var string
+     */
     protected $temp;
+
+    /**
+     * A handle pointing to the process
+     * opened by proc_open
+     *
+     * @var resource
+     */
     protected $process;
+
+    /**
+     * An array of status values returned
+     * by proc_get_status
+     *
+     * @var array
+     */
     protected $status;
+
+    /**
+     * The contents of the test process'
+     * STDERR
+     *
+     * @var string
+     */
     protected $stderr;
+
+    /**
+     * A unique token value for a given
+     * process
+     *
+     * @var int
+     */
     protected $token;
 
+    /**
+     * The descriptor spec used for opening
+     * the test process
+     *
+     * @var array
+     */
     protected static $descriptors = array(
         0 => array('pipe', 'r'),
         1 => array('pipe', 'w'),
@@ -21,16 +74,34 @@ abstract class ExecutableTest
         $this->path = $path;
     }
 
+    /**
+     * Get the path to the test being executed
+     *
+     * @return string
+     */
     public function getPath()
     {
         return $this->path;
     }
 
+    /**
+     * Return the input output streams
+     * of this test's process
+     *
+     * @return array
+     */
     public function getPipes()
     {
         return $this->pipes;
     }
 
+    /**
+     * Returns the path to this test's temp file.
+     * If the temp file does not exist, it will be
+     * created
+     *
+     * @return string
+     */
     public function getTempFile()
     {
         if(is_null($this->temp))
@@ -39,11 +110,23 @@ abstract class ExecutableTest
         return $this->temp;
     }
 
+    /**
+     * Return the test process' stderr contents
+     *
+     * @return string
+     */
     public function getStderr()
     {
         return $this->stderr;
     }
 
+    /**
+     * Stores the final output of the
+     * test process' STDERR and closes
+     * the process
+     *
+     * @return int
+     */
     public function stop()
     {
         $this->initStreams();
@@ -51,6 +134,9 @@ abstract class ExecutableTest
         return proc_close($this->process);
     }
 
+    /**
+     * Removes the test file
+     */
     public function deleteFile()
     {
         $outputFile = $this->getTempFile();
@@ -81,6 +167,14 @@ abstract class ExecutableTest
         return $this->status['exitcode'];
     }
 
+    /**
+     * Executes the test by creating a separate process
+     *
+     * @param $binary
+     * @param array $options
+     * @param array $environmentVariables
+     * @return $this
+     */
     public function run($binary, $options = array(), $environmentVariables = array())
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
@@ -91,6 +185,11 @@ abstract class ExecutableTest
         return $this;
     }
 
+    /**
+     * Sets the contents of STDERR based
+     * on the current contents of the $pipes
+     * collection
+     */
     protected function initStreams()
     {
         $pipes = $this->getPipes();
@@ -107,6 +206,15 @@ abstract class ExecutableTest
         return $options;
     }
 
+    /**
+     * Returns the command string that will be executed
+     * by proc_open
+     *
+     * @param $binary
+     * @param array $options
+     * @param array $environmentVariables
+     * @return mixed
+     */
     protected function getCommandString($binary, $options = array(), $environmentVariables = array())
     {
         $command = $binary;
@@ -120,11 +228,22 @@ abstract class ExecutableTest
         return $command;
     }
 
+    /**
+     * Returns the unique token for this test process
+     *
+     * @return int
+     */
     public function getToken()
     {
         return $this->token;
     }
 
+    /**
+     * Checks environment variables for the presence of a TEST_TOKEN
+     * variable and sets $this->token based on its value
+     *
+     * @param $environmentVariables
+     */
     protected function handleEnvironmentVariables($environmentVariables)
     {
         if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];

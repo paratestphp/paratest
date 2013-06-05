@@ -7,12 +7,51 @@ class Runner
 {
     const PHPUNIT_FATAL_ERROR = 255;
 
+    /**
+     * A collection of pending ExecutableTest objects that have
+     * yet to run
+     *
+     * @var array
+     */
     protected $pending = array();
+
+    /**
+     * A collection of ExecutableTest objects that have processes
+     * currently running
+     *
+     * @var array
+     */
     protected $running = array();
+
+    /**
+     * @var Options
+     */
     protected $options;
+
+    /**
+     * @var \ParaTest\Logging\LogInterpreter
+     */
     protected $interpreter;
+
+    /**
+     * @var ResultPrinter
+     */
     protected $printer;
+
+    /**
+     * A tallied exit code that returns the highest exit
+     * code returned out of the entire collection of tests
+     *
+     * @var int
+     */
     protected $exitcode = -1;
+
+    /**
+     * A collection of available tokens based on the number
+     * of processes specified in $options
+     *
+     * @var array
+     */
     protected $tokens = array();
 
     public function __construct($opts = array())
@@ -23,6 +62,9 @@ class Runner
         $this->initTokens();
     }
 
+    /**
+     * The money maker. Runs all ExecutableTest objects in separate processes.
+     */
     public function run()
     {
         $this->verifyConfiguration();
@@ -40,11 +82,22 @@ class Runner
         $this->complete();
     }
 
+    /**
+     * Returns the highest exit code encountered
+     * throughout the course of test execution
+     *
+     * @return int
+     */
     public function getExitCode()
     {
         return $this->exitcode;
     }
 
+    /**
+     * Ensures a valid configuration was supplied. If not
+     * causes ParaTest to print the error message and exit immediately
+     * with an exit code of 1
+     */
     private function verifyConfiguration()
     {
         if (isset($this->options->filtered['configuration']) && !file_exists($this->options->filtered['configuration']->getPath())) {
@@ -53,6 +106,12 @@ class Runner
         }
     }
 
+    /**
+     * Finalizes the run process. This method
+     * prints all results, rewinds the log interpreter,
+     * logs any results to JUnit, and cleans up temporary
+     * files
+     */
     private function complete()
     {
         $this->printer->printResults();
@@ -63,6 +122,12 @@ class Runner
             $reader->removeLog();
     }
 
+    /**
+     * Builds the collection of pending ExecutableTest objects
+     * to run. If functional mode is enabled $this->pending will
+     * contain a collection of TestMethod objects instead of Suite
+     * objects
+     */
     private function load()
     {
         $loader = new SuiteLoader($this->options);
@@ -73,6 +138,9 @@ class Runner
             $this->printer->addTest($pending);
     }
 
+    /**
+     * Write output to JUnit format if requested
+     */
     private function log()
     {
         if(!isset($this->options->filtered['log-junit'])) return;
@@ -81,6 +149,11 @@ class Runner
         $writer->write($output);
     }
 
+    /**
+     * This method removes ExecutableTest objects from the pending collection
+     * and adds them to the running collection. It is also in charge of recycling and
+     * acquiring available test tokens for use
+     */
     private function fillRunQueue()
     {
         $opts = $this->options;
@@ -93,6 +166,16 @@ class Runner
         }
     }
 
+    /**
+     * Returns whether or not a test has finished being
+     * executed. If it has, this method also halts a test process - optionally
+     * throwing an exception if a fatal error has occurred -
+     * prints feedback, and updates the overall exit code
+     *
+     * @param $test
+     * @return bool
+     * @throws \Exception
+     */
     private function testIsStillRunning($test)
     {
         if(!$test->isDoneRunning()) return true;
@@ -105,6 +188,13 @@ class Runner
         return false;
     }
 
+    /**
+     * If the provided test object has an exit code
+     * higher than the currently set exit code, that exit
+     * code will be set as the overall exit code
+     *
+     * @param ExecutableTest $test
+     */
     private function setExitCode(ExecutableTest $test)
     {
         $exit = $test->getExitCode();
@@ -112,6 +202,10 @@ class Runner
             $this->exitcode = $exit;
     }
 
+    /**
+     * Initialize the available test tokens based
+     * on how many processes ParaTest will be run in
+     */
     protected function initTokens()
     {
         $this->tokens = array();
@@ -120,6 +214,12 @@ class Runner
         }
     }
 
+    /**
+     * Gets the next token that is available to be acquired
+     * from a finished process
+     *
+     * @return bool|int
+     */
     protected function getNextAvailableToken()
     {
         for ($i=0; $i< count($this->tokens); $i++) {
@@ -129,11 +229,21 @@ class Runner
         return false;
     }
 
+    /**
+     * Flag a token as available for use
+     *
+     * @param $tokenIdentifier
+     */
     protected function releaseToken($tokenIdentifier)
     {
         $this->tokens[$tokenIdentifier] = true;
     }
 
+    /**
+     * Flag a token as acquired and not available for use
+     *
+     * @param $tokenIdentifier
+     */
     protected function acquireToken($tokenIdentifier)
     {
         $this->tokens[$tokenIdentifier] = false;

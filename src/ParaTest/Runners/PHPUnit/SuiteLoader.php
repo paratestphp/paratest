@@ -4,13 +4,41 @@ use ParaTest\Parser\Parser;
 
 class SuiteLoader
 {
+    /**
+     * The collection of loaded files
+     *
+     * @var array
+     */
     protected $files = array();
+
+    /**
+     * The collection of parsed test classes
+     *
+     * @var array
+     */
     protected $loadedSuites = array();
 
+    /**
+     * The pattern used for grabbing test files. Uses the *Test.php convention
+     * that PHPUnit defaults to.
+     *
+     * @var string
+     */
     private static $testPattern = '/.+Test\.php$/';
+
+    /**
+     * Matches php files
+     *
+     * @var string
+     */
     private static $filePattern = '/.+\.php$/';
+
+    /**
+     * Used to ignore directory paths '.' and '..'
+     *
+     * @var string
+     */
     private static $dotPattern = '/([.]+)$/';
-    private static $testMethod = '/^test/';
 
     public function __construct($options = null)
     {
@@ -19,11 +47,23 @@ class SuiteLoader
         $this->options = $options;
     }
 
+    /**
+     * Returns all parsed suite objects as ExecutableTest
+     * instances
+     *
+     * @return array
+     */
     public function getSuites()
     {
         return $this->loadedSuites;
     }
 
+    /**
+     * Returns a collection of TestMethod objects
+     * for all loaded ExecutableTest instances
+     *
+     * @return array
+     */
     public function getTestMethods()
     {
         $methods = array();
@@ -33,6 +73,13 @@ class SuiteLoader
         return $methods;
     }
 
+    /**
+     * Populates the loaded suite collection. Will load suites
+     * based off a phpunit xml configuration or a specified path
+     *
+     * @param string $path
+     * @throws \RuntimeException
+     */
     public function load($path = '')
     {
         $configuration = @$this->options->filtered['configuration'] ?: new Configuration('');
@@ -44,6 +91,13 @@ class SuiteLoader
         $this->initSuites();
     }
 
+    /**
+     * Loads suites based on a specific path.
+     * A valid path can be a directory or file
+     *
+     * @param $path
+     * @throws \InvalidArgumentException
+     */
     private function loadPath($path)
     {
         $path = $path ? : $this->options->path;
@@ -55,6 +109,11 @@ class SuiteLoader
             $this->loadFile($path);
     }
 
+    /**
+     * Loads suites from a directory
+     *
+     * @param $path
+     */
     private function loadDir($path)
     {
         $files = scandir($path);
@@ -62,11 +121,22 @@ class SuiteLoader
             $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file);
     }
 
+    /**
+     * Load a single suite file
+     *
+     * @param $path
+     */
     private function loadFile($path)
     {
         $this->tryLoadTests($path, true);
     }
 
+    /**
+     * Attempts to load suites from a path.
+     *
+     * @param $path
+     * @param bool $relaxTestPattern - if true .php satisfies loading pattern otherwise *Test.php will be used
+     */
     private function tryLoadTests($path, $relaxTestPattern = false)
     {
         $pattern = ($relaxTestPattern) ? 'filePattern' : 'testPattern';
@@ -77,6 +147,10 @@ class SuiteLoader
             $this->loadDir($path);
     }
 
+    /**
+     * Called after all files are loaded. Parses loaded files into
+     * ExecutableTest objects - either Suite or TestMethod
+     */
     private function initSuites()
     {
         foreach ($this->files as $path) {
