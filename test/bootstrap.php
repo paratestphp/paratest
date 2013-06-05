@@ -6,7 +6,11 @@ require_once dirname(__DIR__) . DS . 'vendor' . DS . 'autoload.php';
 
 //TEST CONSTANTS
 define('FIXTURES', __DIR__ . DS . 'fixtures');
-define("PARA_BINARY", dirname(dirname(__FILE__)) . DS . 'bin' . DS . 'paratest');
+$para_path = dirname(dirname(__FILE__)) . DS . 'bin' . DS . 'paratest';
+if (file_exists($para_path . '.bat')) {
+	$para_path .= '.bat';
+}
+define("PARA_BINARY", $para_path);
 define("PARATEST_ROOT", dirname(__DIR__));
 
 //check for .bat first if on windows.

@@ -13,16 +13,16 @@ class OutputTest extends FunctionalTestBase
     {
         $output = $this->getParaTestOutput();
         $this->assertRegExp(
-            '/^\nRunning phpunit in 5 processes with ' . 
+            '/\nRunning phpunit in 5 processes with ' .
             $this->getPhpUnitForRegEx() .
-            '\n\nConfiguration read from ' . str_replace('/', '\\/', getcwd() . DS . 'phpunit\.xml\.dist') .
+            '\n\nConfiguration read from ' . str_replace(array('/', '\\'), array('\\/', '\\\\'), getcwd() . DS) . 'phpunit\.xml\.dist' .
             '\n\n\.F\.\./', $output);
     }
 
     public function testMessagePrintedWhenInvalidConfigFileSupplied()
     {
         $output = $this->getParaTestOutput(false, array('configuration' => 'nope.xml'));
-        $this->assertRegExp('/^Could not read "nope\.xml"\.\n$/', $output);
+        $this->assertRegExp('/Could not read "nope\.xml"\.\n$/', $output);
     }
 
     public function testInstantFeedbackIsDisplayedWhenAndFunctionalModeDsiplayed()
@@ -41,16 +41,16 @@ class OutputTest extends FunctionalTestBase
     {
         $output = $this->getParaTestOutput(false, array('p' => '1'));
         $this->assertRegExp(
-            '/^\nRunning phpunit in 1 process with ' . 
+            '/\nRunning phpunit in 1 process with ' .
             $this->getPhpUnitForRegEx() .
-            '\n\nConfiguration read from ' . str_replace('/', '\\/', getcwd() . DS . 'phpunit\.xml\.dist') .
+            '\n\nConfiguration read from ' . str_replace(array('/', '\\'), array('\\/', '\\\\'), getcwd() . DS) . 'phpunit\.xml\.dist' .
             '\n\n\.F\.\./', $output);
     }
 
     protected function assertFunctionalModeIsOnWithFeedback($output)
     {
         $this->assertRegExp(
-            '/^\nRunning phpunit in 5 processes with ' .
+            '/\nRunning phpunit in 5 processes with ' .
             $this->getPhpUnitForRegEx() .
             '. Functional mode is on' .
             '\n\n[.FE]*/', $output);
@@ -58,6 +58,6 @@ class OutputTest extends FunctionalTestBase
 
     protected function getPhpUnitForRegEx()
     {
-        return str_replace("/", "\\/", PHPUNIT);
+        return str_replace(array('/', '\\'), array('\\/', '\\\\'), PHPUNIT);
     }
 }

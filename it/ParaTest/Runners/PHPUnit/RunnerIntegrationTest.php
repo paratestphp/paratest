@@ -62,7 +62,7 @@ class RunnerIntegrationTest extends \TestBase
      */
     protected function changeTempDir()
     {
-        $this->tempDir = rtrim($this->originalTempDir, '/') . '/' . $this->getName(false);
+        $this->tempDir = rtrim($this->originalTempDir, DS) . DS . $this->getName(false);
         if (!file_exists($this->tempDir)) {
             mkdir($this->tempDir);
         }
