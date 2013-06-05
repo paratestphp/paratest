@@ -1,8 +1,29 @@
 <?php namespace ParaTest\Logging;
 
+/**
+ * Class MetaProvider
+ *
+ * Adds __call behavior to a logging object
+ * for aggregating totals and messages
+ *
+ * @package ParaTest\Logging
+ */
 abstract class MetaProvider
 {
+    /**
+     * This pattern is used to see whether a missing
+     * method is a "total" method or not
+     *
+     * @var string
+     */
     protected static $totalMethod = '/^getTotal([\w]+)$/';
+
+    /**
+     * This pattern is used to add message retrieval for a given
+     * type - i.e getFailures() or getErrors()
+     *
+     * @var string
+     */
     protected static $messageMethod = '/^get((Failure|Error)s)$/';
 
     /**
@@ -16,6 +37,12 @@ abstract class MetaProvider
             return $this->getMessages($type);
     }
 
+    /**
+     * Return a value as a float or integer
+     *
+     * @param $property
+     * @return float|int
+     */
     protected function getNumericValue($property)
     {
        return ($property === 'time') 
@@ -23,6 +50,12 @@ abstract class MetaProvider
               : intval($this->suites[0]->$property);
     }
 
+    /**
+     * Return messages for a given type
+     *
+     * @param $type
+     * @return array
+     */
     protected function getMessages($type)
     {
         $messages = array();

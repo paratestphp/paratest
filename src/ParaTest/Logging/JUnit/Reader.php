@@ -4,12 +4,29 @@ use ParaTest\Logging\MetaProvider;
 
 class Reader extends MetaProvider
 {
+    /**
+     * @var \SimpleXMLElement
+     */
     protected $xml;
+
+    /**
+     * @var bool
+     */
     protected $isSingle = false;
+
+    /**
+     * @var array
+     */
     protected $suites = array();
 
+    /**
+     * @var string
+     */
     protected $logFile;
 
+    /**
+     * @var array
+     */
     protected static $defaultSuite = array('name' => '',
                                            'file' => '',
                                            'tests' => 0,
@@ -29,16 +46,37 @@ class Reader extends MetaProvider
         $this->init();
     }
 
+    /**
+     * Returns whether or not this reader contains only
+     * a single suite
+     *
+     * @return bool
+     */
     public function isSingleSuite()
     {
         return $this->isSingle;
     }
 
+    /**
+     * Return the Reader's collection
+     * of test suites
+     *
+     * @return array
+     */
     public function getSuites()
     {
         return $this->suites;
     }
 
+    /**
+     * Return an array that contains
+     * each suite's instant feedback. Since
+     * logs do not contain skipped or incomplete
+     * tests this array will contain any number of the following
+     * characters: .,F,E
+     *
+     * @return array
+     */
     public function getFeedback()
     {
         $feedback = array();
@@ -53,11 +91,18 @@ class Reader extends MetaProvider
         return $feedback;
     }
 
+    /**
+     * Remove the JUnit xml file
+     */
     public function removeLog()
     {
         unlink($this->logFile);
     }
 
+    /**
+     * Initialize the suite collection
+     * from the JUnit xml document
+     */
     protected function init()
     {
         $this->initSuite();
@@ -78,6 +123,13 @@ class Reader extends MetaProvider
         else $this->suites[0]->cases = $testCases;
     }
 
+    /**
+     * Creates and adds a TestSuite based on the given
+     * suite properties and collection of test cases
+     *
+     * @param $properties
+     * @param $testCases
+     */
     protected function addSuite($properties, $testCases)
     {
         $suite = TestSuite::suiteFromArray($properties);
@@ -89,6 +141,7 @@ class Reader extends MetaProvider
      * Fold an array of testcase nodes into a suite array
      * @param array $nodeArray an array of testcase nodes
      * @param array $testCases an array reference. Individual testcases will be placed here.
+     * @return mixed
      */
     protected function caseNodesToSuiteProperties($nodeArray, &$testCases = array())
     {
@@ -106,6 +159,12 @@ class Reader extends MetaProvider
         }, static::$defaultSuite);
     }
 
+    /**
+     * Return a collection of testcase nodes
+     * from the xml document
+     *
+     * @return array
+     */
     protected function getCaseNodes()
     {
         $caseNodes = $this->xml->xpath('//testcase');
@@ -118,6 +177,11 @@ class Reader extends MetaProvider
         return $cases;
     }
 
+    /**
+     * Determine if this reader is a single suite
+     * and initialize the suite collection with the first
+     * suite
+     */
     protected function initSuite()
     {
         $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');

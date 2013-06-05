@@ -2,6 +2,9 @@
 
 class ParsedFunction extends ParsedObject
 {
+    /**
+     * @var string
+     */
     private $visibility;
 
     public function __construct($doc, $visibility, $name)
@@ -10,6 +13,12 @@ class ParsedFunction extends ParsedObject
         $this->visibility = $visibility;
     }
 
+    /**
+     * Returns the accessibility level of the parsed
+     * method - i.e public, private, protected
+     *
+     * @return string
+     */
     public function getVisibility()
     {
         return $this->visibility;

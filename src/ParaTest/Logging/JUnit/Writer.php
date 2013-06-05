@@ -4,12 +4,44 @@ use ParaTest\Logging\LogInterpreter;
 
 class Writer
 {
+    /**
+     * The name attribute of the testsuite being
+     * written
+     *
+     * @var string
+     */
     protected $name;
+
+    /**
+     * @var \ParaTest\Logging\LogInterpreter
+     */
     protected $interpreter;
+
+    /**
+     * @var \DOMDocument
+     */
     protected $document;
 
+    /**
+     * A pattern for matching testsuite attributes
+     *
+     * @var string
+     */
     protected static $suiteAttrs = '/name|(?:test|assertion|failure|error)s|time|file/';
+
+    /**
+     * A pattern for matching testcase attrs
+     *
+     * @var string
+     */
     protected static $caseAttrs = '/name|class|file|line|assertions|time/';
+
+    /**
+     * A default suite to ease flattening of
+     * suite structures
+     *
+     * @var array
+     */
     protected static $defaultSuite = array(
                                         'tests' => 0,
                                         'assertions' => 0,
@@ -27,11 +59,22 @@ class Writer
         $this->document->formatOutput = true;
     }
 
+    /**
+     * Get the name of the root suite being written
+     *
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * Returns the xml structure the writer
+     * will use
+     *
+     * @return string
+     */
     public function getXml()
     {
         $suites = $this->interpreter->flattenCases();
@@ -44,11 +87,24 @@ class Writer
         return $this->document->saveXML();
     }
 
+    /**
+     * Write the xml structure to a file path
+     *
+     * @param $path
+     */
     public function write($path)
     {
         file_put_contents($path, $this->getXml());
     }
 
+    /**
+     * Append a testsuite node to the given
+     * root element
+     *
+     * @param $root
+     * @param TestSuite $suite
+     * @return \DOMElement
+     */
     protected function appendSuite($root, TestSuite $suite)
     {
         $suiteNode = $this->document->createElement("testsuite");
@@ -61,6 +117,14 @@ class Writer
         return $suiteNode;
     }
 
+    /**
+     * Append a testcase node to the given testsuite
+     * node
+     *
+     * @param $suiteNode
+     * @param TestCase $case
+     * @return \DOMElement
+     */
     protected function appendCase($suiteNode, TestCase $case)
     {
         $caseNode = $this->document->createElement("testcase");
@@ -73,6 +137,13 @@ class Writer
         return $caseNode;
     }
 
+    /**
+     * Append error or failure nodes to the given testcase node
+     *
+     * @param $caseNode
+     * @param $defects
+     * @param $type
+     */
     protected function appendDefects($caseNode, $defects, $type)
     {
         foreach($defects as $defect) {
@@ -82,6 +153,12 @@ class Writer
         }
     }
 
+    /**
+     * Get the root level testsuite node
+     *
+     * @param $suites
+     * @return \DOMElement
+     */
     protected function getSuiteRoot($suites)
     {
         $testsuites = $this->document->createElement("testsuites");
@@ -95,6 +172,13 @@ class Writer
         return $rootSuite;
     }
 
+    /**
+     * Get the attributes used on the root testsuite
+     * node
+     *
+     * @param $suites
+     * @return mixed
+     */
     protected function getSuiteRootAttributes($suites)
     {
         return array_reduce($suites, function($result, $suite){

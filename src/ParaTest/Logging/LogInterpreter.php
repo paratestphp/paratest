@@ -6,24 +6,53 @@ use ParaTest\Logging\JUnit\Reader,
 
 class LogInterpreter extends MetaProvider
 {
+    /**
+     * A collection of Reader objects
+     * to aggregate results from
+     *
+     * @var array
+     */
     protected $readers = array();
 
+    /**
+     * Reset the array pointer of the internal
+     * readers collection
+     */
     public function rewind()
     {
         reset($this->readers);
     }
 
+    /**
+     * Add a new Reader to be included
+     * in the final results
+     *
+     * @param Reader $reader
+     * @return $this
+     */
     public function addReader(Reader $reader)
     {
         $this->readers[] = $reader;
         return $this;
     }
 
+    /**
+     * Return all Reader objects associated
+     * with the LogInterpreter
+     *
+     * @return array
+     */
     public function getReaders()
     {
         return $this->readers;
     }
 
+    /**
+     * Returns true if total errors and failures
+     * equals 0, false otherwise
+     *
+     * @return bool
+     */
     public function isSuccessful()
     {
         $failures = $this->getTotalFailures();
@@ -31,6 +60,12 @@ class LogInterpreter extends MetaProvider
         return $failures === 0 && $errors === 0;
     }
 
+    /**
+     * Get all test case objects found within
+     * the collection of Reader objects
+     *
+     * @return array
+     */
     public function getCases()
     {
         $cases = array();
@@ -64,6 +99,12 @@ class LogInterpreter extends MetaProvider
         return array_values($dict);
     }
 
+    /**
+     * Returns a value as either a float or int
+     *
+     * @param $property
+     * @return float|int
+     */
     protected function getNumericValue($property)
     {
         return ($property === 'time') 
@@ -71,11 +112,25 @@ class LogInterpreter extends MetaProvider
                : intval($this->accumulate('getTotal' . ucfirst($property)));
     }
 
+    /**
+     * Gets messages of a given type and
+     * merges them into a single collection
+     *
+     * @param $type
+     * @return array
+     */
     protected function getMessages($type)
     {
         return $this->mergeMessages('get' . ucfirst($type));
     }
 
+    /**
+     * Flatten messages into a single collection
+     * based on an accessor method
+     *
+     * @param $method
+     * @return array
+     */
     private function mergeMessages($method)
     {
         $messages = array();
@@ -84,6 +139,13 @@ class LogInterpreter extends MetaProvider
         return $messages;
     }
 
+    /**
+     * Reduces a collection of readers down to a single
+     * result based on an accessor
+     *
+     * @param $method
+     * @return mixed
+     */
     private function accumulate($method)
     {
         return array_reduce($this->readers, function($result, $reader) use($method){
