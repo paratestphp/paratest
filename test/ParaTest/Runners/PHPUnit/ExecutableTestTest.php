@@ -1,9 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
-
-class ExecutableTestChild extends ExecutableTest
-{
-
-}
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 class ExecutableTestTest extends \TestBase
 {
@@ -55,4 +51,24 @@ class ExecutableTestTest extends \TestBase
         $this->setObjectValue($this->executableTestChild, 'token', 3);
         $this->assertEquals(3, $this->executableTestChild->getToken());
     }
+
+    public function testGetTempFileShouldCreateTempFile()
+    {
+        $file = $this->executableTestChild->getTempFile();
+        $this->assertTrue(file_exists($file));
+        unlink($file);
+    }
+
+    public function testGetTempFileShouldReturnSameFileIfAlreadyCalled()
+    {
+        $file = $this->executableTestChild->getTempFile();
+        $fileAgain = $this->executableTestChild->getTempFile();
+        $this->assertEquals($file, $fileAgain);
+        unlink($file);
+    }
+}
+
+class ExecutableTestChild extends ExecutableTest
+{
+
 }
