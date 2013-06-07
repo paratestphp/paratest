@@ -113,6 +113,14 @@ class PHPUnitTest extends FunctionalTestBase
         if(file_exists($output)) unlink($output);
     }
 
+    public function testTestTokenEnvVarIsPassed()
+    {
+        chdir(PARATEST_ROOT);
+        $this->path = '';
+        $result = $this->paratest(array('path' => 'test/fixtures/tests/TestTokenTest.php'));
+        $this->assertContains("OK (1 test, 1 assertion)", $result);
+    }
+
     public function testLoggingXmlOfSingleFile()
     {
         chdir(PARATEST_ROOT);
