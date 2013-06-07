@@ -230,7 +230,7 @@ class PHPUnitTest extends FunctionalTestBase
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
-Tests: 31, Assertions: 30, Failures: 4, Errors: 1./", $results);
+Tests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())
