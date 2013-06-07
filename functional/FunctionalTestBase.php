@@ -89,4 +89,12 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         return $this->exitCode;
     }
+
+    protected function normalizeStr($string)
+    {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            return str_replace("\r\n", "\n", $string);
+        }
+        return $string;
+    }
 }

@@ -14,13 +14,13 @@ class UsageTest extends FunctionalTestBase
     public function testCallingParaTestWithShortHelpOptionDisplaysUsage()
     {
         $output = $this->getParaTestOutput(false, '-h');   
-        $this->assertEquals($this->usage, $output);
+        $this->assertEquals($this->normalizeStr($this->usage), $this->normalizeStr($output));
     }
 
     public function testCallingParaTestWithLongHelpOptionDisplaysUsage()
     {
         $output = $this->getParaTestOutput(false, '--help');
-        $this->assertEquals($this->usage, $output);
+        $this->assertEquals($this->normalizeStr($this->usage), $this->normalizeStr($output));
     }
 
     protected function getParaTestOutput($functional = false, $options = '')

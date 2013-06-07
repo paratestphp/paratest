@@ -180,9 +180,18 @@ abstract class ExecutableTest
         $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->getCommandString($binary, $options, $environmentVariables);
-        $this->process = proc_open($command, self::$descriptors, $this->pipes);
-
+        $this->process = $this->openProc($command, $environmentVariables);
         return $this;
+    }
+
+    /**
+     * Returns the unique token for this test process
+     *
+     * @return int
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 
     /**
@@ -212,30 +221,17 @@ abstract class ExecutableTest
      *
      * @param $binary
      * @param array $options
-     * @param array $environmentVariables
      * @return mixed
      */
-    protected function getCommandString($binary, $options = array(), $environmentVariables = array())
+    protected function getCommandString($binary, $options = array())
     {
         $command = $binary;
-        $environmentVariablePrefix = '';
 
         foreach($options as $key => $value) $command .= " --$key %s";
-        foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
-        $args = array_merge(array("$environmentVariablePrefix$command %s"), array_values($environmentVariables), array_values($options), array($this->getPath()));
+        $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
         $command = call_user_func_array('sprintf', $args);
 
         return $command;
-    }
-
-    /**
-     * Returns the unique token for this test process
-     *
-     * @return int
-     */
-    public function getToken()
-    {
-        return $this->token;
     }
 
     /**
@@ -247,5 +243,21 @@ abstract class ExecutableTest
     protected function handleEnvironmentVariables($environmentVariables)
     {
         if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];
+    }
+
+    /**
+     * Open a process and return the handle. If ParaTest
+     * is running in Windows, it will ensure the PATH environment
+     * variable is set
+     *
+     * @param $command
+     * @param array $environmentVariables
+     * @return resource
+     */
+    protected function openProc($command, array $environmentVariables)
+    {
+        if (defined('PHP_WINDOWS_VERSION_BUILD') && $path = getenv('PATH'))
+            $environmentVariables['PATH'] = $path;
+        return proc_open($command, self::$descriptors, $this->pipes, null, $environmentVariables);
     }
 }
