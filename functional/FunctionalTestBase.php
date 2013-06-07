@@ -25,12 +25,12 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         $cmd = sprintf("%s --bootstrap %s %s", PHPUNIT, $this->bootstrap, $this->path);
         return $this->getTestOutput($cmd);
     }
-    
+
     protected function setErrorOutput($errorOutput)
     {
         return $this->errorOutput = $errorOutput;
     }
-    
+
     protected function getErrorOutput()
     {
         return $this->errorOutput;
@@ -41,7 +41,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         $cmd = sprintf("%s --bootstrap %s --phpunit %s", PARA_BINARY, $this->bootstrap, PHPUNIT);
         if($functional) $cmd .= ' --functional';
         foreach($options as $switch => $value)
-            $cmd .= sprintf(" %s", 
+            $cmd .= sprintf(" %s",
                            $this->getOption($switch, $value));
         $cmd .= sprintf(" %s", $this->path);
         return $this->getTestOutput($cmd);
@@ -64,8 +64,9 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getFinishedProc($cmd, &$pipes)
     {
         $pipes = array();
-        $proc = proc_open($cmd, self::$descriptorspec, $pipes); 
+        $proc = proc_open($cmd, self::$descriptorspec, $pipes);
         $this->waitForProc($proc);
+
         return $proc;
     }
 
@@ -73,6 +74,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         $output = stream_get_contents($pipes[1]);
         fclose($pipes[1]);
+
         return $output;
     }
 
@@ -82,6 +84,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         while($status['running']) {
             $status = proc_get_status($proc);
             $this->exitCode = $status['exitcode'];
+            sleep(2);
         }
     }
 
