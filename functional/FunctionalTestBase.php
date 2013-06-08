@@ -7,12 +7,6 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected $exitCode = -1;
     private   $errorOutput;
 
-    protected static $descriptorspec = array(
-       0 => array("pipe", "r"),
-       1 => array("pipe", "w"),
-       2 => array("pipe", "w")
-    );
-
     public function setUp()
     {
         $this->path = FIXTURES . DS . 'tests';
@@ -23,6 +17,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getPhpunitOutput()
     {
         $cmd = sprintf("%s --bootstrap %s %s", PHPUNIT, $this->bootstrap, $this->path);
+
         return $this->getTestOutput($cmd);
     }
 
@@ -44,48 +39,41 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
             $cmd .= sprintf(" %s",
                            $this->getOption($switch, $value));
         $cmd .= sprintf(" %s", $this->path);
+
         return $this->getTestOutput($cmd);
     }
 
     protected function getOption($switch, $value) {
         if(strlen($switch) > 1) $switch = '--' . $switch;
         else $switch = '-' . $switch;
+
         return $value ? $switch . ' ' . $value : $switch;
     }
 
     protected function getTestOutput($cmd)
     {
         $proc = $this->getFinishedProc($cmd, $pipes);
-        $output = $this->getOutput($pipes);
-        $this->setErrorOutput(stream_get_contents($pipes[2]));
+        $output = $proc->getOutput();
+        $this->setErrorOutput($proc->getErrorOutput());
+
         return $output;
     }
 
     protected function getFinishedProc($cmd, &$pipes)
     {
-        $pipes = array();
-        $proc = proc_open($cmd, self::$descriptorspec, $pipes);
+        $proc = new \Symfony\Component\Process\Process($cmd, null, array('PATH' => getenv('PATH')));
         $this->waitForProc($proc);
 
         return $proc;
     }
 
-    protected function getOutput($pipes)
+    protected function waitForProc(\Symfony\Component\Process\Process $proc)
     {
-        $output = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-
-        return $output;
-    }
-
-    protected function waitForProc($proc)
-    {
-        $status = proc_get_status($proc);
-        while($status['running']) {
-            $status = proc_get_status($proc);
-            $this->exitCode = $status['exitcode'];
-            sleep(2);
+        $proc->run();
+        while($proc->isRunning()) {
+            usleep(1000);
         }
+        $this->exitCode = $proc->getExitCode();
     }
 
     protected function getExitCode()

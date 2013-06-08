@@ -187,7 +187,7 @@ class PHPUnitTest extends FunctionalTestBase
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ), $pipes);
-        $this->assertContains('Call to undefined function inexistent', stream_get_contents($pipes[2]));
+        $this->assertContains('Call to undefined function inexistent', $proc->getErrorOutput());
     }
 
     /**
@@ -242,6 +242,7 @@ class PHPUnitTest extends FunctionalTestBase
     {
         $cmd = $this->getCmd($options);
         $proc = $this->getFinishedProc($cmd, $pipes);
+
         return $proc;
     }
 
