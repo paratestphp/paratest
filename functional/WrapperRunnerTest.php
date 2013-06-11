@@ -47,4 +47,46 @@ class WrapperRunnerTest extends FunctionalTestBase
         ));
         $this->assertContains('This worker has crashed', $output);
     }
+
+    public function functionalModeEnabledDataProvider()
+    {
+        return array(array(true), array(false));
+    }
+    /**
+     * @dataProvider functionalModeEnabledDataProvider
+     */
+    public function testExitCodes($functionalModeEnabled)
+    {
+        $buildComandOptions = array(
+            'runner' => 'WrapperRunner',
+            'processes' => 1,
+        );
+
+        $this->path = FIXTURES . DS . 'wrapper-runner-exit-code-tests' . DS . 'ErrorTest.php';
+        $output = $this->getParaTestOutput($functionalModeEnabled, $buildComandOptions);
+        $this->assertContains('Tests: 1', $output);
+        $this->assertContains('Failures: 0', $output);
+        $this->assertContains('Errors: 1', $output);
+        $this->assertEquals(2, $this->getExitCode());
+
+        $this->path = FIXTURES . DS . 'wrapper-runner-exit-code-tests' . DS . 'FailureTest.php';
+        $output = $this->getParaTestOutput($functionalModeEnabled, $buildComandOptions);
+        $this->assertContains('Tests: 1', $output);
+        $this->assertContains('Failures: 1', $output);
+        $this->assertContains('Errors: 0', $output);
+        $this->assertEquals(1, $this->getExitCode());
+
+        $this->path = FIXTURES . DS . 'wrapper-runner-exit-code-tests' . DS . 'SuccessTest.php';
+        $output = $this->getParaTestOutput($functionalModeEnabled, $buildComandOptions);
+        $this->assertContains('OK (1 test, 1 assertion)', $output);
+        $this->assertEquals(0, $this->getExitCode());
+
+        $buildComandOptions['processes'] = 3;
+        $this->path = FIXTURES . DS . 'wrapper-runner-exit-code-tests';
+        $output = $this->getParaTestOutput($functionalModeEnabled, $buildComandOptions);
+        $this->assertContains('Tests: 3', $output);
+        $this->assertContains('Failures: 1', $output);
+        $this->assertContains('Errors: 1', $output);
+        $this->assertEquals(2, $this->getExitCode()); // There is at least one error so the exit code must be 2
+    }
 }
