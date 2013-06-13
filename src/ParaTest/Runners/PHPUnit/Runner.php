@@ -77,7 +77,7 @@ class Runner
                     $this->releaseToken($key);
                 }
             $this->fillRunQueue();
-            usleep(10000);
+            usleep(1000);
         }
         $this->complete();
     }

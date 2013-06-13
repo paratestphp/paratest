@@ -1,5 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use Symfony\Component\Process\Process;
+
 abstract class ExecutableTest
 {
     /**
@@ -29,7 +31,7 @@ abstract class ExecutableTest
      * A handle pointing to the process
      * opened by proc_open
      *
-     * @var resource
+     * @var Process
      */
     protected $process;
 
@@ -57,18 +59,6 @@ abstract class ExecutableTest
      */
     protected $token;
 
-    /**
-     * The descriptor spec used for opening
-     * the test process
-     *
-     * @var array
-     */
-    protected static $descriptors = array(
-        0 => array('pipe', 'r'),
-        1 => array('pipe', 'w'),
-        2 => array('pipe', 'w')
-    );
-
     public function __construct($path)
     {
         $this->path = $path;
@@ -82,17 +72,6 @@ abstract class ExecutableTest
     public function getPath()
     {
         return $this->path;
-    }
-
-    /**
-     * Return the input output streams
-     * of this test's process
-     *
-     * @return array
-     */
-    public function getPipes()
-    {
-        return $this->pipes;
     }
 
     /**
@@ -117,7 +96,7 @@ abstract class ExecutableTest
      */
     public function getStderr()
     {
-        return $this->stderr;
+        return $this->process->getErrorOutput();
     }
 
     /**
@@ -129,9 +108,7 @@ abstract class ExecutableTest
      */
     public function stop()
     {
-        $this->initStreams();
-
-        return proc_close($this->process);
+        return $this->process->stop();
     }
 
     /**
@@ -153,9 +130,7 @@ abstract class ExecutableTest
      */
     public function isDoneRunning()
     {
-        $this->status = proc_get_status($this->process);
-
-        return !$this->status['running'];
+        return !$this->process->isRunning();
     }
 
     /**
@@ -164,7 +139,7 @@ abstract class ExecutableTest
      */
     public function getExitCode()
     {
-        return $this->status['exitcode'];
+        return $this->process->getExitCode();
     }
 
     /**
@@ -179,8 +154,11 @@ abstract class ExecutableTest
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
         $this->handleEnvironmentVariables($environmentVariables);
-        $command = $this->getCommandString($binary, $options, $environmentVariables);
-        $this->process = $this->openProc($command, $environmentVariables);
+        $command = $this->getCommandString($binary, $options);
+        $environmentVariables['PATH'] = getenv('PATH');
+        $this->process = new Process($command, null, $environmentVariables);//$this->openProc($command, $environmentVariables);
+        $this->process->start();
+
         return $this;
     }
 
@@ -192,17 +170,6 @@ abstract class ExecutableTest
     public function getToken()
     {
         return $this->token;
-    }
-
-    /**
-     * Sets the contents of STDERR based
-     * on the current contents of the $pipes
-     * collection
-     */
-    protected function initStreams()
-    {
-        $pipes = $this->getPipes();
-        $this->stderr = stream_get_contents($pipes[2]);
     }
 
     /**
@@ -243,21 +210,5 @@ abstract class ExecutableTest
     protected function handleEnvironmentVariables($environmentVariables)
     {
         if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];
-    }
-
-    /**
-     * Open a process and return the handle. If ParaTest
-     * is running in Windows, it will ensure the PATH environment
-     * variable is set
-     *
-     * @param $command
-     * @param array $environmentVariables
-     * @return resource
-     */
-    protected function openProc($command, array $environmentVariables)
-    {
-        if (defined('PHP_WINDOWS_VERSION_BUILD') && $path = getenv('PATH'))
-            $environmentVariables['PATH'] = $path;
-        return proc_open($command, self::$descriptors, $this->pipes, null, $environmentVariables);
     }
 }

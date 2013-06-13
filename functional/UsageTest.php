@@ -13,7 +13,7 @@ class UsageTest extends FunctionalTestBase
 
     public function testCallingParaTestWithShortHelpOptionDisplaysUsage()
     {
-        $output = $this->getParaTestOutput(false, '-h');   
+        $output = $this->getParaTestOutput(false, '-h');
         $this->assertEquals($this->normalizeStr($this->usage), $this->normalizeStr($output));
     }
 
@@ -25,10 +25,10 @@ class UsageTest extends FunctionalTestBase
 
     protected function getParaTestOutput($functional = false, $options = '')
     {
-        $proc = proc_open(PARA_BINARY . ' ' . $options, FunctionalTestBase::$descriptorspec, $pipes);
+        $proc = new \Symfony\Component\Process\Process(PARA_BINARY . ' ' . $options);
         $this->waitForProc($proc);
-        $output = $this->getOutput($pipes);
-        proc_close($proc);
+        $output = $proc->getOutput();
+
         return $output;
     }
 }

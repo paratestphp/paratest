@@ -19,7 +19,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithBootstrapThatDoesNotExist()
     {
         $bootstrap = '/fileThatDoesNotExist.php';
-        
+
         $this->paratest(array('bootstrap' => $bootstrap));
         $this->assertEquals(1, $this->getExitCode(), 'Unexpected exit code');
         $this->assertContains('[RuntimeException]', $this->getErrorOutput(), 'Expected exception name not found in output');
@@ -187,7 +187,7 @@ class PHPUnitTest extends FunctionalTestBase
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ), $pipes);
-        $this->assertContains('Call to undefined function inexistent', stream_get_contents($pipes[2]));
+        $this->assertContains('Call to undefined function inexistent', $proc->getErrorOutput());
     }
 
     /**
@@ -229,8 +229,7 @@ class PHPUnitTest extends FunctionalTestBase
 
     protected function assertResults($results)
     {
-        $this->assertRegExp("/FAILURES!
-Tests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
+        $this->assertRegExp("/FAILURES!\nTests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())
@@ -243,6 +242,7 @@ Tests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
     {
         $cmd = $this->getCmd($options);
         $proc = $this->getFinishedProc($cmd, $pipes);
+
         return $proc;
     }
 
