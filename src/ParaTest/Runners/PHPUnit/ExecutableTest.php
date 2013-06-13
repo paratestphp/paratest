@@ -157,7 +157,7 @@ abstract class ExecutableTest
         $command = $this->getCommandString($binary, $options);
         $environmentVariables['PATH'] = getenv('PATH');
         $this->process = new Process($command, null, $environmentVariables);//$this->openProc($command, $environmentVariables);
-        $this->process->run();
+        $this->process->start();
 
         return $this;
     }

@@ -69,7 +69,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function waitForProc(\Symfony\Component\Process\Process $proc)
     {
-        $proc->run();
+        $proc->start();
         while($proc->isRunning()) {
             usleep(1000);
         }
