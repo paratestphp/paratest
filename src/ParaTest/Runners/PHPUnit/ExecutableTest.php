@@ -122,7 +122,7 @@ abstract class ExecutableTest
      */
     public function isDoneRunning()
     {
-        return !$this->process->isRunning();
+        return $this->process->isTerminated();
     }
 
     /**
