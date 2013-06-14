@@ -6,6 +6,7 @@
         "phpunit/php-timer": ">=1.0.4",
         "symfony/console": "2.3.*",
         "symfony/process": "2.3.0",
+        "brianium/habitat": "1.0.0",
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "ext-pcre": "*"

@@ -1,5 +1,7 @@
 <?php
 
+use \Habitat\Habitat;
+
 class FunctionalTestBase extends PHPUnit_Framework_TestCase
 {
     protected $bootstrap;
@@ -61,7 +63,8 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function getFinishedProc($cmd, &$pipes)
     {
-        $proc = new \Symfony\Component\Process\Process($cmd, null, array('PATH' => getenv('PATH')));
+        $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
+        $proc = new \Symfony\Component\Process\Process($cmd, null, $env);
         $this->waitForProc($proc);
 
         return $proc;
@@ -69,10 +72,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function waitForProc(\Symfony\Component\Process\Process $proc)
     {
-        $proc->start();
-        while($proc->isRunning()) {
-            usleep(1000);
-        }
+        $proc->run();
         $this->exitCode = $proc->getExitCode();
     }
 
