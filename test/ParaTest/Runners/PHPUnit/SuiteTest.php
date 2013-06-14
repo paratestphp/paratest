@@ -11,7 +11,6 @@ class SuiteTest extends \TestBase
 
     public function testConstruction()
     {
-        $this->assertEquals(array(), $this->getObjectValue($this->suite, 'pipes'));
         $this->assertNull($this->getObjectValue($this->suite, 'process'));
     }
 }
