@@ -88,4 +88,7 @@ There are a couple of shortcuts in the `bin` directory as well.
 You can run all tests at once by running phpunit from the project directory.
 `vendor/bin/phpunit`
 
+ParaTest can run its own test suite by running it from the `bin` directory.
+`bin/paratest`
+
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).
