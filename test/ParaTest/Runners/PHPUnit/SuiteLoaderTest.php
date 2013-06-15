@@ -18,6 +18,7 @@ class SuiteLoaderTest extends \TestBase
             'GroupsTest.php',
             'LegacyNamespaceTest.php',
             'LongRunningTest.php',
+            'TestTokenTest.php',
             'UnitTestWithClassAnnotationTest.php',
             'UnitTestWithMethodAnnotationsTest.php',
             'UnitTestWithErrorTest.php',
@@ -72,7 +73,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(11, sizeof($files));
+        $this->assertEquals(12, sizeof($files));
     }
 
     /**
@@ -152,7 +153,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(31, sizeof($methods));
+        $this->assertEquals(32, sizeof($methods));
         return $methods;
     }
 

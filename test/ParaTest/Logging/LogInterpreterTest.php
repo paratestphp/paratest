@@ -94,23 +94,14 @@ class LogInterpreterTest extends ResultTester
 
     public function testGetErrorsReturnsArrayOfErrorMessages()
     {
-        $errors = array('UnitTestWithErrorTest::testTruth
-Exception: Error!!!
-
-/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12');
+        $errors = array("UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12");
         $this->assertEquals($errors, $this->interpreter->getErrors());
     }
 
     public function testGetFailuresReturnsArrayOfFailureMessages()
     {
-        $failures = array('UnitTestWithClassAnnotationTest::testFalsehood
-Failed asserting that true is false.
-
-/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20',
-'UnitTestWithMethodAnnotationsTest::testFalsehood
-Failed asserting that true is false.
-
-/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18');
+        $failures = array("UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
+"UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18");
         $this->assertEquals($failures, $this->interpreter->getFailures());
     }
 

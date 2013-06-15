@@ -1,17 +1,13 @@
 <?php
 
+use \Habitat\Habitat;
+
 class FunctionalTestBase extends PHPUnit_Framework_TestCase
 {
     protected $bootstrap;
     protected $path;
     protected $exitCode = -1;
     private   $errorOutput;
-
-    protected static $descriptorspec = array(
-       0 => array("pipe", "r"),
-       1 => array("pipe", "w"),
-       2 => array("pipe", "w")
-    );
 
     public function setUp()
     {
@@ -23,14 +19,15 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getPhpunitOutput()
     {
         $cmd = sprintf("%s --bootstrap %s %s", PHPUNIT, $this->bootstrap, $this->path);
+
         return $this->getTestOutput($cmd);
     }
-    
+
     protected function setErrorOutput($errorOutput)
     {
         return $this->errorOutput = $errorOutput;
     }
-    
+
     protected function getErrorOutput()
     {
         return $this->errorOutput;
@@ -41,52 +38,54 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         $cmd = sprintf("%s --bootstrap %s --phpunit %s", PARA_BINARY, $this->bootstrap, PHPUNIT);
         if($functional) $cmd .= ' --functional';
         foreach($options as $switch => $value)
-            $cmd .= sprintf(" %s", 
+            $cmd .= sprintf(" %s",
                            $this->getOption($switch, $value));
         $cmd .= sprintf(" %s", $this->path);
+
         return $this->getTestOutput($cmd);
     }
 
     protected function getOption($switch, $value) {
         if(strlen($switch) > 1) $switch = '--' . $switch;
         else $switch = '-' . $switch;
+
         return $value ? $switch . ' ' . $value : $switch;
     }
 
     protected function getTestOutput($cmd)
     {
         $proc = $this->getFinishedProc($cmd, $pipes);
-        $output = $this->getOutput($pipes);
-        $this->setErrorOutput(stream_get_contents($pipes[2]));
+        $output = $proc->getOutput();
+        $this->setErrorOutput($proc->getErrorOutput());
+
         return $output;
     }
 
     protected function getFinishedProc($cmd, &$pipes)
     {
-        $pipes = array();
-        $proc = proc_open($cmd, self::$descriptorspec, $pipes); 
+        $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
+        $proc = new \Symfony\Component\Process\Process($cmd, null, $env);
         $this->waitForProc($proc);
+
         return $proc;
     }
 
-    protected function getOutput($pipes)
+    protected function waitForProc(\Symfony\Component\Process\Process $proc)
     {
-        $output = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-        return $output;
-    }
-
-    protected function waitForProc($proc)
-    {
-        $status = proc_get_status($proc);
-        while($status['running']) {
-            $status = proc_get_status($proc);
-            $this->exitCode = $status['exitcode'];
-        }
+        $proc->run();
+        $this->exitCode = $proc->getExitCode();
     }
 
     protected function getExitCode()
     {
         return $this->exitCode;
+    }
+
+    protected function normalizeStr($string)
+    {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            return str_replace("\r\n", "\n", $string);
+        }
+        return $string;
     }
 }

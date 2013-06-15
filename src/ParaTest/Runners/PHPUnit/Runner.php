@@ -1,7 +1,8 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter,
-    ParaTest\Logging\JUnit\Writer;
+    ParaTest\Logging\JUnit\Writer,
+    Habitat\Habitat;
 
 class Runner
 {
@@ -161,7 +162,9 @@ class Runner
             $token = $this->getNextAvailableToken();
             if ($token !== false) {
                 $this->acquireToken($token);
-                $this->running[$token] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, array('TEST_TOKEN' => $token));
+                $env = array('TEST_TOKEN' => $token);
+                if (defined('PHP_WINDOWS_VERSION_BUILD')) $env = $env + Habitat::getAll();
+                $this->running[$token] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env);
             }
         }
     }
