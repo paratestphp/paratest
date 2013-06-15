@@ -55,6 +55,11 @@ class ResultPrinter
     protected $column = 0;
 
     /**
+     * @var \PHP_Timer
+     */
+    protected $timer;
+
+    /**
      * The total number of cases printed so far
      *
      * @var int
@@ -64,6 +69,7 @@ class ResultPrinter
     public function __construct(LogInterpreter $results)
     {
         $this->results = $results;
+        $this->timer = new \PHP_Timer();
     }
 
     /**
@@ -98,7 +104,7 @@ class ResultPrinter
                $options->functional ? '. Functional mode is on' : '');
         if(isset($options->filtered['configuration']))
             printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
-        \PHP_Timer::start();
+        $this->timer->start();
     }
 
     /**
@@ -169,7 +175,7 @@ class ResultPrinter
      */
     public function getHeader()
     {
-        return "\n\n" . \PHP_Timer::resourceUsage() . "\n\n";
+        return "\n\n" . $this->timer->resourceUsage() . "\n\n";
     }
 
     /**
