@@ -20,28 +20,9 @@ abstract class ExecutableTest
     protected $temp;
 
     /**
-     * A handle pointing to the process
-     * opened by proc_open
-     *
      * @var Process
      */
     protected $process;
-
-    /**
-     * An array of status values returned
-     * by proc_get_status
-     *
-     * @var array
-     */
-    protected $status;
-
-    /**
-     * The contents of the test process'
-     * STDERR
-     *
-     * @var string
-     */
-    protected $stderr;
 
     /**
      * A unique token value for a given
@@ -92,9 +73,8 @@ abstract class ExecutableTest
     }
 
     /**
-     * Stores the final output of the
-     * test process' STDERR and closes
-     * the process
+     * Stop the process and return it's
+     * exit code
      *
      * @return int
      */
@@ -113,12 +93,9 @@ abstract class ExecutableTest
     }
 
     /**
-     * Weather or not the process has finished running
-     * This function updates the member variable $status
-     * for such cases when the status must be cached, i.e
-     * when the exit code must be fetched, but subsequent
-     * calls would overwrite the exit code with a meaningless
-     * code.
+     * Check if the process has terminated.
+     *
+     * @return bool
      */
     public function isDoneRunning()
     {
@@ -126,8 +103,9 @@ abstract class ExecutableTest
     }
 
     /**
-     * Called after a polling context to retrieve
-     * the exit code of the phpunit process
+     * Return the exit code of the process
+     *
+     * @return int
      */
     public function getExitCode()
     {
@@ -166,6 +144,7 @@ abstract class ExecutableTest
 
     /**
      * A template method that can be overridden to add necessary options for a test
+     *
      * @param  array $options the options that are passed to the run method
      * @return array $options the prepared options
      */
