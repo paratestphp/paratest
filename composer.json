@@ -15,7 +15,7 @@
     "description": "Parallel testing for PHP",
     "keywords": ["testing","PHPUnit"],
     "homepage": "https://github.com/brianium/paratest",
-    "license": "APACHE-2",
+    "license": "MIT",
     "authors": [
         {
             "name": "Brian Scaturro",
