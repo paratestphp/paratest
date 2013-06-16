@@ -70,6 +70,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getFinishedProc($cmd, &$pipes)
     {
         $pipes = array();
+        $this->lastExecutedCommand = $cmd;
         $proc = proc_open($cmd, self::$descriptorspec, $pipes); 
         $this->waitForProc($proc);
         return $proc;
@@ -124,4 +125,8 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         }
     }
 
+    protected function debugInformation()
+    {
+        return "The last executed command was `{$this->lastExecutedCommand}`.";
+    }
 }

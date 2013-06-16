@@ -18,7 +18,7 @@ class PerformanceTest extends FunctionalTestBase
         $this->assertTrue($paraTime <= $stdTime, $msg);
     }
 
-    public function testRunningSuitesWithLongBootstrapsInFasterWithTheWrapperRunner()
+    public function testRunningSuitesWithLongBootstrapsIsFasterWithTheWrapperRunner()
     {
         $this->bootstrap = dirname(FIXTURES) . DS . 'slow_bootstrap.php';
         list($paraTime, $wrapperParaTime, $msg) = $this->getExecTimes(
@@ -98,7 +98,7 @@ class PerformanceTest extends FunctionalTestBase
     {
         preg_match(self::$testTime, $output, $matches);
         if (!isset($matches[2])) {
-            throw new RuntimeException("Cannot parse output: $output");
+            throw new RuntimeException("Cannot parse output: {var_export($output)}. {$this->debugInformation()}");
         } 
         return $matches[2];
     }
