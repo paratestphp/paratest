@@ -3,6 +3,7 @@
 abstract class ExecutableTest
 {
     protected $path;
+    protected $fullyQualifiedClassName;
     protected $pipes = array();
     protected $temp;
     protected $process;
@@ -16,9 +17,10 @@ abstract class ExecutableTest
         2 => array('pipe', 'w')
     );
 
-    public function __construct($path)
+    public function __construct($path, $fullyQualifiedClassName = null)
     {
         $this->path = $path;
+        $this->fullyQualifiedClassName = $fullyQualifiedClassName;
     }
 
     public function getPath()
@@ -113,12 +115,13 @@ abstract class ExecutableTest
 
     protected function getCommandString($binary, $options = array(), $environmentVariables = array())
     {
+        // TODO: this should use a CommandBuilder
         //Identify paratest as the test runner
         $environmentVariablePrefix = 'PARATEST=1 ';
         $command = $binary;
         foreach($options as $key => $value) $command .= " --$key %s";
         foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
-        $args = array_merge(array("$environmentVariablePrefix$command %s"), array_values($environmentVariables), array_values($options), array($this->getPath()));
+        $args = array_merge(array("$environmentVariablePrefix$command %s %s"), array_values($environmentVariables), array_values($options), array($this->fullyQualifiedClassName, $this->getPath()));
         $command = call_user_func_array('sprintf', $args);
         return $command;
     }

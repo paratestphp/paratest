@@ -4,9 +4,9 @@ class Suite extends ExecutableTest
 {
     private $functions;
 
-    public function __construct($path, $functions)
+    public function __construct($path, $functions, $fullyQualifiedClassName = null)
     {
-        parent::__construct($path);
+        parent::__construct($path, $fullyQualifiedClassName);
         $this->functions = $functions;
     }
 
