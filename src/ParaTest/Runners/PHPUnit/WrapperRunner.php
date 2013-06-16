@@ -49,6 +49,9 @@ class WrapperRunner
     {
         $loader = new SuiteLoader($this->options);
         $loader->load($this->options->path);
+        if ($this->options->functional) {
+            throw new RuntimeException("The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due to the current PHPUnit commands causing classloading issues.");
+        }
         $executables = ($this->options->functional) ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
         foreach($this->pending as $pending)

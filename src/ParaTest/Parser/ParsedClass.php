@@ -21,6 +21,7 @@ class ParsedClass extends ParsedObject
         return $methods ? $methods : $this->methods;
     }
 
+    // TODO: what about building commands with namespaces?
     public function getNamespace()
     {
         return $this->namespace;
