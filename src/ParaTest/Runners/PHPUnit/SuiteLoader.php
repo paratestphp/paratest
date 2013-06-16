@@ -91,7 +91,6 @@ class SuiteLoader
                         }, 
                         $class->getMethods($this->options ? $this->options->annotations : array())
                     ),
-                    // TODO: does this comprehend the namespace?
                     $class->getName()
                 );
             }

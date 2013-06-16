@@ -43,6 +43,15 @@ class ExecutableTestTest extends \TestBase
         $this->assertEquals('PARATEST=1 TEST_TOKEN=3 APPLICATION_ENVIRONMENT_VAR=abc /usr/bin/phpunit --bootstrap test/bootstrap.php ClassNameTest pathToFile', $command);
     }
 
+    public function testGetCommandStringIncludesTheClassName()
+    {
+        $options = array();
+        $binary = '/usr/bin/phpunit';
+
+        $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
+        $this->assertEquals('PARATEST=1 /usr/bin/phpunit ClassNameTest pathToFile', $command);
+    }
+
     public function testHandleEnvironmentVariablesAssignsToken()
     {
         $environmentVariables = array('TEST_TOKEN' => 3, 'APPLICATION_ENVIRONMENT_VAR' => 'abc');
