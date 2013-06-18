@@ -13,7 +13,7 @@
     },
     "type": "library",
     "description": "Parallel testing for PHP",
-    "keywords": ["testing","PHPUnit"],
+    "keywords": ["testing","PHPUnit", "concurrent", "parallel"],
     "homepage": "https://github.com/brianium/paratest",
     "license": "MIT",
     "authors": [
