@@ -66,6 +66,21 @@ The following phpunit config file is used for ParaTest's test cases.
 </phpunit>
 ```
 
+Test token
+----------
+
+The `TEST_TOKEN` environment variable is guaranteed to have a value that is different
+from every other currently running test. This is useful to e.g. use a different database
+for each test:
+
+```php
+if (getenv('TEST_TOKEN') !== false) {  // Using partest
+    $dbname = 'testdb_' . getenv('TEST_TOKEN');
+} else {
+    $dbname = 'testdb';
+}
+```
+
 Running Tests
 -------------
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
