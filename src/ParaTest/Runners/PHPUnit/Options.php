@@ -42,6 +42,13 @@ class Options
     protected $functional;
 
     /**
+     * Prevents starting new tests after a test has failed.
+     *
+     * @var boolean
+     */
+    protected $stopOnFailure;
+
+    /**
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options
      *
@@ -66,6 +73,7 @@ class Options
         $this->path = $opts['path'];
         $this->phpunit = $opts['phpunit'];
         $this->functional = $opts['functional'];
+        $this->stopOnFailure = $opts['stop-on-failure'];
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -94,7 +102,8 @@ class Options
             'processes' => 5,
             'path' => '',
             'phpunit' => static::phpunit(),
-            'functional' => false
+            'functional' => false,
+            'stop-on-failure' => false
         );
     }
 
@@ -143,7 +152,8 @@ class Options
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
-            'functional' => $this->functional
+            'functional' => $this->functional,
+            'stop-on-failure' => $this->stopOnFailure
         ));
         if($configuration = $this->getConfigurationPath($filtered))
             $filtered['configuration'] = new Configuration($configuration);

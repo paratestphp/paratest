@@ -1,5 +1,5 @@
 Usage:
- paratest [-p|--processes="..."] [-f|--functional] [-h|--help] [--phpunit="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."] [--path="..."] [path]
+ paratest [-p|--processes="..."] [-f|--functional] [-h|--help] [--phpunit="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--stop-on-failure] [--log-junit="..."] [--path="..."] [path]
 
 Arguments:
  path                 The path to a directory or file containing tests. (default: current directory)
@@ -12,6 +12,7 @@ Options:
  --bootstrap          The bootstrap file to be used by PHPUnit.
  --configuration (-c) The PHPUnit configuration file to use.
  --group (-g)         Only runs tests from the specified group(s).
+ --stop-on-failure    Don't start any more processes after a failure.
  --log-junit          Log test execution in JUnit XML format to file.
  --path               An alias for the path argument.
 
