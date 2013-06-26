@@ -130,7 +130,7 @@ class PHPUnitTest extends FunctionalTestBase
             'log-junit' => $output,
             'bootstrap' => BOOTSTRAP
         ));
-        $this->assertRegExp("/OK \(5 tests, 5 assertions\)/", $result);
+        $this->assertRegExp("/OK \(6 tests, 5 assertions\)/", $result);
         $this->assertTrue(file_exists($output));
         if(file_exists($output)) unlink($output);
     }
@@ -229,7 +229,7 @@ class PHPUnitTest extends FunctionalTestBase
 
     protected function assertResults($results)
     {
-        $this->assertRegExp("/FAILURES!\nTests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
+        $this->assertRegExp("/FAILURES!\nTests: 33, Assertions: 31, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())

@@ -117,7 +117,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $first = array_shift($paraSuites);
         $functions = $first->getFunctions();
-        $this->assertEquals(5, sizeof($functions));
+        $this->assertEquals(6, sizeof($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
         $this->assertEquals('testFalsehood', $functions[1]->getName());
         $this->assertEquals('testArrayLength', $functions[2]->getName());
@@ -153,7 +153,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(32, sizeof($methods));
+        $this->assertEquals(33, sizeof($methods));
         return $methods;
     }
 

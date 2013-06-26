@@ -42,4 +42,9 @@ class GroupsTest extends PHPUnit_FrameWork_TestCase
         $vals = 1 + 1;
         $this->assertEquals(2, $vals);
     }
+
+    public function testAdditionIsNotAlone()
+    {
+
+    }
 }
