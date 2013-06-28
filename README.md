@@ -22,7 +22,7 @@ After installation, the binary can be found at `vendors/bin/paratest`. Usage is 
 
 ```
 paratest [-p|--processes="..."] [-f|--functional] [-h|--help] [--phpunit="..."]
-[--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."]
+[--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--stop-on-failure] [--log-junit="..."]
 [--path="..."] [path]
 ```
 
