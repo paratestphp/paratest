@@ -21,9 +21,10 @@ class PHPUnitTest extends FunctionalTestBase
         $bootstrap = '/fileThatDoesNotExist.php';
 
         $this->paratest(array('bootstrap' => $bootstrap));
+        $errors = $this->getErrorOutput();
         $this->assertEquals(1, $this->getExitCode(), 'Unexpected exit code');
         $this->assertContains('[RuntimeException]', $errors, 'Expected exception name not found in output');
-        $this->assertContains(sprintf('Bootstrap specified but could not be found (%s)', $this->bootstrap), $errors, 'Expected error message not found in output');
+        $this->assertContains(sprintf('Bootstrap specified but could not be found (%s)', $bootstrap), $errors, 'Expected error message not found in output');
     }
 
     public function testWithJustConfiguration()
@@ -35,8 +36,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithWrapperRunner()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'runner' => 'WrapperRunner'));
-        $this->assertRegExp("/FAILURES!
-Tests: 33, Assertions: 36, Failures: 4, Errors: 1./", $results);
+        $this->assertResults($results);
     }
 
     public function testParatestEnvironmentVariable()
@@ -272,7 +272,7 @@ Tests: 33, Assertions: 36, Failures: 4, Errors: 1./", $results);
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
-Tests: 33, Assertions: 31, Failures: 4, Errors: 1./", $results);
+Tests: 34, Assertions: 32, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())
