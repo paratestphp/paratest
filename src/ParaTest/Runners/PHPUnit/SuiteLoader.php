@@ -155,10 +155,19 @@ class SuiteLoader
     {
         foreach ($this->files as $path) {
             $parser = new Parser($path);
-            if($class = $parser->getClass())
-                $this->loadedSuites[$path] = new Suite($path, array_map(function($fn) use ($path) {
-                    return new TestMethod($path, $fn->getName());
-                }, $class->getMethods($this->options ? $this->options->annotations : array())));
+            if ($class = $parser->getClass()) {
+                // TODO: ExecutableTest must have the class name too
+                $this->loadedSuites[$path] = new Suite(
+                    $path, 
+                    array_map(
+                        function($fn) use ($path) {
+                            return new TestMethod($path, $fn->getName());
+                        }, 
+                        $class->getMethods($this->options ? $this->options->annotations : array())
+                    ),
+                    $class->getName()
+                );
+            }
         }
     }
 }

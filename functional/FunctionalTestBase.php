@@ -13,7 +13,6 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         $this->path = FIXTURES . DS . 'tests';
         $this->bootstrap = dirname(FIXTURES) . DS . 'bootstrap.php';
-        $this->errorOutput = '';
     }
 
     protected function getPhpunitOutput()
@@ -25,24 +24,27 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function setErrorOutput($errorOutput)
     {
-        return $this->errorOutput = $errorOutput;
+        $cmd = $this->buildCommand($functional, $options);
+        return $this->getTestOutput($cmd);
     }
 
     protected function getErrorOutput()
     {
-        return $this->errorOutput;
+        $cmd = $this->buildCommand($functional, $options);
+        return $this->getTestErrors($cmd);
     }
 
-    protected function getParaTestOutput($functional = false, $options = array())
+    protected function buildCommand($functional, $options)
     {
         $cmd = sprintf("%s --bootstrap %s --phpunit %s", PARA_BINARY, $this->bootstrap, PHPUNIT);
         if($functional) $cmd .= ' --functional';
-        foreach($options as $switch => $value)
+        foreach($options as $switch => $value) {
             $cmd .= sprintf(" %s",
                            $this->getOption($switch, $value));
+        }
         $cmd .= sprintf(" %s", $this->path);
 
-        return $this->getTestOutput($cmd);
+        return $cmd;
     }
 
     protected function getOption($switch, $value) {
@@ -87,5 +89,22 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
             return str_replace("\r\n", "\n", $string);
         }
         return $string;
+    }
+
+    protected function createSmallTests($number)
+    {
+        exec("php {$this->path}/generate.php $number", $output);
+    }
+
+    protected function deleteSmallTests()
+    {
+        foreach (glob(FIXTURES . '/small-tests/FastUnit*Test.php') as $generatedFile) {
+            unlink($generatedFile);
+        }
+    }
+
+    protected function debugInformation()
+    {
+        return "The last executed command was `{$this->lastExecutedCommand}`.";
     }
 }

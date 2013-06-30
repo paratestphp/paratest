@@ -11,7 +11,7 @@ class ExecutableTestTest extends \TestBase
 
     public function setUp()
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile');
+        $this->executableTestChild = new ExecutableTestChild('pathToFile', 'ClassNameTest');
         parent::setUp();
     }
 
@@ -26,7 +26,26 @@ class ExecutableTestTest extends \TestBase
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals('/usr/bin/phpunit --bootstrap test/bootstrap.php pathToFile', $command);
+        $this->assertEquals('PARATEST=1 /usr/bin/phpunit --bootstrap test/bootstrap.php ClassNameTest pathToFile', $command);
+    }
+
+    public function testGetCommandStringIncludesEnvironmentVariables()
+    {
+        $options = array('bootstrap' => 'test/bootstrap.php');
+        $binary = '/usr/bin/phpunit';
+        $environmentVariables = array('TEST_TOKEN' => 3, 'APPLICATION_ENVIRONMENT_VAR' => 'abc');
+        $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options, $environmentVariables);
+
+        $this->assertEquals('PARATEST=1 TEST_TOKEN=3 APPLICATION_ENVIRONMENT_VAR=abc /usr/bin/phpunit --bootstrap test/bootstrap.php ClassNameTest pathToFile', $command);
+    }
+
+    public function testGetCommandStringIncludesTheClassName()
+    {
+        $options = array();
+        $binary = '/usr/bin/phpunit';
+
+        $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
+        $this->assertEquals('PARATEST=1 /usr/bin/phpunit ClassNameTest pathToFile', $command);
     }
 
     public function testHandleEnvironmentVariablesAssignsToken()

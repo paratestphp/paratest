@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Runners\PHPUnit\WrapperRunner;
 
 /**
  * Class PHPUnit
@@ -33,6 +34,7 @@ class PHPUnit extends Tester
     {
         $command
             ->addOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>')
+            ->addOption('runner', null, InputOption::VALUE_REQUIRED, 'Runner or WrapperRunner. <comment>(default: Runner)</comment>')
             ->addOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.')
             ->addOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The PHPUnit configuration file to use.')
             ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).')
@@ -54,7 +56,11 @@ class PHPUnit extends Tester
     {
         if(!$this->hasConfig($input) && !$this->hasPath($input))
             $this->displayHelp($input, $output);
-        $runner = new Runner($this->getRunnerOptions($input));
+        if ($input->getOption('runner') === 'WrapperRunner') {
+            $runner = new WrapperRunner($this->getRunnerOptions($input));
+        } else {
+            $runner = new Runner($this->getRunnerOptions($input));
+        }
         $runner->run();
         return $runner->getExitCode();
     }

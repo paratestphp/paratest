@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+echo "Worker starting\n";
+
+// git working copy
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+}
+// Composer installation
+if (file_exists(__DIR__ . '/../../../autoload.php')) {
+    require_once __DIR__ . '/../../../autoload.php';
+}
+
+$commands = fopen('php://stdin', 'r');
+$lastExitCode = 0;
+while (true) {
+    if (feof($commands)) {
+        exit($lastExitCode);
+    }
+    $command = (fgets($commands));
+    if ($command === false) {
+        exit($lastExitCode);
+    }
+    $command = rtrim($command);
+    if ($command === 'EXIT') {
+        echo "EXITED\n";
+        exit($lastExitCode);
+    }
+    echo "Executing: $command\n";
+    $_SERVER['argv'] = explode(' ', $command);
+
+    while (!preg_match('|/phpunit|', $_SERVER['argv'][0])) {
+        $environmentVariable = array_shift($_SERVER['argv']);
+        putenv($environmentVariable);
+    } 
+
+    $lastExitCode = PHPUnit_TextUI_Command::main(false);
+    echo "FINISHED\n";
+}

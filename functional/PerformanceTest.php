@@ -4,11 +4,76 @@ class PerformanceTest extends FunctionalTestBase
 {
     protected static $testTime = '/Time: (([0-9]+)(?:[.][0-9]+)?)/';
 
+    public function setUp()
+    {
+        parent::setUp();
+        $this->deleteSmallTests();
+    }
+
     public function testRunningSuitesInParallelIsNotSlower()
     {
         list($stdTime, $paraTime, $msg) = $this->getExecTimes(
             $this->getPhpunitOutput(),
             $this->getParaTestOutput());
+        $this->assertTrue($paraTime <= $stdTime, $msg);
+    }
+
+    public function testRunningSuitesWithLongBootstrapsIsFasterWithTheWrapperRunner()
+    {
+        $this->bootstrap = dirname(FIXTURES) . DS . 'slow_bootstrap.php';
+        list($paraTime, $wrapperParaTime, $msg) = $this->getExecTimes(
+            $output = $this->getParaTestOutput(false, array(
+                'runner' => 'Runner',
+                'processes' => 2
+            )),
+            $output = $this->getParaTestOutput(false, array(
+                'runner' => 'WrapperRunner',
+                'processes' => 2
+            ))
+        );
+        $this->assertTrue($wrapperParaTime <= $paraTime, $msg);
+    }
+
+    public function testRunningSuitesWithLongBootstrapsIsReliablyFasterThanVanillaPhpunit()
+    {
+        $this->markTestIncomplete("Currently the execution times are comparable.");
+        $this->bootstrap = dirname(FIXTURES) . DS . 'slow_bootstrap.php';
+        list($stdTime, $paraTime, $msg) = $this->getExecTimes(
+            $this->getPhpunitOutput(),
+            $this->getParaTestOutput(false, array(
+                'runner' => 'WrapperRunner',
+                'processes' => 2
+            ))
+        );
+        $this->assertTrue($paraTime <= $stdTime, $msg);
+    }
+
+    public function testRunningLotsOfShortTestsIsFasterWithTheWrapperRunner()
+    {
+        $this->path = FIXTURES . DS . 'small-tests';
+        $this->createSmallTests(500);
+        list($paraTime, $wrapperParaTime, $msg) = $this->getExecTimes(
+            $this->getParaTestOutput(false, array(
+                'runner' => 'Runner',
+            )),
+            $this->getParaTestOutput(false, array(
+                'runner' => 'WrapperRunner',
+            ))
+        );
+        $this->assertTrue($wrapperParaTime <= $paraTime, $msg);
+    }
+
+    public function testRunningLotsOfShortTestsIsReliablyFasterThanWithVanillaPhpunit()
+    {
+        $this->markTestIncomplete("Currently the execution times are comparable.");
+        $this->path = FIXTURES . DS . 'small-tests';
+        $this->createSmallTests(200);
+        list($stdTime, $paraTime, $msg) = $this->getExecTimes(
+            $this->getPhpunitOutput(),
+            $this->getParaTestOutput(false, array(
+                'runner' => 'WrapperRunner',
+            ))
+        );
         $this->assertTrue($paraTime <= $stdTime, $msg);
     }
 
@@ -23,11 +88,18 @@ class PerformanceTest extends FunctionalTestBase
 
     protected function getExecTimes($phpunitOut, $paraOut)
     {
-        preg_match(self::$testTime, $phpunitOut, $smatches);
-        preg_match(self::$testTime, $paraOut, $pmatches);
-        $stdTime = $smatches[2];
-        $paraTime = $pmatches[2];
+        $stdTime = $this->getExecTime($phpunitOut);
+        $paraTime = $this->getExecTime($paraOut);
         $msg = sprintf("PHPUnit: %s, ParaTest: %s", $stdTime, $paraTime);
         return array($stdTime, $paraTime, $msg);
+    }
+
+    private function getExecTime($output)
+    {
+        preg_match(self::$testTime, $output, $matches);
+        if (!isset($matches[2])) {
+            throw new RuntimeException("Cannot parse output: {var_export($output)}. {$this->debugInformation()}");
+        } 
+        return $matches[2];
     }
 }

@@ -18,6 +18,8 @@ abstract class ExecutableTest
      * @var string
      */
     protected $temp;
+    protected $fullyQualifiedClassName;
+    protected $pipes = array();
 
     /**
      * @var Process
@@ -32,9 +34,10 @@ abstract class ExecutableTest
      */
     protected $token;
 
-    public function __construct($path)
+    public function __construct($path, $fullyQualifiedClassName = null)
     {
         $this->path = $path;
+        $this->fullyQualifiedClassName = $fullyQualifiedClassName;
     }
 
     /**
@@ -122,7 +125,6 @@ abstract class ExecutableTest
      */
     public function run($binary, $options = array(), $environmentVariables = array())
     {
-        $options = array_merge($this->prepareOptions($options), array('log-junit' => '"' . $this->getTempFile() . '"'));
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->getCommandString($binary, $options);
         $this->process = new Process($command, null, $environmentVariables);
@@ -138,6 +140,12 @@ abstract class ExecutableTest
     public function getToken()
     {
         return $this->token;
+    }
+
+    public function command($binary, $options = array())
+    {
+        $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
+        return $this->getCommandString($binary, $options);
     }
 
     /**
@@ -161,12 +169,14 @@ abstract class ExecutableTest
      */
     protected function getCommandString($binary, $options = array())
     {
+        // TODO: this should use a CommandBuilder
+        //Identify paratest as the test runner
+        $environmentVariablePrefix = 'PARATEST=1 ';
         $command = $binary;
-
         foreach($options as $key => $value) $command .= " --$key %s";
-        $args = array_merge(array("$command %s"), array_values($options), array($this->getPath()));
+        foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
+        $args = array_merge(array("$environmentVariablePrefix$command %s %s"), array_values($environmentVariables), array_values($options), array($this->fullyQualifiedClassName, $this->getPath()));
         $command = call_user_func_array('sprintf', $args);
-
         return $command;
     }
 

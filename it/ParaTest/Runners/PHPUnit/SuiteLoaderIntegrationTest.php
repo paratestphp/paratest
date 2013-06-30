@@ -1,24 +1,21 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-class SuiteLoaderTest extends \TestBase
+class SuiteLoaderIntegrationTest extends \TestBase
 {
     protected $loader;
     protected $files;
-    protected $options;
     protected $testDir;
 
     public function setUp()
     {
-        chdir(__DIR__);
-        $this->options = new Options(array('group' => 'group1'));
         $this->loader = new SuiteLoader();
         $tests = FIXTURES . DS . 'tests';
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
+            'EnvironmentTest.php',
             'GroupsTest.php',
             'LegacyNamespaceTest.php',
             'LongRunningTest.php',
-            'TestTokenTest.php',
             'UnitTestWithClassAnnotationTest.php',
             'UnitTestWithMethodAnnotationsTest.php',
             'UnitTestWithErrorTest.php',
@@ -27,64 +24,6 @@ class SuiteLoaderTest extends \TestBase
             'level1' . DS . 'level2' . DS . 'UnitTestInSubSubLevelTest.php',
             'level1' . DS . 'level2' . DS . 'AnotherUnitTestInSubSubLevelTest.php'
         ));
-    }
-
-    public function testConstructor()
-    {
-        $options = new Options(array('group' => 'group1'));
-        $loader = new SuiteLoader($options);
-        $this->assertEquals($this->options, $this->getObjectValue($loader, 'options'));
-    }
-
-    public function testOptionsCanBeNull()
-    {
-        $loader = new SuiteLoader();
-        $this->assertNull($this->getObjectValue($loader, 'options'));
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testOptionsMustBeInstanceOfOptionsIfNotNull()
-    {
-        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));        
-    }
-
-    /**
-     * @expectedException   \InvalidArgumentException
-     */
-    public function testLoadThrowsExceptionWithInvalidPath()
-    {
-        $this->loader->load('/path/to/nowhere');
-    }
-
-    /**
-     * @expectedException   \RuntimeException
-     * @expectedExceptionMessage No path or configuration provided (tests must end with Test.php)
-     */
-    public function testLoadBarePathWithNoPathAndNoConfiguration()
-    {
-        $this->loader->load();
-    }
-
-    public function testLoadSuiteFromConfig()
-    {
-        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunit.xml.dist'));
-        $loader = new SuiteLoader($options);
-        $loader->load();
-        $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(12, sizeof($files));
-    }
-
-    /**
-     * @expectedException   \RuntimeException
-     * @expectedExceptionMessage Suite path ./nope/ could not be found
-     */
-    public function testLoadSuiteFromConfigWithBadSuitePath()
-    {
-        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunitbad.xml.dist'));
-        $loader = new SuiteLoader($options);
-        $loader->load();
     }
 
     public function testLoadFileGetsPathOfFile()
@@ -115,7 +54,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testFirstParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        $first = array_shift($paraSuites);
+        $first = $this->byClassName('GroupsTest', $paraSuites);
         $functions = $first->getFunctions();
         $this->assertEquals(5, sizeof($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
@@ -130,7 +69,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testSecondParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        $second = next($paraSuites);
+        $second = $this->byClassName('LegacyNamespaceTest', $paraSuites);
         $functions = $second->getFunctions();
         $this->assertEquals(0, sizeof($functions));
     }
@@ -140,8 +79,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testThirdParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        next($paraSuites);
-        $third = next($paraSuites);
+        $third = $this->byClassName('LongRunningTest', $paraSuites);
         $functions = $third->getFunctions();
         $this->assertEquals(3, sizeof($functions));
         $this->assertEquals('testOne', $functions[0]->getName());
@@ -149,11 +87,20 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testThree', $functions[2]->getName());
     }
 
+    private function byClassName($name, array $suites)
+    {
+        foreach ($suites as $path => $suite) {
+            if (preg_match("|/{$name}.php$|", $path)) {
+                return $suite;
+            }
+        }
+    }
+
     public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(32, sizeof($methods));
+        $this->assertEquals(33, sizeof($methods));
         return $methods;
     }
 

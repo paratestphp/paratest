@@ -22,14 +22,43 @@ class PHPUnitTest extends FunctionalTestBase
 
         $this->paratest(array('bootstrap' => $bootstrap));
         $this->assertEquals(1, $this->getExitCode(), 'Unexpected exit code');
-        $this->assertContains('[RuntimeException]', $this->getErrorOutput(), 'Expected exception name not found in output');
-        $this->assertContains(sprintf('Bootstrap specified but could not be found (%s)', $bootstrap), $this->getErrorOutput(), 'Expected error message not found in output');
+        $this->assertContains('[RuntimeException]', $errors, 'Expected exception name not found in output');
+        $this->assertContains(sprintf('Bootstrap specified but could not be found (%s)', $this->bootstrap), $errors, 'Expected error message not found in output');
     }
 
     public function testWithJustConfiguration()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION));
         $this->assertResults($results);
+    }
+
+    public function testWithWrapperRunner()
+    {
+        $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'runner' => 'WrapperRunner'));
+        $this->assertRegExp("/FAILURES!
+Tests: 33, Assertions: 36, Failures: 4, Errors: 1./", $results);
+    }
+
+    public function testParatestEnvironmentVariable()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP));
+        $this->assertRegexp('/OK \(\d+ test/', $results);
+    }
+
+    public function testParatestEnvironmentVariableWithWrapperRunner()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner'));
+        $this->assertRegexp('/OK \(\d+ test/', $results);
+    }
+
+    public function testParatestEnvironmentVariableWithWrapperRunnerandWithoutTestTokens()
+    {
+        $this->path .= '/EnvironmentTest.php';
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0));
+        $this->markTestIncomplete('When the standard runner will pass the token, this test will become green');
+        $this->assertRegexp('/FAILURES \(\d+ test/', $results);
     }
 
     public function testWithConfigurationInDirWithoutConfigFile()
@@ -187,7 +216,20 @@ class PHPUnitTest extends FunctionalTestBase
         $proc = $this->paratestProc(array(
             'bootstrap' => BOOTSTRAP
         ), $pipes);
-        $this->assertContains('Call to undefined function inexistent', $proc->getErrorOutput());
+        $stderr = stream_get_contents($pipes[2]);
+        $this->assertContains('Call to undefined function inexistent', $stderr);
+    }
+
+    public function testRunWithFatalRuntimeErrorWithTheWrapperRunnerOutputsError()
+    {
+        $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalFunctionErrorTest.php';
+        $pipes = array();
+        $proc = $this->paratestProc(array(
+            'bootstrap' => BOOTSTRAP,
+            'runner' => 'WrapperRunner'
+        ), $pipes);
+        $stderr = stream_get_contents($pipes[2]);
+        $this->assertContains('Call to undefined function inexistent', $stderr);
     }
 
     /**
@@ -229,7 +271,8 @@ class PHPUnitTest extends FunctionalTestBase
 
     protected function assertResults($results)
     {
-        $this->assertRegExp("/FAILURES!\nTests: 32, Assertions: 31, Failures: 4, Errors: 1./", $results);
+        $this->assertRegExp("/FAILURES!
+Tests: 33, Assertions: 31, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())
