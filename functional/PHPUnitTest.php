@@ -36,7 +36,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithWrapperRunner()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'runner' => 'WrapperRunner'));
-        $this->assertResultsFunctional($results);
+        $this->assertResults($results);
     }
 
     public function testParatestEnvironmentVariable()
@@ -80,19 +80,19 @@ class PHPUnitTest extends FunctionalTestBase
     public function testFunctionalWithBootstrap()
     {
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'functional' => ''));
-        $this->assertResultsFunctional($results);
+        $this->assertResults($results);
     }
 
     public function testFunctionalWithConfiguration()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'functional' => ''));
-        $this->assertResultsFunctional($results);
+        $this->assertResults($results);
     }
 
     public function testFunctionalWithBootstrapUsingShortOption()
     {
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'f' => ''));
-        $this->assertResultsFunctional($results);
+        $this->assertResults($results);
     }
 
     public function testWithBootstrapAndProcessesSwitch()
@@ -255,7 +255,7 @@ class PHPUnitTest extends FunctionalTestBase
         ));
         $this->assertRegExp('/Running phpunit in 6 processes/', $results);
         $this->assertRegExp('/Functional mode is on/i', $results);
-        $this->assertResultsFunctional($results);
+        $this->assertResults($results);
         $this->assertTrue(file_exists($output));
         //the highest exit code presented should be what is returned
         $this->assertEquals(2, $this->getExitCode());
@@ -266,16 +266,10 @@ class PHPUnitTest extends FunctionalTestBase
     {
         chdir(FIXTURES);
         $results = $this->paratest(array('f' => ''));
-        $this->assertResultsFunctional($results);
+        $this->assertResults($results);
     }
 
     protected function assertResults($results)
-    {
-        $this->assertRegExp("/FAILURES!
-Tests: 34, Assertions: 32, Failures: 4, Errors: 1./", $results);
-    }
-
-    protected function assertResultsFunctional($results)
     {
         $this->assertRegExp("/FAILURES!
 Tests: 34, Assertions: 37, Failures: 4, Errors: 1./", $results);
