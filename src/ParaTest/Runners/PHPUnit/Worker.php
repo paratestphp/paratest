@@ -20,7 +20,7 @@ class Worker
 
     public function start($wrapperBinary, $token = 1)
     {
-        $bin = '';
+        $bin = 'PARATEST=1 ';
         if (is_numeric($token)) {
             $bin .= "TEST_TOKEN=$token ";
         }

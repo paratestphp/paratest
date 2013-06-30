@@ -29,11 +29,6 @@ while (true) {
     echo "Executing: $command\n";
     $_SERVER['argv'] = explode(' ', $command);
 
-    while (!preg_match('|/phpunit|', $_SERVER['argv'][0])) {
-        $environmentVariable = array_shift($_SERVER['argv']);
-        putenv($environmentVariable);
-    } 
-
     $lastExitCode = PHPUnit_TextUI_Command::main(false);
     echo "FINISHED\n";
 }

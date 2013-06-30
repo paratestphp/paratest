@@ -125,6 +125,7 @@ abstract class ExecutableTest
      */
     public function run($binary, $options = array(), $environmentVariables = array())
     {
+        $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->command($binary, $options);
         $this->process = new Process($command, null, $environmentVariables);
@@ -167,15 +168,12 @@ abstract class ExecutableTest
      * @param array $options
      * @return mixed
      */
-    protected function getCommandString($binary, $options = array(), $environmentVariables = array())
+    protected function getCommandString($binary, $options = array())
     {
         // TODO: this should use a CommandBuilder
-        //Identify paratest as the test runner
-        $environmentVariablePrefix = 'PARATEST=1 ';
         $command = $binary;
         foreach($options as $key => $value) $command .= " --$key %s";
-        foreach($environmentVariables as $key => $value) $environmentVariablePrefix .= "$key=%s ";
-        $args = array_merge(array("$environmentVariablePrefix$command %s %s"), array_values($environmentVariables), array_values($options), array($this->fullyQualifiedClassName, $this->getPath()));
+        $args = array_merge(array("$command %s %s"), array_values($options), array($this->fullyQualifiedClassName, $this->getPath()));
         $command = call_user_func_array('sprintf', $args);
         return $command;
     }
