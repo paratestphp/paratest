@@ -36,7 +36,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithWrapperRunner()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'runner' => 'WrapperRunner'));
-        $this->assertResults($results);
+        $this->assertResultsFunctional($results);
     }
 
     public function testParatestEnvironmentVariable()
@@ -80,19 +80,19 @@ class PHPUnitTest extends FunctionalTestBase
     public function testFunctionalWithBootstrap()
     {
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'functional' => ''));
-        $this->assertResults($results);
+        $this->assertResultsFunctional($results);
     }
 
     public function testFunctionalWithConfiguration()
     {
         $results = $this->paratest(array('configuration' => PHPUNIT_CONFIGURATION, 'functional' => ''));
-        $this->assertResults($results);
+        $this->assertResultsFunctional($results);
     }
 
     public function testFunctionalWithBootstrapUsingShortOption()
     {
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'f' => ''));
-        $this->assertResults($results);
+        $this->assertResultsFunctional($results);
     }
 
     public function testWithBootstrapAndProcessesSwitch()
@@ -213,10 +213,10 @@ class PHPUnitTest extends FunctionalTestBase
     {
         $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalFunctionErrorTest.php';
         $pipes = array();
-        $proc = $this->paratestProc(array(
+        $this->paratest(array(
             'bootstrap' => BOOTSTRAP
-        ), $pipes);
-        $stderr = stream_get_contents($pipes[2]);
+        ));
+        $stderr = $this->getErrorOutput();
         $this->assertContains('Call to undefined function inexistent', $stderr);
     }
 
@@ -224,11 +224,11 @@ class PHPUnitTest extends FunctionalTestBase
     {
         $this->path = FIXTURES . DS . 'fatal-tests' . DS . 'UnitTestWithFatalFunctionErrorTest.php';
         $pipes = array();
-        $proc = $this->paratestProc(array(
+        $this->paratest(array(
             'bootstrap' => BOOTSTRAP,
             'runner' => 'WrapperRunner'
-        ), $pipes);
-        $stderr = stream_get_contents($pipes[2]);
+        ));
+        $stderr = $this->getErrorOutput();
         $this->assertContains('Call to undefined function inexistent', $stderr);
     }
 
@@ -255,7 +255,7 @@ class PHPUnitTest extends FunctionalTestBase
         ));
         $this->assertRegExp('/Running phpunit in 6 processes/', $results);
         $this->assertRegExp('/Functional mode is on/i', $results);
-        $this->assertResults($results);
+        $this->assertResultsFunctional($results);
         $this->assertTrue(file_exists($output));
         //the highest exit code presented should be what is returned
         $this->assertEquals(2, $this->getExitCode());
@@ -266,13 +266,19 @@ class PHPUnitTest extends FunctionalTestBase
     {
         chdir(FIXTURES);
         $results = $this->paratest(array('f' => ''));
-        $this->assertResults($results);
+        $this->assertResultsFunctional($results);
     }
 
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
 Tests: 34, Assertions: 32, Failures: 4, Errors: 1./", $results);
+    }
+
+    protected function assertResultsFunctional($results)
+    {
+        $this->assertRegExp("/FAILURES!
+Tests: 34, Assertions: 37, Failures: 4, Errors: 1./", $results);
     }
 
     protected function paratest($options = array())
