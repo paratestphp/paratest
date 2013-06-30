@@ -16,6 +16,7 @@ class Worker
     private $commands = array();
     private $chunks = '';
     private $alreadyReadOutput = '';
+    private $currentlyExecuting;
 
     public function start($wrapperBinary, $token = 1)
     {
@@ -45,15 +46,15 @@ class Worker
 
     public function assign(ExecutableTest $test, $phpunit, $phpunitOptions)
     {
+        $this->currentlyExecuting = $test;
         $this->execute($test->command($phpunit, $phpunitOptions));
-        $this->tempFile = $test->getTempFile();
     }
 
     public function printFeedback($printer)
     {
-        if (isset($this->tempFile)) {
-            $printer->printFeedbackFromFile($this->tempFile);
-            unset($this->tempFile);
+        if (isset($this->currentlyExecuting)) {
+            $printer->printFeedback($this->currentlyExecuting);
+            unset($this->currentlyExecuting);
         }
     }
 

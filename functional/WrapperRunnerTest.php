@@ -41,10 +41,11 @@ class WrapperRunnerTest extends FunctionalTestBase
     public function testFatalErrorsAreReported()
     {
         $this->path = FIXTURES . DS . 'fatal-tests/UnitTestWithFatalFunctionErrorTest.php';
-        $output = $this->getParaTestErrors(false, array(
+        $this->getParaTestOutput(false, array(
                 'runner' => 'WrapperRunner',
                 'processes' => 1,
         ));
-        $this->assertContains('This worker has crashed', $output);
+        $errors = $this->getErrorOutput();
+        $this->assertContains('This worker has crashed', $errors);
     }
 }
