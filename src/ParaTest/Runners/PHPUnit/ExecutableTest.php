@@ -126,7 +126,7 @@ abstract class ExecutableTest
     public function run($binary, $options = array(), $environmentVariables = array())
     {
         $this->handleEnvironmentVariables($environmentVariables);
-        $command = $this->getCommandString($binary, $options);
+        $command = $this->command($binary, $options);
         $this->process = new Process($command, null, $environmentVariables);
         $this->process->start();
         return $this;
