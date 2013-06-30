@@ -15,6 +15,7 @@ class SuiteLoaderTest extends \TestBase
         $tests = FIXTURES . DS . 'tests';
         $this->testDir = $tests;
         $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
+            'EnvironmentTest.php',
             'GroupsTest.php',
             'LegacyNamespaceTest.php',
             'LongRunningTest.php',
@@ -25,7 +26,7 @@ class SuiteLoaderTest extends \TestBase
             'level1' . DS . 'UnitTestInSubLevelTest.php',
             'level1' . DS . 'AnotherUnitTestInSubLevelTest.php',
             'level1' . DS . 'level2' . DS . 'UnitTestInSubSubLevelTest.php',
-            'level1' . DS . 'level2' . DS . 'AnotherUnitTestInSubSubLevelTest.php'
+            'level1' . DS . 'level2' . DS . 'AnotherUnitTestInSubSubLevelTest.php',
         ));
     }
 
@@ -73,7 +74,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(12, sizeof($files));
+        $this->assertEquals(13, sizeof($files));
     }
 
     /**
@@ -115,7 +116,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testFirstParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        $first = array_shift($paraSuites);
+        $first = $this->suiteByPath('GroupsTest.php', $paraSuites);
         $functions = $first->getFunctions();
         $this->assertEquals(5, sizeof($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
@@ -130,7 +131,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testSecondParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        $second = next($paraSuites);
+        $second = $this->suiteByPath('LegacyNamespaceTest.php', $paraSuites);
         $functions = $second->getFunctions();
         $this->assertEquals(0, sizeof($functions));
     }
@@ -140,8 +141,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testThirdParallelSuiteHasCorrectFunctions($paraSuites)
     {
-        next($paraSuites);
-        $third = next($paraSuites);
+        $third = $this->suiteByPath('LongRunningTest.php', $paraSuites);
         $functions = $third->getFunctions();
         $this->assertEquals(3, sizeof($functions));
         $this->assertEquals('testOne', $functions[0]->getName());
@@ -153,7 +153,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(32, sizeof($methods));
+        $this->assertEquals(34, sizeof($methods));
         return $methods;
     }
 
@@ -184,5 +184,15 @@ class SuiteLoaderTest extends \TestBase
         $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
         $paths = array_keys($loaded);
         return $paths;
+    }
+
+    private function suiteByPath($path, array $paraSuites)
+    {
+        foreach ($paraSuites as $completePath => $suite) {
+            if (strstr($completePath, $path)) {
+                return $suite;
+            }
+        }
+        throw new \RuntimeException("Suite $path not found.");
     }
 }

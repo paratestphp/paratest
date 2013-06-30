@@ -167,7 +167,7 @@ abstract class ExecutableTest
      * @param array $options
      * @return mixed
      */
-    protected function getCommandString($binary, $options = array())
+    protected function getCommandString($binary, $options = array(), $environmentVariables = array())
     {
         // TODO: this should use a CommandBuilder
         //Identify paratest as the test runner
