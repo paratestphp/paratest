@@ -30,13 +30,9 @@ class WrapperRunner
         $this->printer->start($this->options);
 
         $this->startWorkers();
-        $this->printer->println('BEFORE ALL PENDING');
         $this->assignAllPendingTests();
-        $this->printer->println('BEFORE STOP MESSAGES');
         $this->sendStopMessages();
-        $this->printer->println('BEFORE WAIT');
         $this->waitForAllToFinish();
-        $this->printer->println('BEFORE COMPLETE');
         $this->complete();
     }
 
