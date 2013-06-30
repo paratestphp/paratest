@@ -57,8 +57,7 @@ class PHPUnitTest extends FunctionalTestBase
     {
         $this->path .= '/EnvironmentTest.php';
         $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0));
-        $this->markTestIncomplete('When the standard runner will pass the token, this test will become green');
-        $this->assertRegexp('/FAILURES \(\d+ test/', $results);
+        $this->assertRegexp('/Failures: 1/', $results);
     }
 
     public function testWithConfigurationInDirWithoutConfigFile()
