@@ -36,6 +36,7 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.'),
             new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The PHPUnit configuration file to use.'),
             new InputOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).'),
+            new InputOption('stop-on-failure', null, InputOption::VALUE_NONE, 'Don\'t start any more processes after a failure.'),
             new InputOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.'),
             new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'),
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.')
