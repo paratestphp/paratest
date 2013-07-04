@@ -83,7 +83,9 @@ class WrapperRunner
                 if($worker->isFree()) {
                     $worker->printFeedback($this->printer);
                     $pending = array_shift($this->pending);
-                    $worker->assign($pending, $phpunit, $phpunitOptions);
+                    if ($pending) {
+                        $worker->assign($pending, $phpunit, $phpunitOptions);
+                    }
                 }
             }
         }
