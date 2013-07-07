@@ -2,7 +2,7 @@
 
 class PerformanceTest extends FunctionalTestBase
 {
-    protected static $testTime = '/Time: (([0-9]+)(?:[.][0-9]+)?)/';
+    protected static $testTime = '/Time: (([0-9]+)(?:[.][0-9]+)?) second[s]*,/';
 
     public function setUp()
     {
@@ -51,7 +51,7 @@ class PerformanceTest extends FunctionalTestBase
     public function testRunningLotsOfShortTestsIsFasterWithTheWrapperRunner()
     {
         $this->path = FIXTURES . DS . 'small-tests';
-        $this->createSmallTests(500);
+        $this->createSmallTests(50);
         list($paraTime, $wrapperParaTime, $msg) = $this->getExecTimes(
             $this->getParaTestOutput(false, array(
                 'runner' => 'Runner',
@@ -67,7 +67,7 @@ class PerformanceTest extends FunctionalTestBase
     {
         $this->markTestIncomplete("Currently the execution times are comparable.");
         $this->path = FIXTURES . DS . 'small-tests';
-        $this->createSmallTests(200);
+        $this->createSmallTests(50);
         list($stdTime, $paraTime, $msg) = $this->getExecTimes(
             $this->getPhpunitOutput(),
             $this->getParaTestOutput(false, array(
