@@ -282,13 +282,15 @@ class ResultPrinter
      */
     private function getFailedFooter()
     {
-        $formatString = "\nFAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
+        $formatString = "FAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
 
-        return sprintf($formatString,
+        return "\n" . $this->red(
+            sprintf($formatString,
                        $this->results->getTotalTests(),
                        $this->results->getTotalAssertions(),
                        $this->results->getTotalFailures(),
-                       $this->results->getTotalErrors());
+                       $this->results->getTotalErrors())
+        );
     }
 
     /**
@@ -315,6 +317,16 @@ class ResultPrinter
     {
         if ($this->colors) {
             return "\x1b[30;42m\x1b[2K"
+                . $text
+                . "\x1b[0m\x1b[2K";
+        }
+        return $text;
+    }
+
+    private function red($text)
+    {
+        if ($this->colors) {
+            return "\x1b[37;41m\x1b[2K"
                 . $text
                 . "\x1b[0m\x1b[2K";
         }
