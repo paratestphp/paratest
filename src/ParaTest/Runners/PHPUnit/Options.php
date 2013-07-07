@@ -68,6 +68,7 @@ class Options
         $this->functional = $opts['functional'];
         $this->runner = $opts['runner'];
         $this->noTestTokens = $opts['no-test-tokens'];
+        $this->colors = $opts['colors'];
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -99,6 +100,7 @@ class Options
             'functional' => false,
             'runner' => 'Runner',
             'no-test-tokens' => false,
+            'colors' => false,
         );
     }
 
@@ -150,6 +152,7 @@ class Options
             'functional' => $this->functional,
             'runner' => $this->runner,
             'no-test-tokens' => $this->noTestTokens,
+            'colors' => $this->colors,
         ));
         if($configuration = $this->getConfigurationPath($filtered))
             $filtered['configuration'] = new Configuration($configuration);
