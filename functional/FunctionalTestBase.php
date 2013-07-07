@@ -63,7 +63,8 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function getFinishedProc($cmd, &$pipes)
     {
         $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
-        $proc = new \Symfony\Component\Process\Process($cmd, null, $env);
+        $this->lastExecutedCommand = $cmd;
+        $proc = new \Symfony\Component\Process\Process($cmd, null, $env, null, $timeout = 60);
         $this->waitForProc($proc);
 
         return $proc;
