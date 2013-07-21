@@ -38,6 +38,7 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The PHPUnit configuration file to use.'),
             new InputOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).'),
             new InputOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.'),
+            new InputOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.'),
             new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'),
             new InputOption('no-test-tokens', null, InputOption::VALUE_NONE, 'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'),
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.')

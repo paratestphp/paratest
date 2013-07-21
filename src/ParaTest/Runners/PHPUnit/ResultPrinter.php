@@ -66,6 +66,13 @@ class ResultPrinter
      */
     protected $casesProcessed = 0;
 
+    /**
+     * Whether to display a red or green bar
+     *
+     * @var bool
+     */
+    protected $colors;
+
     public function __construct(LogInterpreter $results)
     {
         $this->results = $results;
@@ -105,6 +112,7 @@ class ResultPrinter
         if(isset($options->filtered['configuration']))
             printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
         $this->timer->start();
+        $this->colors = $options->colors;
     }
 
     /**
@@ -274,13 +282,15 @@ class ResultPrinter
      */
     private function getFailedFooter()
     {
-        $formatString = "\nFAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
+        $formatString = "FAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
 
-        return sprintf($formatString,
+        return "\n" . $this->red(
+            sprintf($formatString,
                        $this->results->getTotalTests(),
                        $this->results->getTotalAssertions(),
                        $this->results->getTotalFailures(),
-                       $this->results->getTotalErrors());
+                       $this->results->getTotalErrors())
+        );
     }
 
     /**
@@ -294,11 +304,33 @@ class ResultPrinter
         $tests = $this->results->getTotalTests();
         $asserts = $this->results->getTotalAssertions();
 
-        return sprintf("OK (%d test%s, %d assertion%s)\n",
+        return $this->green(
+            sprintf("OK (%d test%s, %d assertion%s)\n",
                        $tests,
                        ($tests == 1) ? '' : 's',
                        $asserts,
-                       ($asserts == 1) ? '' : 's');
+                       ($asserts == 1) ? '' : 's')
+        );
+    }
+
+    private function green($text)
+    {
+        if ($this->colors) {
+            return "\x1b[30;42m\x1b[2K"
+                . $text
+                . "\x1b[0m\x1b[2K";
+        }
+        return $text;
+    }
+
+    private function red($text)
+    {
+        if ($this->colors) {
+            return "\x1b[37;41m\x1b[2K"
+                . $text
+                . "\x1b[0m\x1b[2K";
+        }
+        return $text;
     }
 
     /**
