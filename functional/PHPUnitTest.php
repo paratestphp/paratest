@@ -282,6 +282,13 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertOkResults($results, 3, 3);
     }
 
+    public function testFunctionalModeEachTestCalledOnce()
+    {
+        $this->path = FIXTURES . DS . "tests" . DS . "FunctionalModeEachTestCalledOnce.php";
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP, 'f' => ''));
+        $this->assertOkResults($results, 2, 2);
+    }
+
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
