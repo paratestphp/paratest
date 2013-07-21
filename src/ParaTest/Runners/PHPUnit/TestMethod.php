@@ -53,7 +53,7 @@ class TestMethod extends ExecutableTest
      */
     protected function prepareOptions($options)
     {
-        $options['filter'] = $this->name;
+        $options['filter'] = sprintf("'/\b%s\b/'", $this->name);
 
         return $options;
     }

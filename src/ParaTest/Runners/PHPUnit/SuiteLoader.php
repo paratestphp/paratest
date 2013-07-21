@@ -156,18 +156,60 @@ class SuiteLoader
         foreach ($this->files as $path) {
             $parser = new Parser($path);
             if ($class = $parser->getClass()) {
-                // TODO: ExecutableTest must have the class name too
                 $this->loadedSuites[$path] = new Suite(
-                    $path, 
-                    array_map(
-                        function($fn) use ($path) {
-                            return new TestMethod($path, $fn->getName());
-                        }, 
+                    $path,
+                    $this->executableTests(
+                        $path,
                         $class->getMethods($this->options ? $this->options->annotations : array())
                     ),
                     $class->getName()
                 );
             }
         }
+    }
+
+    private function executableTests($path, $classMethods)
+    {
+        $executableTests = array();
+        $methodBatches = $this->getMethodBatches($classMethods);
+        foreach ($methodBatches as $methodBatch) {
+            $executableTest = new TestMethod($path, implode('|', $methodBatch));
+            $executableTests[] = $executableTest;
+        }
+        return $executableTests;
+    }
+
+    /**
+     * Identify method dependencies, and group dependents and dependees on a single methodBatch
+     * If no dependencies exist each methodBatch will contain a single method.
+     * @param  array of ParsedFunction $classMethods
+     * @return array of MethodBatches. Each MethodBatch has an array of method names
+     */
+    private function getMethodBatches($classMethods)
+    {
+        $methodBatches = array();
+        foreach ($classMethods as $method) {
+            if (($dependsOn = $this->methodDependency($method)) != null) {
+                foreach ($methodBatches as $key => $methodBatch) {
+                    foreach ($methodBatch as $methodName) {
+                        if ($dependsOn === $methodName) {
+                            $methodBatches[$key][] = $method->getName();
+                            continue;
+                        }
+                    }
+                }
+            } else {
+                $methodBatches[] = array($method->getName());
+            }
+        }
+        return $methodBatches;
+    }
+
+    private function methodDependency($method)
+    {
+        if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 }
