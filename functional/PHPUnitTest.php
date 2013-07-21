@@ -39,6 +39,29 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertResults($results);
     }
 
+    public function testWithColorsGreenBar()
+    {
+        $this->path .= '/EnvironmentTest.php';
+
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP), array('colors'));
+
+        $this->assertContains(
+            "[30;42m[2KOK",
+            $results
+        );
+    }
+
+    public function testWithColorsRedBar()
+    {
+        $this->path .= '/UnitTestWithErrorTest.php';
+
+        $results = $this->paratest(array('bootstrap' => BOOTSTRAP), array('colors'));
+        $this->assertContains(
+            "[37;41m[2KFAILURES",
+            $results
+        );
+    }
+
     public function testParatestEnvironmentVariable()
     {
         $this->path .= '/EnvironmentTest.php';
@@ -274,9 +297,9 @@ class PHPUnitTest extends FunctionalTestBase
 Tests: 34, Assertions: 37, Failures: 4, Errors: 1./", $results);
     }
 
-    protected function paratest($options = array())
+    protected function paratest($options = array(), $switches = array())
     {
-        $cmd = $this->getCmd($options);
+        $cmd = $this->getCmd($options, $switches);
         return $this->getTestOutput($cmd);
     }
 
@@ -288,11 +311,15 @@ Tests: 34, Assertions: 37, Failures: 4, Errors: 1./", $results);
         return $proc;
     }
 
-    protected function getCmd($options = array())
+    protected function getCmd($options = array(), $switches = array())
     {
         $cmd = PARA_BINARY;
-        foreach($options as $switch => $value)
+        foreach($options as $switch => $value) {
             $cmd .= ' ' . $this->getOption($switch, $value);
+        }
+        foreach ($switches as $name) {
+            $cmd .= " --$name";
+        }
         $cmd .= ' ' . $this->path;
         return $cmd;
     }
