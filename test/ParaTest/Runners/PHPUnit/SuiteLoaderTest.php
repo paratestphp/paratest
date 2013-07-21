@@ -178,6 +178,20 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testFalsehood', $methods[1]->getName());
     }
 
+    public function testExecutableTestsForFunctionalModeUse()
+    {
+        $path = FIXTURES . DS . 'tests' . DS . 'DependsOnChain.php';
+        $this->loader->load($path);
+        $tests = $this->loader->getTestMethods();
+        $this->assertEquals(2, count($tests));
+        $testMethod = $tests[0];
+        $testMethodName = $this->getObjectValue($testMethod, 'name');
+        $this->assertEquals($testMethodName, 'testOneA|testOneBDependsOnA|testOneCDependsOnB');
+        $testMethod = $tests[1];
+        $testMethodName = $this->getObjectValue($testMethod, 'name');
+        $this->assertEquals($testMethodName, 'testTwoA|testTwoBDependsOnA');
+    }
+
     protected function getLoadedPaths($path)
     {
         $this->loader->load($path);
