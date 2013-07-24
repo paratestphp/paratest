@@ -22,9 +22,9 @@ Usage
 After installation, the binary can be found at `vendors/bin/paratest`. Usage is as follows:
 
 ```
-paratest [-p|--processes="..."] [-f|--functional] [-h|--help] [--phpunit="..."]
-[--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."]
-[--path="..."] [path]
+paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help]
+[--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."]
+[-g|--group="..."] [--log-junit="..."] [--colors] [--path="..."] [path]
 ```
 
 ![ParaTest Usage](https://raw.github.com/brianium/paratest/master/paratest-usage.png "ParaTest Console Usage")
