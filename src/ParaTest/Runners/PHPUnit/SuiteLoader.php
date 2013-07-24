@@ -85,8 +85,9 @@ class SuiteLoader
         $configuration = @$this->options->filtered['configuration'] ?: new Configuration('');
         if($path) $this->loadPath($path);
         else if($suites = $configuration->getSuites())
-            foreach($suites as $name => $path)
-                $this->loadPath($path);
+            foreach($suites as $name => $dirs)
+                foreach ($dirs as $path)
+                    $this->loadPath($path);
         if(!$this->files) throw new \RuntimeException("No path or configuration provided (tests must end with Test.php)");
         $this->initSuites();
     }
