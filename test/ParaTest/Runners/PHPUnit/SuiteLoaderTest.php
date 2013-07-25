@@ -77,6 +77,16 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals(13, sizeof($files));
     }
 
+    public function testLoadSuiteFromConfigWithMultipleDirs()
+    {
+        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunit_multidir.xml.dist'));
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+        $this->assertEquals(15, sizeof($files));
+    }
+
+
     /**
      * @expectedException   \RuntimeException
      * @expectedExceptionMessage Suite path ./nope/ could not be found
