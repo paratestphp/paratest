@@ -40,8 +40,8 @@ class ConfigurationTest extends \TestBase
     public function testSuitesContainPathAsValue($suites)
     {
         $basePath = getcwd() . DS;
-        $this->assertEquals($basePath . 'test' . DS . 'ParaTest', $suites["ParaTest Unit Tests"]);
-        $this->assertEquals($basePath . 'it' . DS . 'ParaTest', $suites["ParaTest Integration Tests"]);
-        $this->assertEquals($basePath . 'functional', $suites["ParaTest Functional Tests"]);
+        $this->assertEquals(array($basePath . 'test' . DS . 'ParaTest'), $suites["ParaTest Unit Tests"]);
+        $this->assertEquals(array($basePath . 'it' . DS . 'ParaTest'), $suites["ParaTest Integration Tests"]);
+        $this->assertEquals(array($basePath . 'functional'), $suites["ParaTest Functional Tests"]);
     }
 }
