@@ -31,7 +31,7 @@ class ExecutableTestTest extends \TestBase
 
     public function testCommandRedirectsCoverage()
     {
-        $options = array('a' => 'b', 'coverage-php' => 'target.php');
+        $options = array('a' => 'b', 'coverage-php' => 'target_html', 'coverage-php' => 'target.php');
         $binary = '/usr/bin/phpunit';
 
         $command = $this->executableTestChild->command($binary, $options);

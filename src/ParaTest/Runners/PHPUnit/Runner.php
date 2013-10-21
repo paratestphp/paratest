@@ -1,5 +1,6 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\LogInterpreter,
     ParaTest\Logging\JUnit\Writer,
     Habitat\Habitat;
@@ -55,6 +56,13 @@ class Runner
      */
     protected $tokens = array();
 
+    /**
+     * CoverageMerger to hold track of the accumulated coverage
+     *
+     * @var CoverageMerger
+     */
+    protected $coverage = null;
+
     public function __construct($opts = array())
     {
         $this->options = new Options($opts);
@@ -69,6 +77,7 @@ class Runner
     public function run()
     {
         $this->verifyConfiguration();
+        $this->initCoverage();
         $this->load();
         $this->printer->start($this->options);
         while (count($this->running) || count($this->pending)) {
@@ -118,6 +127,7 @@ class Runner
         $this->printer->printResults();
         $this->interpreter->rewind();
         $this->log();
+        $this->logCoverage();
         $readers = $this->interpreter->getReaders();
         foreach($readers as $reader)
             $reader->removeLog();
@@ -151,6 +161,30 @@ class Runner
     }
 
     /**
+     * Write coverage to file if requested
+     */
+    private function logCoverage()
+    {
+        if (!$this->hasCoverage()) {
+            return;
+        }
+
+        $filteredOptions = $this->options->filtered;
+        if (isset($filteredOptions['coverage-clover'])) {
+            $clover = new \PHP_CodeCoverage_Report_Clover();
+            $clover->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-clover']);
+        }
+
+        if (isset($filteredOptions['coverage-html'])) {
+            $html = new \PHP_CodeCoverage_Report_HTML();
+            $html->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-html']);
+        }
+
+        $php = new \PHP_CodeCoverage_Report_PHP();
+        $php->process($this->getCoverage()->getCoverage(),  $filteredOptions['coverage-php']);
+    }
+
+    /**
      * This method removes ExecutableTest objects from the pending collection
      * and adds them to the running collection. It is also in charge of recycling and
      * acquiring available test tokens for use
@@ -174,7 +208,7 @@ class Runner
      * throwing an exception if a fatal error has occurred -
      * prints feedback, and updates the overall exit code
      *
-     * @param $test
+     * @param ExecutableTest $test
      * @return bool
      * @throws \Exception
      */
@@ -186,6 +220,9 @@ class Runner
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
             throw new \Exception($test->getStderr());
         $this->printer->printFeedback($test);
+        if ($this->hasCoverage()) {
+            $this->addCoverage($test);
+        }
 
         return false;
     }
@@ -249,5 +286,42 @@ class Runner
     protected function acquireToken($tokenIdentifier)
     {
         $this->tokens[$tokenIdentifier] = false;
+    }
+
+    private function initCoverage()
+    {
+        if (!isset($this->options->filtered['coverage-php'])) {
+            return;
+        }
+
+        $this->coverage = new CoverageMerger();
+    }
+
+    private function hasCoverage()
+    {
+        return $this->getCoverage() != null;
+    }
+
+    /**
+     * @return CoverageMerger
+     */
+    public function getCoverage()
+    {
+        return $this->coverage;
+    }
+
+    /**
+     * @param ExecutableTest $test
+     */
+    private function addCoverage($test)
+    {
+        $coverageFile = $test->getCoverageFileName();
+        if (!file_exists($coverageFile)) {
+            return;
+        }
+
+        /** @var \PHP_CodeCoverage $coverage */
+        $coverage = unserialize(file_get_contents($coverageFile));
+        $this->getCoverage()->addCoverage($coverage);
     }
 }
