@@ -29,6 +29,16 @@ class ExecutableTestTest extends \TestBase
         $this->assertEquals('/usr/bin/phpunit --bootstrap test/bootstrap.php ClassNameTest pathToFile', $command);
     }
 
+    public function testCommandRedirectsCoverage()
+    {
+        $options = array('a' => 'b', 'coverage-php' => 'target.php');
+        $binary = '/usr/bin/phpunit';
+
+        $command = $this->executableTestChild->command($binary, $options);
+        $coverageFileName = str_replace('/', '\/', $this->executableTestChild->getCoverageFileName());
+        $this->assertRegExp('/^\/usr\/bin\/phpunit --a b --coverage-php ' . $coverageFileName . ' .*/', $command);
+    }
+
     public function testGetCommandStringDoesNotIncludeEnvironmentVariablesToKeepCompatibilityWithWindows()
     {
         $options = array('bootstrap' => 'test/bootstrap.php');
