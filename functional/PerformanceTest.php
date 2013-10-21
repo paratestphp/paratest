@@ -2,7 +2,8 @@
 
 class PerformanceTest extends FunctionalTestBase
 {
-    protected static $testTime = '/Time: (([0-9]+)(?:[.][0-9]+)?) second[s]*,/';
+    protected static $testTimeSeconds = '/Time: (([0-9]+)(?:[.][0-9]+)?) second[s]?,/';
+    protected static $testTimeMilliseconds = '/Time: (([0-9]+)(?:[.][0-9]+)?) ms,/';
 
     public function setUp()
     {
@@ -96,9 +97,13 @@ class PerformanceTest extends FunctionalTestBase
 
     private function getExecTime($output)
     {
-        preg_match(self::$testTime, $output, $matches);
+        preg_match(self::$testTimeSeconds, $output, $matches);
         if (!isset($matches[2])) {
-            throw new RuntimeException("Cannot parse output: {var_export($output)}. {$this->debugInformation()}");
+            preg_match(self::$testTimeMilliseconds, $output, $matches);
+            if (!isset($matches[2])) {
+                throw new RuntimeException("Cannot parse output: {var_export($output)}. {$this->debugInformation()}");
+            }
+            $matches[2] = $matches[2] / 1000.0;
         } 
         return $matches[2];
     }
