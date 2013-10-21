@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: julian
- * Date: 21.10.13
- * Time: 20:18
- * To change this template use File | Settings | File Templates.
- */
 
 namespace ParaTest\Coverage;
-
 
 class CoverageMergerTest extends \PHPUnit_Framework_TestCase
 {
