@@ -29,7 +29,10 @@ class ParaTestCommand extends Command
             ->addOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 5)
             ->addOption('functional', 'f', InputOption::VALUE_NONE, 'Run methods instead of suites in separate processes.')
             ->addOption('no-test-tokens', null, InputOption::VALUE_NONE, 'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>')
-            ->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.');
+            ->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.')
+            ->addOption('coverage-clover', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in Clover XML format.')
+            ->addOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.')
+            ->addOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.');
     }
 
     /**
