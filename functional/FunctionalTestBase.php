@@ -64,7 +64,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     {
         $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
         $this->lastExecutedCommand = $cmd;
-        $proc = new \Symfony\Component\Process\Process($cmd, null, $env, null, $timeout = 60);
+        $proc = new \Symfony\Component\Process\Process($cmd, null, $env, null, $timeout = 600);
         $this->waitForProc($proc);
 
         return $proc;
