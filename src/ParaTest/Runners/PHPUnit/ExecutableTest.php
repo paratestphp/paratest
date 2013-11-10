@@ -152,7 +152,7 @@ abstract class ExecutableTest
     public function command($binary, $options = array())
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
-        $options = $this->redirectCoverageOption($options, $this->getCoverageFileName());
+        $options = $this->redirectCoverageOption($options);
         return $this->getCommandString($binary, $options);
     }
 
@@ -201,13 +201,12 @@ abstract class ExecutableTest
      * This will ensure, that multiple tests write to separate coverage-files.
      *
      * @param array $options
-     * @param string $coverageFileName
      * @return array $options
      */
-    private function redirectCoverageOption($options, $coverageFileName)
+    private function redirectCoverageOption($options)
     {
         if (isset($options['coverage-php'])) {
-            $options['coverage-php'] = $coverageFileName;
+            $options['coverage-php'] = $this->getCoverageFileName();
         }
 
         unset($options['coverage-html']);
