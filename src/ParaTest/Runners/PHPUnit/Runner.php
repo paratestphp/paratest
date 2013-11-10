@@ -323,5 +323,6 @@ class Runner
         /** @var \PHP_CodeCoverage $coverage */
         $coverage = unserialize(file_get_contents($coverageFile));
         $this->getCoverage()->addCoverage($coverage);
+        unlink($coverageFile);
     }
 }

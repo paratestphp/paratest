@@ -22,6 +22,12 @@ abstract class ExecutableTest
     protected $pipes = array();
 
     /**
+     * Path where the coveragereport is stored
+     * @var string
+     */
+    protected $coverageFileName;
+
+    /**
      * @var Process
      */
     protected $process;
@@ -215,6 +221,10 @@ abstract class ExecutableTest
      */
     public function getCoverageFileName()
     {
-        return sys_get_temp_dir() . '/COVERAGE_' . $this->getToken() . '.php';
+        if ($this->coverageFileName === null) {
+            $this->coverageFileName = tempnam(sys_get_temp_dir(), "CV_");
+        }
+
+        return $this->coverageFileName;
     }
 }

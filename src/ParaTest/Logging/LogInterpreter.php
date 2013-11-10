@@ -40,7 +40,7 @@ class LogInterpreter extends MetaProvider
      * Return all Reader objects associated
      * with the LogInterpreter
      *
-     * @return array
+     * @return Reader[]
      */
     public function getReaders()
     {
