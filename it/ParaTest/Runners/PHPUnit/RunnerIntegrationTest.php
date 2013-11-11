@@ -4,31 +4,31 @@ class RunnerIntegrationTest extends \TestBase
 {
     protected $runner;
     protected $options;
-    protected $originalTempDir;
-    protected $tempDir;
 
     public function setUp()
     {
         $this->options = array(
             'path' => FIXTURES . DS . 'tests',
             'phpunit' => PHPUNIT,
+            'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
             'bootstrap' => BOOTSTRAP
         );
         $this->runner = new Runner($this->options);
-        $this->originalTempDir = sys_get_temp_dir();
-        $this->changeTempDir();
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles()
     {
-        $countBefore = count(glob($this->tempDir . DS . 'PT_*'));
+        $countBefore = count(glob(sys_get_temp_dir() . DS . 'PT_*'));
+        $countCoverageBefore = count(glob(sys_get_temp_dir() . DS . 'CV_*'));
         //dont want the output mucking up the test results
         ob_start();
         $this->runner->run();
         ob_end_clean();
-        $countAfter = count(glob($this->tempDir . DS . 'PT_*'));
+        $countAfter = count(glob(sys_get_temp_dir() . DS . 'PT_*'));
+        $countCoverageAfter = count(glob(sys_get_temp_dir() . DS . 'CV_*'));
 
-        $this->assertEquals($countAfter, $countBefore, "Test Runner failed to clean up the 'PT_*' file in " . $this->tempDir);
+        $this->assertEquals($countAfter, $countBefore, "Test Runner failed to clean up the 'PT_*' file in " . sys_get_temp_dir());
+        $this->assertEquals($countCoverageAfter, $countCoverageBefore, "Test Runner failed to clean up the 'CV_*' file in " . sys_get_temp_dir());
     }
 
     public function testLogJUnitCreatesXmlFile()
@@ -57,24 +57,13 @@ class RunnerIntegrationTest extends \TestBase
         $this->assertEquals(1, sizeof($errors));
     }
 
-    /**
-     * creates a test-specific temp dir inside the systems temp dir
-     */
-    protected function changeTempDir()
-    {
-        $this->tempDir = rtrim($this->originalTempDir, '/') . '/' . $this->getName(false);
-        if (!file_exists($this->tempDir)) {
-            mkdir($this->tempDir);
-        }
-        putenv('TMPDIR=' . $this->tempDir);
-    }
-
     protected function tearDown()
     {
-        parent::tearDown();
-        putenv('TMPDIR=' . $this->originalTempDir);
-        if (file_exists($this->tempDir)) {
-            rmdir($this->tempDir);
+        $testcoverageFile = sys_get_temp_dir() . DS . 'testcoverage.php';
+        if (file_exists($testcoverageFile)) {
+            unlink($testcoverageFile);
         }
+
+        parent::tearDown();
     }
 }

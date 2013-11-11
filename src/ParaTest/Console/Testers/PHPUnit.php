@@ -116,7 +116,7 @@ class PHPUnit extends Tester
      * @return array
      * @throws \RuntimeException
      */
-    protected function getRunnerOptions(InputInterface $input)
+    public function getRunnerOptions(InputInterface $input)
     {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
@@ -135,6 +135,10 @@ class PHPUnit extends Tester
                     $options['bootstrap']));
         }
 
+        if ($this->hasCoverage($options) && !isset($options['coverage-php'])) {
+            $options['coverage-php'] = sys_get_temp_dir() . '/will_be_overwritten.php';
+        }
+
         $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
         return $options;
     }
@@ -147,5 +151,14 @@ class PHPUnit extends Tester
     private function requireBootstrap($file)
     {
         require_once $file;
+    }
+
+    /**
+     * @param $options
+     * @return bool
+     */
+    protected function hasCoverage($options)
+    {
+        return isset($options['coverage-html']) || isset($options['coverage-clover']);
     }
 }

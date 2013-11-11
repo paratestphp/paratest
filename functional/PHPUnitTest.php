@@ -350,4 +350,47 @@ Tests: 34, Assertions: 37, Failures: 4, Errors: 1./", $results);
         $cmd .= ' ' . $this->path;
         return $cmd;
     }
+
+    public function setsCoveragePhpDataProvider()
+    {
+        return array(
+            array(
+                array('coverage-html' => 'wayne'),
+                sys_get_temp_dir() . '/will_be_overwritten.php'
+            ),
+            array(
+                array('coverage-clover' => 'wayne'),
+                sys_get_temp_dir() . '/will_be_overwritten.php'
+            ),
+            array(
+                array('coverage-php' => 'notWayne'),
+                'notWayne'
+            ),
+            array(
+                array('coverage-clover' => 'wayne', 'coverage-php' => 'notWayne'),
+                'notWayne'
+            )
+        );
+    }
+
+    /**
+     * @dataProvider setsCoveragePhpDataProvider
+     *
+     * @param $options
+     * @param $coveragePhp
+     */
+    public function testSetsCoveragePhp($options, $coveragePhp)
+    {
+        $phpUnit = new \ParaTest\Console\Testers\PHPUnit();
+        $c = new \ParaTest\Console\Commands\ParaTestCommand($phpUnit);
+
+        $input = new \Symfony\Component\Console\Input\ArrayInput(array(), $c->getDefinition());
+        foreach ($options as $key => $value) {
+            $input->setOption($key, $value);
+        }
+        $input->setArgument('path', '.');
+        $options = $phpUnit->getRunnerOptions($input);
+
+        $this->assertEquals($coveragePhp, $options['coverage-php']);
+    }
 }

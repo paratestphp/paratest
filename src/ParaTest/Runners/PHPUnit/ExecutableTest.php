@@ -22,6 +22,12 @@ abstract class ExecutableTest
     protected $pipes = array();
 
     /**
+     * Path where the coveragereport is stored
+     * @var string
+     */
+    protected $coverageFileName;
+
+    /**
      * @var Process
      */
     protected $process;
@@ -146,6 +152,7 @@ abstract class ExecutableTest
     public function command($binary, $options = array())
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
+        $options = $this->redirectCoverageOption($options);
         return $this->getCommandString($binary, $options);
     }
 
@@ -187,5 +194,36 @@ abstract class ExecutableTest
     protected function handleEnvironmentVariables($environmentVariables)
     {
         if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];
+    }
+
+    /**
+     * Checks if the coverage-php option is set and redirects it to a unique temp file.
+     * This will ensure, that multiple tests write to separate coverage-files.
+     *
+     * @param array $options
+     * @return array $options
+     */
+    private function redirectCoverageOption($options)
+    {
+        if (isset($options['coverage-php'])) {
+            $options['coverage-php'] = $this->getCoverageFileName();
+        }
+
+        unset($options['coverage-html']);
+        unset($options['coverage-clover']);
+
+        return $options;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCoverageFileName()
+    {
+        if ($this->coverageFileName === null) {
+            $this->coverageFileName = tempnam(sys_get_temp_dir(), "CV_");
+        }
+
+        return $this->coverageFileName;
     }
 }

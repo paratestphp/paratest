@@ -41,7 +41,10 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.'),
             new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'),
             new InputOption('no-test-tokens', null, InputOption::VALUE_NONE, 'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'),
-            new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.')
+            new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
+            new InputOption('coverage-clover', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in Clover XML format.'),
+            new InputOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.'),
+            new InputOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.')
         ));
         $definition = $this->command->getDefinition();
         $this->assertEquals($expected, $definition);

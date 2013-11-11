@@ -1,5 +1,5 @@
 Usage:
- paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."] [--colors] [--path="..."] [path]
+ paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."] [--colors] [--path="..."] [path]
 
 Arguments:
  path                 The path to a directory or file containing tests. (default: current directory)
@@ -9,6 +9,9 @@ Options:
  --functional (-f)    Run methods instead of suites in separate processes.
  --no-test-tokens     Disable TEST_TOKEN environment variables. (default: variable is set)
  --help (-h)          Display this help message.
+ --coverage-clover    Generate code coverage report in Clover XML format.
+ --coverage-html      Generate code coverage report in HTML format.
+ --coverage-php       Serialize PHP_CodeCoverage object to file.
  --phpunit            The PHPUnit binary to execute. (default: vendor/bin/phpunit)
  --runner             Runner or WrapperRunner. (default: Runner)
  --bootstrap          The bootstrap file to be used by PHPUnit.
