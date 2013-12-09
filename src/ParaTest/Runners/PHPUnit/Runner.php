@@ -320,6 +320,10 @@ class Runner
             return;
         }
 
+        if (filesize($coverageFile) == 0) {
+            throw new \RuntimeException("Coverage file $coverageFile is empty. This means a PHPUnit process has crashed.");
+        }
+
         /** @var \PHP_CodeCoverage $coverage */
         $coverage = unserialize(file_get_contents($coverageFile));
         $this->getCoverage()->addCoverage($coverage);
