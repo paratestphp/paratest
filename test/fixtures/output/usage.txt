@@ -1,5 +1,5 @@
 Usage:
- paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--log-junit="..."] [--colors] [--path="..."] [path]
+ paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--exclude-group="..."] [--log-junit="..."] [--colors] [--path="..."] [path]
 
 Arguments:
  path                 The path to a directory or file containing tests. (default: current directory)
@@ -17,6 +17,7 @@ Options:
  --bootstrap          The bootstrap file to be used by PHPUnit.
  --configuration (-c) The PHPUnit configuration file to use.
  --group (-g)         Only runs tests from the specified group(s).
+ --exclude-group      Don' run tests from the specified group(s).
  --log-junit          Log test execution in JUnit XML format to file.
  --colors             Displays a colored bar as a test result.
  --path               An alias for the path argument.

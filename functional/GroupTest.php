@@ -13,6 +13,12 @@ class GroupTest extends FunctionalTestBase
         $this->assertRegExp('/OK \(2 tests, 2 assertions\)/', $output);
     }
 
+    public function testExcludeGroupSwitchDontExecuteThatGroup()
+    {
+        $output = $this->getParaTestOutput(false, array('exclude-group' => 'group1'));
+        $this->assertRegExp('/OK \(3 tests, 3 assertions\)/', $output);
+    }
+
     public function testGroupSwitchExecutesGroupsUsingShortOption()
     {
         $output = $this->getParaTestOutput(false, array('g' => 'group1'));
