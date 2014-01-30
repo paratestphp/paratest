@@ -15,29 +15,6 @@ class Parser
     private $refl;
 
     /**
-     * A pattern for matching namespace syntax
-     *
-     * @var string
-     */
-    private static $namespace = '/\bnamespace\b[\s]+([^;]+);/';
-
-    /**
-     * A pattern for matching class syntax
-     *
-     * @var string
-     */
-    private static $class = '/\bclass\b/';
-
-    /**
-     * A pattern for matching class syntax and extension
-     * defaulting to ungreedy matches, case insensitivity, and
-     * dot matches all
-     *
-     * @var string
-     */
-    private static $className = '/\bclass\b\s+([^\s]+)\s+extends/Usi';
-
-    /**
      * Matches a test method beginning with the conventional "test"
      * word
      *
@@ -58,8 +35,9 @@ class Parser
             throw new \InvalidArgumentException("file not found");
 
         $this->path = $srcPath;
-        $class = $this->getClassName();
+        $declaredClasses = get_declared_classes();
         require_once($this->path);
+        $class = $this->getClassName($this->path, $declaredClasses);
         $this->refl = new \ReflectionClass($class);
     }
 
@@ -102,50 +80,16 @@ class Parser
      *
      * @return string
      */
-    private function getClassName()
+    private function getClassName($filename, $previousDeclaredClasses)
     {
-        $class = str_replace('.php', '', basename($this->path));
-        $class = $this->parseClassName($class);
-        $namespace = $this->getNamespace();
-        if($namespace)
-            $class = $namespace . '\\' . $class;
-        return $class;
-    }
+        $classes = get_declared_classes();
+        $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
-    /**
-     * Reads just enough of the source file to
-     * get the class name
-     *
-     * @param $fallbackClassName
-     * @return mixed
-     */
-    private function parseClassName($fallbackClassName)
-    {
-        $handle = fopen($this->path, 'r');
-        while($line = fgets($handle)) {
-            if(preg_match(self::$className, $line, $matches))
-                return $matches[1];
+        foreach ($newClasses as $className) {
+            $class = new \ReflectionClass($className);
+            if ($class->getFileName() == $filename) {
+                return $className;
+            }
         }
-        fclose($handle);
-        return $fallbackClassName;
-    }
-
-    /**
-     * Reads just enough of the source file to get the namespace
-     * of the source file
-     *
-     * @return string
-     */
-    private function getNamespace()
-    {
-        $handle = fopen($this->path, 'r');
-        while($line = fgets($handle)) {
-            if(preg_match(self::$namespace, $line, $matches))
-                return $matches[1];
-            if(preg_match(self::$class, $line))
-                break;
-        }
-        fclose($handle);
-        return '';
     }
 }

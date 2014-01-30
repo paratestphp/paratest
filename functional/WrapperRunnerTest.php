@@ -24,6 +24,18 @@ class WrapperRunnerTest extends FunctionalTestBase
         $this->assertContains("OK ($expected tests, $expected assertions)", $output);
     }
 
+    public function testMultiLineClassDeclarationWithFilenameDifferentThanClassnameIsSupported()
+    {
+        $this->path = FIXTURES . DS . 'special-classes';
+
+        $output = $this->getParaTestOutput(false, array(
+            'runner' => 'WrapperRunner',
+            'processes' => 3,
+        ));
+
+        $this->assertContains("OK (1 test, 1 assertion)", $output);
+    }
+
     public function testRunningFewerTestsThanTheWorkersIsPossible()
     {
         $this->path = FIXTURES . DS . 'small-tests';
