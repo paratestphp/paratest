@@ -91,5 +91,13 @@ class Parser
                 return $className;
             }
         }
+
+        // Test class was loaded before somehow (referenced from other test class, or explicitly loaded)
+        foreach ($classes as $className) {
+            $class = new \ReflectionClass($className);
+            if ($class->getFileName() == $filename) {
+                return $className;
+            }
+        }
     }
 }
