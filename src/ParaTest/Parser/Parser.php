@@ -82,6 +82,7 @@ class Parser
      */
     private function getClassName($filename, $previousDeclaredClasses)
     {
+        $filename = realpath($filename);
         $classes = get_declared_classes();
         $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
