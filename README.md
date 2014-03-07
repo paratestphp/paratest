@@ -19,7 +19,7 @@ The `display_errors` php.ini directive must be set to `stderr` to run the test s
 
 Usage
 -----
-After installation, the binary can be found at `vendors/bin/paratest`. Usage is as follows:
+After installation, the binary can be found at `vendor/bin/paratest`. Usage is as follows:
 
 ```
 paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help]
@@ -34,7 +34,7 @@ paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help]
 Windows users be sure to use the appropriate batch files.
 An example being:
 
-`vendors\bin\paratest.bat --phpunit vendors\bin\phpunit.bat ...`
+`vendor\bin\paratest.bat --phpunit vendor\bin\phpunit.bat ...`
 
 ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests.
 
