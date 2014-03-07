@@ -1,6 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
 
 abstract class ExecutableTest
 {
@@ -171,18 +172,28 @@ abstract class ExecutableTest
      * Returns the command string that will be executed
      * by proc_open
      *
+     * @todo Change this class to use the ProcessBuilder for everything.
      * @param $binary
      * @param array $options
      * @return mixed
      */
     protected function getCommandString($binary, $options = array())
     {
-        // TODO: this should use a CommandBuilder
-        $command = $binary;
-        foreach($options as $key => $value) $command .= " --$key %s";
-        $args = array_merge(array("$command %s %s"), array_values($options), array($this->fullyQualifiedClassName, $this->getPath()));
-        $command = call_user_func_array('sprintf', $args);
-        return $command;
+        $builder = new ProcessBuilder();
+        $builder->setPrefix($binary);
+        foreach($options as $key => $value) {
+            $builder->add("--$key");
+            if ($value !== null) {
+                $builder->add($value);
+            }
+        }
+
+        $builder->add($this->fullyQualifiedClassName);
+        $builder->add($this->getPath());
+
+        $process = $builder->getProcess();
+
+        return $process->getCommandLine();
     }
 
     /**
