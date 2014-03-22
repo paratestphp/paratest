@@ -35,7 +35,7 @@ class Reader extends MetaProvider
                                            'errors' => 0,
                                            'time' => 0);
 
-    public function __construct($logFile) 
+    public function __construct($logFile)
     {
         if(!file_exists($logFile))
             throw new \InvalidArgumentException("Log file $logFile does not exist");
@@ -190,6 +190,9 @@ class Reader extends MetaProvider
         $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
         $this->isSingle = sizeof($suiteNodes) === 0;
         $node = current($this->xml->xpath("/testsuites/testsuite"));
-        $this->suites[] = TestSuite::suiteFromNode($node);
+
+        if ($node !== false) {
+            $this->suites[] = TestSuite::suiteFromNode($node);
+        }
     }
 }

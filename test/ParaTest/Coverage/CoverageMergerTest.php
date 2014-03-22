@@ -6,18 +6,21 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
 {
     public function testSimpleMerge()
     {
+        $firstFile = PARATEST_ROOT . '/src/ParaTest/Logging/LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . '/src/ParaTest/Logging/MetaProvider.php';
+
         $coverage1 = new \PHP_CodeCoverage();
         $coverage1->append(
             array(
-                'someFile' => array(1 => 1),
-                'someOtherFile' => array(1 => 1)
+                $firstFile => array(35 => 1),
+                $secondFile => array(34 => 1)
             ),
             'Test1'
         );
         $coverage2 = new \PHP_CodeCoverage();
         $coverage2->append(
             array(
-                'someFile' => array(1 => 1, 2 => 1)
+                $firstFile => array(35 => 1, 36 => 1)
             ),
             'Test2'
         );
@@ -28,14 +31,14 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
         $coverage = $merger->getCoverage();
 
         $data = $coverage->getData();
-        $this->assertEquals(2, count($data['someFile'][1]));
-        $this->assertEquals('Test1', $data['someFile'][1][0]);
-        $this->assertEquals('Test2', $data['someFile'][1][1]);
+        $this->assertEquals(2, count($data[$firstFile][35]));
+        $this->assertEquals('Test1', $data[$firstFile][35][0]);
+        $this->assertEquals('Test2', $data[$firstFile][35][1]);
 
-        $this->assertEquals(1, count($data['someFile'][2]));
-        $this->assertEquals('Test2', $data['someFile'][2][0]);
+        $this->assertEquals(1, count($data[$firstFile][36]));
+        $this->assertEquals('Test2', $data[$firstFile][36][0]);
 
-        $this->assertEquals(1, count($data['someOtherFile'][1]));
-        $this->assertEquals('Test1', $data['someOtherFile'][1][0]);
+        $this->assertEquals(1, count($data[$secondFile][34]));
+        $this->assertEquals('Test1', $data[$secondFile][34][0]);
     }
 }
