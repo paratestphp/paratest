@@ -42,8 +42,10 @@ class SuiteLoader
 
     public function __construct($options = null)
     {
-        if($options && !$options instanceof Options)
+        if ($options && !$options instanceof Options) {
             throw new \InvalidArgumentException("SuiteLoader options must be null or of type Options");
+        }
+
         $this->options = $options;
     }
 
@@ -82,13 +84,26 @@ class SuiteLoader
      */
     public function load($path = '')
     {
-        $configuration = @$this->options->filtered['configuration'] ?: new Configuration('');
-        if($path) $this->loadPath($path);
-        else if($suites = $configuration->getSuites())
-            foreach($suites as $name => $dirs)
-                foreach ($dirs as $path)
+        if (is_object($this->options) && isset($this->options->filtered['configuration'])) {
+            $configuration = $this->options->filtered['configuration'];
+        } else {
+            $configuration = new Configuration('');
+        }
+
+        if ($path) {
+            $this->loadPath($path);
+        } elseif ($suites = $configuration->getSuites()) {
+            foreach ($suites as $dirs) {
+                foreach ($dirs as $path) {
                     $this->loadPath($path);
-        if(!$this->files) throw new \RuntimeException("No path or configuration provided (tests must end with Test.php)");
+                }
+            }
+        }
+
+        if (!$this->files) {
+            throw new \RuntimeException("No path or configuration provided (tests must end with Test.php)");
+        }
+
         $this->initSuites();
     }
 

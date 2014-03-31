@@ -2,6 +2,9 @@
 
 class SuiteLoaderTest extends \TestBase
 {
+    /**
+     * @var SuiteLoader
+     */
     protected $loader;
     protected $files;
     protected $options;
@@ -48,7 +51,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testOptionsMustBeInstanceOfOptionsIfNotNull()
     {
-        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));        
+        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));
     }
 
     /**
