@@ -38,7 +38,7 @@ class PHPUnit extends Tester
             ->addOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.')
             ->addOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The PHPUnit configuration file to use.')
             ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).')
-            ->addOption('exclude-group', null, InputOption::VALUE_REQUIRED, 'Don\' run tests from the specified group(s).')
+            ->addOption('exclude-group', null, InputOption::VALUE_REQUIRED, 'Don\'t run tests from the specified group(s).')
             ->addOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.')
             ->addOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.')
             ->addArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
