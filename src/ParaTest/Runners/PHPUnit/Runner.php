@@ -324,9 +324,26 @@ class Runner
             throw new \RuntimeException("Coverage file $coverageFile is empty. This means a PHPUnit process has crashed.");
         }
 
-        /** @var \PHP_CodeCoverage $coverage */
-        $coverage = unserialize(file_get_contents($coverageFile));
-        $this->getCoverage()->addCoverage($coverage);
+        $this->getCoverage()->addCoverage($this->getCoverageObject($coverageFile));
         unlink($coverageFile);
+    }
+
+    /**
+     * Returns coverage object from file.
+     *
+     * @param string $coverageFile Coverage file.
+     *
+     * @return \PHP_CodeCoverage
+     */
+    private function getCoverageObject($coverageFile)
+    {
+        $coverage = file_get_contents($coverageFile);
+
+        if (substr($coverage, 0, 5) === '<?php') {
+            return include $coverageFile;
+        }
+
+        // the PHPUnit 3.x and below
+        return unserialize($coverage);
     }
 }

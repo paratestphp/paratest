@@ -2,6 +2,9 @@
 
 class SuiteLoaderTest extends \TestBase
 {
+    /**
+     * @var SuiteLoader
+     */
     protected $loader;
     protected $files;
     protected $options;
@@ -19,6 +22,7 @@ class SuiteLoaderTest extends \TestBase
             'GroupsTest.php',
             'LegacyNamespaceTest.php',
             'LongRunningTest.php',
+            'PreviouslyLoadedTest.php',
             'TestTokenTest.php',
             'UnitTestWithClassAnnotationTest.php',
             'UnitTestWithMethodAnnotationsTest.php',
@@ -48,7 +52,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testOptionsMustBeInstanceOfOptionsIfNotNull()
     {
-        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));        
+        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));
     }
 
     /**
@@ -74,7 +78,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(13, sizeof($files));
+        $this->assertEquals(14, sizeof($files));
     }
 
     public function testLoadSuiteFromConfigWithMultipleDirs()
@@ -83,7 +87,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(15, sizeof($files));
+        $this->assertEquals(16, sizeof($files));
     }
 
 
@@ -163,7 +167,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(34, sizeof($methods));
+        $this->assertEquals(35, sizeof($methods));
         return $methods;
     }
 
