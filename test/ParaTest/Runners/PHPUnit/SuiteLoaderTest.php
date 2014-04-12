@@ -88,7 +88,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(16, sizeof($files));
+        $this->assertEquals(17, sizeof($files));
     }
 
 
