@@ -3,6 +3,7 @@
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\LogInterpreter,
     ParaTest\Logging\JUnit\Writer,
+    ParaTest\Runners\PHPUnit\Options,
     Habitat\Habitat;
 
 class Runner
@@ -217,6 +218,8 @@ class Runner
         if(!$test->isDoneRunning()) return true;
         $this->setExitCode($test);
         $test->stop();
+        if ($this->options->stopOnFailure && $test->getExitCode() > 0)
+            $this->pending = array();
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
             throw new \Exception($test->getStderr());
         $this->printer->printFeedback($test);

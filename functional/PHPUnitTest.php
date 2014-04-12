@@ -254,6 +254,20 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertContains('Call to undefined function inexistent', $stderr);
     }
 
+    public function testStopOnFailurePreventsStartingFurtherTestsAfterFailure()
+    {
+        $this->path = FIXTURES . DS . 'tests' . DS . 'StopOnFailureTest.php';
+        $pipes = array();
+        $results = $this->paratest(array(
+            'bootstrap' => BOOTSTRAP,
+            'stop-on-failure' => '',
+            'f' => '',
+            'p' => '2'
+        ), $pipes);
+        $this->assertContains('Tests: 2,', $results);     // The suite actually has 4 tests
+        $this->assertContains('Failures: 1,', $results);  // The suite actually has 2 failing tests
+    }
+
     /**
      * @todo something funny with this
      */
@@ -315,7 +329,7 @@ class PHPUnitTest extends FunctionalTestBase
     protected function assertResults($results)
     {
         $this->assertRegExp("/FAILURES!
-Tests: 35, Assertions: 38, Failures: 4, Errors: 1./", $results);
+Tests: 37, Assertions: 42, Failures: 6, Errors: 1./", $results);
     }
 
     protected function assertOkResults($results, $tests, $assertions)

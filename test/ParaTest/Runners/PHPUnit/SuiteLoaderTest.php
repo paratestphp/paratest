@@ -22,6 +22,7 @@ class SuiteLoaderTest extends \TestBase
             'GroupsTest.php',
             'LegacyNamespaceTest.php',
             'LongRunningTest.php',
+            'StopOnFailureTest.php',
             'PreviouslyLoadedTest.php',
             'TestTokenTest.php',
             'UnitTestWithClassAnnotationTest.php',
@@ -78,7 +79,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(14, sizeof($files));
+        $this->assertEquals(15, sizeof($files));
     }
 
     public function testLoadSuiteFromConfigWithMultipleDirs()
@@ -167,7 +168,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $this->loader->load($this->testDir);
         $methods = $this->loader->getTestMethods();
-        $this->assertEquals(35, sizeof($methods));
+        $this->assertEquals(39, sizeof($methods));
         return $methods;
     }
 

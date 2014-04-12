@@ -16,6 +16,7 @@ class PHPUnitTest extends \TestBase
             new InputOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.'),
             new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The PHPUnit configuration file to use.'),
             new InputOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).'),
+            new InputOption('stop-on-failure', null, InputOption::VALUE_NONE, 'Don\'t start any more processes after a failure.'),
             new InputOption('exclude-group', null, InputOption::VALUE_REQUIRED, 'Don\'t run tests from the specified group(s).'),
             new InputOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.'),
             new InputOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.'),
