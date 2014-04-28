@@ -44,4 +44,15 @@ class ConfigurationTest extends \TestBase
         $this->assertEquals(array($basePath . 'it' . DS . 'ParaTest'), $suites["ParaTest Integration Tests"]);
         $this->assertEquals(array($basePath . 'functional'), $suites["ParaTest Functional Tests"]);
     }
+
+    public function testLoadConfigEvenIfLibXmlEntityLoaderIsDisabled()
+    {
+        $before = libxml_disable_entity_loader();
+        try {
+            $this->config = new Configuration($this->path);
+        } catch (\Exception $e) {
+            libxml_disable_entity_loader($before);
+            throw $e;
+        }
+    }
 }

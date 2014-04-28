@@ -34,13 +34,16 @@ class Configuration
     public function __construct($path)
     {
         $this->path = $path;
-        if(file_exists($path))
+        if(file_exists($path)) {
+            $before = libxml_disable_entity_loader(false);
             $this->xml = simplexml_load_file($path);
+            libxml_disable_entity_loader($before);
+        }
     }
-    
+
     /**
      * Get the bootstrap PHPUnit configuration attribute
-     * 
+     *
      * @return string The bootstrap attribute or empty string if not set
      */
     public function getBootstrap()
