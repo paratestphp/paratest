@@ -48,11 +48,16 @@ class ConfigurationTest extends \TestBase
     public function testLoadConfigEvenIfLibXmlEntityLoaderIsDisabled()
     {
         $before = libxml_disable_entity_loader();
+        $e = null;
+
         try {
             $this->config = new Configuration($this->path);
-        } catch (\Exception $e) {
-            libxml_disable_entity_loader($before);
-            throw $e;
+        } catch (\Exception $exc) {
+            $e = $exc;
         }
+
+        libxml_disable_entity_loader($before);
+
+        $this->assertNull($e, 'Could not instantiate Configuration: ' . ($e instanceof \Exception ? $e->getMessage() : 'no error given'));
     }
 }
