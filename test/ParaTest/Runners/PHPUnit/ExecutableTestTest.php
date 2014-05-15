@@ -26,7 +26,7 @@ class ExecutableTestTest extends \TestBase
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals('/usr/bin/phpunit --bootstrap test/bootstrap.php ClassNameTest pathToFile', $command);
+        $this->assertEquals('/usr/bin/phpunit --bootstrap "test/bootstrap.php" ClassNameTest "pathToFile"', $command);
     }
 
     public function testCommandRedirectsCoverage()
@@ -36,7 +36,7 @@ class ExecutableTestTest extends \TestBase
 
         $command = $this->executableTestChild->command($binary, $options);
         $coverageFileName = str_replace('/', '\/', $this->executableTestChild->getCoverageFileName());
-        $this->assertRegExp('/^\/usr\/bin\/phpunit --a b --coverage-php ' . $coverageFileName . ' .*/', $command);
+        $this->assertRegExp('/^\/usr\/bin\/phpunit --a "b" --coverage-php "' . $coverageFileName . '" .*/', $command);
     }
 
     public function testGetCommandStringDoesNotIncludeEnvironmentVariablesToKeepCompatibilityWithWindows()
@@ -46,7 +46,7 @@ class ExecutableTestTest extends \TestBase
         $environmentVariables = array('APPLICATION_ENVIRONMENT_VAR' => 'abc');
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options, $environmentVariables);
 
-        $this->assertEquals('/usr/bin/phpunit --bootstrap test/bootstrap.php ClassNameTest pathToFile', $command);
+        $this->assertEquals('/usr/bin/phpunit --bootstrap "test/bootstrap.php" ClassNameTest "pathToFile"', $command);
     }
 
     public function testGetCommandStringIncludesTheClassName()
@@ -55,7 +55,7 @@ class ExecutableTestTest extends \TestBase
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals('/usr/bin/phpunit ClassNameTest pathToFile', $command);
+        $this->assertEquals('/usr/bin/phpunit ClassNameTest "pathToFile"', $command);
     }
 
     public function testHandleEnvironmentVariablesAssignsToken()
