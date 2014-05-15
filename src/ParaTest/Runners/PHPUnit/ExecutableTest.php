@@ -179,8 +179,8 @@ abstract class ExecutableTest
     {
         // TODO: this should use a CommandBuilder
         $command = $binary;
-        foreach($options as $key => $value) $command .= " --$key %s";
-        $args = array_merge(array("$command %s %s"), array_values($options), array($this->fullyQualifiedClassName, $this->getPath()));
+        foreach($options as $key => $value) $command .= " --$key \"%s\"";
+        $args = array_merge(array("$command %s \"%s\""), array_values($options), array($this->fullyQualifiedClassName, $this->getPath()));
         $command = call_user_func_array('sprintf', $args);
         return $command;
     }
