@@ -5,10 +5,15 @@ php:
     - "5.5"
     - "5.4"
     - "5.3"
+    - hhvm
 
 env:
     - PHPUNIT_VERSION='3.7.*'
     - PHPUNIT_VERSION='4.0.*'
+
+matrix: 
+    allow_failures:
+        - php: hhvm
 
 before_script:
     - composer require --no-update phpunit/phpunit=$PHPUNIT_VERSION
