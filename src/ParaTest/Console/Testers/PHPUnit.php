@@ -150,9 +150,11 @@ class PHPUnit extends Tester
      * so that $options variable defined in it doesn't break
      * this object's configuration.
      */
-    private function requireBootstrap($file)
+    public function requireBootstrap($file)
     {
+        $cwd = getcwd();
         require_once $file;
+        chdir($cwd);
     }
 
     /**

@@ -4,6 +4,7 @@ use Symfony\Component\Console\Command\Command,
     Symfony\Component\Console\Input\InputDefinition,
     Symfony\Component\Console\Input\InputOption,
     Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\ArrayInput;
 
 class PHPUnitTest extends \TestBase
 {
@@ -26,6 +27,17 @@ class PHPUnitTest extends \TestBase
         $tester = new PHPUnit();
         $tester->configure($testCommand);
         $this->assertEquals($definition, $testCommand->getDefinition());
+    }
+
+    public function testRequireBootstrapIsChdirResistent()
+    {
+
+        $file = dirname(__FILE__) . '/../../../fixtures/chdirBootstrap.php';
+        $tester = new PHPUnit();
+        $cwd = getcwd();
+
+        $tester->requireBootstrap($file);
+        $this->assertEquals($cwd, getcwd());
     }
 }
 
