@@ -75,8 +75,9 @@ class WrapperRunner
 
     private function assignAllPendingTests()
     {
-        $phpunit = $this->options->phpunit . ' --no-globals-backup';
+        $phpunit = $this->options->phpunit;
         $phpunitOptions = $this->options->filtered;
+        $phpunitOptions['no-globals-backup'] = null;
         while(count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
             foreach($this->progressedWorkers() as $worker) {
