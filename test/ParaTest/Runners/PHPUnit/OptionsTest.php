@@ -14,7 +14,7 @@ class OptionsTest extends \TestBase
             'functional' => true,
             'group' => 'group1',
             'bootstrap' => '/path/to/bootstrap'
-        ); 
+        );
         $this->options = new Options($this->unfiltered);
         $this->cleanUpConfigurations();
     }
@@ -54,10 +54,28 @@ class OptionsTest extends \TestBase
         $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']->getPath());
     }
 
+    public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists()
+    {
+        file_put_contents('phpunit.xml', '<root />');
+        $this->unfiltered['path'] = getcwd();
+        $this->unfiltered['configuration'] = getcwd();
+        $options = new Options($this->unfiltered);
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']->getPath());
+    }
+
     public function testConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd()
     {
         file_put_contents('phpunit.xml.dist', '<root />');
         $this->unfiltered['path'] = getcwd();
+        $options = new Options($this->unfiltered);
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->filtered['configuration']->getPath());
+    }
+
+    public function testConfigurationShouldReturnXmlDistIfConfigSpecifiedAsDirectoryAndFileExists()
+    {
+        file_put_contents('phpunit.xml.dist', '<root />');
+        $this->unfiltered['path'] = getcwd();
+        $this->unfiltered['configuration'] = getcwd();
         $options = new Options($this->unfiltered);
         $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->filtered['configuration']->getPath());
     }
