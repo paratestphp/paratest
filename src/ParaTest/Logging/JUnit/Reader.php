@@ -47,6 +47,10 @@ class Reader extends MetaProvider
         $logFileContents = file_get_contents($this->logFile);
         $this->xml = new \SimpleXMLElement($logFileContents);
         $this->init();
+
+        if(count($this->suites) == 0) {
+            throw new \InvalidArgumentException("No test suites in $logFile.");
+        }
     }
 
     /**
