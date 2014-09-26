@@ -29,6 +29,13 @@ class Parser
      */
     private static $testAnnotation = '/@test\b/';
 
+    /**
+     * A pattern for matching test classes
+     *
+     * @var string
+     */
+    private static $testClassName = '/Test$/';
+
     public function __construct($srcPath)
     {
         if(!file_exists($srcPath))
@@ -75,8 +82,8 @@ class Parser
     }
 
     /**
-     * Return the class name of the class contained
-     * in the file
+     * Return the first class name contained in the file that matches
+     * the testClassName pattern
      *
      * @return string
      */
@@ -87,6 +94,9 @@ class Parser
         $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
         foreach ($newClasses as $className) {
+            if (!preg_match(self::$testClassName, $className)) {
+                continue;
+            }
             $class = new \ReflectionClass($className);
             if ($class->getFileName() == $filename) {
                 return $className;
