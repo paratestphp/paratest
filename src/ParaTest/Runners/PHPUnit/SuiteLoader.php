@@ -172,11 +172,16 @@ class SuiteLoader
         foreach ($this->files as $path) {
             $parser = new Parser($path);
             if ($class = $parser->getClass()) {
+                $methods = $class->getMethods($this->options ? $this->options->annotations : array());
+
+                if(count($methods) == 0)
+                    throw new \RuntimeException("No test methods found in $path, is test class first?");
+
                 $this->loadedSuites[$path] = new Suite(
                     $path,
                     $this->executableTests(
                         $path,
-                        $class->getMethods($this->options ? $this->options->annotations : array())
+                        $methods
                     ),
                     $class->getName()
                 );
