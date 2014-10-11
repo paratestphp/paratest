@@ -4,6 +4,15 @@ namespace ParaTest\Coverage;
 
 class CoverageMergerTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        try {
+            $coverage = new \PHP_CodeCoverage();
+        } catch(\Exception $e) {
+            $this->markTestSkipped($e->getMessage());
+        }
+    }
+
     public function testSimpleMerge()
     {
         $firstFile = PARATEST_ROOT . '/src/ParaTest/Logging/LogInterpreter.php';

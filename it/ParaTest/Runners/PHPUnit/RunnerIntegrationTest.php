@@ -7,6 +7,12 @@ class RunnerIntegrationTest extends \TestBase
 
     public function setUp()
     {
+        try {
+            $coverage = new \PHP_CodeCoverage();
+        } catch(\Exception $e) {
+            $this->markTestSkipped($e->getMessage());
+        }
+
         $this->options = array(
             'path' => FIXTURES . DS . 'tests',
             'phpunit' => PHPUNIT,
