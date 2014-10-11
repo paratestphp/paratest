@@ -6,33 +6,24 @@ class SuiteLoaderTest extends \TestBase
      * @var SuiteLoader
      */
     protected $loader;
-    protected $files;
     protected $options;
-    protected $testDir;
 
     public function setUp()
     {
         chdir(__DIR__);
         $this->options = new Options(array('group' => 'group1'));
         $this->loader = new SuiteLoader();
-        $tests = FIXTURES . DS . 'tests';
-        $this->testDir = $tests;
-        $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
-            'EnvironmentTest.php',
-            'GroupsTest.php',
-            'LegacyNamespaceTest.php',
-            'LongRunningTest.php',
-            'StopOnFailureTest.php',
-            'PreviouslyLoadedTest.php',
-            'TestTokenTest.php',
-            'UnitTestWithClassAnnotationTest.php',
-            'UnitTestWithMethodAnnotationsTest.php',
-            'UnitTestWithErrorTest.php',
-            'level1' . DS . 'UnitTestInSubLevelTest.php',
-            'level1' . DS . 'AnotherUnitTestInSubLevelTest.php',
-            'level1' . DS . 'level2' . DS . 'UnitTestInSubSubLevelTest.php',
-            'level1' . DS . 'level2' . DS . 'AnotherUnitTestInSubSubLevelTest.php',
-        ));
+    }
+
+    private function enumerateTestFiles($dir)
+    {
+        $files = array();
+        foreach(new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST)) as $file){
+            if(preg_match('/Test\.php$/', $file)) $files []= $file;
+        }
+
+        return $files;
     }
 
     public function testConstructor()
@@ -79,7 +70,9 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(15, sizeof($files));
+
+        $expected = sizeof($this->enumerateTestFiles(FIXTURES . DS . 'tests'));
+        $this->assertEquals($expected, sizeof($files));
     }
 
     public function testLoadSuiteFromConfigWithMultipleDirs()
@@ -88,9 +81,11 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(17, sizeof($files));
-    }
 
+        $expected = sizeof($this->enumerateTestFiles(FIXTURES . DS . 'tests')) +
+            sizeof($this->enumerateTestFiles(FIXTURES . DS . 'tests2'));
+        $this->assertEquals($expected, sizeof($files));
+    }
 
     /**
      * @expectedException   \RuntimeException
@@ -119,10 +114,13 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadDirGetsPathOfAllTestsWithKeys()
     {
-        $this->loader->load($this->testDir);
+        $path = FIXTURES . DS . 'tests';
+        $files = $this->enumerateTestFiles($path);
+
+        $this->loader->load($path);
         $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
         foreach($loaded as $path => $test)
-            $this->assertContains($path, $this->files);
+            $this->assertContains($path, $files);
         return $loaded;
     }
 
@@ -162,14 +160,6 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testOne', $functions[0]->getName());
         $this->assertEquals('testTwo', $functions[1]->getName());
         $this->assertEquals('testThree', $functions[2]->getName());
-    }
-
-    public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
-    {
-        $this->loader->load($this->testDir);
-        $methods = $this->loader->getTestMethods();
-        $this->assertEquals(39, sizeof($methods));
-        return $methods;
     }
 
     /**
