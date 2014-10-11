@@ -14,7 +14,7 @@ class RunnerIntegrationTest extends \TestBase
         }
 
         $this->options = array(
-            'path' => FIXTURES . DS . 'tests',
+            'path' => FIXTURES . DS . 'passing-tests',
             'phpunit' => PHPUNIT,
             'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
             'bootstrap' => BOOTSTRAP

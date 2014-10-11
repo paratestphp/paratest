@@ -1,13 +1,24 @@
 <?php
 class TestBase extends PHPUnit_Framework_TestCase
 {
-    protected function pathToFixture($fixture)
+    protected function fixture($fixture)
     {
         $fixture = FIXTURES . DS . $fixture;
         if(!file_exists($fixture))
-            throw new Exception("Fixture not found");
-        
+            throw new Exception("Fixture $fixture not found");
+
         return $fixture;
+    }
+
+    protected function findTests($dir)
+    {
+        $files = array();
+        foreach(new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST)) as $file){
+            if(preg_match('/Test\.php$/', $file)) $files []= $file;
+        }
+
+        return $files;
     }
 
     protected function getObjectValue($object, $property)

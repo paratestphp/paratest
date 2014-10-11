@@ -26,6 +26,6 @@
     ],
     "bin": ["bin/paratest"],
     "autoload": {
-        "psr-0": { "ParaTest": ["src/", "test/", "it/"] }
+        "psr-0": { "": ["src/", "test/", "it/", "functional/"] }
     }
 }

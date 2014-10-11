@@ -1,6 +1,10 @@
 <?php
+namespace Sublevel;
 
-class TestOfUnits extends PHPUnit_Framework_TestCase
+/**
+ * @runParallel
+ */
+class UnitTestInSubLevelTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @group fixtures
@@ -15,7 +19,7 @@ class TestOfUnits extends PHPUnit_Framework_TestCase
      */
     public function testFalsehood()
     {
-        $this->assertFalse(true);
+        $this->assertFalse(false);
     }
 
     /**

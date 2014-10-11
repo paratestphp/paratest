@@ -26,10 +26,10 @@ class Worker
         }
         $bin .= "exec $wrapperBinary";
         $pipes = array();
-        $this->proc = proc_open($bin, self::$descriptorspec, $pipes); 
+        $this->proc = proc_open($bin, self::$descriptorspec, $pipes);
         $this->pipes = $pipes;
         $this->isRunning = true;
-    } 
+    }
 
     public function stdout()
     {
@@ -108,7 +108,7 @@ class Worker
 
     /**
      * @deprecated
-     * This function consumes a lot of CPU while waiting for 
+     * This function consumes a lot of CPU while waiting for
      * the worker to finish. Use it only in testing paratest
      * itself.
      */

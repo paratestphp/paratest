@@ -7,8 +7,7 @@ class WorkerTest extends \TestBase
     public function setUp()
     {
         parent::setUp();
-        $this->path = FIXTURES . DS . 'tests';
-        $this->bootstrap = dirname(FIXTURES) . DS . 'bootstrap.php';
+        $this->bootstrap = PARATEST_ROOT . '/test/bootstrap.php';
         $this->phpunitWrapper = PARATEST_ROOT . '/bin/phpunit-wrapper';
     }
 
@@ -28,7 +27,7 @@ class WorkerTest extends \TestBase
     public function testReadsAPHPUnitCommandFromStdInAndExecutesItItsOwnProcess()
     {
         $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
+        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
         $worker = new Worker();
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
@@ -42,7 +41,7 @@ class WorkerTest extends \TestBase
     public function testKnowsWhenAJobIsFinished()
     {
         $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
+        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
         $worker = new Worker();
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
@@ -54,7 +53,7 @@ class WorkerTest extends \TestBase
     public function testTellsWhenItsFree()
     {
         $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
+        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
         $worker = new Worker();
         $worker->start($this->phpunitWrapper);
         $this->assertTrue($worker->isFree());
@@ -87,11 +86,11 @@ class WorkerTest extends \TestBase
         $worker->start($this->phpunitWrapper);
 
         $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('TestOfUnits.php', $testLog);
+        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
         $worker->execute($testCmd);
 
         $testLog2 = '/tmp/test2.xml';
-        $testCmd2 = $this->getCommand('UnitTestWithErrorTest.php', $testLog2);
+        $testCmd2 = $this->getCommand('failing-tests/UnitTestWithErrorTest.php', $testLog2);
         $worker->execute($testCmd2);
 
         $worker->stop();
@@ -107,14 +106,14 @@ class WorkerTest extends \TestBase
        2 => array("pipe", "w")
     );
 
-    private function getCommand($test, $logFile)
+    private function getCommand($testFile, $logFile)
     {
         return sprintf(
             "%s --bootstrap %s --log-junit %s %s",
-            'vendor/bin/phpunit', 
-            $this->bootstrap, 
-            $logFile, 
-            $this->path . '/' . $test
+            'vendor/bin/phpunit',
+            $this->bootstrap,
+            $logFile,
+            $this->fixture($testFile)
         );
     }
 

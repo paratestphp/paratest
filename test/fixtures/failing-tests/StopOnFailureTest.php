@@ -3,10 +3,11 @@ class StopOnFailureTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @group fixtures
+     * @group slow
      */
     public function testOne()
     {
-        sleep(3);
+        sleep(1); // whilst terrible, this sleep is used by PHPUnitTest::testStopOnFailurePreventsStartingFurtherTestsAfterFailure
         $this->assertTrue(true);
     }
 

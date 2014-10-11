@@ -1,8 +1,6 @@
 <?php
-/**
- * @runParallel
- */
-class UnitTestInSubSubLevelTest extends PHPUnit_Framework_TestCase
+
+class TestOfUnits extends PHPUnit_Framework_TestCase
 {
     /**
      * @group fixtures
@@ -10,15 +8,6 @@ class UnitTestInSubSubLevelTest extends PHPUnit_Framework_TestCase
     public function testTruth()
     {
         $this->assertTrue(true);
-    }
-
-    /**
-     * @group fixtures
-     */
-    public function testFalsehood()
-    {
-        sleep(2);
-        $this->assertFalse(false);
     }
 
     /**

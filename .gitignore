@@ -6,4 +6,5 @@ vendor
 composer.lock
 .idea
 test/fixtures/small-tests/*Test.php
+test/fixtures/generated-tests
 nbproject

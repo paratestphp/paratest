@@ -5,4 +5,8 @@
  */
 class Tests_Fixtures_Tests_LegacyNamespaceTest extends PHPUnit_Framework_TestCase
 {
+    public function testAlwaysTrue()
+    {
+        $this->assertTrue(true);
+    }
 }
