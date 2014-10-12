@@ -13,6 +13,7 @@
     <testsuites>
         <testsuite name="ParaTest Fixtures">
             <directory>./passing-tests/</directory>
+            <directory>./failing-tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

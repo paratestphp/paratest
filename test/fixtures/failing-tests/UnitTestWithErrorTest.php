@@ -21,7 +21,6 @@ class UnitTestWithErrorTest extends UnitTestWithMethodAnnotationsTest
      */
     public function isItFalse()
     {
-        sleep(2);
         $this->assertFalse(false);
-    }    
+    }
 }

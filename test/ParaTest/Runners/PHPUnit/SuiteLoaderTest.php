@@ -2,44 +2,11 @@
 
 class SuiteLoaderTest extends \TestBase
 {
-    /**
-     * @var SuiteLoader
-     */
-    protected $loader;
-    protected $files;
-    protected $options;
-    protected $testDir;
-
-    public function setUp()
-    {
-        chdir(__DIR__);
-        $this->options = new Options(array('group' => 'group1'));
-        $this->loader = new SuiteLoader();
-        $tests = FIXTURES . DS . 'tests';
-        $this->testDir = $tests;
-        $this->files = array_map(function($e) use($tests) { return $tests . DS . $e; }, array(
-            'EnvironmentTest.php',
-            'GroupsTest.php',
-            'LegacyNamespaceTest.php',
-            'LongRunningTest.php',
-            'StopOnFailureTest.php',
-            'PreviouslyLoadedTest.php',
-            'TestTokenTest.php',
-            'UnitTestWithClassAnnotationTest.php',
-            'UnitTestWithMethodAnnotationsTest.php',
-            'UnitTestWithErrorTest.php',
-            'level1' . DS . 'UnitTestInSubLevelTest.php',
-            'level1' . DS . 'AnotherUnitTestInSubLevelTest.php',
-            'level1' . DS . 'level2' . DS . 'UnitTestInSubSubLevelTest.php',
-            'level1' . DS . 'level2' . DS . 'AnotherUnitTestInSubSubLevelTest.php',
-        ));
-    }
-
     public function testConstructor()
     {
         $options = new Options(array('group' => 'group1'));
         $loader = new SuiteLoader($options);
-        $this->assertEquals($this->options, $this->getObjectValue($loader, 'options'));
+        $this->assertEquals($options, $this->getObjectValue($loader, 'options'));
     }
 
     public function testOptionsCanBeNull()
@@ -61,7 +28,8 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testLoadThrowsExceptionWithInvalidPath()
     {
-        $this->loader->load('/path/to/nowhere');
+        $loader = new SuiteLoader();
+        $loader->load('/path/to/nowhere');
     }
 
     /**
@@ -70,27 +38,32 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testLoadBarePathWithNoPathAndNoConfiguration()
     {
-        $this->loader->load();
+        $loader = new SuiteLoader();
+        $loader->load();
     }
 
     public function testLoadSuiteFromConfig()
     {
-        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunit.xml.dist'));
+        $options = new Options(array('configuration' => $this->fixture('phpunit-passing.xml')));
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(15, sizeof($files));
+
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $this->assertEquals($expected, sizeof($files));
     }
 
     public function testLoadSuiteFromConfigWithMultipleDirs()
     {
-        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunit_multidir.xml.dist'));
+        $options = new Options(array('configuration' => $this->fixture('phpunit-multidir.xml')));
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
-        $this->assertEquals(17, sizeof($files));
-    }
 
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            sizeof($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $this->assertEquals($expected, sizeof($files));
+    }
 
     /**
      * @expectedException   \RuntimeException
@@ -98,31 +71,35 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testLoadSuiteFromConfigWithBadSuitePath()
     {
-        $options = new Options(array('configuration' => FIXTURES . DS . 'phpunitbad.xml.dist'));
+        $options = new Options(array('configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml')));
         $loader = new SuiteLoader($options);
         $loader->load();
     }
 
     public function testLoadFileGetsPathOfFile()
     {
-        $path = FIXTURES . DS . 'tests' . DS . 'UnitTestWithClassAnnotationTest.php';
+        $path = $this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php');
         $paths = $this->getLoadedPaths($path);
         $this->assertEquals($path, array_shift($paths));
     }
 
     public function testLoadFileShouldLoadFileWhereNameDoesNotEndInTest()
     {
-        $path = FIXTURES . DS . 'tests' . DS . 'TestOfUnits.php';
+        $path = $this->fixture('passing-tests/TestOfUnits.php');
         $paths = $this->getLoadedPaths($path);
         $this->assertEquals($path, array_shift($paths));
     }
 
     public function testLoadDirGetsPathOfAllTestsWithKeys()
     {
-        $this->loader->load($this->testDir);
-        $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
+        $path = $this->fixture('passing-tests');
+        $files = $this->findTests($path);
+
+        $loader = new SuiteLoader();
+        $loader->load($path);
+        $loaded = $this->getObjectValue($loader, 'loadedSuites');
         foreach($loaded as $path => $test)
-            $this->assertContains($path, $this->files);
+            $this->assertContains($path, $files);
         return $loaded;
     }
 
@@ -148,44 +125,14 @@ class SuiteLoaderTest extends \TestBase
     {
         $second = $this->suiteByPath('LegacyNamespaceTest.php', $paraSuites);
         $functions = $second->getFunctions();
-        $this->assertEquals(0, sizeof($functions));
-    }
-
-    /**
-     * @depends testLoadDirGetsPathOfAllTestsWithKeys
-     */
-    public function testThirdParallelSuiteHasCorrectFunctions($paraSuites)
-    {
-        $third = $this->suiteByPath('LongRunningTest.php', $paraSuites);
-        $functions = $third->getFunctions();
-        $this->assertEquals(3, sizeof($functions));
-        $this->assertEquals('testOne', $functions[0]->getName());
-        $this->assertEquals('testTwo', $functions[1]->getName());
-        $this->assertEquals('testThree', $functions[2]->getName());
-    }
-
-    public function testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods()
-    {
-        $this->loader->load($this->testDir);
-        $methods = $this->loader->getTestMethods();
-        $this->assertEquals(39, sizeof($methods));
-        return $methods;
-    }
-
-    /**
-     * @depends testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods
-     */
-    public function testTestMethodsShouldBeInstanceOfTestMethod($methods)
-    {
-        foreach($methods as $method)
-            $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\TestMethod', $method);
+        $this->assertEquals(1, sizeof($functions));
     }
 
     public function testGetTestMethodsOnlyReturnsMethodsOfGroupIfOptionIsSpecified()
     {
         $options = new Options(array('group' => 'group1'));
         $loader = new SuiteLoader($options);
-        $groupsTest = FIXTURES . DS . 'tests' . DS . 'GroupsTest.php';
+        $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
         $loader->load($groupsTest);
         $methods = $loader->getTestMethods();
         $this->assertEquals(2, sizeof($methods));
@@ -195,9 +142,10 @@ class SuiteLoaderTest extends \TestBase
 
     public function testExecutableTestsForFunctionalModeUse()
     {
-        $path = FIXTURES . DS . 'tests' . DS . 'DependsOnChain.php';
-        $this->loader->load($path);
-        $tests = $this->loader->getTestMethods();
+        $path = $this->fixture('passing-tests/DependsOnChain.php');
+        $loader = new SuiteLoader();
+        $loader->load($path);
+        $tests = $loader->getTestMethods();
         $this->assertEquals(2, count($tests));
         $testMethod = $tests[0];
         $testMethodName = $this->getObjectValue($testMethod, 'name');
@@ -207,10 +155,11 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals($testMethodName, 'testTwoA|testTwoBDependsOnA');
     }
 
-    protected function getLoadedPaths($path)
+    protected function getLoadedPaths($path, $loader=null)
     {
-        $this->loader->load($path);
-        $loaded = $this->getObjectValue($this->loader, 'loadedSuites');
+        $loader = $loader ?: new SuiteLoader();
+        $loader->load($path);
+        $loaded = $this->getObjectValue($loader, 'loadedSuites');
         $paths = array_keys($loaded);
         return $paths;
     }

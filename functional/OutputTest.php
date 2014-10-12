@@ -6,12 +6,15 @@ class OutputTest extends FunctionalTestBase
     public function setUp()
     {
         parent::setUp();
-        $this->path = FIXTURES . DS . "tests" . DS . "UnitTestWithClassAnnotationTest.php";
+        $this->paratest = new ParaTestInvoker(
+            $this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'),
+            BOOTSTRAP
+        );
     }
 
-    public function testInstantFeedbackIsDisplayed()
+    public function testDefaultMessagesDisplayed()
     {
-        $output = $this->getParaTestOutput();
+        $output = $this->paratest->execute()->getOutput();
         $this->assertContains("Running phpunit in 5 processes with " . PHPUNIT, $output);
         $this->assertContains("Configuration read from " . getcwd() . DS . 'phpunit.xml.dist', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
@@ -19,39 +22,27 @@ class OutputTest extends FunctionalTestBase
 
     public function testMessagePrintedWhenInvalidConfigFileSupplied()
     {
-        $output = $this->getParaTestOutput(false, array('configuration' => 'nope.xml'));
+        $output = $this->paratest
+            ->execute(array('configuration' => 'nope.xml'))
+            ->getOutput();
         $this->assertContains('Could not read "nope.xml"', $output);
     }
 
-    public function testInstantFeedbackIsDisplayedWhenAndFunctionalModeDsiplayed()
+    public function testMessagePrintedWhenFunctionalModeIsOn()
     {
-        $output = $this->getParaTestOutput(true);
-        $this->assertFunctionalModeIsOnWithFeedback($output);
-    }
-
-    public function testFunctionalModeIsDisplayedWithShortFunctionalOption()
-    {
-        $output = $this->getParaTestOutput(false, array('f' => ''));
-        $this->assertFunctionalModeIsOnWithFeedback($output);
-    }
-
-    public function testProcCountIsReportedWithShortProcOption()
-    {
-        $output = $this->getParaTestOutput(false, array('p' => '1'));
-        $this->assertContains("Running phpunit in 1 process with " . PHPUNIT, $output);
-        $this->assertContains("Configuration read from " . getcwd() . DS . 'phpunit.xml.dist', $output);
-        $this->assertRegExp('/[.F]{4}/', $output);
-    }
-
-    protected function assertFunctionalModeIsOnWithFeedback($output)
-    {
+        $output = $this->paratest
+            ->execute(array('functional'))
+            ->getOutput();
         $this->assertContains("Running phpunit in 5 processes with " . PHPUNIT, $output);
         $this->assertContains("Functional mode is on", $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 
-    protected function getPhpUnitForRegEx()
+    public function testProcCountIsReportedWithProcOption()
     {
-        return str_replace("/", "\\/", PHPUNIT);
+        $output = $this->paratest->execute(array('p'=>1))
+            ->getOutput();
+        $this->assertContains("Running phpunit in 1 process with " . PHPUNIT, $output);
+        $this->assertRegExp('/[.F]{4}/', $output);
     }
 }
