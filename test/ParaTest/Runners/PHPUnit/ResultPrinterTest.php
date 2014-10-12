@@ -231,7 +231,7 @@ class ResultPrinterTest extends ResultTester
         //start the printer so boundaries are established
         ob_start();
         $this->printer->start(new Options());
-        ob_clean();
+        ob_end_clean();
 
         //get the feedback string
         ob_start();
@@ -263,6 +263,6 @@ class ResultPrinterTest extends ResultTester
         ob_start();
         foreach($suites as $suite)
             $this->printer->printFeedback($suite);
-        ob_clean();
+        ob_end_clean();
     }
 }
