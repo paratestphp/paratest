@@ -227,7 +227,7 @@ class PHPUnitTest extends FunctionalTestBase
             'bootstrap' => BOOTSTRAP,
             'stop-on-failure' => '',
             'f' => '',
-            'p' => '2'
+            'p' => '1'
         ));
         $results = $proc->getOutput();
         $this->assertContains('Tests: 2,', $results);     // The suite actually has 4 tests

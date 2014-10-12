@@ -7,7 +7,6 @@ class StopOnFailureTest extends PHPUnit_Framework_TestCase
      */
     public function testOne()
     {
-        sleep(1); // whilst terrible, this sleep is used by PHPUnitTest::testStopOnFailurePreventsStartingFurtherTestsAfterFailure
         $this->assertTrue(true);
     }
 
