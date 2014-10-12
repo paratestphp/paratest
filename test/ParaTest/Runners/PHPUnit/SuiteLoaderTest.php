@@ -128,15 +128,6 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals(1, sizeof($functions));
     }
 
-    /**
-     * @depends testGetTestMethodsReturnCorrectNumberOfSuiteTestMethods
-     */
-    public function testTestMethodsShouldBeInstanceOfTestMethod($methods)
-    {
-        foreach($methods as $method)
-            $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\TestMethod', $method);
-    }
-
     public function testGetTestMethodsOnlyReturnsMethodsOfGroupIfOptionIsSpecified()
     {
         $options = new Options(array('group' => 'group1'));

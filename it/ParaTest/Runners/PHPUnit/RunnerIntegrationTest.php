@@ -57,10 +57,12 @@ class RunnerIntegrationTest extends \TestBase
         $cases = $doc->xpath('//testcase');
         $failures = $doc->xpath('//failure');
         $errors = $doc->xpath('//error');
-        $this->assertEquals(14, sizeof($suites));
-        $this->assertEquals(39, sizeof($cases));
-        $this->assertEquals(6, sizeof($failures));
-        $this->assertEquals(1, sizeof($errors));
+
+        $tests = $this->findTests($this->options['path']);
+        $this->assertTrue(sizeof($suites) > 0);
+        $this->assertTrue(sizeof($cases) > 0);
+        $this->assertEquals(0, sizeof($failures));
+        $this->assertEquals(0, sizeof($errors));
     }
 
     protected function tearDown()
