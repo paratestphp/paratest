@@ -283,6 +283,20 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertTestsPassed($proc, 2, 2);
     }
 
+    public function testTestsWithWarningsResultInFailure()
+    {
+        $proc = $this->invokeParatest("warning-tests/HasWarningsTest.php",
+            array('bootstrap' => BOOTSTRAP)
+        );
+
+        $output = $proc->getOutput();
+
+        $this->assertEquals(1, $proc->getExitCode(), "Test should fail with 1");
+        $this->assertRegExp("/There were 2 warnings/", $output);
+        $this->assertRegExp("/FAILURES!\n".
+        "Tests: 1, Assertions: 1, Failures: 0, Errors: 0./", $output);
+    }
+
     public function setsCoveragePhpDataProvider()
     {
         return array(
