@@ -32,7 +32,7 @@ class PHPUnitTest extends \TestBase
     public function testRequireBootstrapIsChdirResistent()
     {
 
-        $file = dirname(__FILE__) . '/../../../fixtures/chdirBootstrap.php';
+        $file = dirname(__FILE__) . '/../../../../fixtures/chdirBootstrap.php';
         $tester = new PHPUnit();
         $cwd = getcwd();
 

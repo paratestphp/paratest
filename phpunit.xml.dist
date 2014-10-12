@@ -12,13 +12,10 @@
 >
     <testsuites>
         <testsuite name="ParaTest Unit Tests">
-            <directory>./test/ParaTest/</directory>
-        </testsuite>
-        <testsuite name="ParaTest Integration Tests">
-            <directory>./it/ParaTest/</directory>
+            <directory>./test/unit/</directory>
         </testsuite>
         <testsuite name="ParaTest Functional Tests">
-            <directory>./functional/</directory>
+            <directory>./test/functional/</directory>
         </testsuite>
     </testsuites>
 </phpunit>
