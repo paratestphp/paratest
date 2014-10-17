@@ -125,7 +125,12 @@ class ResultPrinterTest extends ResultTester
 
         $header = $this->printer->getHeader();
 
-        $this->assertRegExp("/\n\nTime: [0-9]+([.][0-9]{1,2})? (seconds|ms)?, Memory:[\s][0-9]+([.][0-9]{1,2})?Mb\n\n/", $header);
+        $this->assertRegExp(
+            "/\n\nTime: [0-9]+([.][0-9]{1,2})? " .
+            "(minute|minutes|second|seconds|ms)?," .
+            " Memory:[\s][0-9]+([.][0-9]{1,2})?Mb\n\n/",
+            $header
+        );
     }
 
     public function testGetErrorsSingleError()
