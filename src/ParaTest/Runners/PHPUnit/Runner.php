@@ -220,8 +220,13 @@ class Runner
         $test->stop();
         if ($this->options->stopOnFailure && $test->getExitCode() > 0)
             $this->pending = array();
-        if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
-            throw new \Exception($test->getStderr());
+        if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode()) {
+            $errorOutput = $test->getStderr();
+            if (!$errorOutput) {
+                $errorOutput = $test->getStdout();
+            }
+            throw new \Exception($errorOutput);
+        }
         $this->printer->printFeedback($test);
         if ($this->hasCoverage()) {
             $this->addCoverage($test);

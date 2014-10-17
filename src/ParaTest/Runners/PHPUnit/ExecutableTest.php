@@ -247,4 +247,9 @@ abstract class ExecutableTest
 
         return $this->coverageFileName;
     }
+
+    public function getStdout()
+    {
+        return $this->process->getOutput();
+    }
 }
