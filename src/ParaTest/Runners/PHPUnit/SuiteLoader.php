@@ -5,6 +5,17 @@ use ParaTest\Parser\Parser;
 class SuiteLoader
 {
     /**
+     * The pattern used for grabbing test files. Uses the *Test.php convention
+     * that PHPUnit defaults to.
+     */
+    const TEST_PATTERN = '/.+Test\.php$/';
+
+    /**
+     * Matches php files
+     */
+    const FILE_PATTERN = '/.+\.php$/';
+
+    /**
      * The collection of loaded files
      *
      * @var array
@@ -17,21 +28,6 @@ class SuiteLoader
      * @var array
      */
     protected $loadedSuites = array();
-
-    /**
-     * The pattern used for grabbing test files. Uses the *Test.php convention
-     * that PHPUnit defaults to.
-     *
-     * @var string
-     */
-    private static $testPattern = '/.+Test\.php$/';
-
-    /**
-     * Matches php files
-     *
-     * @var string
-     */
-    private static $filePattern = '/.+\.php$/';
 
     /**
      * Used to ignore directory paths '.' and '..'
@@ -117,10 +113,11 @@ class SuiteLoader
     private function loadPath($path)
     {
         $path = $path ? : $this->options->path;
-        $pattern = null;
         if ($path instanceof SuitePath) {
             $pattern = $path->getPattern();
             $path = $path->getPath();
+        } else {
+            $pattern = self::TEST_PATTERN;
         }
         if (!file_exists($path))
             throw new \InvalidArgumentException("$path is not a valid directory or file");
@@ -136,7 +133,7 @@ class SuiteLoader
      * @param string $path
      * @param string $pattern
      */
-    private function loadDir($path, $pattern = null)
+    private function loadDir($path, $pattern = self::TEST_PATTERN)
     {
         $files = scandir($path);
         foreach($files as $file)
@@ -150,7 +147,7 @@ class SuiteLoader
      */
     private function loadFile($path)
     {
-        $this->tryLoadTests($path, self::$filePattern);
+        $this->tryLoadTests($path, self::FILE_PATTERN);
     }
 
     /**
@@ -159,11 +156,8 @@ class SuiteLoader
      * @param string $path
      * @param string $pattern regular expression for matching file names
      */
-    private function tryLoadTests($path, $pattern = null)
+    private function tryLoadTests($path, $pattern = self::TEST_PATTERN)
     {
-        if ($pattern === null) {
-          $pattern = self::$testPattern;
-        }
         if(preg_match($pattern, $path))
             $this->files[] = $path;
 
