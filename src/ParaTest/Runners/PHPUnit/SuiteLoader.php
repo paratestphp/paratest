@@ -93,9 +93,9 @@ class SuiteLoader
         if ($path) {
             $this->loadPath($path);
         } elseif ($suites = $configuration->getSuites()) {
-            foreach ($suites as $dirs) {
-                foreach ($dirs as $path) {
-                    $this->loadPath($path);
+            foreach ($suites as $suite) {
+                foreach ($suite as $suitePath) {
+                    $this->loadPath($suitePath);
                 }
             }
         }
@@ -117,10 +117,15 @@ class SuiteLoader
     private function loadPath($path)
     {
         $path = $path ? : $this->options->path;
+        $pattern = null;
+        if ($path instanceof SuitePath) {
+            $pattern = $path->getPattern();
+            $path = $path->getPath();
+        }
         if (!file_exists($path))
             throw new \InvalidArgumentException("$path is not a valid directory or file");
         if (is_dir($path))
-            $this->loadDir($path);
+            $this->loadDir($path, $pattern);
         else if (file_exists($path))
             $this->loadFile($path);
     }
@@ -128,13 +133,14 @@ class SuiteLoader
     /**
      * Loads suites from a directory
      *
-     * @param $path
+     * @param string $path
+     * @param string $pattern
      */
-    private function loadDir($path)
+    private function loadDir($path, $pattern = null)
     {
         $files = scandir($path);
         foreach($files as $file)
-            $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file);
+            $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file, $pattern);
     }
 
     /**
@@ -144,23 +150,25 @@ class SuiteLoader
      */
     private function loadFile($path)
     {
-        $this->tryLoadTests($path, true);
+        $this->tryLoadTests($path, self::$filePattern);
     }
 
     /**
      * Attempts to load suites from a path.
      *
-     * @param $path
-     * @param bool $relaxTestPattern - if true .php satisfies loading pattern otherwise *Test.php will be used
+     * @param string $path
+     * @param string $pattern regular expression for matching file names
      */
-    private function tryLoadTests($path, $relaxTestPattern = false)
+    private function tryLoadTests($path, $pattern = null)
     {
-        $pattern = ($relaxTestPattern) ? 'filePattern' : 'testPattern';
-        if(preg_match(self::$$pattern, $path))
+        if ($pattern === null) {
+          $pattern = self::$testPattern;
+        }
+        if(preg_match($pattern, $path))
             $this->files[] = $path;
 
         if(!preg_match(self::$dotPattern, $path) && is_dir($path))
-            $this->loadDir($path);
+            $this->loadDir($path, $pattern);
     }
 
     /**

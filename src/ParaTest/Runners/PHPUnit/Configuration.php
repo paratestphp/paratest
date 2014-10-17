@@ -76,9 +76,13 @@ class Configuration
         if(!$this->xml) return null;
         $suites = array();
         $nodes = $this->xml->xpath('//testsuite');
-        while(list(, $node) = each($nodes))
-            foreach ($node->directory as $dir)
-                $suites[(string) $node['name']][] = $this->getSuitePath((string) $dir);
+        while(list(, $node) = each($nodes)) {
+            foreach ($node->directory as $dir) {
+              $suites[(string) $node['name']][] = new SuitePath(
+                  $this->getSuitePath((string) $dir),
+                  $dir->attributes()->suffix);
+            }
+        }
 
         return $suites;
     }
