@@ -39,8 +39,18 @@ class ConfigurationTest extends \TestBase
     public function testSuitesContainPathAsValue($suites)
     {
         $basePath = getcwd() . DS;
-        $this->assertEquals(array($basePath . 'test' . DS . 'unit'), $suites["ParaTest Unit Tests"]);
-        $this->assertEquals(array($basePath . 'test' . DS . 'functional'), $suites["ParaTest Functional Tests"]);
+        $unitSuite = $suites["ParaTest Unit Tests"];
+        $this->assertInternalType('array', $unitSuite);
+        $this->assertCount(1, $unitSuite);
+        $unitSuitePath = $unitSuite[0];
+        $this->assertInstanceOf('ParaTest\Runners\PHPUnit\SuitePath', $unitSuitePath);
+        $this->assertEquals($basePath . 'test' . DS . 'unit', $unitSuitePath->getPath());
+        $functionalSuite = $suites["ParaTest Functional Tests"];
+        $this->assertInternalType('array', $functionalSuite);
+        $this->assertCount(1, $functionalSuite);
+        $functionalSuitePath = $functionalSuite[0];
+        $this->assertInstanceOf('ParaTest\Runners\PHPUnit\SuitePath', $functionalSuitePath);
+        $this->assertEquals($basePath . 'test' . DS . 'functional', $functionalSuitePath->getPath());
     }
 
     public function testLoadConfigEvenIfLibXmlEntityLoaderIsDisabled()
