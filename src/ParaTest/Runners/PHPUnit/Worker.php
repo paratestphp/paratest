@@ -1,6 +1,8 @@
 <?php
 namespace ParaTest\Runners\PHPUnit;
 
+use Exception;
+
 class Worker
 {
     private static $descriptorspec = array(
@@ -16,6 +18,9 @@ class Worker
     private $commands = array();
     private $chunks = '';
     private $alreadyReadOutput = '';
+    /**
+     * @var ExecutableTest
+     */
     private $currentlyExecuting;
 
     public function start($wrapperBinary, $token = 1)
@@ -46,16 +51,23 @@ class Worker
 
     public function assign(ExecutableTest $test, $phpunit, $phpunitOptions)
     {
+        if ($this->currentlyExecuting !== null) {
+            throw new Exception("Worker already has a test assigned - did you forget to call reset()?");
+        }
         $this->currentlyExecuting = $test;
         $this->execute($test->command($phpunit, $phpunitOptions));
     }
 
     public function printFeedback($printer)
     {
-        if (isset($this->currentlyExecuting)) {
+        if ($this->currentlyExecuting !== null) {
             $printer->printFeedback($this->currentlyExecuting);
-            unset($this->currentlyExecuting);
         }
+    }
+
+    public function reset()
+    {
+        $this->currentlyExecuting = null;
     }
 
     public function isStarted()
@@ -118,6 +130,15 @@ class Worker
         while($status['running']) {
             $status = proc_get_status($this->proc);
             $this->setExitCode($status);
+        }
+    }
+
+    public function getCoverageFileName()
+    {
+        if ($this->currentlyExecuting !== null) {
+            return $this->currentlyExecuting->getCoverageFileName();
+        } else {
+            return null;
         }
     }
 
