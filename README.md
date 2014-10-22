@@ -1,4 +1,4 @@
-ParaTest 
+ParaTest
 ========
 [![Build Status](https://secure.travis-ci.org/brianium/paratest.png?branch=master)](https://travis-ci.org/brianium/paratest)
 [![HHVM Status](http://hhvm.h4cc.de/badge/brianium/paratest.svg)](http://hhvm.h4cc.de/package/brianium/paratest)
@@ -15,8 +15,6 @@ To install with composer add the following to your `composer.json` file:
 }
 ```
 Then run `php composer.phar install`
-The `display_errors` php.ini directive must be set to `stderr` to run the test suite.
-
 
 Usage
 -----
@@ -88,20 +86,14 @@ Running Tests
 -------------
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
 
-To run unit tests:
-`vendor/bin/phpunit test/ParaTest`
+**Note that The `display_errors` php.ini directive must be set to `stderr` to run
+the test suite.**
 
-To run integration tests:
-`vendor/bin/phpunit it/ParaTest`
+To run unit tests:
+`vendor/bin/phpunit test/unit`
 
 To run functional tests:
-`vendor/bin/phpunit functional`
-
-There are a couple of shortcuts in the `bin` directory as well.
-
-`bin/test` for unit tests.
-`bin/test it` for integration tests.
-`bin/test functional` for functional tests
+`vendor/bin/phpunit test/functional`
 
 You can run all tests at once by running phpunit from the project directory.
 `vendor/bin/phpunit`

@@ -1,8 +1,0 @@
-#!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT="$DIR/../"
-cd $PROJECT
-TYPE=$1
-PHPUNIT="$PROJECT"vendor/bin/phpunit
-
-$PHPUNIT --bootstrap "test/bootstrap.php" --color
