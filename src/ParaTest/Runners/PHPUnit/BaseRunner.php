@@ -60,14 +60,19 @@ abstract class BaseRunner
     protected $coverage = null;
 
 
-    abstract public function run();
-
-
     public function __construct($opts = array())
     {
         $this->options = new Options($opts);
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
+    }
+
+    public function run()
+    {
+        $this->verifyConfiguration();
+        $this->initCoverage();
+        $this->load();
+        $this->printer->start($this->options);
     }
 
     /**
@@ -117,7 +122,7 @@ abstract class BaseRunner
     protected function log()
     {
         if (!isset($this->options->filtered['log-junit'])) {
-          return;
+            return;
         }
         $output = $this->options->filtered['log-junit'];
         $writer = new Writer($this->interpreter, $this->options->path);
@@ -182,7 +187,7 @@ abstract class BaseRunner
       $coverage = file_get_contents($coverageFile);
 
       if (substr($coverage, 0, 5) === '<?php') {
-        return include $coverageFile;
+          return include $coverageFile;
       }
 
       // the PHPUnit 3.x and below

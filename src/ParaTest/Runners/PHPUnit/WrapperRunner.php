@@ -24,10 +24,7 @@ class WrapperRunner extends BaseRunner
 
     public function run()
     {
-        $this->verifyConfiguration();
-        $this->initCoverage();
-        $this->load();
-        $this->printer->start($this->options);
+        parent::run();
 
         $this->startWorkers();
         $this->assignAllPendingTests();

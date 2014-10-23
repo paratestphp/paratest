@@ -1,7 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\Coverage\CoverageMerger;
 use Habitat\Habitat;
+
 
 class Runner extends BaseRunner
 {
@@ -25,16 +25,15 @@ class Runner extends BaseRunner
      */
     public function run()
     {
-        $this->verifyConfiguration();
-        $this->initCoverage();
-        $this->load();
-        $this->printer->start($this->options);
+        parent::run();
+
         while (count($this->running) || count($this->pending)) {
-            foreach($this->running as $key => $test)
+            foreach($this->running as $key => $test) {
                 if (!$this->testIsStillRunning($test)) {
                     unset($this->running[$key]);
                     $this->releaseToken($key);
                 }
+            }
             $this->fillRunQueue();
             usleep(10000);
         }
@@ -54,8 +53,9 @@ class Runner extends BaseRunner
         $this->log();
         $this->logCoverage();
         $readers = $this->interpreter->getReaders();
-        foreach($readers as $reader)
+        foreach ($readers as $reader) {
             $reader->removeLog();
+        }
     }
 
     /**
@@ -91,8 +91,9 @@ class Runner extends BaseRunner
         if(!$test->isDoneRunning()) return true;
         $this->setExitCode($test);
         $test->stop();
-        if ($this->options->stopOnFailure && $test->getExitCode() > 0)
+        if ($this->options->stopOnFailure && $test->getExitCode() > 0) {
             $this->pending = array();
+        }
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode()) {
             $errorOutput = $test->getStderr();
             if (!$errorOutput) {
