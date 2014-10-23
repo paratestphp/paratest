@@ -1,33 +1,30 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\Logging\LogInterpreter,
-    ParaTest\Logging\JUnit\Writer;
 
-class WrapperRunner
+class WrapperRunner extends BaseRunner
 {
-    const PHPUNIT_FATAL_ERROR = 255;
     const PHPUNIT_FAILURES = 1;
     const PHPUNIT_ERRORS = 2;
 
-    protected $pending = array();
-    protected $running = array();
-    protected $options;
-    protected $interpreter;
-    protected $printer;
-    protected $exitcode = 0;
-    
-    public function __construct($opts = array())
-    {
-        $this->options = new Options($opts);
-        $this->interpreter = new LogInterpreter();
-        $this->printer = new ResultPrinter($this->interpreter);
-    }
+    /**
+     * @var array
+     */
+    protected $streams;
+
+    /**
+     * @var Worker[]
+     */
+    protected $workers;
+
+    /**
+     * @var array
+     */
+    protected $modified;
+
 
     public function run()
     {
-        $this->verifyConfiguration();
-        $this->load();
-        $this->printer->start($this->options);
+        parent::run();
 
         $this->startWorkers();
         $this->assignAllPendingTests();
@@ -36,25 +33,12 @@ class WrapperRunner
         $this->complete();
     }
 
-    private function verifyConfiguration()
+    protected function load()
     {
-        if (isset($this->options->filtered['configuration']) && !file_exists($this->options->filtered['configuration']->getPath())) {
-            $this->printer->println(sprintf('Could not read "%s".', $this->options->filtered['configuration']));
-            exit(1);
-        }
-    }
-
-    private function load()
-    {
-        $loader = new SuiteLoader($this->options);
-        $loader->load($this->options->path);
         if ($this->options->functional) {
             throw new \RuntimeException("The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due to the current PHPUnit commands causing classloading issues.");
         }
-        $executables = ($this->options->functional) ? $loader->getTestMethods() : $loader->getSuites();
-        $this->pending = array_merge($this->pending, $executables);
-        foreach($this->pending as $pending)
-            $this->printer->addTest($pending);
+        parent::load();
     }
 
     private function startWorkers()
@@ -77,11 +61,11 @@ class WrapperRunner
     {
         $phpunit = $this->options->phpunit . ' --no-globals-backup';
         $phpunitOptions = $this->options->filtered;
-        while(count($this->pending)) {
+        while (count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
-            foreach($this->progressedWorkers() as $worker) {
-                if($worker->isFree()) {
-                    $worker->printFeedback($this->printer);
+            foreach ($this->progressedWorkers() as $worker) {
+                if ($worker->isFree()) {
+                    $this->flushWorker($worker);
                     $pending = array_shift($this->pending);
                     if ($pending) {
                         $worker->assign($pending, $phpunit, $phpunitOptions);
@@ -106,7 +90,7 @@ class WrapperRunner
             $new = $this->waitForStreamsToChange($toCheck);
             foreach ($this->progressedWorkers() as $index => $worker) {
                 if (!$worker->isRunning()) {
-                    $worker->printFeedback($this->printer);
+                    $this->flushWorker($worker);
                     unset($toStop[$index]);
                 }
             }
@@ -126,7 +110,10 @@ class WrapperRunner
         return $result;
     }
 
-    // put on WorkersPool
+    /**
+     * put on WorkersPool
+     * @return Worker[]
+     */
     private function progressedWorkers()
     {
         $result = array();
@@ -164,6 +151,7 @@ class WrapperRunner
         $this->printer->printResults();
         $this->interpreter->rewind();
         $this->log();
+        $this->logCoverage();
         $readers = $this->interpreter->getReaders();
         foreach($readers as $reader) {
             $reader->removeLog();
@@ -171,30 +159,27 @@ class WrapperRunner
     }
 
 
-    private function log()
-    {
-        if(!isset($this->options->filtered['log-junit'])) return;
-        $output = $this->options->filtered['log-junit'];
-        $writer = new Writer($this->interpreter, $this->options->path);
-        $writer->write($output);
-    }
-
-    public function getExitCode()
-    {
-        return $this->exitcode;
-    }
-
     private function setExitCode()
     {
-        if ($this->interpreter->getTotalFailures()) {
-            $this->exitcode = self::PHPUNIT_FAILURES;
-        }
         if ($this->interpreter->getTotalErrors()) {
             $this->exitcode = self::PHPUNIT_ERRORS;
+        } elseif ($this->interpreter->getTotalFailures()) {
+            $this->exitcode = self::PHPUNIT_FAILURES;
+        } else {
+            $this->exitcode = 0;
         }
     }
 
-    /**
+    private function flushWorker($worker)
+    {
+        if ($this->hasCoverage()) {
+            $this->addCoverageFromFile($worker->getCoverageFileName());
+        }
+        $worker->printFeedback($this->printer);
+        $worker->reset();
+    }
+
+  /**
     private function testIsStillRunning($test)
     {
         if(!$test->isDoneRunning()) return true;
