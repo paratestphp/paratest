@@ -11,10 +11,6 @@ env:
     - PHPUNIT_VERSION='3.7.*'
     - PHPUNIT_VERSION='4.0.*'
 
-matrix: 
-    allow_failures:
-        - php: hhvm
-
 before_script:
     - composer require --no-update phpunit/phpunit=$PHPUNIT_VERSION
     - composer install --prefer-source
