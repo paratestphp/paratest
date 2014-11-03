@@ -23,6 +23,17 @@ class ConfigurationTest extends \TestBase
         return $suites;
     }
 
+    public function testGlobbingSupport()
+    {
+        $basePath = getcwd() . DS;
+        $configuration = new Configuration($this->fixture('phpunit-globbing.xml'));
+        /** @var SuitePath[][] $suites */
+        $suites = $configuration->getSuites();
+        $this->assertEquals($basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir', $suites["ParaTest Fixtures"][0]->getPath());
+        $this->assertEquals($basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir2', $suites["ParaTest Fixtures"][1]->getPath());
+        return $suites;
+    }
+
     /**
      * @depends test_getSuitesShouldReturnCorrectNumberOfSuites
      */

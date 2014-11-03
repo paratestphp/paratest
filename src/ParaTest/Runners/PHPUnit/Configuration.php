@@ -78,12 +78,18 @@ class Configuration
         $nodes = $this->xml->xpath('//testsuite');
         while(list(, $node) = each($nodes)) {
             foreach ($node->directory as $dir) {
-              $suites[(string) $node['name']][] = new SuitePath(
-                  $this->getSuitePath((string) $dir),
-                  $dir->attributes()->suffix);
+                if ($this->isGlobRequired((string) $dir)) {
+                    foreach ($this->getSuitePaths((string) $dir) as $path) {
+                        $suites[(string)$node['name']][] = new SuitePath($path, $dir->attributes()->suffix);
+                    }
+                } else {
+                    $suites[(string) $node['name']][] = new SuitePath(
+                        $this->getSuitePath((string) $dir),
+                        $dir->attributes()->suffix
+                    );
+                }
             }
         }
-
         return $suites;
     }
 
@@ -96,6 +102,41 @@ class Configuration
     public function getConfigDir()
     {
         return dirname($this->path) . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * Returns a suite paths relative to the config file
+     *
+     * @param $path
+     * @return array|string[]
+     */
+    public function getSuitePaths($path)
+    {
+        $real = realpath($this->getConfigDir() . $path);
+
+        if($real) {
+            return array($real);
+        }
+
+        $paths = array();
+        foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
+            if (($path = realpath($path)) !== false) {
+                $paths[] = $path;
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
+     * Returns true if path needs globbing (like a /path/*-to/string)
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function isGlobRequired($path)
+    {
+        return strpos($path, '*') !== false;
     }
 
     /**
