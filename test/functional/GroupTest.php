@@ -1,6 +1,9 @@
 <?php
 class GroupTest extends FunctionalTestBase
 {
+    /** @var ParatestInvoker */
+    private $invoker;
+
     public function setUp()
     {
         parent::setUp();

@@ -27,7 +27,11 @@ while (true) {
         exit($lastExitCode);
     }
     echo "Executing: $command\n";
-    $_SERVER['argv'] = explode(' ', $command);
+
+    if (!preg_match_all('/\'([^\']*)\'[ ]?/', $command, $arguments)) {
+        throw new \Exception("Failed to parse arguments from command line: \"" . $command . "\"");
+    }
+    $_SERVER['argv'] = $arguments[1];
 
     $lastExitCode = PHPUnit_TextUI_Command::main(false);
     echo "FINISHED\n";

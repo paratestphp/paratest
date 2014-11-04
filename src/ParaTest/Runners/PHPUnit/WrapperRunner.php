@@ -59,9 +59,10 @@ class WrapperRunner extends BaseRunner
 
     private function assignAllPendingTests()
     {
-        $phpunit = $this->options->phpunit . ' --no-globals-backup';
+        $phpunit = $this->options->phpunit;
         $phpunitOptions = $this->options->filtered;
-        while (count($this->pending)) {
+        $phpunitOptions['no-globals-backup'] = null;
+        while(count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $worker) {
                 if ($worker->isFree()) {

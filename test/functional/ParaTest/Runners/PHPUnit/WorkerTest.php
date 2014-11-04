@@ -109,7 +109,7 @@ class WorkerTest extends \TestBase
     private function getCommand($testFile, $logFile)
     {
         return sprintf(
-            "%s --bootstrap %s --log-junit %s %s",
+            "'%s' '--bootstrap' '%s' '--log-junit' '%s' '%s'",
             'vendor/bin/phpunit',
             $this->bootstrap,
             $logFile,
