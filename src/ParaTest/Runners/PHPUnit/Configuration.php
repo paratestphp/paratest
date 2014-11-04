@@ -78,15 +78,8 @@ class Configuration
         $nodes = $this->xml->xpath('//testsuite');
         while(list(, $node) = each($nodes)) {
             foreach ($node->directory as $dir) {
-                if ($this->isGlobRequired((string) $dir)) {
-                    foreach ($this->getSuitePaths((string) $dir) as $path) {
-                        $suites[(string)$node['name']][] = new SuitePath($path, $dir->attributes()->suffix);
-                    }
-                } else {
-                    $suites[(string) $node['name']][] = new SuitePath(
-                        $this->getSuitePath((string) $dir),
-                        $dir->attributes()->suffix
-                    );
+                foreach ($this->getSuitePaths((string) $dir) as $path) {
+                    $suites[(string)$node['name']][] = new SuitePath($path, $dir->attributes()->suffix);
                 }
             }
         }
@@ -114,18 +107,22 @@ class Configuration
     {
         $real = realpath($this->getConfigDir() . $path);
 
-        if($real) {
+        if ($real !== false) {
             return array($real);
         }
 
-        $paths = array();
-        foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
-            if (($path = realpath($path)) !== false) {
-                $paths[] = $path;
+        if ($this->isGlobRequired($path)) {
+            $paths = array();
+            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
+                if (($path = realpath($path)) !== false) {
+                    $paths[] = $path;
+                }
             }
+
+            return $paths;
         }
 
-        return $paths;
+        throw new \RuntimeException("Suite path $path could not be found");
     }
 
     /**
@@ -137,20 +134,6 @@ class Configuration
     public function isGlobRequired($path)
     {
         return strpos($path, '*') !== false;
-    }
-
-    /**
-     * Returns a suite path relative to the config file
-     *
-     * @param $path
-     * @return string
-     * @throws \RuntimeException
-     */
-    public function getSuitePath($path)
-    {
-        $real = realpath($this->getConfigDir() . $path);
-        if($real) return $real;
-        throw new \RuntimeException("Suite path $path could not be found");
     }
 
     /**
