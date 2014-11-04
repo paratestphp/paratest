@@ -78,12 +78,11 @@ class Configuration
         $nodes = $this->xml->xpath('//testsuite');
         while(list(, $node) = each($nodes)) {
             foreach ($node->directory as $dir) {
-              $suites[(string) $node['name']][] = new SuitePath(
-                  $this->getSuitePath((string) $dir),
-                  $dir->attributes()->suffix);
+                foreach ($this->getSuitePaths((string) $dir) as $path) {
+                    $suites[(string)$node['name']][] = new SuitePath($path, $dir->attributes()->suffix);
+                }
             }
         }
-
         return $suites;
     }
 
@@ -99,17 +98,42 @@ class Configuration
     }
 
     /**
-     * Returns a suite path relative to the config file
+     * Returns a suite paths relative to the config file
      *
      * @param $path
-     * @return string
-     * @throws \RuntimeException
+     * @return array|string[]
      */
-    public function getSuitePath($path)
+    public function getSuitePaths($path)
     {
         $real = realpath($this->getConfigDir() . $path);
-        if($real) return $real;
+
+        if ($real !== false) {
+            return array($real);
+        }
+
+        if ($this->isGlobRequired($path)) {
+            $paths = array();
+            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
+                if (($path = realpath($path)) !== false) {
+                    $paths[] = $path;
+                }
+            }
+
+            return $paths;
+        }
+
         throw new \RuntimeException("Suite path $path could not be found");
+    }
+
+    /**
+     * Returns true if path needs globbing (like a /path/*-to/string)
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function isGlobRequired($path)
+    {
+        return strpos($path, '*') !== false;
     }
 
     /**
