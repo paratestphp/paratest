@@ -27,3 +27,5 @@ tools:
     enabled: true
     config:
       standard: "PSR2"
+  
+  php_code_coverage: true
