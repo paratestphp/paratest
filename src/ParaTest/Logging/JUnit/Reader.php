@@ -19,7 +19,7 @@ class Reader extends MetaProvider
 
     public function __construct($logFile)
     {
-        if(!file_exists($logFile)) {
+        if (!file_exists($logFile)) {
             throw new \InvalidArgumentException("Log file $logFile does not exist");
         }
 
@@ -136,7 +136,8 @@ class Reader extends MetaProvider
      *
      * @return TestSuite
      */
-    private function createSuite(\SimpleXMLElement $element) {
+    private function createSuite(\SimpleXMLElement $element)
+    {
         $suite = TestSuite::suiteFromNode($element);
         $testCases = array();
         foreach ($element->testcase as $testCase) {
@@ -146,5 +147,4 @@ class Reader extends MetaProvider
 
         return $suite;
     }
-
 }

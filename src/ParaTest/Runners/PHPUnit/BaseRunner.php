@@ -212,5 +212,4 @@ abstract class BaseRunner
         $this->getCoverage()->addCoverage($this->getCoverageObject($coverageFile));
         unlink($coverageFile);
     }
-
 }
