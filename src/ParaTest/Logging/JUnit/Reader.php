@@ -72,7 +72,7 @@ class Reader extends MetaProvider
     {
         $results = array();
         foreach ($cases as $case) {
-            $results[] = $case->failures ? 'F' : ($case->errors ? 'E' : '.');
+            $results[] = $this->getCaseResult($case);
         }
 
         return $results;
@@ -86,13 +86,23 @@ class Reader extends MetaProvider
     private function validateCasesAsOne($cases)
     {
         foreach ($cases as $case) {
-            $result = $case->failures ? 'F' : ($case->errors ? 'E' : '.');
+            $result = $this->getCaseResult($case);
             if ($result !== '.') {
                 return $result;
             }
         }
 
         return '.';
+    }
+
+    /**
+     * @param TestCase $case
+     *
+     * @return string
+     */
+    private function getCaseResult(TestCase $case)
+    {
+        return $case->failures ? 'F' : ($case->errors ? 'E' : '.');
     }
 
     /**
