@@ -197,7 +197,7 @@ class ReaderTest extends \TestBase
     {
         $reader = new Reader(FIXTURES . DS . 'results' . DS . 'with-data-provider.xml');
         $feedback = $reader->getFeedback($totalCases = 2, $casesProcessed = 0);
-        $this->assertSame(['.', '.', 'F'], $feedback);
+        $this->assertSame(array('.', '.', 'F'), $feedback);
     }
 
     public function testRemoveLog()

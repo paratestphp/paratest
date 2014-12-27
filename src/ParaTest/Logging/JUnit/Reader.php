@@ -122,11 +122,11 @@ class Reader extends MetaProvider
         $cases = $this->getCaseNodes();
         foreach ($cases as $file => $nodeArray) {
             if (empty($file)) { // cases of data provider
-                $buffer = [];
+                $buffer = array();
                 foreach ($nodeArray as $node) {
                     if ($buffer && strpos($node['name'], ' #0') !== false) {
                         $this->initSuiteFromCases($buffer);
-                        $buffer = [];
+                        $buffer = array();
                     }
 
                     $buffer[] = $node;
