@@ -193,6 +193,13 @@ class ReaderTest extends \TestBase
         $this->assertEquals(array('.', 'F', '.', 'E', '.', 'F', '.'), $feedback);
     }
 
+    public function testGetFeedbackWithDataProvider()
+    {
+        $reader = new Reader(FIXTURES . DS . 'results' . DS . 'with-data-provider.xml');
+        $feedback = $reader->getFeedback($totalCases = 2, $casesProcessed = 0);
+        $this->assertSame(['.', '.', 'F'], $feedback);
+    }
+
     public function testRemoveLog()
     {
         $contents = file_get_contents($this->mixedPath);
@@ -202,4 +209,5 @@ class ReaderTest extends \TestBase
         $reader->removeLog();
         $this->assertFalse(file_exists($tmp));
     }
+
 }

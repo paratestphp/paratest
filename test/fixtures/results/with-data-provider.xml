@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="UnitTestWithDataProviderAnnotationTest" file="test/fixtures/failing-tests/UnitTestWithDataProviderAnnotationTest.php" tests="7" assertions="7" failures="1" errors="0" time="0.005042">
+        <testcase name="testDummyTest" class="UnitTestWithDataProviderAnnotationTest" file="test/fixtures/failing-tests/UnitTestWithDataProviderAnnotationTest.php" line="6" assertions="1" time="0.000811"/>
+        <testsuite name="UnitTestWithDataProviderAnnotationTest::testSuccess" tests="3" assertions="3" failures="0" errors="0" time="0.000362">
+            <testcase name="testSuccess with data set #0" assertions="1" time="0.000119"/>
+            <testcase name="testSuccess with data set #1" assertions="1" time="0.000129"/>
+            <testcase name="testSuccess with data set #2" assertions="1" time="0.000114"/>
+        </testsuite>
+        <testsuite name="UnitTestWithDataProviderAnnotationTest::testFailure" tests="3" assertions="3" failures="1" errors="0" time="0.003869">
+            <testcase name="testFailure with data set #0" assertions="1" time="0.002502"/>
+            <testcase name="testFailure with data set #1" assertions="1" time="0.001238">
+                <failure type="PHPUnit_Framework_ExpectationFailedException">UnitTestWithDataProviderAnnotationTest::testFailure with data set #1 (5, 1)
+                    Failed asserting that 1 is identical to 5.
+
+                    test/fixtures/failing-tests/UnitTestWithDataProviderAnnotationTest.php:36
+                </failure>
+            </testcase>
+            <testcase name="testFailure with data set #2" assertions="1" time="0.000129"/>
+        </testsuite>
+    </testsuite>
+</testsuites>
