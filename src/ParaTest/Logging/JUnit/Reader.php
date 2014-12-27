@@ -84,11 +84,21 @@ class Reader extends MetaProvider
     {
         $feedback = array();
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
-        foreach($suites as $suite) {
-            foreach($suite->cases as $case) {
-                if($case->failures) $feedback[] = 'F';
-                else if ($case->errors) $feedback[] = 'E';
-                else $feedback[] = '.';
+        foreach ($suites as $suite) {
+            $suitFeedback = '.';
+            $hasDataProvider = empty($suite->cases[0]->class);
+            foreach ($suite->cases as $case) {
+                if ($hasDataProvider) {
+                    if ($case->failures || $case->errors) {
+                        $suitFeedback = $case->failures ? 'F' : 'E';
+                        break;
+                    }
+                } else {
+                    $feedback[] = $case->failures ? 'F' : ($case->errors ? 'E' : '.');
+                }
+            }
+            if ($hasDataProvider) {
+                $feedback[] = $suitFeedback;
             }
         }
         return $feedback;
@@ -110,8 +120,23 @@ class Reader extends MetaProvider
     {
         $this->initSuite();
         $cases = $this->getCaseNodes();
-        foreach($cases as $file => $nodeArray)
-            $this->initSuiteFromCases($nodeArray);
+        foreach ($cases as $file => $nodeArray) {
+            if (empty($file)) { // cases of data provider
+                $buffer = array();
+                foreach ($nodeArray as $node) {
+                    if ($buffer && strpos($node['name'], ' #0') !== false) {
+                        $this->initSuiteFromCases($buffer);
+                        $buffer = array();
+                    }
+
+                    $buffer[] = $node;
+                }
+
+                $this->initSuiteFromCases($buffer);
+            } else {
+                $this->initSuiteFromCases($nodeArray);
+            }
+        }
     }
 
     /**

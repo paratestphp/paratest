@@ -70,9 +70,9 @@ class RunnerIntegrationTest extends \TestBase
 
         // these numbers represent the tests in fixtures/failing-tests
         // so will need to be updated when tests are added or removed
-        $this->assertCount(6, $suites);
-        $this->assertCount(16, $cases);
-        $this->assertCount(6, $failures);
+        $this->assertCount(8, $suites);
+        $this->assertCount(23, $cases);
+        $this->assertCount(7, $failures);
         $this->assertCount(1, $errors);
     }
 
