@@ -212,7 +212,6 @@ abstract class ExecutableTest
         $builder->add($this->getPath());
 
         $process = $builder->getProcess();
-
         return $process->getCommandLine();
     }
 

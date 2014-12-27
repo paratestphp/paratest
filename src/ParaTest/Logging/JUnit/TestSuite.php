@@ -47,18 +47,18 @@ class TestSuite
     public $file;
 
     /**
-     * Nested suites
-     *
-     * @var array
-     */
-    public $suites = array();
-
-    /**
      * Cases belonging to this suite
      *
      * @var array
      */
     public $cases = array();
+
+    /**
+     * dataProvider suite - all cases must be processed without failure/error
+     *
+     * @var bool
+     */
+    public $isSubSuite = false;
 
     public function __construct(
         $name, 
@@ -76,6 +76,9 @@ class TestSuite
         $this->errors = $errors;
         $this->time = $time;
         $this->file = $file;
+        if (empty($file)) {
+            $this->isSubSuite = true;
+        }
     }
 
     /**

@@ -15,7 +15,7 @@ class ResultPrinter
     /**
      * A collection of ExecutableTest objects
      *
-     * @var array
+     * @var ExecutableTest[]
      */
     protected $suites = array();
 

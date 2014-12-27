@@ -25,7 +25,7 @@ class SuiteLoader
     /**
      * The collection of parsed test classes
      *
-     * @var array
+     * @var ExecutableTest[]
      */
     protected $loadedSuites = array();
 
@@ -49,7 +49,7 @@ class SuiteLoader
      * Returns all parsed suite objects as ExecutableTest
      * instances
      *
-     * @return array
+     * @return ExecutableTest[]
      */
     public function getSuites()
     {
@@ -60,7 +60,7 @@ class SuiteLoader
      * Returns a collection of TestMethod objects
      * for all loaded ExecutableTest instances
      *
-     * @return array
+     * @return TestMethod[]
      */
     public function getTestMethods()
     {
