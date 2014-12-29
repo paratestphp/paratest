@@ -122,6 +122,10 @@ class Reader extends MetaProvider
     private function init(\SimpleXMLElement $xml)
     {
         $baseSuite = current($xml->xpath('/testsuites/testsuite'));
+        if (!$baseSuite) {
+            return;
+        }
+
         foreach ($baseSuite->testsuite as $testSuite) {
             $this->suites[] = $this->createSuite($testSuite);
         }
