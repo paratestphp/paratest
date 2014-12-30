@@ -32,13 +32,17 @@ class Parser
     public function __construct($srcPath)
     {
         if(!file_exists($srcPath))
-            throw new \InvalidArgumentException("file not found");
+            throw new \InvalidArgumentException("file not found: " . $srcPath);
 
         $this->path = $srcPath;
         $declaredClasses = get_declared_classes();
         require_once($this->path);
         $class = $this->getClassName($this->path, $declaredClasses);
-        $this->refl = new \ReflectionClass($class);
+        try{
+            $this->refl = new \ReflectionClass($class);
+        } catch (\ReflectionException $e){
+            throw new \InvalidArgumentException("Unable to instantiate ReflectionClass. " . $class . " not found in: " . $srcPath);
+        }
     }
 
     /**
