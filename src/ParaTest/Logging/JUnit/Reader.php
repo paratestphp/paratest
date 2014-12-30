@@ -72,6 +72,17 @@ class Reader extends MetaProvider
     }
 
     /**
+     * Checks whether the xml log has
+     * test suite results
+     *
+     * @return array
+     */
+    public function hasResults()
+    {
+        return $this->xml->count() > 0;
+    }
+
+    /**
      * Return an array that contains
      * each suite's instant feedback. Since
      * logs do not contain skipped or incomplete
@@ -195,4 +206,5 @@ class Reader extends MetaProvider
             $this->suites[] = TestSuite::suiteFromNode($node);
         }
     }
+
 }
