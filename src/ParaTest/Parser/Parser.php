@@ -90,17 +90,19 @@ class Parser
         $classes = get_declared_classes();
         $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
-        foreach ($newClasses as $className) {
+        foreach($newClasses as $className){
             $class = new \ReflectionClass($className);
-            if ($class->getFileName() == $filename) {
+            if($class->getFileName() == $filename){
                 return $className;
+            } else if (true) {
+                
             }
         }
 
         // Test class was loaded before somehow (referenced from other test class, or explicitly loaded)
         foreach ($classes as $className) {
             $class = new \ReflectionClass($className);
-            if ($class->getFileName() == $filename) {
+            if($class->getFileName() == $filename) {
                 return $className;
             }
         }
