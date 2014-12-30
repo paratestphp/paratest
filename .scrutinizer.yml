@@ -31,4 +31,4 @@ tools:
   php_code_coverage: true
   
 build_failure_conditions:
-  - 'issues.severity(>= MINOR).new.exists'
+  - 'issues.new.exists'
