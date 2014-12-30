@@ -9,4 +9,13 @@ class ParserTest extends \TestBase
     {
         $parser = new Parser('/path/to/nowhere');
     }
+
+    /**
+     * @expectedException  \InvalidArgumentException
+     */
+    public function testConstructorThrowsExceptionIfClassNotFoundInFile()
+    {
+        $fileWithoutAClass = FIXTURES . DS . 'chdirBootstrap.php';
+        $parser = new Parser($fileWithoutAClass);
+    }
 }
