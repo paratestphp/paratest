@@ -93,7 +93,9 @@ class Parser
         foreach ($newClasses as $className) {
             $class = new \ReflectionClass($className);
             if ($class->getFileName() == $filename) {
-                return $className;
+                if (strpos($filename, $className) !== false) {
+                    return $className;
+                }
             }
         }
 
