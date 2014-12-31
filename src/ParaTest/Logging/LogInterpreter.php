@@ -72,8 +72,6 @@ class LogInterpreter extends MetaProvider
         while(list( , $reader) = each($this->readers)) {
             foreach($reader->getSuites() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
-                while(list( , $nested) = each($suite->suites))
-                    $cases = array_merge($cases, $nested->cases);
             }
         }
         return $cases;

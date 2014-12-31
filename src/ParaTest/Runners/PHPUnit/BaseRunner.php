@@ -32,7 +32,7 @@ abstract class BaseRunner
      * A collection of pending ExecutableTest objects that have
      * yet to run
      *
-     * @var array
+     * @var ExecutableTest[]
      */
     protected $pending = array();
 
@@ -212,5 +212,4 @@ abstract class BaseRunner
         $this->getCoverage()->addCoverage($this->getCoverageObject($coverageFile));
         unlink($coverageFile);
     }
-
 }
