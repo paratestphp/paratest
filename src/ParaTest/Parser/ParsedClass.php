@@ -32,9 +32,15 @@ class ParsedClass extends ParsedObject
      */
     public function getMethods($annotations = array())
     {
-        $methods = array_filter($this->methods, function($m) use($annotations){
-            foreach($annotations as $a => $v)
-                return $m->hasAnnotation($a, $v);
+        $methods = array_filter($this->methods, function ($m) use ($annotations) {
+            foreach ($annotations as $a => $v) {
+                foreach (explode(',', $v) as $subValue) {
+                    if ($m->hasAnnotation($a, $subValue)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         });
         return $methods ? $methods : $this->methods;
     }
