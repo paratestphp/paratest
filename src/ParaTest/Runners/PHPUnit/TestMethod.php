@@ -57,4 +57,15 @@ class TestMethod extends ExecutableTest
 
         return $options;
     }
+
+    /**
+     * Get the expected count of tests or testmethods
+     * to be executed in this test
+     *
+     * @return int
+     */
+    public function getTestMethodCount()
+    {
+        return 1;
+    }
 }

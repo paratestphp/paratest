@@ -9,18 +9,18 @@ class ResultPrinterTest extends ResultTester
     protected $printer;
     protected $interpreter;
 
+    protected $passingSuiteWithWrongTestCountEsimation;
+
     public function setUp()
     {
         parent::setUp();
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
-        $this->mockFunctions($this->errorSuite, 1);
-        $this->mockFunctions($this->failureSuite, 3);
-        $this->mockFunctions($this->mixedSuite, 7);
-        $this->mockFunctions($this->passingSuite, 3);
         chdir(__DIR__);
         if(file_exists('myconfig.xml'))
             unlink('myconfig.xml');
+
+        $this->passingSuiteWithWrongTestCountEsimation = $this->getSuiteWithResult('single-passing.xml', 1);
     }
 
     public function testConstructor()
@@ -252,6 +252,34 @@ class ResultPrinterTest extends ResultTester
         for($i = 0; $i < 57; $i++)
             $expected .= '.';
         $this->assertEquals($expected, $feedback);
+    }
+
+    public function testResultPrinterAdjustsTotalCountForDataProviders()
+    {
+        //add tests
+        for ($i = 0; $i < 22; $i++)
+            $this->printer->addTest($this->passingSuiteWithWrongTestCountEsimation);
+
+        //start the printer so boundaries are established
+        ob_start();
+        $this->printer->start(new Options());
+        ob_end_clean();
+
+        //get the feedback string
+        ob_start();
+        for ($i = 0; $i < 22; $i++)
+            $this->printer->printFeedback($this->passingSuiteWithWrongTestCountEsimation);
+        $feedback = ob_get_clean();
+
+        //assert it is as expected
+        $expected = '';
+        for($i = 0; $i < 65; $i++)
+            $expected .= '.';
+        $expected .= " 65 / 66 ( 98%)\n";
+        for($i = 0; $i < 1; $i++)
+            $expected .= '.';
+        $this->assertEquals($expected, $feedback);
+
     }
 
     protected function getStartOutput(Options $options)

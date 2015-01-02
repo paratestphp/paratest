@@ -48,6 +48,14 @@ abstract class ExecutableTest
     }
 
     /**
+     * Get the expected count of tests or testmethods
+     * to be executed in this test
+     *
+     * @return int
+     */
+    public abstract function getTestMethodCount();
+
+    /**
      * Get the path to the test being executed
      *
      * @return string
@@ -261,5 +269,10 @@ abstract class ExecutableTest
     public function getStdout()
     {
         return $this->process->getOutput();
+    }
+
+    public function setTempFile($temp)
+    {
+        $this->temp = $temp;
     }
 }

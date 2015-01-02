@@ -164,6 +164,10 @@ class ResultPrinter
         $reader = new Reader($test->getTempFile());
         $this->results->addReader($reader);
         $feedbackItems = $reader->getFeedback();
+
+        $dataProviderOverhead = count($feedbackItems) - $test->getTestMethodCount();
+        $this->totalCases += $dataProviderOverhead;
+
         foreach ($feedbackItems as $item)
             $this->printFeedbackItem($item);
 
