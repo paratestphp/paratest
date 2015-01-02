@@ -9,16 +9,16 @@ class ParsedClassTest extends \TestBase
     {
         $this->methods = array(
             new ParsedFunction(
-            "/**
+                "/**
               * @group group1
               */",
-             'public', 'testFunction'
+                'public', 'testFunction'
             ),
             new ParsedFunction(
-            "/**
+                "/**
               * @group group2
               */",
-             'public', 'testFunction2'
+                'public', 'testFunction2'
             ),
             new ParsedFunction('', 'public', 'testFunction3')
         );
@@ -28,6 +28,31 @@ class ParsedClassTest extends \TestBase
     public function testGetMethodsReturnsMethods()
     {
         $this->assertEquals($this->methods, $this->class->getMethods());
+    }
+
+    public function testGetMethodsMultipleAnnotationsReturnsMethods()
+    {
+        $goodMethod = new ParsedFunction(
+            "/**
+              * @group group1
+              */",
+            'public', 'testFunction'
+        );
+        $goodMethod2 = new ParsedFunction(
+            "/**
+              * @group group2
+              */",
+            'public', 'testFunction2'
+        );
+        $badMethod = new ParsedFunction(
+            "/**
+              * @group group3
+              */",
+            'public', 'testFunction2'
+        );
+        $annotatedClass = new ParsedClass('', 'MyTestClass', '', array($goodMethod, $goodMethod2, $badMethod));
+        $methods = $annotatedClass->getMethods(array('group' => 'group1,group2'));
+        $this->assertEquals(array($goodMethod, $goodMethod2), $methods);
     }
 
     public function testGetMethodsExceptsAdditionalAnnotationFilter()
