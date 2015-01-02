@@ -53,7 +53,7 @@ abstract class ExecutableTest
      *
      * @return int
      */
-    public abstract function getTestMethodCount();
+    abstract public function getTestMethodCount();
 
     /**
      * Get the path to the test being executed
