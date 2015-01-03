@@ -160,11 +160,16 @@ class Worker
 
     public function isCrashed()
     {
-        $this->updateStateFromAvailableOutput();
         if (!$this->isStarted()) {
             return false;
         }
         $status = proc_get_status($this->proc);
+
+        $this->updateStateFromAvailableOutput();
+        if (!$this->isRunning) {
+            return false;
+        }
+
         $this->setExitCode($status);
         if ($this->exitCode === null) {
             return false;
