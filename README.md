@@ -3,6 +3,7 @@ ParaTest
 [![Build Status](https://secure.travis-ci.org/brianium/paratest.png?branch=master)](https://travis-ci.org/brianium/paratest)
 [![HHVM Status](http://hhvm.h4cc.de/badge/brianium/paratest.svg)](http://hhvm.h4cc.de/package/brianium/paratest)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brianium/paratest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brianium/paratest/?branch=master)
+[![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
 
 The objective of ParaTest is to support parallel testing in a variety of PHP testing tools. Currently only PHPUnit is supported.
 
