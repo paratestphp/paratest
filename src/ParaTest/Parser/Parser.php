@@ -38,6 +38,9 @@ class Parser
         $declaredClasses = get_declared_classes();
         require_once($this->path);
         $class = $this->getClassName($this->path, $declaredClasses);
+        if (!$class) {
+            throw new NoClassInFileException();
+        }
         try{
             $this->refl = new \ReflectionClass($class);
         } catch (\ReflectionException $e){
@@ -93,7 +96,7 @@ class Parser
         foreach ($newClasses as $className) {
             $class = new \ReflectionClass($className);
             if ($class->getFileName() == $filename) {
-                if (strpos($filename, $className) !== false) {
+                if ($this->classNameMatchesFileName($filename, $className)) {
                     return $className;
                 }
             }
@@ -106,5 +109,21 @@ class Parser
                 return $className;
             }
         }
+    }
+
+    /**
+     * @param $filename
+     * @param $className
+     * @return bool
+     */
+    private function classNameMatchesFileName($filename, $className)
+    {
+        return strpos($filename, $className) !== false
+            || strpos($filename, $this->invertSlashes($className)) !== false;
+    }
+
+    private function invertSlashes($className)
+    {
+        return str_replace('\\', '/', $className);
     }
 }
