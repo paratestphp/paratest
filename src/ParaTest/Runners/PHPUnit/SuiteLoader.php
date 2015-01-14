@@ -1,5 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Parser\NoClassInFileException;
+use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\Parser;
 
 class SuiteLoader
@@ -172,16 +174,13 @@ class SuiteLoader
     private function initSuites()
     {
         foreach ($this->files as $path) {
-            $parser = new Parser($path);
-            if ($class = $parser->getClass()) {
-                $this->loadedSuites[$path] = new Suite(
-                    $path,
-                    $this->executableTests(
-                        $path,
-                        $class->getMethods($this->options ? $this->options->annotations : array())
-                    ),
-                    $class->getName()
-                );
+            try {
+                $parser = new Parser($path);
+                if ($class = $parser->getClass()) {
+                    $this->loadedSuites[$path] = $this->createSuite($path, $class);
+                }
+            } catch (NoClassInFileException $e) {
+                continue;
             }
         }
     }
@@ -229,5 +228,17 @@ class SuiteLoader
             return $matches[1];
         }
         return null;
+    }
+
+    private function createSuite($path, ParsedClass $class)
+    {
+        return new Suite(
+            $path,
+            $this->executableTests(
+                $path,
+                $class->getMethods($this->options ? $this->options->annotations : array())
+            ),
+            $class->getName()
+        );
     }
 }

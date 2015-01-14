@@ -1,4 +1,5 @@
 <?php
+namespace SomeNamespace;
 
 class SomeOtherClass{}
 
