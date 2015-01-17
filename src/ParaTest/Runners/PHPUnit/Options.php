@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 /**
  * Class Options
@@ -66,8 +67,9 @@ class Options
 
     public function __construct($opts = array())
     {
-        foreach(self::defaults() as $opt => $value)
+        foreach (self::defaults() as $opt => $value) {
             $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
+        }
 
         $this->processes = $opts['processes'];
         $this->path = $opts['path'];
@@ -126,8 +128,14 @@ class Options
         $vendor  = static::vendorDir();
         $phpunit = $vendor . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
         $batch = $phpunit . '.bat';
-        if(file_exists($batch)) return $batch;
-        if(file_exists($phpunit)) return $phpunit;
+
+        if (file_exists($batch)) {
+            return $batch;
+        }
+
+        if (file_exists($phpunit)) {
+            return $phpunit;
+        }
 
         return 'phpunit';
     }
@@ -140,8 +148,9 @@ class Options
     protected static function vendorDir()
     {
         $vendor = dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'vendor';
-        if(!file_exists($vendor))
+        if (!file_exists($vendor)) {
             $vendor = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+        }
 
         return $vendor;
     }
@@ -164,8 +173,9 @@ class Options
             'no-test-tokens' => $this->noTestTokens,
             'colors' => $this->colors,
         ));
-        if($configuration = $this->getConfigurationPath($filtered))
+        if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
+        }
 
         return $filtered;
     }
@@ -179,15 +189,19 @@ class Options
      */
     protected function getConfigurationPath($filtered)
     {
-        if(isset($filtered['configuration']))
+        if (isset($filtered['configuration'])) {
+            return file_exists($filtered['configuration'])
+                ? realpath($filtered['configuration'])
+                : $filtered['configuration'];
+        }
 
-            return file_exists($filtered['configuration']) ? realpath($filtered['configuration']) : $filtered['configuration'];
-        if(file_exists('phpunit.xml'))
-
+        if (file_exists('phpunit.xml')) {
             return realpath('phpunit.xml');
-        if(file_exists('phpunit.xml.dist'))
+        }
 
+        if (file_exists('phpunit.xml.dist')) {
             return realpath('phpunit.xml.dist');
+        }
     }
 
     /**
@@ -197,8 +211,10 @@ class Options
     protected function initAnnotations()
     {
         $annotatedOptions = array('group');
-        foreach($this->filtered as $key => $value)
-            if(array_search($key, $annotatedOptions) !== false)
+        foreach ($this->filtered as $key => $value) {
+            if (array_search($key, $annotatedOptions) !== false) {
                 $this->annotations[$key] = $value;
+            }
+        }
     }
 }

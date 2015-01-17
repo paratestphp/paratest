@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
@@ -67,8 +68,9 @@ class SuiteLoader
     public function getTestMethods()
     {
         $methods = array();
-        foreach($this->loadedSuites as $suite)
+        foreach ($this->loadedSuites as $suite) {
             $methods = array_merge($methods, $suite->getFunctions());
+        }
 
         return $methods;
     }
@@ -121,12 +123,14 @@ class SuiteLoader
         } else {
             $pattern = self::TEST_PATTERN;
         }
-        if (!file_exists($path))
+        if (!file_exists($path)) {
             throw new \InvalidArgumentException("$path is not a valid directory or file");
-        if (is_dir($path))
+        }
+        if (is_dir($path)) {
             $this->loadDir($path, $pattern);
-        else if (file_exists($path))
+        } elseif (file_exists($path)) {
             $this->loadFile($path);
+        }
     }
 
     /**
@@ -138,8 +142,9 @@ class SuiteLoader
     private function loadDir($path, $pattern = self::TEST_PATTERN)
     {
         $files = scandir($path);
-        foreach($files as $file)
+        foreach ($files as $file) {
             $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file, $pattern);
+        }
     }
 
     /**
@@ -160,11 +165,13 @@ class SuiteLoader
      */
     private function tryLoadTests($path, $pattern = self::TEST_PATTERN)
     {
-        if(preg_match($pattern, $path))
+        if (preg_match($pattern, $path)) {
             $this->files[] = $path;
+        }
 
-        if(!preg_match(self::$dotPattern, $path) && is_dir($path))
+        if (!preg_match(self::$dotPattern, $path) && is_dir($path)) {
             $this->loadDir($path, $pattern);
+        }
     }
 
     /**

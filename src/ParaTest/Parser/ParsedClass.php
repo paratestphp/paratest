@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Parser;
+<?php
+namespace ParaTest\Parser;
 
 class ParsedClass extends ParsedObject
 {
@@ -13,7 +14,7 @@ class ParsedClass extends ParsedObject
      *
      * @var array
      */
-    private $functions;
+    private $methods;
 
     public function __construct($doc, $name, $namespace, $methods = array())
     {

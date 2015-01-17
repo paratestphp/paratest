@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Logging;
+<?php
+namespace ParaTest\Logging;
 
 /**
  * Class MetaProvider
@@ -31,12 +32,10 @@ abstract class MetaProvider
      */
     public function __call($method, $args)
     {
-        if(preg_match(self::$totalMethod, $method, $matches) && $property = strtolower($matches[1]))
-        {
+        if (preg_match(self::$totalMethod, $method, $matches) && $property = strtolower($matches[1])) {
             return $this->getNumericValue($property);
         }
-        if(preg_match(self::$messageMethod, $method, $matches) && $type = strtolower($matches[1]))
-        {
+        if (preg_match(self::$messageMethod, $method, $matches) && $type = strtolower($matches[1])) {
             return $this->getMessages($type);
         }
     }
@@ -49,9 +48,9 @@ abstract class MetaProvider
      */
     protected function getNumericValue($property)
     {
-       return ($property === 'time') 
-              ? floatval($this->suites[0]->$property)
-              : intval($this->suites[0]->$property);
+        return ($property === 'time')
+            ? floatval($this->suites[0]->$property)
+            : intval($this->suites[0]->$property);
     }
 
     /**
@@ -64,14 +63,14 @@ abstract class MetaProvider
     {
         $messages = array();
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
-        foreach($suites as $suite)
-            $messages = array_merge($messages, array_reduce($suite->cases, function($result, $case) use($type) {
-                return array_merge($result, array_reduce($case->$type, function($msgs, $msg) { 
+        foreach ($suites as $suite) {
+            $messages = array_merge($messages, array_reduce($suite->cases, function ($result, $case) use ($type) {
+                return array_merge($result, array_reduce($case->$type, function ($msgs, $msg) {
                     $msgs[] = $msg['text'];
                     return $msgs;
                 }, array()));
             }, array()));
+        }
         return $messages;
     }
-
 }
