@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
@@ -66,8 +67,9 @@ abstract class ExecutableTest
      */
     public function getTempFile()
     {
-        if(is_null($this->temp))
+        if (is_null($this->temp)) {
             $this->temp = tempnam(sys_get_temp_dir(), "PT_");
+        }
 
         return $this->temp;
     }
@@ -88,8 +90,9 @@ abstract class ExecutableTest
      */
     public function getWarnings()
     {
-        if(!$this->process)
+        if (!$this->process) {
             return false;
+        }
 
         // PHPUnit has a bug where by it doesn't include warnings in the junit
         // output, but still fails. This is a hacky, imperfect method for extracting them
@@ -201,7 +204,7 @@ abstract class ExecutableTest
     {
         $builder = new ProcessBuilder();
         $builder->setPrefix($binary);
-        foreach($options as $key => $value) {
+        foreach ($options as $key => $value) {
             $builder->add("--$key");
             if ($value !== null) {
                 $builder->add($value);
@@ -224,7 +227,9 @@ abstract class ExecutableTest
      */
     protected function handleEnvironmentVariables($environmentVariables)
     {
-        if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];
+        if (isset($environmentVariables['TEST_TOKEN'])) {
+            $this->token = $environmentVariables['TEST_TOKEN'];
+        }
     }
 
     /**

@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 /**
  * Class Configuration
@@ -34,7 +35,7 @@ class Configuration
     public function __construct($path)
     {
         $this->path = $path;
-        if(file_exists($path)) {
+        if (file_exists($path)) {
             $before = libxml_disable_entity_loader(false);
             $this->xml = simplexml_load_file($path);
             libxml_disable_entity_loader($before);
@@ -48,10 +49,11 @@ class Configuration
      */
     public function getBootstrap()
     {
-        if($this->xml)
+        if ($this->xml) {
             return (string)$this->xml->attributes()->bootstrap;
-        else
+        } else {
             return '';
+        }
     }
 
     /**
@@ -73,10 +75,12 @@ class Configuration
      */
     public function getSuites()
     {
-        if(!$this->xml) return null;
+        if (!$this->xml) {
+            return null;
+        }
         $suites = array();
         $nodes = $this->xml->xpath('//testsuite');
-        while(list(, $node) = each($nodes)) {
+        while (list(, $node) = each($nodes)) {
             foreach ($node->directory as $dir) {
                 foreach ($this->getSuitePaths((string) $dir) as $path) {
                     $suites[(string)$node['name']][] = new SuitePath($path, $dir->attributes()->suffix);

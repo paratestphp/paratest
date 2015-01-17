@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\LogInterpreter;
@@ -7,7 +8,6 @@ use PHP_CodeCoverage_Report_Clover;
 use PHP_CodeCoverage_Report_HTML;
 use PHP_CodeCoverage_Report_PHP;
 use RuntimeException;
-
 
 abstract class BaseRunner
 {
@@ -100,7 +100,7 @@ abstract class BaseRunner
         $loader->load($this->options->path);
         $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
-        foreach($this->pending as $pending) {
+        foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);
         }
     }
@@ -150,7 +150,7 @@ abstract class BaseRunner
         }
 
         $php = new PHP_CodeCoverage_Report_PHP();
-        $php->process($this->getCoverage()->getCoverage(),  $filteredOptions['coverage-php']);
+        $php->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-php']);
     }
 
     protected function initCoverage()
@@ -162,7 +162,7 @@ abstract class BaseRunner
         $this->coverage = new CoverageMerger();
     }
 
-    protected  function hasCoverage()
+    protected function hasCoverage()
     {
         return $this->getCoverage() != null;
     }
@@ -184,14 +184,14 @@ abstract class BaseRunner
      */
     protected function getCoverageObject($coverageFile)
     {
-      $coverage = file_get_contents($coverageFile);
+        $coverage = file_get_contents($coverageFile);
 
-      if (substr($coverage, 0, 5) === '<?php') {
-          return include $coverageFile;
-      }
-
-      // the PHPUnit 3.x and below
-      return unserialize($coverage);
+        if (substr($coverage, 0, 5) === '<?php') {
+            return include $coverageFile;
+        }
+        
+        // the PHPUnit 3.x and below
+        return unserialize($coverage);
     }
 
     /**
@@ -212,5 +212,4 @@ abstract class BaseRunner
         $this->getCoverage()->addCoverage($this->getCoverageObject($coverageFile));
         unlink($coverageFile);
     }
-
 }

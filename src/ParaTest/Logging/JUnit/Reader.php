@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Logging\JUnit;
+<?php
+namespace ParaTest\Logging\JUnit;
 
 use ParaTest\Logging\MetaProvider;
 
@@ -37,8 +38,9 @@ class Reader extends MetaProvider
 
     public function __construct($logFile)
     {
-        if(!file_exists($logFile))
+        if (!file_exists($logFile)) {
             throw new \InvalidArgumentException("Log file $logFile does not exist");
+        }
 
         $this->logFile = $logFile;
         if (filesize($logFile) == 0) {
@@ -95,11 +97,15 @@ class Reader extends MetaProvider
     {
         $feedback = array();
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
-        foreach($suites as $suite) {
-            foreach($suite->cases as $case) {
-                if($case->failures) $feedback[] = 'F';
-                else if ($case->errors) $feedback[] = 'E';
-                else $feedback[] = '.';
+        foreach ($suites as $suite) {
+            foreach ($suite->cases as $case) {
+                if ($case->failures) {
+                    $feedback[] = 'F';
+                } elseif ($case->errors) {
+                    $feedback[] = 'E';
+                } else {
+                    $feedback[] = '.';
+                }
             }
         }
         return $feedback;
@@ -121,8 +127,9 @@ class Reader extends MetaProvider
     {
         $this->initSuite();
         $cases = $this->getCaseNodes();
-        foreach($cases as $file => $nodeArray)
+        foreach ($cases as $file => $nodeArray) {
             $this->initSuiteFromCases($nodeArray);
+        }
     }
 
     /**
@@ -133,8 +140,11 @@ class Reader extends MetaProvider
     {
         $testCases = array();
         $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
-        if(!$this->isSingle) $this->addSuite($properties, $testCases);
-        else $this->suites[0]->cases = $testCases;
+        if (!$this->isSingle) {
+            $this->addSuite($properties, $testCases);
+        } else {
+            $this->suites[0]->cases = $testCases;
+        }
     }
 
     /**
@@ -160,7 +170,7 @@ class Reader extends MetaProvider
     protected function caseNodesToSuiteProperties($nodeArray, &$testCases = array())
     {
         $cb = array('ParaTest\\Logging\\JUnit\\TestCase', 'caseFromNode');
-        return array_reduce($nodeArray, function($result, $c) use(&$testCases, $cb) {
+        return array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
             $testCases[] = call_user_func_array($cb, array($c));
             $result['name'] = (string)$c['class'];
             $result['file'] = (string)$c['file'];
@@ -183,9 +193,11 @@ class Reader extends MetaProvider
     {
         $caseNodes = $this->xml->xpath('//testcase');
         $cases = array();
-        while(list( , $node) = each($caseNodes)) {
+        while (list( , $node) = each($caseNodes)) {
             $case = $node;
-            if(!isset($cases[(string)$node['file']])) $cases[(string)$node['file']] = array();
+            if (!isset($cases[(string)$node['file']])) {
+                $cases[(string)$node['file']] = array();
+            }
             $cases[(string)$node['file']][] = $node;
         }
         return $cases;

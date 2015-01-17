@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Parser;
+<?php
+namespace ParaTest\Parser;
 
 class Parser
 {
@@ -31,8 +32,9 @@ class Parser
 
     public function __construct($srcPath)
     {
-        if(!file_exists($srcPath))
+        if (!file_exists($srcPath)) {
             throw new \InvalidArgumentException("file not found: " . $srcPath);
+        }
 
         $this->path = $srcPath;
         $declaredClasses = get_declared_classes();
@@ -41,9 +43,9 @@ class Parser
         if (!$class) {
             throw new NoClassInFileException();
         }
-        try{
+        try {
             $this->refl = new \ReflectionClass($class);
-        } catch (\ReflectionException $e){
+        } catch (\ReflectionException $e) {
             throw new \InvalidArgumentException("Unable to instantiate ReflectionClass. " . $class . " not found in: " . $srcPath);
         }
     }
@@ -62,7 +64,8 @@ class Parser
                 $this->refl->getDocComment(),
                 $this->refl->getName(),
                 $this->refl->getNamespaceName(),
-                $this->getMethods());
+                $this->getMethods()
+            );
     }
 
     /**
@@ -74,9 +77,13 @@ class Parser
     {
         $tests = array();
         $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
-        foreach($methods as $method) {
-            if(preg_match(self::$testName, $method->getName()) || preg_match(self::$testAnnotation, $method->getDocComment()))
+        foreach ($methods as $method) {
+            $hasTestName = preg_match(self::$testName, $method->getName());
+            $hasTestAnnotation = preg_match(self::$testAnnotation, $method->getDocComment());
+            $isTestMethod = $hasTestName || $hasTestAnnotation;
+            if ($isTestMethod) {
                 $tests[] = new ParsedFunction($method->getDocComment(), 'public', $method->getName());
+            }
         }
         return $tests;
     }
