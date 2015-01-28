@@ -173,6 +173,10 @@ class ResultPrinter
         }
         $this->results->addReader($reader);
         $feedbackItems = $reader->getFeedback();
+
+        $dataProviderOverhead = count($feedbackItems) - $test->getTestMethodCount();
+        $this->totalCases += $dataProviderOverhead;
+
         foreach ($feedbackItems as $item) {
             $this->printFeedbackItem($item);
         }
@@ -320,9 +324,8 @@ class ResultPrinter
     protected function printProgress()
     {
         printf(
-            ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
+            ' %' . $this->numTestsWidth . 'd (%3s%%)',
             $this->casesProcessed,
-            $this->totalCases,
             floor(($this->casesProcessed / $this->totalCases) * 100)
         );
 
