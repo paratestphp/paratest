@@ -140,6 +140,13 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testFalsehood', $methods[1]->getName());
     }
 
+    public function testLoadIgnoresFilesWithoutClasses()
+    {
+        $loader = new SuiteLoader();
+        $fileWithoutClass = $this->fixture('special-classes/FileWithoutClass.php');
+        $loader->load($fileWithoutClass);
+    }
+
     public function testExecutableTestsForFunctionalModeUse()
     {
         $path = $this->fixture('passing-tests/DependsOnChain.php');

@@ -127,7 +127,7 @@ class Worker
     public function waitForStop()
     {
         $status = proc_get_status($this->proc);
-        while($status['running']) {
+        while ($status['running']) {
             $status = proc_get_status($this->proc);
             $this->setExitCode($status);
         }
@@ -160,11 +160,16 @@ class Worker
 
     public function isCrashed()
     {
-        $this->updateStateFromAvailableOutput();
         if (!$this->isStarted()) {
             return false;
         }
         $status = proc_get_status($this->proc);
+
+        $this->updateStateFromAvailableOutput();
+        if (!$this->isRunning) {
+            return false;
+        }
+
         $this->setExitCode($status);
         if ($this->exitCode === null) {
             return false;
@@ -175,12 +180,14 @@ class Worker
     private function checkNotCrashed()
     {
         if ($this->isCrashed()) {
-            throw new \RuntimeException("This worker has crashed. Last executed command: " . end($this->commands) . PHP_EOL
+            throw new \RuntimeException(
+                "This worker has crashed. Last executed command: " . end($this->commands) . PHP_EOL
                 . "Output:" . PHP_EOL
                 . "----------------------" . PHP_EOL
                 . $this->alreadyReadOutput . PHP_EOL
                 . "----------------------" . PHP_EOL
-                . $this->readAllStderr());
+                . $this->readAllStderr()
+            );
         }
     }
 

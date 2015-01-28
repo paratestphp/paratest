@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Console\Testers;
+<?php 
+namespace ParaTest\Console\Testers;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -57,13 +58,16 @@ class PHPUnit extends Tester
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        if(!$this->hasConfig($input) && !$this->hasPath($input))
+        if (!$this->hasConfig($input) && !$this->hasPath($input)) {
             $this->displayHelp($input, $output);
+        }
+
         if ($input->getOption('runner') === 'WrapperRunner') {
             $runner = new WrapperRunner($this->getRunnerOptions($input));
         } else {
             $runner = new Runner($this->getRunnerOptions($input));
         }
+
         $runner->run();
         return $runner->getExitCode();
     }
@@ -101,14 +105,15 @@ class PHPUnit extends Tester
     {
         $cwd = getcwd() . DIRECTORY_SEPARATOR;
 
-        if($input->getOption('configuration'))
+        if ($input->getOption('configuration')) {
             $configFilename = $input->getOption('configuration');
-        elseif(file_exists($cwd . 'phpunit.xml.dist'))
+        } elseif (file_exists($cwd . 'phpunit.xml.dist')) {
             $configFilename = $cwd . 'phpunit.xml.dist';
-        elseif(file_exists($cwd . 'phpunit.xml'))
+        } elseif (file_exists($cwd . 'phpunit.xml')) {
             $configFilename = $cwd . 'phpunit.xml';
-        else
+        } else {
             return false;
+        }
 
         return new Configuration($configFilename);
     }
@@ -123,18 +128,20 @@ class PHPUnit extends Tester
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
 
-        if($this->hasConfig($input) && !isset($options['bootstrap'])) {
+        if ($this->hasConfig($input) && !isset($options['bootstrap'])) {
             $config = $this->getConfig($input);
-            if($config->getBootstrap())
+            if ($config->getBootstrap()) {
                 $options['bootstrap'] = $config->getConfigDir() . $config->getBootstrap();
+            }
         }
-        if(isset($options['bootstrap'])) {
-            if(file_exists($options['bootstrap']))
+
+        if (isset($options['bootstrap'])) {
+            if (file_exists($options['bootstrap'])) {
                 $this->requireBootstrap($options['bootstrap']);
-            else
-                throw new \RuntimeException(
-                    sprintf('Bootstrap specified but could not be found (%s)',
-                    $options['bootstrap']));
+            } else {
+                $message = sprintf('Bootstrap specified but could not be found (%s)', $options['bootstrap']);
+                throw new \RuntimeException($message);
+            }
         }
 
         if ($this->hasCoverage($options) && !isset($options['coverage-php'])) {

@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Logging\JUnit;
+<?php
+namespace ParaTest\Logging\JUnit;
 
 use ParaTest\Logging\LogInterpreter;
 
@@ -50,8 +51,7 @@ class Writer
                                         'time' => 0
                                     );
 
-    public function __construct(LogInterpreter $interpreter,
-                                $name = '')
+    public function __construct(LogInterpreter $interpreter, $name = '')
     {
         $this->name = $name;
         $this->interpreter = $interpreter;
@@ -79,10 +79,11 @@ class Writer
     {
         $suites = $this->interpreter->flattenCases();
         $root = $this->getSuiteRoot($suites);
-        foreach($suites as $suite) {
+        foreach ($suites as $suite) {
             $snode = $this->appendSuite($root, $suite);
-            foreach($suite->cases as $case)
+            foreach ($suite->cases as $case) {
                 $cnode = $this->appendCase($snode, $case);
+            }
         }
         return $this->document->saveXML();
     }
@@ -109,9 +110,10 @@ class Writer
     {
         $suiteNode = $this->document->createElement("testsuite");
         $vars = get_object_vars($suite);
-        foreach($vars as $name => $value) {
-            if(preg_match(static::$suiteAttrs, $name))
+        foreach ($vars as $name => $value) {
+            if (preg_match(static::$suiteAttrs, $name)) {
                 $suiteNode->setAttribute($name, $value);
+            }
         }
         $root->appendChild($suiteNode);
         return $suiteNode;
@@ -129,8 +131,11 @@ class Writer
     {
         $caseNode = $this->document->createElement("testcase");
         $vars = get_object_vars($case);
-        foreach($vars as $name => $value)
-            if(preg_match(static::$caseAttrs, $name)) $caseNode->setAttribute($name, $value);
+        foreach ($vars as $name => $value) {
+            if (preg_match(static::$caseAttrs, $name)) {
+                $caseNode->setAttribute($name, $value);
+            }
+        }
         $suiteNode->appendChild($caseNode);
         $this->appendDefects($caseNode, $case->failures, 'failure');
         $this->appendDefects($caseNode, $case->errors, 'error');
@@ -146,7 +151,7 @@ class Writer
      */
     protected function appendDefects($caseNode, $defects, $type)
     {
-        foreach($defects as $defect) {
+        foreach ($defects as $defect) {
             $defectNode = $this->document->createElement($type, htmlentities($defect['text']) . "\n");
             $defectNode->setAttribute('type', $defect['type']);
             $caseNode->appendChild($defectNode);
@@ -163,11 +168,14 @@ class Writer
     {
         $testsuites = $this->document->createElement("testsuites");
         $this->document->appendChild($testsuites);
-        if(sizeof($suites) == 1) return $testsuites;
+        if (sizeof($suites) == 1) {
+            return $testsuites;
+        }
         $rootSuite = $this->document->createElement('testsuite');
         $attrs = $this->getSuiteRootAttributes($suites);
-        foreach($attrs as $attr => $value)
+        foreach ($attrs as $attr => $value) {
             $rootSuite->setAttribute($attr, $value);
+        }
         $testsuites->appendChild($rootSuite);
         return $rootSuite;
     }
@@ -181,7 +189,7 @@ class Writer
      */
     protected function getSuiteRootAttributes($suites)
     {
-        return array_reduce($suites, function($result, $suite){
+        return array_reduce($suites, function ($result, $suite) {
             $result['tests'] += $suite->tests;
             $result['assertions'] += $suite->assertions;
             $result['failures'] += $suite->failures;

@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Logging\JUnit\Reader;
@@ -111,13 +112,16 @@ class ResultPrinter
     {
         $this->numTestsWidth = strlen((string) $this->totalCases);
         $this->maxColumn = 69 - (2 * $this->numTestsWidth);
-        printf("\nRunning phpunit in %d process%s with %s%s\n\n",
-               $options->processes,
-               $options->processes > 1 ? 'es' : '',
-               $options->phpunit,
-               $options->functional ? '. Functional mode is on' : '');
-        if(isset($options->filtered['configuration']))
+        printf(
+            "\nRunning phpunit in %d process%s with %s%s\n\n",
+            $options->processes,
+            $options->processes > 1 ? 'es' : '',
+            $options->phpunit,
+            $options->functional ? '. Functional mode is on' : ''
+        );
+        if (isset($options->filtered['configuration'])) {
             printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
+        }
         $this->timer->start();
         $this->colors = $options->colors;
     }
@@ -162,20 +166,26 @@ class ResultPrinter
     public function printFeedback(ExecutableTest $test)
     {
         $reader = new Reader($test->getTempFile());
+        if (!$reader->hasResults()) {
+            throw new \RuntimeException("Log file " . $test->getTempFile() . " is empty.
+                This means a PHPUnit process was unable to run " . $test->getPath() . "
+                Maybe there is more than one class in this file.");
+        }
         $this->results->addReader($reader);
         $feedbackItems = $reader->getFeedback();
 
         $dataProviderOverhead = count($feedbackItems) - $test->getTestMethodCount();
         $this->totalCases += $dataProviderOverhead;
 
-        foreach ($feedbackItems as $item)
+        foreach ($feedbackItems as $item) {
             $this->printFeedbackItem($item);
-
+        }
         $warnings = $test->getWarnings();
         if ($warnings) {
             $this->addWarnings($warnings);
-            foreach ($warnings as $warning)
+            foreach ($warnings as $warning) {
                 $this->printFeedbackItem('W');
+            }
         }
     }
 
@@ -191,8 +201,9 @@ class ResultPrinter
         print $item;
         $this->column++;
         $this->casesProcessed++;
-        if ($this->column == $this->maxColumn)
+        if ($this->column == $this->maxColumn) {
             $this->printProgress();
+        }
     }
 
     /**
@@ -286,18 +297,23 @@ class ResultPrinter
      * @param $type
      * @return string
      */
-    protected function getDefects($defects = array(), $type)
+    protected function getDefects(array $defects, $type)
     {
         $count = sizeof($defects);
-        if($count == 0) return '';
-        $output = sprintf("There %s %d %s%s:\n",
+        if ($count == 0) {
+            return '';
+        }
+        $output = sprintf(
+            "There %s %d %s%s:\n",
             ($count == 1) ? 'was' : 'were',
             $count,
             $type,
-            ($count == 1) ? '' : 's');
+            ($count == 1) ? '' : 's'
+        );
 
-        for($i = 1; $i <= sizeof($defects); $i++)
+        for ($i = 1; $i <= sizeof($defects); $i++) {
             $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
+        }
 
         return $output;
     }
@@ -309,7 +325,6 @@ class ResultPrinter
     {
         printf(
             ' %' . $this->numTestsWidth . 'd (%3s%%)',
-
             $this->casesProcessed,
             floor(($this->casesProcessed / $this->totalCases) * 100)
         );
@@ -328,11 +343,13 @@ class ResultPrinter
         $formatString = "FAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
 
         return "\n" . $this->red(
-            sprintf($formatString,
-                       $this->results->getTotalTests(),
-                       $this->results->getTotalAssertions(),
-                       $this->results->getTotalFailures(),
-                       $this->results->getTotalErrors())
+            sprintf(
+                $formatString,
+                $this->results->getTotalTests(),
+                $this->results->getTotalAssertions(),
+                $this->results->getTotalFailures(),
+                $this->results->getTotalErrors()
+            )
         );
     }
 
@@ -348,11 +365,13 @@ class ResultPrinter
         $asserts = $this->results->getTotalAssertions();
 
         return $this->green(
-            sprintf("OK (%d test%s, %d assertion%s)\n",
-                       $tests,
-                       ($tests == 1) ? '' : 's',
-                       $asserts,
-                       ($asserts == 1) ? '' : 's')
+            sprintf(
+                "OK (%d test%s, %d assertion%s)\n",
+                $tests,
+                ($tests == 1) ? '' : 's',
+                $asserts,
+                ($asserts == 1) ? '' : 's'
+            )
         );
     }
 
@@ -377,13 +396,13 @@ class ResultPrinter
     }
 
     /**
-     * Deletes all the log files for ExecutableTest objects
+     * Deletes all the temporary log files for ExecutableTest objects
      * being printed
      */
     private function clearLogs()
     {
-        //remove temporary logs
-        foreach($this->suites as $suite)
+        foreach ($this->suites as $suite) {
             $suite->deleteFile();
+        }
     }
 }

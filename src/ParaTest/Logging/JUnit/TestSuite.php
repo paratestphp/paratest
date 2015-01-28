@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Logging\JUnit;
+<?php
+namespace ParaTest\Logging\JUnit;
 
 /**
  * Class TestSuite
@@ -61,14 +62,14 @@ class TestSuite
     public $cases = array();
 
     public function __construct(
-        $name, 
+        $name,
         $tests,
         $assertions,
         $failures,
         $errors,
         $time,
-        $file = null)
-    {
+        $file = null
+    ) {
         $this->name = $name;
         $this->tests = $tests;
         $this->assertions = $assertions;
@@ -87,13 +88,15 @@ class TestSuite
      */
     public static function suiteFromArray($arr)
     {
-        return new TestSuite($arr['name'],
-                             $arr['tests'],
-                             $arr['assertions'],
-                             $arr['failures'],
-                             $arr['errors'],
-                             $arr['time'],
-                             $arr['file']);
+        return new TestSuite(
+            $arr['name'],
+            $arr['tests'],
+            $arr['assertions'],
+            $arr['failures'],
+            $arr['errors'],
+            $arr['time'],
+            $arr['file']
+        );
     }
 
     /**
@@ -102,14 +105,16 @@ class TestSuite
      * @param \SimpleXMLElement $node
      * @return TestSuite
      */
-    public static function suiteFromNode(\SimpleXMLElement $node) 
+    public static function suiteFromNode(\SimpleXMLElement $node)
     {
-        return new TestSuite((string) $node['name'],
-                             (string) $node['tests'],
-                             (string) $node['assertions'],
-                             (string) $node['failures'],
-                             (string) $node['errors'],
-                             (string) $node['time'],
-                             (string) $node['file']);
+        return new TestSuite(
+            (string) $node['name'],
+            (string) $node['tests'],
+            (string) $node['assertions'],
+            (string) $node['failures'],
+            (string) $node['errors'],
+            (string) $node['time'],
+            (string) $node['file']
+        );
     }
 }

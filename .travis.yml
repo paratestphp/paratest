@@ -8,14 +8,25 @@ php:
     - "5.4"
     - "5.3"
     - hhvm
+    - hhvm-nightly
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: hhvm-nightly
 
 env:
     - PHPUNIT_VERSION='3.7.*'
     - PHPUNIT_VERSION='4.0.*'
+    - PHPUNIT_VERSION='4.*@stable'
 
 before_script:
     - composer require --no-update phpunit/phpunit=$PHPUNIT_VERSION
     - composer install --prefer-source
 
 script:
-    - vendor/bin/phpunit
+    - vendor/bin/phpunit --coverage-clover=coverage.clover
+
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover

@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Parser;
+<?php
+namespace ParaTest\Parser;
 
 class ParsedClass extends ParsedObject
 {
@@ -13,7 +14,7 @@ class ParsedClass extends ParsedObject
      *
      * @var array
      */
-    private $functions;
+    private $methods;
 
     public function __construct($doc, $name, $namespace, $methods = array())
     {
@@ -32,9 +33,15 @@ class ParsedClass extends ParsedObject
      */
     public function getMethods($annotations = array())
     {
-        $methods = array_filter($this->methods, function($m) use($annotations){
-            foreach($annotations as $a => $v)
-                return $m->hasAnnotation($a, $v);
+        $methods = array_filter($this->methods, function ($m) use ($annotations) {
+            foreach ($annotations as $a => $v) {
+                foreach (explode(',', $v) as $subValue) {
+                    if ($m->hasAnnotation($a, $subValue)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         });
         return $methods ? $methods : $this->methods;
     }

@@ -1,7 +1,7 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 use Habitat\Habitat;
-
 
 class Runner extends BaseRunner
 {
@@ -28,7 +28,7 @@ class Runner extends BaseRunner
         parent::run();
 
         while (count($this->running) || count($this->pending)) {
-            foreach($this->running as $key => $test) {
+            foreach ($this->running as $key => $test) {
                 if (!$this->testIsStillRunning($test)) {
                     unset($this->running[$key]);
                     $this->releaseToken($key);
@@ -88,7 +88,9 @@ class Runner extends BaseRunner
      */
     private function testIsStillRunning($test)
     {
-        if(!$test->isDoneRunning()) return true;
+        if (!$test->isDoneRunning()) {
+            return true;
+        }
         $this->setExitCode($test);
         $test->stop();
         if ($this->options->stopOnFailure && $test->getExitCode() > 0) {
@@ -119,8 +121,9 @@ class Runner extends BaseRunner
     private function setExitCode(ExecutableTest $test)
     {
         $exit = $test->getExitCode();
-        if($exit > $this->exitcode)
+        if ($exit > $this->exitcode) {
             $this->exitcode = $exit;
+        }
     }
 
     /**
@@ -144,7 +147,9 @@ class Runner extends BaseRunner
     protected function getNextAvailableToken()
     {
         for ($i=0; $i< count($this->tokens); $i++) {
-            if ($this->tokens[$i]) return $i;
+            if ($this->tokens[$i]) {
+                return $i;
+            }
         }
 
         return false;
@@ -178,5 +183,4 @@ class Runner extends BaseRunner
         $coverageFile = $test->getCoverageFileName();
         $this->addCoverageFromFile($coverageFile);
     }
-
 }
