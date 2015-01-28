@@ -308,11 +308,9 @@ class ResultPrinter
     protected function printProgress()
     {
         printf(
-            ' %' . $this->numTestsWidth . 'd / %' .
-                $this->numTestsWidth . 'd (%3s%%)',
+            ' %' . $this->numTestsWidth . 'd (%3s%%)',
 
             $this->casesProcessed,
-            $this->totalCases,
             floor(($this->casesProcessed / $this->totalCases) * 100)
         );
 
