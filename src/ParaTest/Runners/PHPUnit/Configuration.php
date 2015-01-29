@@ -99,7 +99,7 @@ class Configuration
     {
         $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
 
-        $files = [];
+        $files = array();
         while (list(, $node) = each($nodes)) {
             foreach ($node->file as $file) {
                 foreach ($this->getSuitePaths((string) $file) as $path) {
