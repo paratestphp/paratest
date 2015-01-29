@@ -95,7 +95,8 @@ class Configuration
      *
      * @return array|null
      */
-    public function getSuiteFiles($suiteName) {
+    public function getSuiteFiles($suiteName)
+    {
         $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
 
         $files = [];
