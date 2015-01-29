@@ -46,7 +46,8 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
             new InputOption('coverage-clover', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in Clover XML format.'),
             new InputOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.'),
-            new InputOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.')
+            new InputOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.'),
+            new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
         ));
         $definition = $this->command->getDefinition();
         $this->assertEquals($expected, $definition);
