@@ -96,9 +96,12 @@ class SuiteLoader
             foreach ($configuration->getSuiteFiles($this->options->testsuite) as $file) {
                 $this->loadFile($file);
             }
-            if (!$this->files) {
-                throw new \RuntimeException("You provided a testsuite but the testsuite does not contain any <file>'s");
+            foreach ($configuration->getSuites() as $suite) {
+                foreach ($suite as $suitePath) {
+                    $this->loadPath($suitePath);
+                }
             }
+            $this->files = array_unique($this->files); // remove duplicates
         } elseif ($suites = $configuration->getSuites()) {
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {

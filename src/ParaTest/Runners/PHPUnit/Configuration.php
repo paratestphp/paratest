@@ -90,6 +90,11 @@ class Configuration
         return $suites;
     }
 
+    public function getTestsuiteItems()
+    {
+
+    }
+
     /**
      * @param string $suiteName
      *
