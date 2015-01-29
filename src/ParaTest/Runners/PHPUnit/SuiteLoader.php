@@ -92,6 +92,13 @@ class SuiteLoader
 
         if ($path) {
             $this->loadPath($path);
+        } elseif (isset($this->options->testsuite) && $this->options->testsuite) {
+            foreach($configuration->getSuiteFiles($this->options->testsuite) as $file) {
+                $this->loadFile($file);
+            }
+            if(!$this->files) {
+                throw new \RuntimeException("You provided a testsuite but the testsuite does not contain any <file>'s");
+            }
         } elseif ($suites = $configuration->getSuites()) {
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {

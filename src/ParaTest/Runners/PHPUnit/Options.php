@@ -79,6 +79,7 @@ class Options
         $this->runner = $opts['runner'];
         $this->noTestTokens = $opts['no-test-tokens'];
         $this->colors = $opts['colors'];
+        $this->testsuite = $opts['testsuite'];
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -112,6 +113,7 @@ class Options
             'runner' => 'Runner',
             'no-test-tokens' => false,
             'colors' => false,
+            'testsuite' => '',
         );
     }
 

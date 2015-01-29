@@ -42,6 +42,42 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
     }
 
+    public function testLoadTestsuiteFileFromConfig() {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 1;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromConfig() {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-multifile.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 2;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    /**
+     * @expectedException   \RuntimeException
+     * @expectedExceptionMessage You provided a testsuite but the testsuite does not contain any <file>'s
+     */
+    public function testLoadTestsuiteWithoutFiles() {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-passing.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+    }
+
     public function testLoadSuiteFromConfig()
     {
         $options = new Options(array('configuration' => $this->fixture('phpunit-passing.xml')));

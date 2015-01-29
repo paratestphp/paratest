@@ -43,6 +43,7 @@ class PHPUnit extends Tester
             ->addOption('stop-on-failure', null, InputOption::VALUE_NONE, 'Don\'t start any more processes after a failure.')
             ->addOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.')
             ->addOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.')
+            ->addOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
             ->addArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.');
         $this->command = $command;
