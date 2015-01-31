@@ -90,6 +90,32 @@ class Configuration
         return $suites;
     }
 
+    public function getTestsuiteItems()
+    {
+
+    }
+
+    /**
+     * @param string $suiteName
+     *
+     * @return array|null
+     */
+    public function getSuiteFiles($suiteName)
+    {
+        $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
+
+        $files = array();
+        while (list(, $node) = each($nodes)) {
+            foreach ($node->file as $file) {
+                foreach ($this->getSuitePaths((string) $file) as $path) {
+                    $files[] = $path;
+                }
+            }
+        }
+
+        return $files;
+    }
+
     /**
      * Return the path of the directory
      * that contains the phpunit configuration

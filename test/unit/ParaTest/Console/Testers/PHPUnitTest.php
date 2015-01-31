@@ -22,7 +22,8 @@ class PHPUnitTest extends \TestBase
             new InputOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.'),
             new InputOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.'),
             new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'),
-            new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.')
+            new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
+            new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
         ));
         $tester = new PHPUnit();
         $tester->configure($testCommand);

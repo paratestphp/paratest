@@ -92,6 +92,16 @@ class SuiteLoader
 
         if ($path) {
             $this->loadPath($path);
+        } elseif (isset($this->options->testsuite) && $this->options->testsuite) {
+            foreach ($configuration->getSuiteFiles($this->options->testsuite) as $file) {
+                $this->loadFile($file);
+            }
+            foreach ($configuration->getSuites() as $suite) {
+                foreach ($suite as $suitePath) {
+                    $this->loadPath($suitePath);
+                }
+            }
+            $this->files = array_unique($this->files); // remove duplicates
         } elseif ($suites = $configuration->getSuites()) {
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {
