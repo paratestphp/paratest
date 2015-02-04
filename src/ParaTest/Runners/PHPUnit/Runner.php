@@ -146,7 +146,7 @@ class Runner extends BaseRunner
      */
     protected function getNextAvailableToken()
     {
-        foreach($this->tokens as $token => $free) {
+        foreach ($this->tokens as $token => $free) {
             if ($free) {
                 return $token;
             }
