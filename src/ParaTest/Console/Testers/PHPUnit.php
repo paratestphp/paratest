@@ -66,6 +66,17 @@ class PHPUnit extends Tester
         if ($input->getOption('runner') === 'WrapperRunner') {
             $runner = new WrapperRunner($this->getRunnerOptions($input));
         } else {
+            if ($input->getOption('runner') !== '') {
+                // because we want to have to bootstrap script inherited before check/initialization
+                $runnerOption = $this->getRunnerOptions($input);
+                $runnerClass = $input->getOption('runner');
+                if (class_exists($runnerClass)) {
+                    $runner = new $runnerClass($runnerOption);
+                }
+            }
+        }
+
+        if (!isset($runner)) {
             $runner = new Runner($this->getRunnerOptions($input));
         }
 
