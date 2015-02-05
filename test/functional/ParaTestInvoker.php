@@ -17,14 +17,24 @@ class ParaTestInvoker
 
     /**
      * Runs the command, returns the proc after it's done
-     * @return \Symfony\Component\Process\Process
+     *
+     * @param array $options
+     * @param callable  $callback
+     *
+     * @return Process
      */
-    public function execute($options=array())
+    public function execute($options=array(), $callback = null)
     {
         $cmd = $this->buildCommand($options);
         $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
         $proc = new Process($cmd, null, $env, null, $timeout = 600);
-        $proc->run();
+
+        if (!is_callable($callback)) {
+            $proc->run();
+        } else {
+            $proc->run($callback);
+        }
+
         return $proc;
     }
 

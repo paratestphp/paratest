@@ -34,6 +34,21 @@ class PHPUnitTest extends FunctionalTestBase
         )));
     }
 
+    public function testWithCustomRunner()
+    {
+        $cb = new ProcessCallback();
+
+        $this->invokeParatest(
+            'passing-tests',
+            array(
+                'configuration' => PHPUNIT_CONFIGURATION,
+                'runner'        => 'EmptyRunnerStub'
+            ),
+            array($cb, 'callback')
+        );
+        $this->assertEquals('EXECUTED', $cb->getBuffer());
+    }
+
     public function testWithColorsGreenBar()
     {
         $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',

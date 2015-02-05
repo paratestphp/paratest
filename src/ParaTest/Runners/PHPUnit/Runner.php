@@ -134,7 +134,7 @@ class Runner extends BaseRunner
     {
         $this->tokens = array();
         for ($i=0; $i< $this->options->processes; $i++) {
-            $this->tokens[$i] = true;
+            $this->tokens[uniqid()] = true;
         }
     }
 
@@ -146,12 +146,11 @@ class Runner extends BaseRunner
      */
     protected function getNextAvailableToken()
     {
-        for ($i=0; $i< count($this->tokens); $i++) {
-            if ($this->tokens[$i]) {
-                return $i;
+        foreach ($this->tokens as $token => $free) {
+            if ($free) {
+                return $token;
             }
         }
-
         return false;
     }
 
