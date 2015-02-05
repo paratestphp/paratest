@@ -1,6 +1,5 @@
 <?php
 namespace ParaTest\Runners\PHPUnit;
-use ParaTest\Parser\Parser;
 
 /**
  * Class Configuration
@@ -113,7 +112,8 @@ class Configuration
                         default:
                             foreach ($this->getSuitePaths((string)$nodeContent) as $path) {
                                 $suites[(string)$node['name']][] = new SuitePath(
-                                    $path, $nodeContent->attributes()->suffix
+                                    $path,
+                                    $nodeContent->attributes()->suffix
                                 );
                             }
                             break;
