@@ -93,15 +93,11 @@ class SuiteLoader
         if ($path) {
             $this->loadPath($path);
         } elseif (isset($this->options->testsuite) && $this->options->testsuite) {
-            foreach ($configuration->getSuiteFiles($this->options->testsuite) as $file) {
-                $this->loadFile($file);
-            }
-            foreach ($configuration->getSuites() as $suite) {
+            foreach ($configuration->getSuiteByName($this->options->testsuite) as $suite) {
                 foreach ($suite as $suitePath) {
                     $this->loadPath($suitePath);
                 }
             }
-            $this->files = array_unique($this->files); // remove duplicates
         } elseif ($suites = $configuration->getSuites()) {
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {
@@ -113,6 +109,8 @@ class SuiteLoader
         if (!$this->files) {
             throw new \RuntimeException("No path or configuration provided (tests must end with Test.php)");
         }
+
+        $this->files = array_unique($this->files); // remove duplicates
 
         $this->initSuites();
     }

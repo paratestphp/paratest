@@ -93,12 +93,28 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadTestsuiteWithFilesDirsMixed()
     {
-        $options = new Options(array('configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => 'ParaTest Fixtures'));
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = sizeof($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteWithNestedSuite()
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-files-dirs-mix-nested.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            sizeof($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
         $this->assertEquals($expected, sizeof($files));
     }
 

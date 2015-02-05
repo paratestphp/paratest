@@ -23,6 +23,8 @@ class Configuration
      */
     protected $xml;
 
+    protected $availableNodes = array('file', 'directory', 'testsuite');
+
     /**
      * A collection of datastructures
      * build from the <testsuite> nodes inside of a
@@ -79,41 +81,48 @@ class Configuration
             return null;
         }
         $suites = array();
-        $nodes = $this->xml->xpath('//testsuite');
+        $nodes = $this->xml->xpath('//testsuites/testsuite');
+
         while (list(, $node) = each($nodes)) {
-            foreach ($node->directory as $dir) {
-                foreach ($this->getSuitePaths((string) $dir) as $path) {
-                    $suites[(string)$node['name']][] = new SuitePath($path, $dir->attributes()->suffix);
-                }
-            }
+            $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$node['name']));
         }
         return $suites;
     }
 
-    public function getTestsuiteItems()
-    {
-
-    }
-
     /**
+     * Return the contents of the <testsuite> nodes
+     * contained in a PHPUnit configuration
+     *
      * @param string $suiteName
      *
-     * @return array|null
+     * @return array
      */
-    public function getSuiteFiles($suiteName)
+    public function getSuiteByName($suiteName)
     {
         $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
 
-        $files = array();
+        $suites = array();
         while (list(, $node) = each($nodes)) {
-            foreach ($node->file as $file) {
-                foreach ($this->getSuitePaths((string) $file) as $path) {
-                    $files[] = $path;
+            foreach ($this->availableNodes as $nodeName) {
+                foreach ($node->{$nodeName} as $nodeContent) {
+                    switch ($nodeName) {
+                        case 'testsuite':
+                            $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$nodeContent));
+                            break;
+                        default:
+                            foreach ($this->getSuitePaths((string)$nodeContent) as $path) {
+                                $suites[(string)$node['name']][] = new SuitePath(
+                                    $path,
+                                    $nodeContent->attributes()->suffix
+                                );
+                            }
+                            break;
+                    }
                 }
             }
         }
 
-        return $files;
+        return $suites;
     }
 
     /**
