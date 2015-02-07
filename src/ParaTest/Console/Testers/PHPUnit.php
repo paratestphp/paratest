@@ -139,37 +139,47 @@ class PHPUnit extends Tester
     {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
+        $bootstrap = $this->getBootstrapFile($input, $options);
+        $this->requireBootstrap($bootstrap);
 
-        if ($this->hasConfig($input) && !isset($options['bootstrap'])) {
-            $config = $this->getConfig($input);
-            if ($config->getBootstrap()) {
-                $options['bootstrap'] = $config->getConfigDir() . $config->getBootstrap();
-            }
-        }
-
-        if (isset($options['bootstrap'])) {
-            if (file_exists($options['bootstrap'])) {
-                $this->requireBootstrap($options['bootstrap']);
-            } else {
-                $message = sprintf('Bootstrap specified but could not be found (%s)', $options['bootstrap']);
-                throw new \RuntimeException($message);
-            }
-        }
-
-        if ($this->hasCoverage($options) && !isset($options['coverage-php'])) {
+        if ($this->hasCoverage($options)) {
             $options['coverage-php'] = sys_get_temp_dir() . '/will_be_overwritten.php';
         }
 
-        $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
+        if ($path) {
+            $options = array_merge(array('path' => $path), $options);
+        }
+
         return $options;
     }
 
     /**
-     * This function limits the scope affected by the bootstrap,
-     * so that $options variable defined in it doesn't break
-     * this object's configuration.
+     * Require the bootstrap. If the file is specified, but does not exist
+     * then an exception will be raised.
+     *
+     * @param $file
+     * @throws \RuntimeException
      */
     public function requireBootstrap($file)
+    {
+        if (! $file) {
+            return;
+        }
+
+        if (! file_exists($file)) {
+            $message = sprintf('Bootstrap specified but could not be found (%s)', $file);
+            throw new \RuntimeException($message);
+        }
+
+        $this->scopedRequire($file);
+    }
+
+    /**
+     * This function limits the scope of a required file
+     * so that variables defined in it do not break
+     * this object's configuration.
+     */
+    protected function scopedRequire($file)
     {
         $cwd = getcwd();
         require_once $file;
@@ -177,11 +187,38 @@ class PHPUnit extends Tester
     }
 
     /**
+     * Return whether or not code coverage information should be collected.
+     *
      * @param $options
      * @return bool
      */
     protected function hasCoverage($options)
     {
-        return isset($options['coverage-html']) || isset($options['coverage-clover']);
+        $isFileFormat = isset($options['coverage-html']) || isset($options['coverage-clover']);
+        $isPHP = isset($options['coverage-php']);
+        return $isFileFormat && ! $isPHP;
+    }
+
+    /**
+     * Fetch the path to the bootstrap file.
+     *
+     * @param InputInterface $input
+     * @param array $options
+     * @return string
+     */
+    protected function getBootstrapFile(InputInterface $input, array $options)
+    {
+        if (isset($options['bootstrap'])) {
+            return $options['bootstrap'];
+        }
+
+        if (! $this->hasConfig($input)) {
+            return '';
+        }
+
+        $config = $this->getConfig($input);
+        $bootstrap = $config->getBootstrap();
+
+        return ($bootstrap) ? $config->getConfigDir() . $bootstrap : '';
     }
 }
