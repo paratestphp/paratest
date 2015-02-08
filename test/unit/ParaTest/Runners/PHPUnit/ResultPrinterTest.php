@@ -55,7 +55,7 @@ class ResultPrinterTest extends ResultTester
         $options = new Options();
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\n", $options->phpunit);
-        $this->assertEquals($expected, $contents);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testStartSetsWidthAndMaxColumn()
@@ -80,7 +80,7 @@ class ResultPrinterTest extends ResultTester
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\nConfiguration read from %s\n\n",
                             $options->phpunit,
                             __DIR__ . DS . 'myconfig.xml');
-        $this->assertEquals($expected, $contents);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithFunctionalMode()
@@ -88,7 +88,7 @@ class ResultPrinterTest extends ResultTester
         $options = new Options(array('functional' => true));
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is on\n\n", $options->phpunit);
-        $this->assertEquals($expected, $contents);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess()
@@ -96,7 +96,7 @@ class ResultPrinterTest extends ResultTester
         $options = new Options(array('processes' => 1));
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
-        $this->assertEquals($expected, $contents);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases()

@@ -192,19 +192,28 @@ class Options
      */
     protected function getConfigurationPath($filtered)
     {
-        if (isset($filtered['configuration'])) {
-            return file_exists($filtered['configuration'])
-                ? realpath($filtered['configuration'])
-                : $filtered['configuration'];
-        }
+        if(isset($filtered['configuration']))
+            return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
+        return $this->getDefaultConfigurationForPath();
+    }
 
-        if (file_exists('phpunit.xml')) {
-            return realpath('phpunit.xml');
+    /**
+     * Retrieve the default configuration given a path (directory or file).
+     * This will search into the directory, if a directory is specified
+     *
+     * @param string $path The path to search into
+     * @param string $default The default value to give back
+     * @return string|null
+     */
+    private function getDefaultConfigurationForPath($path = '', $default = null)
+    {
+        $directory_separator = strlen($path) ? DIRECTORY_SEPARATOR : '';
+        $suffixes = array('', $directory_separator . 'phpunit.xml', $directory_separator . 'phpunit.xml.dist');
+        foreach ($suffixes as $suffix) {
+            if (file_exists($path.$suffix) && !is_dir($path.$suffix))
+                return realpath($path.$suffix);
         }
-
-        if (file_exists('phpunit.xml.dist')) {
-            return realpath('phpunit.xml.dist');
-        }
+        return $default;
     }
 
     /**

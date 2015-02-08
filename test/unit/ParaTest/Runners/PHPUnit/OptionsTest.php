@@ -105,4 +105,28 @@ class OptionsTest extends \TestBase
         if(file_exists('myconfig.xml'))
             unlink('myconfig.xml');
     }
+
+    /**
+     * @group wip
+     */
+    public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists()
+    {
+        file_put_contents('phpunit.xml', '<root />');
+        $this->unfiltered['path'] = getcwd();
+        $this->unfiltered['configuration'] = getcwd();
+        $options = new Options($this->unfiltered);
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']->getPath());
+    }
+
+    /**
+     * @group wip
+     */
+    public function testConfigurationShouldReturnXmlDistIfConfigSpecifiedAsDirectoryAndFileExists()
+    {
+        file_put_contents('phpunit.xml.dist', '<root />');
+        $this->unfiltered['path'] = getcwd();
+        $this->unfiltered['configuration'] = getcwd();
+        $options = new Options($this->unfiltered);
+        $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->filtered['configuration']->getPath());
+    }
 }
