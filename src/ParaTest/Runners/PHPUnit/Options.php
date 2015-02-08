@@ -206,12 +206,17 @@ class Options
      * @param string $default The default value to give back
      * @return string|null
      */
-    private function getDefaultConfigurationForPath($path = '', $default = null)
+    private function getDefaultConfigurationForPath($path = '.', $default = null)
     {
-        $directory_separator = strlen($path) ? DIRECTORY_SEPARATOR : '';
-        $suffixes = array('', $directory_separator . 'phpunit.xml', $directory_separator . 'phpunit.xml.dist');
+        if ($this->isFile($path)) {
+            return realpath($path);
+        }
+
+        $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $suffixes = array('phpunit.xml', 'phpunit.xml.dist');
+
         foreach ($suffixes as $suffix) {
-            if (file_exists($path.$suffix) && !is_dir($path.$suffix)) {
+            if ($this->isFile($path . $suffix)) {
                 return realpath($path . $suffix);
             }
         }
@@ -230,5 +235,14 @@ class Options
                 $this->annotations[$key] = $value;
             }
         }
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    private function isFile($file)
+    {
+        return file_exists($file) && !is_dir($file);
     }
 }

@@ -106,9 +106,6 @@ class OptionsTest extends \TestBase
             unlink('myconfig.xml');
     }
 
-    /**
-     * @group wip
-     */
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists()
     {
         file_put_contents('phpunit.xml', '<root />');
@@ -118,9 +115,6 @@ class OptionsTest extends \TestBase
         $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']->getPath());
     }
 
-    /**
-     * @group wip
-     */
     public function testConfigurationShouldReturnXmlDistIfConfigSpecifiedAsDirectoryAndFileExists()
     {
         file_put_contents('phpunit.xml.dist', '<root />');
