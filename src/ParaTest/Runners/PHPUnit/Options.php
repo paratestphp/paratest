@@ -192,8 +192,9 @@ class Options
      */
     protected function getConfigurationPath($filtered)
     {
-        if(isset($filtered['configuration']))
+        if (isset($filtered['configuration'])) {
             return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
+        }
         return $this->getDefaultConfigurationForPath();
     }
 
@@ -210,8 +211,9 @@ class Options
         $directory_separator = strlen($path) ? DIRECTORY_SEPARATOR : '';
         $suffixes = array('', $directory_separator . 'phpunit.xml', $directory_separator . 'phpunit.xml.dist');
         foreach ($suffixes as $suffix) {
-            if (file_exists($path.$suffix) && !is_dir($path.$suffix))
-                return realpath($path.$suffix);
+            if (file_exists($path.$suffix) && !is_dir($path.$suffix)) {
+                return realpath($path . $suffix);
+            }
         }
         return $default;
     }
