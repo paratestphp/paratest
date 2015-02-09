@@ -193,18 +193,34 @@ class Options
     protected function getConfigurationPath($filtered)
     {
         if (isset($filtered['configuration'])) {
-            return file_exists($filtered['configuration'])
-                ? realpath($filtered['configuration'])
-                : $filtered['configuration'];
+            return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
+        }
+        return $this->getDefaultConfigurationForPath();
+    }
+
+    /**
+     * Retrieve the default configuration given a path (directory or file).
+     * This will search into the directory, if a directory is specified
+     *
+     * @param string $path The path to search into
+     * @param string $default The default value to give back
+     * @return string|null
+     */
+    private function getDefaultConfigurationForPath($path = '.', $default = null)
+    {
+        if ($this->isFile($path)) {
+            return realpath($path);
         }
 
-        if (file_exists('phpunit.xml')) {
-            return realpath('phpunit.xml');
-        }
+        $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $suffixes = array('phpunit.xml', 'phpunit.xml.dist');
 
-        if (file_exists('phpunit.xml.dist')) {
-            return realpath('phpunit.xml.dist');
+        foreach ($suffixes as $suffix) {
+            if ($this->isFile($path . $suffix)) {
+                return realpath($path . $suffix);
+            }
         }
+        return $default;
     }
 
     /**
@@ -219,5 +235,14 @@ class Options
                 $this->annotations[$key] = $value;
             }
         }
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    private function isFile($file)
+    {
+        return file_exists($file) && !is_dir($file);
     }
 }
