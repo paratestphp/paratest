@@ -49,7 +49,7 @@ class WrapperRunner extends BaseRunner
             if ($this->options->noTestTokens) {
                 $token = null;
             } else {
-                $token = $i;
+                $token = uniqid();
             }
             $worker->start($wrapper, $token);
             $this->streams[] = $worker->stdout();
