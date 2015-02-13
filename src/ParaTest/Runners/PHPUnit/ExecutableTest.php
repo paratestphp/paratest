@@ -42,6 +42,13 @@ abstract class ExecutableTest
      */
     protected $token;
 
+    /**
+     * Last executed process command
+     *
+     * @var string
+     */
+    protected $lastCommand;
+
     public function __construct($path, $fullyQualifiedClassName = null)
     {
         $this->path = $path;
@@ -155,6 +162,16 @@ abstract class ExecutableTest
     }
 
     /**
+     * Return the last process command
+     *
+     * @return string
+     */
+    public function getLastCommand()
+    {
+        return $this->lastCommand;
+    }
+
+    /**
      * Executes the test by creating a separate process
      *
      * @param $binary
@@ -167,6 +184,7 @@ abstract class ExecutableTest
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->command($binary, $options);
+        $this->lastCommand = $command;
         $this->process = new Process($command, null, $environmentVariables);
         $this->process->start();
         return $this;

@@ -248,7 +248,7 @@ class ResultPrinterTest extends ResultTester
         $expected = '';
         for($i = 0; $i < 63; $i++)
             $expected .= '.';
-        $expected .= "  63 ( 52%)\n";
+        $expected .= "  63 / 120 ( 52%)\n";
         for($i = 0; $i < 57; $i++)
             $expected .= '.';
         $this->assertEquals($expected, $feedback);
@@ -275,7 +275,7 @@ class ResultPrinterTest extends ResultTester
         $expected = '';
         for($i = 0; $i < 65; $i++)
             $expected .= '.';
-        $expected .= " 65 ( 98%)\n";
+        $expected .= " 65 / 66 ( 98%)\n";
         for($i = 0; $i < 1; $i++)
             $expected .= '.';
         $this->assertEquals($expected, $feedback);

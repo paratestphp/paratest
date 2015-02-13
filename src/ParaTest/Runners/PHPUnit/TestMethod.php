@@ -20,17 +20,16 @@ class TestMethod extends ExecutableTest
     protected $path;
 
     /**
-     * The name of the method that will be supplied
-     * to the --filter switch
+     * A set of filters for test, they are merged into phpunit's --filter option
      *
-     * @var string
+     * @var string[]
      */
-    protected $name;
+    protected $filters;
 
-    public function __construct($suitePath, $name)
+    public function __construct($testPath, $filters)
     {
-        $this->path = $suitePath;
-        $this->name = $name;
+        $this->path = $testPath;
+        $this->filters = (array)$filters;
     }
 
     /**
@@ -38,9 +37,19 @@ class TestMethod extends ExecutableTest
      *
      * @return string
      */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+
+    /**
+     * Returns the test method's filters
+     *
+     * @return string
+     */
     public function getName()
     {
-        return $this->name;
+        return implode("|", $this->filters);
     }
 
     /**
@@ -53,7 +62,10 @@ class TestMethod extends ExecutableTest
      */
     protected function prepareOptions($options)
     {
-        $options['filter'] = sprintf("/\b%s\b/", $this->name);
+        $re = array_reduce($this->filters, function ($r, $v) {
+            return ($r ? $r . "|" : "") . preg_quote($v, "/");
+        });
+        $options['filter'] = "/" . $re . "/";
 
         return $options;
     }
@@ -66,6 +78,6 @@ class TestMethod extends ExecutableTest
      */
     public function getTestMethodCount()
     {
-        return 1;
+        return count($this->filters);
     }
 }

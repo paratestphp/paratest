@@ -261,10 +261,8 @@ class SuiteLoaderTest extends \TestBase
         $tests = $loader->getTestMethods();
         $this->assertEquals(2, count($tests));
         $testMethod = $tests[0];
-        $testMethodName = $this->getObjectValue($testMethod, 'name');
-        $this->assertEquals($testMethodName, 'testOneA|testOneBDependsOnA|testOneCDependsOnB');
+        $this->assertEquals($testMethod->getName(), 'testOneA|testOneBDependsOnA|testOneCDependsOnB');
         $testMethod = $tests[1];
-        $testMethodName = $this->getObjectValue($testMethod, 'name');
-        $this->assertEquals($testMethodName, 'testTwoA|testTwoBDependsOnA');
+        $this->assertEquals($testMethod->getName(), 'testTwoA|testTwoBDependsOnA');
     }
 }

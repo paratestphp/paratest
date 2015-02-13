@@ -25,8 +25,9 @@ After installation, the binary can be found at `vendor/bin/paratest`. Usage is a
 ```
 paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help]
  [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."]
- [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."]
- [-g|--group="..."] [--stop-on-failure] [--log-junit="..."] [--colors] [--path="..."] [path]
+ [-m|--max-batch-size="..."] [--filter="..."] [--phpunit="..."] [--runner="..."]
+ [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--exclude-group="..."]
+ [--stop-on-failure] [--log-junit="..."] [--colors] [--testsuite[="..."]] [--path="..."] [path]
 ```
 
 ![ParaTest Usage](https://raw.github.com/brianium/paratest/master/paratest-usage.png "ParaTest Console Usage")
@@ -34,14 +35,15 @@ paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help]
 ### Optimizing Speed ###
 To get the most out of paratest, you have to adjust the parameters carefully.
  1. ***Adjust the number of processes with ```-p```***
- 
+
     To allow full usage of your cpu cores, you should have at least one process per core. More processes allow better resource usage but keep in mind that each process has it's own costs for spawning.
  2. ***Choose between per-testcase- and per-testmethod-parallelization with ```-f```***
- 
+
     Given you have few testcases (classes) with many long running methods, you should use the ```-f``` option to enable the ```functional mode``` and allow different methods of the same class to be executed in parallel. Keep in mind that the default is per-testcase-parallelization to address inter-testmethod dependencies.
  3. ***Use the WrapperRunner if possible***
- 
+
     The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process. Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the WrapperRunner with ```--runner WrapperRunner```. It spawns one "worker"-process for each parallel process (```-p```), executes the bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and bootstrapping is reduced to the minimum.
+ 4. Tune ```--batch-max-size``` in functional mode to group tests for single process runner.
 
 ### Windows ###
 Windows users be sure to use the appropriate batch files.

@@ -81,6 +81,13 @@ class ResultPrinter
      */
     protected $warnings = array();
 
+    /**
+     * Number of columns
+     *
+     * @var integer
+     */
+    protected $numberOfColumns = 80;
+
     public function __construct(LogInterpreter $results)
     {
         $this->results = $results;
@@ -96,7 +103,9 @@ class ResultPrinter
     public function addTest(ExecutableTest $suite)
     {
         $this->suites[] = $suite;
-        $increment = method_exists($suite, 'getFunctions') ? count($suite->getFunctions()) : 1;
+        $increment = method_exists($suite, 'getFunctions')
+                   ? count($suite->getFunctions())
+                   : $suite->getTestMethodCount();
         $this->totalCases = $this->totalCases + $increment;
 
         return $this;
@@ -111,7 +120,9 @@ class ResultPrinter
     public function start(Options $options)
     {
         $this->numTestsWidth = strlen((string) $this->totalCases);
-        $this->maxColumn = 69 - (2 * $this->numTestsWidth);
+        $this->maxColumn = $this->numberOfColumns
+                         + (DIRECTORY_SEPARATOR == "\\" ? -1 : 0) // fix windows blank lines
+                         - strlen($this->getProgress());
         printf(
             "\nRunning phpunit in %d process%s with %s%s\n\n",
             $options->processes,
@@ -167,9 +178,14 @@ class ResultPrinter
     {
         $reader = new Reader($test->getTempFile());
         if (!$reader->hasResults()) {
-            throw new \RuntimeException("Log file " . $test->getTempFile() . " is empty.
-                This means a PHPUnit process was unable to run " . $test->getPath() . "
-                Maybe there is more than one class in this file.");
+            throw new \RuntimeException(sprintf(
+                "The process: %s\nLog file \"%s\" is empty.\n" .
+                "This means a PHPUnit process was unable to run \"%s\"\n" .
+                "Maybe there is more than one class in this file.",
+                $test->getLastCommand(),
+                $test->getTempFile(),
+                $test->getPath()
+            ));
         }
         $this->results->addReader($reader);
         $feedbackItems = $reader->getFeedback();
@@ -202,7 +218,8 @@ class ResultPrinter
         $this->column++;
         $this->casesProcessed++;
         if ($this->column == $this->maxColumn) {
-            $this->printProgress();
+            print $this->getProgress();
+            $this->println();
         }
     }
 
@@ -321,15 +338,14 @@ class ResultPrinter
     /**
      * Prints progress for large test collections
      */
-    protected function printProgress()
+    protected function getProgress()
     {
-        printf(
-            ' %' . $this->numTestsWidth . 'd (%3s%%)',
+        return sprintf(
+            ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
             $this->casesProcessed,
-            floor(($this->casesProcessed / $this->totalCases) * 100)
+            $this->totalCases,
+            floor(($this->totalCases ? $this->casesProcessed / $this->totalCases : 0) * 100)
         );
-
-        $this->println();
     }
 
     /**

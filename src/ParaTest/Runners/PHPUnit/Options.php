@@ -74,12 +74,14 @@ class Options
         $this->processes = $opts['processes'];
         $this->path = $opts['path'];
         $this->phpunit = $opts['phpunit'];
-        $this->functional = $opts['functional'];
+        $this->functional = strlen($opts['filter']) > 0 || $opts['functional'];
         $this->stopOnFailure = $opts['stop-on-failure'];
         $this->runner = $opts['runner'];
         $this->noTestTokens = $opts['no-test-tokens'];
         $this->colors = $opts['colors'];
         $this->testsuite = $opts['testsuite'];
+        $this->maxBatchSize = $opts['max-batch-size'];
+        $this->filter = $opts['filter'];
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -114,6 +116,8 @@ class Options
             'no-test-tokens' => false,
             'colors' => false,
             'testsuite' => '',
+            'max-batch-size' => 50,
+            'filter' => null
         );
     }
 
@@ -174,7 +178,9 @@ class Options
             'runner' => $this->runner,
             'no-test-tokens' => $this->noTestTokens,
             'colors' => $this->colors,
-            'testsuite' => $this->testsuite
+            'testsuite' => $this->testsuite,
+            'max-batch-size' => $this->maxBatchSize,
+            'filter' => $this->filter,
         ));
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);

@@ -200,12 +200,12 @@ class SuiteLoader
         }
     }
 
-    private function executableTests($path, $classMethods)
+    private function executableTests($path, $class)
     {
         $executableTests = array();
-        $methodBatches = $this->getMethodBatches($classMethods);
+        $methodBatches = $this->getMethodBatches($path, $class);
         foreach ($methodBatches as $methodBatch) {
-            $executableTest = new TestMethod($path, implode('|', $methodBatch));
+            $executableTest = new TestMethod($path, $methodBatch);
             $executableTests[] = $executableTest;
         }
         return $executableTests;
@@ -214,27 +214,94 @@ class SuiteLoader
     /**
      * Identify method dependencies, and group dependents and dependees on a single methodBatch
      * If no dependencies exist each methodBatch will contain a single method.
-     * @param  array of ParsedFunction $classMethods
+     * @param  string      $path
+     * @param  ParsedClass $class
      * @return array of MethodBatches. Each MethodBatch has an array of method names
      */
-    private function getMethodBatches($classMethods)
+    private function getMethodBatches($path, $class)
     {
+        $classMethods = $class->getMethods($this->options ? $this->options->annotations : array());
+        $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
         $methodBatches = array();
         foreach ($classMethods as $method) {
+            $tests = $this->getMethodTests($path, $class, $method);
+            if (!$tests) {
+                continue;
+            }
+
             if (($dependsOn = $this->methodDependency($method)) != null) {
                 foreach ($methodBatches as $key => $methodBatch) {
                     foreach ($methodBatch as $methodName) {
                         if ($dependsOn === $methodName) {
-                            $methodBatches[$key][] = $method->getName();
+                            $methodBatches[$key] = array_merge($methodBatches[$key], $tests);
                             continue;
                         }
                     }
                 }
             } else {
-                $methodBatches[] = array($method->getName());
+                foreach ($tests as $test) {
+                    $lastIndex = count($methodBatches) - 1;
+                    if ($lastIndex != -1
+                        && count($methodBatches[$lastIndex]) < $maxBatchSize
+                    ) {
+                        $methodBatches[$lastIndex][] = $test;
+                    } else {
+                        $methodBatches[] = array($test);
+                    }
+                }
             }
         }
         return $methodBatches;
+    }
+
+    private function getMethodTests($path, $class, $method)
+    {
+        $result = array();
+
+        $dataProvider = $this->methodDataProvider($method);
+        if ($dataProvider) {
+            $testFullClassName = "\\" . $class->getName();
+            $testClass = new $testFullClassName();
+            $result = array();
+            $datasetKeys = array_keys($testClass->$dataProvider());
+            foreach ($datasetKeys as $key) {
+                $test = sprintf(
+                    "%s with data set %s",
+                    $method->getName(),
+                    is_int($key) ? "#" . $key : "\"" . $key . "\""
+                );
+                if ($this->testMatchFilter($class->getName(), $test)) {
+                    $result[] = $test;
+                }
+            }
+        } elseif ($this->testMatchFilter($class->getName(), $method->getName())) {
+            $result = array($method->getName());
+        }
+
+        return $result;
+    }
+
+    private function testMatchFilter($className, $name)
+    {
+        if (empty($this->options->filter)) {
+            return true;
+        }
+
+        $re = substr($this->options->filter, 0, 1) == "/"
+            ? $this->options->filter
+            : "/" . $this->options->filter . "/";
+        $fullName = $className . "::" . $name;
+        $result = preg_match($re, $fullName);
+
+        return $result;
+    }
+
+    private function methodDataProvider($method)
+    {
+        if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 
     private function methodDependency($method)
@@ -251,7 +318,7 @@ class SuiteLoader
             $path,
             $this->executableTests(
                 $path,
-                $class->getMethods($this->options ? $this->options->annotations : array())
+                $class
             ),
             $class->getName()
         );
