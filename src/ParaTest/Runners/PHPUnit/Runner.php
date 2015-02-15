@@ -161,7 +161,9 @@ class Runner extends BaseRunner
      */
     protected function releaseToken($tokenIdentifier)
     {
-        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) { return ($val['token'] === $tokenIdentifier); });
+        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+            return ($val['token'] === $tokenIdentifier);
+        });
         $this->tokens[array_keys($filtered)[0]]['available'] = true;
     }
 
@@ -172,7 +174,9 @@ class Runner extends BaseRunner
      */
     protected function acquireToken($tokenIdentifier)
     {
-        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) { return ($val['token'] === $tokenIdentifier); });
+        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+            return ($val['token'] === $tokenIdentifier);
+        });
         $this->tokens[array_keys($filtered)[0]]['available'] = false;
     }
 
