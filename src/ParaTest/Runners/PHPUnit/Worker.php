@@ -23,11 +23,14 @@ class Worker
      */
     private $currentlyExecuting;
 
-    public function start($wrapperBinary, $token = 1)
+    public function start($wrapperBinary, $token = 1, $uniqueToken = null)
     {
         $bin = 'PARATEST=1 ';
         if (is_numeric($token)) {
             $bin .= "TEST_TOKEN=$token ";
+        }
+        if ($uniqueToken) {
+            $bin .= "UNIQUE_TEST_TOKEN=$uniqueToken ";
         }
         $bin .= "exec $wrapperBinary";
         $pipes = array();

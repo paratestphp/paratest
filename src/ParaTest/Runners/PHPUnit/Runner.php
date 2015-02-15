@@ -67,11 +67,11 @@ class Runner extends BaseRunner
     {
         $opts = $this->options;
         while (sizeof($this->pending) && sizeof($this->running) < $opts->processes) {
-            $token = $this->getNextAvailableToken();
-            if ($token !== false) {
-                $this->acquireToken($token);
-                $env = array('TEST_TOKEN' => $token) + Habitat::getAll();
-                $this->running[$token] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env);
+            $tokenData = $this->getNextAvailableToken();
+            if ($tokenData !== false) {
+                $this->acquireToken($tokenData['token']);
+                $env = array('TEST_TOKEN' => $tokenData['token'], 'UNIQUE_TEST_TOKEN' => $tokenData['unique']) + Habitat::getAll();
+                $this->running[$tokenData['token']] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env);
             }
         }
     }
@@ -133,8 +133,8 @@ class Runner extends BaseRunner
     protected function initTokens()
     {
         $this->tokens = array();
-        for ($i=0; $i< $this->options->processes; $i++) {
-            $this->tokens[uniqid()] = true;
+        for ($i = 0; $i < $this->options->processes; $i++) {
+            $this->tokens[$i] = array('token' => $i, 'unique' => uniqid(), 'available' => true);
         }
     }
 
@@ -142,13 +142,13 @@ class Runner extends BaseRunner
      * Gets the next token that is available to be acquired
      * from a finished process
      *
-     * @return bool|int
+     * @return bool|array
      */
     protected function getNextAvailableToken()
     {
-        foreach ($this->tokens as $token => $free) {
-            if ($free) {
-                return $token;
+        foreach ($this->tokens as $data) {
+            if ($data['available']) {
+                return $data;
             }
         }
         return false;
@@ -161,7 +161,11 @@ class Runner extends BaseRunner
      */
     protected function releaseToken($tokenIdentifier)
     {
-        $this->tokens[$tokenIdentifier] = true;
+        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+            return ($val['token'] === $tokenIdentifier);
+        });
+        $keys = array_keys($filtered);
+        $this->tokens[$keys[0]]['available'] = true;
     }
 
     /**
@@ -171,7 +175,11 @@ class Runner extends BaseRunner
      */
     protected function acquireToken($tokenIdentifier)
     {
-        $this->tokens[$tokenIdentifier] = false;
+        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+            return ($val['token'] === $tokenIdentifier);
+        });
+        $keys = array_keys($filtered);
+        $this->tokens[$keys[0]]['available'] = false;
     }
 
     /**

@@ -48,10 +48,12 @@ class WrapperRunner extends BaseRunner
             $worker = new Worker();
             if ($this->options->noTestTokens) {
                 $token = null;
+                $uniqueToken = null;
             } else {
                 $token = $i;
+                $uniqueToken = uniqid();
             }
-            $worker->start($wrapper, $token);
+            $worker->start($wrapper, $token, $uniqueToken);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
