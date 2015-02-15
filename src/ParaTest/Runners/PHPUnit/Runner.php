@@ -164,7 +164,8 @@ class Runner extends BaseRunner
         $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
             return ($val['token'] === $tokenIdentifier);
         });
-        $this->tokens[array_keys($filtered)[0]]['available'] = true;
+        $keys = array_keys($filtered);
+        $this->tokens[$keys[0]]['available'] = true;
     }
 
     /**
@@ -177,7 +178,8 @@ class Runner extends BaseRunner
         $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
             return ($val['token'] === $tokenIdentifier);
         });
-        $this->tokens[array_keys($filtered)[0]]['available'] = false;
+        $keys = array_keys($filtered);
+        $this->tokens[$keys[0]]['available'] = false;
     }
 
     /**
