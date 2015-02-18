@@ -30,6 +30,3 @@ tools:
       standard: "PSR2"
   
   php_code_coverage: true
-  
-build_failure_conditions:
-  - 'issues.new.exists'
