@@ -63,7 +63,7 @@ class TestMethod extends ExecutableTest
     protected function prepareOptions($options)
     {
         $re = array_reduce($this->filters, function ($r, $v) {
-            return ($r ? $r . "|" : "") . preg_quote($v, "/");
+            return ($r ? $r . "|" : "") . preg_quote($v, "/") . "\$";
         });
         $options['filter'] = "/" . $re . "/";
 
