@@ -135,6 +135,7 @@ class Runner extends BaseRunner
         $this->tokens = array();
         for ($i = 0; $i < $this->options->processes; $i++) {
             $this->tokens[$i] = array('token' => $i, 'unique' => uniqid(), 'available' => true);
+            usleep(1);
         }
     }
 
