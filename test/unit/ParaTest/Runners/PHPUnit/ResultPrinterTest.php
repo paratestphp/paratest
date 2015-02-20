@@ -87,7 +87,7 @@ class ResultPrinterTest extends ResultTester
     {
         $options = new Options(array('functional' => true));
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is on\n\n", $options->phpunit);
+        $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is ON.\n\n", $options->phpunit);
         $this->assertStringStartsWith($expected, $contents);
     }
 

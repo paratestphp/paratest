@@ -17,7 +17,8 @@ class DataProviderTest extends FunctionalTestBase
     public function testFunctionalMode()
     {
         $proc = $this->invoker->execute(array(
-            "functional" => null
+            "functional"     => null,
+            "max-batch-size" => 50,
         ));
         $this->assertRegExp('/OK \(1100 tests, 1100 assertions\)/', $proc->getOutput());
     }
@@ -25,7 +26,8 @@ class DataProviderTest extends FunctionalTestBase
     public function testNumericDataSetInFunctionalModeWithMethodFilter()
     {
         $proc = $this->invoker->execute(array(
-            "functional" => null,
+            "functional"     => null,
+            "max-batch-size" => 50,
             "filter" => "testNumericDataProvider50"
         ));
         $this->assertRegExp('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
@@ -34,7 +36,8 @@ class DataProviderTest extends FunctionalTestBase
     public function testNumericDataSetInFunctionalModeWithCustomFilter()
     {
         $proc = $this->invoker->execute(array(
-            "functional" => null,
+            "functional"     => null,
+            "max-batch-size" => 50,
             "filter" => "testNumericDataProvider50.*1"
         ));
         $this->assertRegExp('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
@@ -43,7 +46,8 @@ class DataProviderTest extends FunctionalTestBase
     public function testNamedDataSetInFunctionalModeWithMethodFilter()
     {
         $proc = $this->invoker->execute(array(
-            "functional" => null,
+            "functional"     => null,
+            "max-batch-size" => 50,
             "filter" => "testNamedDataProvider50"
         ));
         $this->assertRegExp('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
@@ -52,7 +56,8 @@ class DataProviderTest extends FunctionalTestBase
     public function testNamedDataSetInFunctionalModeWithCustomFilter()
     {
         $proc = $this->invoker->execute(array(
-            "functional" => null,
+            "functional"     => null,
+            "max-batch-size" => 50,
             "filter" => "testNamedDataProvider50.*name_of_test_.*1"
         ));
         $this->assertRegExp('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
@@ -61,7 +66,7 @@ class DataProviderTest extends FunctionalTestBase
     public function testNumericDataSet1000InFunctionalModeWithFilterAndMaxBatchSize()
     {
         $proc = $this->invoker->execute(array(
-            "functional" => null,
+            "functional"     => null,
             "max-batch-size" => 50,
             "filter" => "testNumericDataProvider1000"
         ));

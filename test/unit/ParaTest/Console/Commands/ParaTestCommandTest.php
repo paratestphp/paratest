@@ -48,7 +48,7 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.'),
             new InputOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
-            new InputOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 50),
+            new InputOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0),
             new InputOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).'),
         ));
         $definition = $this->command->getDefinition();

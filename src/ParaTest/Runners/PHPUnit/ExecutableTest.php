@@ -56,12 +56,11 @@ abstract class ExecutableTest
     }
 
     /**
-     * Get the expected count of tests or testmethods
-     * to be executed in this test
+     * Get the expected count of tests to be executed
      *
      * @return int
      */
-    abstract public function getTestMethodCount();
+    abstract public function getTestCount();
 
     /**
      * Get the path to the test being executed
@@ -184,6 +183,7 @@ abstract class ExecutableTest
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->command($binary, $options);
+        $this->assertValidCommandLineLength($command);
         $this->lastCommand = $command;
         $this->process = new Process($command, null, $environmentVariables);
         $this->process->start();
@@ -200,11 +200,77 @@ abstract class ExecutableTest
         return $this->token;
     }
 
+    /**
+     * Generate command line with passed options suitable to handle through paratest.
+     *
+     * @param  string $binary  Executable binary name.
+     * @param  array  $options Command line options.
+     * @return string          Command line.
+     */
     public function command($binary, $options = array())
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
         $options = $this->redirectCoverageOption($options);
         return $this->getCommandString($binary, $options);
+    }
+
+    /**
+     * Get covertage filename
+     *
+     * @return string
+     */
+    public function getCoverageFileName()
+    {
+        if ($this->coverageFileName === null) {
+            $this->coverageFileName = tempnam(sys_get_temp_dir(), "CV_");
+        }
+
+        return $this->coverageFileName;
+    }
+
+    /**
+     * Get process stdout content
+     *
+     * @return string
+     */
+    public function getStdout()
+    {
+        return $this->process->getOutput();
+    }
+
+    /**
+     * Set process termporary filename
+     *
+     * @param string $temp
+     */
+    public function setTempFile($temp)
+    {
+        $this->temp = $temp;
+    }
+
+    /**
+     * Assert that command line lenght is valid.
+     *
+     * In some situations process command line can became too long when combining different test
+     * cases in single --filter arguments so it's better to show error regarding that to user
+     * and propose him to decrease max batch size.
+     *
+     * @param  string $cmd Command line
+     * @throws \RuntimeException on too long command line
+     */
+    protected function assertValidCommandLineLength($cmd)
+    {
+        if (DIRECTORY_SEPARATOR == "\\") { // windows
+            // symfony's process wrapper
+            $cmd = 'cmd /V:ON /E:ON /C "('.$cmd.')';
+            if (strlen($cmd) > 32767) {
+                throw new \RuntimeException("Command line is too long, try to decrease max batch size");
+            }
+        } else {
+            // TODO:
+            // linux: echo | xargs --show-limits
+            // osx/linux: getconf ARG_MAX
+        }
     }
 
     /**
@@ -265,7 +331,7 @@ abstract class ExecutableTest
      * @param array $options
      * @return array $options
      */
-    private function redirectCoverageOption($options)
+    protected function redirectCoverageOption($options)
     {
         if (isset($options['coverage-php'])) {
             $options['coverage-php'] = $this->getCoverageFileName();
@@ -275,27 +341,5 @@ abstract class ExecutableTest
         unset($options['coverage-clover']);
 
         return $options;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCoverageFileName()
-    {
-        if ($this->coverageFileName === null) {
-            $this->coverageFileName = tempnam(sys_get_temp_dir(), "CV_");
-        }
-
-        return $this->coverageFileName;
-    }
-
-    public function getStdout()
-    {
-        return $this->process->getOutput();
-    }
-
-    public function setTempFile($temp)
-    {
-        $this->temp = $temp;
     }
 }

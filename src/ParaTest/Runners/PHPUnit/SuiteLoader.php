@@ -3,6 +3,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
+use ParaTest\Parser\ParsedObject;
 use ParaTest\Parser\Parser;
 
 class SuiteLoader
@@ -212,8 +213,11 @@ class SuiteLoader
     }
 
     /**
-     * Identify method dependencies, and group dependents and dependees on a single methodBatch
-     * If no dependencies exist each methodBatch will contain a single method.
+     * Get method batches.
+     *
+     * Identify method dependencies, and group dependents and dependees on a single methodBatch.
+     * Use max batch size to fill batches.
+     *
      * @param  string      $path
      * @param  ParsedClass $class
      * @return array of MethodBatches. Each MethodBatch has an array of method names
@@ -222,44 +226,69 @@ class SuiteLoader
     {
         $classMethods = $class->getMethods($this->options ? $this->options->annotations : array());
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
-        $methodBatches = array();
+        $batches = array();
         foreach ($classMethods as $method) {
-            $tests = $this->getMethodTests($path, $class, $method);
+            $tests = $this->getMethodTests($path, $class, $method, $maxBatchSize != 0);
+            // if filter passed to paratest then method tests can be blank if not match to filter
             if (!$tests) {
                 continue;
             }
 
             if (($dependsOn = $this->methodDependency($method)) != null) {
-                foreach ($methodBatches as $key => $methodBatch) {
-                    foreach ($methodBatch as $methodName) {
-                        if ($dependsOn === $methodName) {
-                            $methodBatches[$key] = array_merge($methodBatches[$key], $tests);
-                            continue;
-                        }
-                    }
-                }
+                $this->addDependentTestsToBatchSet($batches, $dependsOn, $tests);
             } else {
-                foreach ($tests as $test) {
-                    $lastIndex = count($methodBatches) - 1;
-                    if ($lastIndex != -1
-                        && count($methodBatches[$lastIndex]) < $maxBatchSize
-                    ) {
-                        $methodBatches[$lastIndex][] = $test;
-                    } else {
-                        $methodBatches[] = array($test);
-                    }
+                $this->addTestsToBatchSet($batches, $tests, $maxBatchSize);
+            }
+        }
+        return $batches;
+    }
+
+    private function addDependentTestsToBatchSet(&$batches, $dependsOn, $tests)
+    {
+        foreach ($batches as $key => $batch) {
+            foreach ($batch as $methodName) {
+                if ($dependsOn === $methodName) {
+                    $batches[$key] = array_merge($batches[$key], $tests);
+                    continue;
                 }
             }
         }
-        return $methodBatches;
     }
 
-    private function getMethodTests($path, $class, $method)
+    private function addTestsToBatchSet(&$batches, $tests, $maxBatchSize)
+    {
+        foreach ($tests as $test) {
+            $lastIndex = count($batches) - 1;
+            if ($lastIndex != -1
+                && count($batches[$lastIndex]) < $maxBatchSize
+            ) {
+                $batches[$lastIndex][] = $test;
+            } else {
+                $batches[] = array($test);
+            }
+        }
+    }
+
+    /**
+     * Get method all available tests.
+     *
+     * With empty filter this method returns single test if doesnt' have data provider or
+     * data provider is not used and return all test if has data provider and data provider is used.
+     *
+     * @param  string       $path             Path to test case file.
+     * @param  ParsedClass  $class            Parsed class.
+     * @param  ParsedObject $method           Parsed method.
+     * @param  bool         $useDataProvider  Try to use data provider or not.
+     * @return string[]     Array of test names.
+     */
+    private function getMethodTests($path, $class, $method, $useDataProvider = false)
     {
         $result = array();
 
+        $group = $this->methodGroup($method);
+
         $dataProvider = $this->methodDataProvider($method);
-        if ($dataProvider) {
+        if ($useDataProvider && $dataProvider) {
             $testFullClassName = "\\" . $class->getName();
             $testClass = new $testFullClassName();
             $result = array();
@@ -270,21 +299,35 @@ class SuiteLoader
                     $method->getName(),
                     is_int($key) ? "#" . $key : "\"" . $key . "\""
                 );
-                if ($this->testMatchFilter($class->getName(), $test)) {
+                if ($this->testMatchFilter($class->getName(), $test, $group)) {
                     $result[] = $test;
                 }
             }
-        } elseif ($this->testMatchFilter($class->getName(), $method->getName())) {
+        } elseif ($this->testMatchFilter($class->getName(), $method->getName(), $group)) {
             $result = array($method->getName());
         }
 
         return $result;
     }
 
-    private function testMatchFilter($className, $name)
+    private function testMatchFilter($className, $name, $group)
     {
         if (empty($this->options->filter)) {
             return true;
+        }
+
+        if (isset($this->options->group)
+            && isset($group)
+            && $group != $this->options->group
+        ) {
+            return false;
+        }
+
+        if (isset($this->options->excludeGroup)
+            && isset($group)
+            && $group == $this->options->excludeGroup
+        ) {
+            return false;
         }
 
         $re = substr($this->options->filter, 0, 1) == "/"
@@ -307,6 +350,14 @@ class SuiteLoader
     private function methodDependency($method)
     {
         if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
+
+    private function methodGroup($method)
+    {
+        if (preg_match("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
         return null;

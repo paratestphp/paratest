@@ -34,7 +34,7 @@ class OutputTest extends FunctionalTestBase
             ->execute(array('functional'))
             ->getOutput();
         $this->assertContains("Running phpunit in 5 processes with " . PHPUNIT, $output);
-        $this->assertContains("Functional mode is on", $output);
+        $this->assertContains("Functional mode is ON.", $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 

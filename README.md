@@ -43,7 +43,24 @@ To get the most out of paratest, you have to adjust the parameters carefully.
  3. ***Use the WrapperRunner if possible***
 
     The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process. Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the WrapperRunner with ```--runner WrapperRunner```. It spawns one "worker"-process for each parallel process (```-p```), executes the bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and bootstrapping is reduced to the minimum.
- 4. Tune ```--batch-max-size``` in functional mode to group tests for single process runner.
+ 4. ***Tune batch max size ```--batch-max-size```***.
+
+    Batch size will affect on max amount of atomic tests which will be used for single test method.
+    One atomic test will be either one test method from test class if no data provider available for
+    method or will be only one item from dataset for method.
+    Increase this value to reduce per-process overhead and in most cases it will also reduce parallel efficiency.
+    Decrease this value to increase per-process overhead and in most cases it will also increase parallel efficiency.
+    If amount of all tests less then max batch size then everything will be processed in one
+    process thread so paratest is completely useless in that case.
+    The best way to find the most effective batch size is to test with different batch size values
+    and select best.
+    Max batch size = 0 means that grouping in batches will not be used and one batch will equal to
+    all method tests (one or all from data provider).
+    Max batch size = 1 means that each batch will contain only one test from data provider or one
+    method if data provider is not used.
+    Bigger max batch size can significantly increase phpunit command line length so process can failed.
+    Decrease max batch size to reduce command line length.
+    Windows has limit around 32k, Linux - 2048k, Mac OS X - 256k.
 
 ### Windows ###
 Windows users be sure to use the appropriate batch files.
@@ -52,6 +69,9 @@ An example being:
 `vendor\bin\paratest.bat --phpunit vendor\bin\phpunit.bat ...`
 
 ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests.
+
+For convenience paratest windows version use 79 columns mode to prevent blank lines in standard
+80x25 windows console.
 
 PHPUnit Xml Config Support
 --------------------------

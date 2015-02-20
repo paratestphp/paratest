@@ -83,6 +83,10 @@ class Options
         $this->maxBatchSize = $opts['max-batch-size'];
         $this->filter = $opts['filter'];
 
+        // TODO: some tests didn't work without @
+        $this->group = @$opts['group'];
+        $this->excludeGroup = @$opts['exclude-group'];
+
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
     }
@@ -116,8 +120,11 @@ class Options
             'no-test-tokens' => false,
             'colors' => false,
             'testsuite' => '',
-            'max-batch-size' => 50,
-            'filter' => null
+            'max-batch-size' => 0,
+            'filter' => null,
+            // TODO: for some reason tests failed if code below uncommented
+            //'group' => null,
+            //'excludeGroup' => null,
         );
     }
 
@@ -181,6 +188,9 @@ class Options
             'testsuite' => $this->testsuite,
             'max-batch-size' => $this->maxBatchSize,
             'filter' => $this->filter,
+            // TODO: for some reason tests failed if code below uncommented
+            //'group' => $this->group,
+            //'excludeGroup' => $this->excludeGroup
         ));
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
