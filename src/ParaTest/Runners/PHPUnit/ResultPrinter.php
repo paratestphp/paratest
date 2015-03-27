@@ -339,7 +339,7 @@ class ResultPrinter
     protected function isSkippedIncompleTestCanBeTracked($options)
     {
         return $options->functional
-            || (!isset($options->group) && !isset($options->excludeGroup));
+            || (empty($options->groups) && empty($options->excludeGroups));
     }
 
     /**

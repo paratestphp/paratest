@@ -88,8 +88,12 @@ class Options
         // phpunit command line generation (it will add them in command line with no value
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
-        $this->group = isset($opts['group']) ? $opts['group'] : null;
-        $this->excludeGroup = isset($opts['exclude-group']) ? $opts['exclude-group'] : null;
+        $this->groups = isset($opts['group']) && $opts['group'] !== ""
+                      ? explode(",", $opts['group'])
+                      : [];
+        $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ""
+                             ? explode(",", $opts['exclude-group'])
+                             : [];
 
         if (strlen($opts['filter']) > 0 && !$this->functional) {
             throw new \RuntimeException("Option --filter is not implemented for non functional mode");

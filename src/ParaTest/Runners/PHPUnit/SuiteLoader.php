@@ -204,7 +204,7 @@ class SuiteLoader
     private function executableTests($path, $class)
     {
         $executableTests = array();
-        $methodBatches = $this->getMethodBatches($path, $class);
+        $methodBatches = $this->getMethodBatches($class);
         foreach ($methodBatches as $methodBatch) {
             $executableTest = new TestMethod($path, $methodBatch);
             $executableTests[] = $executableTest;
@@ -218,17 +218,16 @@ class SuiteLoader
      * Identify method dependencies, and group dependents and dependees on a single methodBatch.
      * Use max batch size to fill batches.
      *
-     * @param  string      $path
      * @param  ParsedClass $class
      * @return array of MethodBatches. Each MethodBatch has an array of method names
      */
-    private function getMethodBatches($path, $class)
+    private function getMethodBatches($class)
     {
         $classMethods = $class->getMethods($this->options ? $this->options->annotations : array());
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
         $batches = array();
         foreach ($classMethods as $method) {
-            $tests = $this->getMethodTests($path, $class, $method, $maxBatchSize != 0);
+            $tests = $this->getMethodTests($class, $method, $maxBatchSize != 0);
             // if filter passed to paratest then method tests can be blank if not match to filter
             if (!$tests) {
                 continue;
@@ -275,20 +274,19 @@ class SuiteLoader
      * With empty filter this method returns single test if doesnt' have data provider or
      * data provider is not used and return all test if has data provider and data provider is used.
      *
-     * @param  string       $path             Path to test case file.
      * @param  ParsedClass  $class            Parsed class.
      * @param  ParsedObject $method           Parsed method.
      * @param  bool         $useDataProvider  Try to use data provider or not.
      * @return string[]     Array of test names.
      */
-    private function getMethodTests($path, $class, $method, $useDataProvider = false)
+    private function getMethodTests($class, $method, $useDataProvider = false)
     {
         $result = array();
 
-        $group = $this->methodGroup($method);
+        $groups = $this->methodGroups($method);
 
         $dataProvider = $this->methodDataProvider($method);
-        if ($useDataProvider && $dataProvider) {
+        if ($useDataProvider && isset($dataProvider)) {
             $testFullClassName = "\\" . $class->getName();
             $testClass = new $testFullClassName();
             $result = array();
@@ -299,35 +297,42 @@ class SuiteLoader
                     $method->getName(),
                     is_int($key) ? "#" . $key : "\"" . $key . "\""
                 );
-                if ($this->testMatchFilter($class->getName(), $test, $group)) {
+                if ($this->testMatchOptions($class->getName(), $test, $groups)) {
                     $result[] = $test;
                 }
             }
-        } elseif ($this->testMatchFilter($class->getName(), $method->getName(), $group)) {
+        } elseif ($this->testMatchOptions($class->getName(), $method->getName(), $groups)) {
             $result = array($method->getName());
         }
 
         return $result;
     }
 
-    private function testMatchFilter($className, $name, $group)
+    private function testMatchGroupOptions($groups)
     {
-        if (empty($this->options->filter)) {
+        if (empty($groups)) {
             return true;
         }
 
-        if (isset($this->options->group)
-            && isset($group)
-            && $group != $this->options->group
+        if (!empty($this->options->groups)
+            && !array_intersect($groups, $this->options->groups)
         ) {
             return false;
         }
 
-        if (isset($this->options->excludeGroup)
-            && isset($group)
-            && $group == $this->options->excludeGroup
+        if (!empty($this->options->excludeGroups)
+            && array_intersect($groups, $this->options->excludeGroups)
         ) {
             return false;
+        }
+
+        return true;
+    }
+
+    private function testMatchFilterOptions($className, $name, $group)
+    {
+        if (empty($this->options->filter)) {
+            return true;
         }
 
         $re = substr($this->options->filter, 0, 1) == "/"
@@ -335,6 +340,14 @@ class SuiteLoader
             : "/" . $this->options->filter . "/";
         $fullName = $className . "::" . $name;
         $result = preg_match($re, $fullName);
+
+        return $result;
+    }
+
+    private function testMatchOptions($className, $name, $group)
+    {
+        $result = $this->testMatchGroupOptions($group)
+                && $this->testMatchFilterOptions($className, $name, $group);
 
         return $result;
     }
@@ -355,12 +368,12 @@ class SuiteLoader
         return null;
     }
 
-    private function methodGroup($method)
+    private function methodGroups($method)
     {
-        if (preg_match("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
-        return null;
+        return [];
     }
 
     private function createSuite($path, ParsedClass $class)
