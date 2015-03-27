@@ -1,23 +1,7 @@
 <?php
 
-class SkippedOrIncompleteTest extends \PHPUnit_Framework_TestCase
+class SkippedAndIncompleteDataProviderTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @group skipped-group
-     */
-    public function testSkipped()
-    {
-        $this->markTestSkipped();
-    }
-
-    /**
-     * @group incomplete-group
-     */
-    public function testIncomplete()
-    {
-        $this->markTestIncomplete();
-    }
-
     public function dataProviderNumeric100()
     {
         $result = array();
@@ -29,7 +13,6 @@ class SkippedOrIncompleteTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @group dataset-group
      * @dataProvider dataProviderNumeric100
      */
     public function testDataProviderWithSkipped($expected, $actual)

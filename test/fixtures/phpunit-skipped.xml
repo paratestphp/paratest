@@ -12,7 +12,7 @@
         >
     <testsuites>
         <testsuite name="ParaTest Fixtures">
-            <file>./skipped-tests/SkippedOrIncompleteTest.php</file>
+            <directory>./skipped-tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

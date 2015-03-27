@@ -1,5 +1,6 @@
 ParaTest
 ========
+
 [![Build Status](https://secure.travis-ci.org/brianium/paratest.png?branch=master)](https://travis-ci.org/brianium/paratest)
 [![HHVM Status](http://hhvm.h4cc.de/badge/brianium/paratest.svg)](http://hhvm.h4cc.de/package/brianium/paratest)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brianium/paratest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brianium/paratest/?branch=master)
@@ -9,7 +10,9 @@ The objective of ParaTest is to support parallel testing in a variety of PHP tes
 
 Installation
 ------------
+
 ### Composer ###
+
 To install with composer add the following to your `composer.json` file:
 ```js
 "require": {
@@ -20,20 +23,44 @@ Then run `php composer.phar install`
 
 Usage
 -----
+
 After installation, the binary can be found at `vendor/bin/paratest`. Usage is as follows:
 
 ```
-paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help]
- [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."]
- [-m|--max-batch-size="..."] [--filter="..."] [--phpunit="..."] [--runner="..."]
- [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--exclude-group="..."]
- [--stop-on-failure] [--log-junit="..."] [--colors] [--testsuite[="..."]] [--path="..."] [path]
+Usage:
+ paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."] [-m|--max-batch-size="..."] [--filter="..."] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--exclude-group="..."] [--stop-on-failure] [--log-junit="..."] [--colors] [--testsuite[="..."]] [--path="..."] [path]
+
+Arguments:
+ path                  The path to a directory or file containing tests. (default: current directory)
+
+Options:
+ --processes (-p)      The number of test processes to run. (default: 5)
+ --functional (-f)     Run methods instead of suites in separate processes.
+ --no-test-tokens      Disable TEST_TOKEN environment variables. (default: variable is set)
+ --help (-h)           Display this help message.
+ --coverage-clover     Generate code coverage report in Clover XML format.
+ --coverage-html       Generate code coverage report in HTML format.
+ --coverage-php        Serialize PHP_CodeCoverage object to file.
+ --max-batch-size (-m) Max batch size (only for functional mode). (default: 0)
+ --filter              Filter (only for functional mode).
+ --phpunit             The PHPUnit binary to execute. (default: vendor/bin/phpunit)
+ --runner              Runner or WrapperRunner. (default: Runner)
+ --bootstrap           The bootstrap file to be used by PHPUnit.
+ --configuration (-c)  The PHPUnit configuration file to use.
+ --group (-g)          Only runs tests from the specified group(s).
+ --exclude-group       Don't run tests from the specified group(s).
+ --stop-on-failure     Don't start any more processes after a failure.
+ --log-junit           Log test execution in JUnit XML format to file.
+ --colors              Displays a colored bar as a test result.
+ --testsuite           Filter which testsuite to run
+ --path                An alias for the path argument.
+
 ```
 
-![ParaTest Usage](https://raw.github.com/brianium/paratest/master/paratest-usage.png "ParaTest Console Usage")
-
 ### Optimizing Speed ###
+
 To get the most out of paratest, you have to adjust the parameters carefully.
+
  1. ***Adjust the number of processes with ```-p```***
 
     To allow full usage of your cpu cores, you should have at least one process per core. More processes allow better resource usage but keep in mind that each process has it's own costs for spawning.
@@ -63,7 +90,9 @@ To get the most out of paratest, you have to adjust the parameters carefully.
     Windows has limit around 32k, Linux - 2048k, Mac OS X - 256k.
 
 ### Windows ###
+
 Windows users be sure to use the appropriate batch files.
+
 An example being:
 
 `vendor\bin\paratest.bat --phpunit vendor\bin\phpunit.bat ...`
@@ -75,6 +104,7 @@ For convenience paratest windows version use 79 columns mode to prevent blank li
 
 PHPUnit Xml Config Support
 --------------------------
+
 When running PHPUnit tests, ParaTest will automatically pass the phpunit.xml or phpunit.xml.dist to the phpunit runner
 via the --configuration switch. ParaTest also allows the configuration path to be specified manually.
 
@@ -120,6 +150,7 @@ if (getenv('TEST_TOKEN') !== false) {  // Using partest
 
 Running Tests
 -------------
+
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
 
 **Note that The `display_errors` php.ini directive must be set to `stderr` to run

@@ -267,7 +267,8 @@ abstract class ExecutableTest
                 throw new \RuntimeException("Command line is too long, try to decrease max batch size");
             }
         } else {
-            // TODO:
+            // TODO: Implement command line length validation for linux/osx/freebsd
+            //       Please note that on unix environment variables also became part of command line
             // linux: echo | xargs --show-limits
             // osx/linux: getconf ARG_MAX
         }

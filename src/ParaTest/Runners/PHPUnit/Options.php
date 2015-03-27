@@ -68,13 +68,13 @@ class Options
     public function __construct($opts = array())
     {
         foreach (self::defaults() as $opt => $value) {
-            $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
+            $opts[$opt] = isset($opts[$opt]) ? $opts[$opt] : $value;
         }
 
         $this->processes = $opts['processes'];
         $this->path = $opts['path'];
         $this->phpunit = $opts['phpunit'];
-        $this->functional = strlen($opts['filter']) > 0 || $opts['functional'];
+        $this->functional = $opts['functional'];
         $this->stopOnFailure = $opts['stop-on-failure'];
         $this->runner = $opts['runner'];
         $this->noTestTokens = $opts['no-test-tokens'];
@@ -83,9 +83,17 @@ class Options
         $this->maxBatchSize = $opts['max-batch-size'];
         $this->filter = $opts['filter'];
 
-        // TODO: some tests didn't work without @
-        $this->group = @$opts['group'];
-        $this->excludeGroup = @$opts['exclude-group'];
+        // we need to register that options if they are blank but do not get them as
+        // key with null value in $this->filtered as it will create problems for
+        // phpunit command line generation (it will add them in command line with no value
+        // and it's wrong because group and exclude-group options require value when passed
+        // to phpunit)
+        $this->group = isset($opts['group']) ? $opts['group'] : null;
+        $this->excludeGroup = isset($opts['exclude-group']) ? $opts['exclude-group'] : null;
+
+        if (strlen($opts['filter']) > 0 && !$this->functional) {
+            throw new \RuntimeException("Option --filter is not implemented for non functional mode");
+        }
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -121,10 +129,7 @@ class Options
             'colors' => false,
             'testsuite' => '',
             'max-batch-size' => 0,
-            'filter' => null,
-            // TODO: for some reason tests failed if code below uncommented
-            //'group' => null,
-            //'excludeGroup' => null,
+            'filter' => null
         );
     }
 
@@ -187,10 +192,7 @@ class Options
             'colors' => $this->colors,
             'testsuite' => $this->testsuite,
             'max-batch-size' => $this->maxBatchSize,
-            'filter' => $this->filter,
-            // TODO: for some reason tests failed if code below uncommented
-            //'group' => $this->group,
-            //'excludeGroup' => $this->excludeGroup
+            'filter' => $this->filter
         ));
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);

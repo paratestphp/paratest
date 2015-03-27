@@ -1,7 +1,7 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
 /**
- * Class Batch
+ * Class TestMethod
  *
  * Represents a set of tests grouped in batch which can be passed to a single phpunit process.
  * Batch limited to run tests only from one php test case file.
