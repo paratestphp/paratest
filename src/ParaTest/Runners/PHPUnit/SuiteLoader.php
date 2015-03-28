@@ -373,7 +373,7 @@ class SuiteLoader
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
-        return [];
+        return array();
     }
 
     private function createSuite($path, ParsedClass $class)

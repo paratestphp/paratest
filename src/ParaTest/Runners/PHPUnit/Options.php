@@ -90,10 +90,10 @@ class Options
         // to phpunit)
         $this->groups = isset($opts['group']) && $opts['group'] !== ""
                       ? explode(",", $opts['group'])
-                      : [];
+                      : array();
         $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ""
                              ? explode(",", $opts['exclude-group'])
-                             : [];
+                             : array();
 
         if (strlen($opts['filter']) > 0 && !$this->functional) {
             throw new \RuntimeException("Option --filter is not implemented for non functional mode");
