@@ -68,7 +68,7 @@ class Options
     public function __construct($opts = array())
     {
         foreach (self::defaults() as $opt => $value) {
-            $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
+            $opts[$opt] = isset($opts[$opt]) ? $opts[$opt] : $value;
         }
 
         $this->processes = $opts['processes'];
@@ -80,6 +80,24 @@ class Options
         $this->noTestTokens = $opts['no-test-tokens'];
         $this->colors = $opts['colors'];
         $this->testsuite = $opts['testsuite'];
+        $this->maxBatchSize = $opts['max-batch-size'];
+        $this->filter = $opts['filter'];
+
+        // we need to register that options if they are blank but do not get them as
+        // key with null value in $this->filtered as it will create problems for
+        // phpunit command line generation (it will add them in command line with no value
+        // and it's wrong because group and exclude-group options require value when passed
+        // to phpunit)
+        $this->groups = isset($opts['group']) && $opts['group'] !== ""
+                      ? explode(",", $opts['group'])
+                      : array();
+        $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ""
+                             ? explode(",", $opts['exclude-group'])
+                             : array();
+
+        if (strlen($opts['filter']) > 0 && !$this->functional) {
+            throw new \RuntimeException("Option --filter is not implemented for non functional mode");
+        }
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -114,6 +132,8 @@ class Options
             'no-test-tokens' => false,
             'colors' => false,
             'testsuite' => '',
+            'max-batch-size' => 0,
+            'filter' => null
         );
     }
 
@@ -174,7 +194,9 @@ class Options
             'runner' => $this->runner,
             'no-test-tokens' => $this->noTestTokens,
             'colors' => $this->colors,
-            'testsuite' => $this->testsuite
+            'testsuite' => $this->testsuite,
+            'max-batch-size' => $this->maxBatchSize,
+            'filter' => $this->filter
         ));
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);

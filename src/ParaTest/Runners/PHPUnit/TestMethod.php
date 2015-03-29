@@ -3,69 +3,96 @@
 /**
  * Class TestMethod
  *
- * Represents an individual test method
- * used for running ParaTest in functional mode
+ * Represents a set of tests grouped in batch which can be passed to a single phpunit process.
+ * Batch limited to run tests only from one php test case file.
+ * Used for running ParaTest in functional mode.
+ *
+ * @todo Rename to Batch
  *
  * @package ParaTest\Runners\PHPUnit
  */
 class TestMethod extends ExecutableTest
 {
     /**
-     * The path to the test suite that
-     * contains this method. This patch
-     * is executed using the --filter clause
+     * The path to the test case file.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * The name of the method that will be supplied
-     * to the --filter switch
+     * A set of filters for test, they are merged into phpunit's --filter option.
      *
-     * @var string
+     * @var string[]
      */
-    protected $name;
+    protected $filters;
 
-    public function __construct($suitePath, $name)
+    /**
+     * Constructor.
+     *
+     * Passed filters must be unescaped and must represent test name, optionally including
+     * dataset name (numeric or named).
+     *
+     * @param string          $testPath Path to phpunit test case file.
+     * @param string|string[] $filters  Array of filters or single filter.
+     */
+    public function __construct($testPath, $filters)
     {
-        $this->path = $suitePath;
-        $this->name = $name;
+        $this->path = $testPath;
+        // for compatibility with other code (tests), which can pass string (one filter)
+        // instead of array of filters
+        $this->filters = (array)$filters;
     }
 
     /**
-     * Returns the test method's name
+     * Returns the test method's filters.
+     *
+     * @return string[]
+     */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+
+    /**
+     * Returns the test method's name.
+     *
+     * This method will join all filters via pipe character and return as string.
      *
      * @return string
      */
     public function getName()
     {
-        return $this->name;
+        return implode("|", $this->filters);
     }
 
     /**
-     * Additional processing for options being
-     * passed to PHPUnit. This sets up the --filter
-     * switch used to run a single PHPUnit test method
+     * Additional processing for options being passed to PHPUnit.
      *
-     * @param array $options
+     * This sets up the --filter switch used to run a single PHPUnit test method.
+     * This method also provide escaping for method name to be used as filter regexp.
+     *
+     * @param  array $options
      * @return array
      */
     protected function prepareOptions($options)
     {
-        $options['filter'] = sprintf("/\b%s\b/", $this->name);
+        $re = array_reduce($this->filters, function ($r, $v) {
+            $isDataSet = strpos($v, " with data set ") !== false;
+            return ($r ? $r . "|" : "") . preg_quote($v, "/") . ($isDataSet ? "\$" : "(?:\s|\$)");
+        });
+        $options['filter'] = "/" . $re . "/";
 
         return $options;
     }
 
     /**
-     * Get the expected count of tests or testmethods
-     * to be executed in this test
+     * Get the expected count of tests to be executed.
      *
      * @return int
      */
-    public function getTestMethodCount()
+    public function getTestCount()
     {
-        return 1;
+        return count($this->filters);
     }
 }

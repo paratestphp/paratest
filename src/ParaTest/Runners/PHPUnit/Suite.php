@@ -35,12 +35,11 @@ class Suite extends ExecutableTest
     }
 
     /**
-     * Get the expected count of tests or testmethods
-     * to be executed in this test
+     * Get the expected count of tests to be executed
      *
      * @return int
      */
-    public function getTestMethodCount()
+    public function getTestCount()
     {
         return count($this->functions);
     }
