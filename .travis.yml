@@ -8,12 +8,10 @@ php:
     - "5.5"
     - "5.4"
     - "5.3"
-    - hhvm-nightly
 
 matrix:
   fast_finish: true
   allow_failures:
-    - php: hhvm-nightly
     - env: PHPUNIT_VERSION='4.*@dev'
 
 env:
