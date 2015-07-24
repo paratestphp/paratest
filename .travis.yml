@@ -10,6 +10,10 @@ php:
     - "5.3"
     - hhvm-nightly
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 matrix:
   fast_finish: true
   allow_failures:
@@ -23,7 +27,7 @@ env:
 
 before_script:
     - composer require --no-update phpunit/phpunit=$PHPUNIT_VERSION
-    - composer install --prefer-source
+    - composer install --prefer-dist
 
 script:
     - vendor/bin/phpunit --coverage-clover=coverage.clover
