@@ -24,6 +24,7 @@ env:
     - PHPUNIT_VERSION='4.*@stable'
 
 before_script:
+    - composer self-update
     - composer require --no-update phpunit/phpunit=$PHPUNIT_VERSION
     - composer install --prefer-dist
 
