@@ -27,8 +27,12 @@
     "bin": ["bin/paratest"],
     "autoload": {
         "psr-0": {
-            "": ["test/unit", "test/functional"],
             "ParaTest": ["src/"]
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "": ["test/unit", "test/functional"]
         }
     }
 }
