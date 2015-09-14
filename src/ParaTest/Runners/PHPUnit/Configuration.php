@@ -38,9 +38,7 @@ class Configuration
     {
         $this->path = $path;
         if (file_exists($path)) {
-            $before = libxml_disable_entity_loader(false);
-            $this->xml = simplexml_load_file($path);
-            libxml_disable_entity_loader($before);
+            $this->xml = simplexml_load_string(file_get_contents($path));
         }
     }
 
