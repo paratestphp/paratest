@@ -49,7 +49,8 @@ class ParaTestCommand extends Command
             ->addOption('coverage-text', null, InputOption::VALUE_NONE, 'Generate code coverage report in text format.')
             ->addOption('coverage-xml', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in PHPUnit XML format.')
             ->addOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0)
-            ->addOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).');
+            ->addOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).')
+            ->addOption('parallel-suite', null, InputOption::VALUE_NONE, 'Run the suites of the config in parallel.');
 
         if (self::isWhitelistSupported()) {
             $this->addOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');

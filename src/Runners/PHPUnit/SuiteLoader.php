@@ -20,11 +20,23 @@ class SuiteLoader
     protected $files = [];
 
     /**
+     * @var array
+     */
+    protected $suitesName = null;
+
+    /**
      * The collection of parsed test classes.
      *
      * @var array
      */
     protected $loadedSuites = [];
+
+    /**
+     * The configuration
+     *
+     * @var Configuration|null
+     */
+    protected $configuration;
 
     /**
      * @var Options
@@ -34,6 +46,12 @@ class SuiteLoader
     public function __construct(Options $options = null)
     {
         $this->options = $options;
+
+        if (is_object($this->options) && isset($this->options->filtered['configuration'])) {
+            $this->configuration = $this->options->filtered['configuration'];
+        } else {
+            $this->configuration = new Configuration('');
+        }
     }
 
     /**
@@ -73,23 +91,30 @@ class SuiteLoader
      */
     public function load(string $path = '')
     {
-        if (is_object($this->options) && isset($this->options->filtered['configuration'])) {
-            $configuration = $this->options->filtered['configuration'];
-        } else {
-            $configuration = new Configuration('');
-        }
-
         if ($path) {
-            $testFileLoader = new TestFileLoader($this->options);
-            $this->files = array_merge($this->files, $testFileLoader->loadPath($path));
-        } elseif (isset($this->options->testsuite) && $this->options->testsuite) {
-            foreach ($configuration->getSuiteByName($this->options->testsuite) as $suite) {
+            $this->loadPath($path);
+        } elseif (
+            is_object($this->options) &&
+            $this->options->parallelSuite &&
+            isset($this->options->filtered['configuration']) ) {
+
+            $this->suitesName = array();
+            foreach ($this->configuration->getSuitesName() as $suiteName) {
+                $this->suitesName[] = $suiteName;
+            }
+
+        } elseif (
+            is_object($this->options) &&
+            isset($this->options->testsuite) &&
+            $this->options->testsuite) {
+
+            foreach ($this->configuration->getSuiteByName($this->options->testsuite) as $suite) {
                 foreach ($suite as $suitePath) {
                     $testFileLoader = new TestFileLoader($this->options);
                     $this->files = array_merge($this->files, $testFileLoader->loadSuitePath($suitePath));
                 }
             }
-        } elseif ($suites = $configuration->getSuites()) {
+        } elseif ($suites = $this->configuration->getSuites()) {
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {
                     $testFileLoader = new TestFileLoader($this->options);
@@ -98,7 +123,7 @@ class SuiteLoader
             }
         }
 
-        if (!$this->files) {
+        if (!$this->files && !is_array($this->suitesName)) {
             throw new \RuntimeException('No path or configuration provided (tests must end with Test.php)');
         }
 
@@ -108,19 +133,92 @@ class SuiteLoader
     }
 
     /**
+     * Loads suites based on a specific path.
+     * A valid path can be a directory or file
+     *
+     * @param $path
+     * @throws \InvalidArgumentException
+     */
+    private function loadPath($path)
+    {
+        $path = $path ? : $this->options->path;
+        if ($path instanceof SuitePath) {
+            $pattern = $path->getPattern();
+            $path = $path->getPath();
+        } else {
+            $pattern = self::TEST_PATTERN;
+        }
+        if (!file_exists($path)) {
+            throw new \InvalidArgumentException("$path is not a valid directory or file");
+        }
+        if (is_dir($path)) {
+            $this->loadDir($path, $pattern);
+        } elseif (file_exists($path)) {
+            $this->loadFile($path);
+        }
+    }
+
+    /**
+     * Loads suites from a directory
+     *
+     * @param string $path
+     * @param string $pattern
+     */
+    private function loadDir($path, $pattern = self::TEST_PATTERN)
+    {
+        $files = scandir($path);
+        foreach ($files as $file) {
+            $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file, $pattern);
+        }
+    }
+
+    /**
+     * Load a single suite file
+     *
+     * @param $path
+     */
+    private function loadFile($path)
+    {
+        $this->tryLoadTests($path, self::FILE_PATTERN);
+    }
+
+    /**
+     * Attempts to load suites from a path.
+     *
+     * @param string $path
+     * @param string $pattern regular expression for matching file names
+     */
+    private function tryLoadTests($path, $pattern = self::TEST_PATTERN)
+    {
+        if (preg_match($pattern, $path)) {
+            $this->files[] = $path;
+        }
+
+        if (!preg_match(self::$dotPattern, $path) && is_dir($path)) {
+            $this->loadDir($path, $pattern);
+        }
+    }
+
+    /**
      * Called after all files are loaded. Parses loaded files into
-     * ExecutableTest objects - either Suite or TestMethod.
+     * ExecutableTest objects - either Suite or TestMethod or FullSuite.
      */
     protected function initSuites()
     {
-        foreach ($this->files as $path) {
-            try {
-                $parser = new Parser($path);
-                if ($class = $parser->getClass()) {
-                    $this->loadedSuites[$path] = $this->createSuite($path, $class);
+        if (is_array($this->suitesName)) {
+            foreach ($this->suitesName as $suiteName) {
+                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->getPath());
+            }
+        } else {
+            foreach ($this->files as $path) {
+                try {
+                    $parser = new Parser($path);
+                    if ($class = $parser->getClass()) {
+                        $this->loadedSuites[$path] = $this->createSuite($path, $class);
+                    }
+                } catch (NoClassInFileException $e) {
+                    continue;
                 }
-            } catch (NoClassInFileException $e) {
-                continue;
             }
         }
     }
@@ -312,5 +410,10 @@ class SuiteLoader
             ),
             $class->getName()
         );
+    }
+
+    private function createFullSuite($suiteName, $configPath)
+    {
+        return new FullSuite($suiteName, $configPath);
     }
 }

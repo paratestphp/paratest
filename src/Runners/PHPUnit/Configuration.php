@@ -27,6 +27,11 @@ class Configuration
     protected $availableNodes = ['exclude', 'file', 'directory', 'testsuite'];
 
     /**
+     * @var int
+     */
+    public $count = 0;
+
+    /**
      * A collection of datastructures
      * build from the <testsuite> nodes inside of a
      * PHPUnit configuration.
@@ -98,6 +103,19 @@ class Configuration
         }
 
         return $suites;
+    }
+
+    public function getSuitesName()
+    {
+        if (!$this->xml) {
+            return null;
+        }
+        $nodes = $this->xml->xpath('//testsuites/testsuite');
+        $names = [];
+        while (list(, $node) = each($nodes)) {
+           $names[] = (string)$node['name'];
+        }
+        return $names;
     }
 
     /**
@@ -172,6 +190,8 @@ class Configuration
      */
     public function getSuitePaths(string $path)
     {
+        $this->count++;
+
         $real = realpath($this->getConfigDir() . $path);
 
         if ($real !== false) {
