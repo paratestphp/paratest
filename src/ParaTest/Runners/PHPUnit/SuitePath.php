@@ -17,13 +17,19 @@ class SuitePath
      * @var string
      */
     protected $suffix;
+
+    /**
+     * @var string[]s
+     */
+    protected $excludedPaths;
     
-    public function __construct($path, $suffix)
+    public function __construct($path, $excludedPaths, $suffix)
     {
         if ($suffix === null) {
             $suffix = self::DEFAULT_SUFFIX;
         }
         $this->path = $path;
+        $this->excludedPaths = $excludedPaths;
         $this->suffix = $suffix;
     }
 
@@ -33,6 +39,14 @@ class SuitePath
     public function getPath()
     {
         return $this->path;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExcludedPaths()
+    {
+        return $this->excludedPaths;
     }
 
     /**
