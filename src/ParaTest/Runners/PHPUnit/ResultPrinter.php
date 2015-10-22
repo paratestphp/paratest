@@ -189,7 +189,19 @@ class ResultPrinter
      */
     public function printFeedback(ExecutableTest $test)
     {
-        $reader = new Reader($test->getTempFile());
+        try {
+            $reader = new Reader($test->getTempFile());
+        } catch (\InvalidArgumentException $e) {
+            throw new \RuntimeException(sprintf(
+                "%s\n" .
+                "The process: %s\n" .
+                "This means a PHPUnit process was unable to run \"%s\"\n" .
+                "This is is a good starting point for debugging.\n",
+                $e->getmessage(),
+                $test->getLastCommand(),
+                $test->getPath()
+            ));
+        }
         if (!$reader->hasResults()) {
             throw new \RuntimeException(sprintf(
                 "The process: %s\nLog file \"%s\" is empty.\n" .
