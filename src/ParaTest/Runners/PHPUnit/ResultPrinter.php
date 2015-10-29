@@ -195,8 +195,7 @@ class ResultPrinter
             throw new \RuntimeException(sprintf(
                 "%s\n" .
                 "The process: %s\n" .
-                "This means a PHPUnit process was unable to run \"%s\"\n" .
-                "This is is a good starting point for debugging.\n",
+                "This means a PHPUnit process was unable to run \"%s\"\n" ,
                 $e->getmessage(),
                 $test->getLastCommand(),
                 $test->getPath()
