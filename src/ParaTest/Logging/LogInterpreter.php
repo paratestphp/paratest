@@ -86,10 +86,10 @@ class LogInterpreter extends MetaProvider
     /**
      * Fix problem with log from DataProvider
      *
-     * @param TestCase $cases
+     * @param array $cases
      * @param TestSuite $suite
      */
-    protected function extendEmptyCasesFromSuites(TestCase $cases, TestSuite $suite)
+    protected function extendEmptyCasesFromSuites($cases, TestSuite $suite)
     {
         $class = !empty($suite->name)?$suite->name:"";
         $file = !empty($suite->file)?$suite->file:"";
