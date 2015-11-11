@@ -2,6 +2,7 @@
 namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\TestCase;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\MetaProvider;
 
@@ -74,11 +75,34 @@ class LogInterpreter extends MetaProvider
             foreach ($reader->getSuites() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
                 while (list( , $nested) = each($suite->suites)) {
+                    $this->extendEmptyCasesFromSuites($nested->cases, $suite);
                     $cases = array_merge($cases, $nested->cases);
                 }
             }
         }
         return $cases;
+    }
+
+    /**
+     * Fix problem with log from DataProvider
+     *
+     * @param TestCase $cases
+     * @param TestSuite $suite
+     */
+    protected function extendEmptyCasesFromSuites(TestCase $cases, TestSuite $suite)
+    {
+        $class = !empty($suite->name)?$suite->name:"";
+        $file = !empty($suite->file)?$suite->file:"";
+
+        /** @var TestCase $case */
+        foreach ($cases as $case) {
+            if (empty($case->class)) {
+                $case->class = $class;
+            }
+            if (empty($case->file)) {
+                $case->file = $file;
+            }
+        }
     }
 
     /**
