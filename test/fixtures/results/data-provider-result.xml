@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="DataProviderTest" file="/var/www/tonicforhealth.com/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php" tests="50" assertions="50" failures="0" errors="0" time="0.002866">
+        <testsuite name="DataProviderTest::testNamedDataProvider50" tests="50" assertions="50" failures="0" errors="0" time="0.002866">
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_0&quot;" assertions="1" time="0.000457"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_1&quot;" assertions="1" time="0.000057"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_2&quot;" assertions="1" time="0.000050"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_3&quot;" assertions="1" time="0.000048"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_4&quot;" assertions="1" time="0.000047"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_5&quot;" assertions="1" time="0.000046"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_6&quot;" assertions="1" time="0.000041"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_7&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_8&quot;" assertions="1" time="0.000040"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_9&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_10&quot;" assertions="1" time="0.000041"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_11&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_12&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_13&quot;" assertions="1" time="0.000042"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_14&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_15&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_16&quot;" assertions="1" time="0.000038"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_17&quot;" assertions="1" time="0.000084"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_18&quot;" assertions="1" time="0.000053"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_19&quot;" assertions="1" time="0.000052"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_20&quot;" assertions="1" time="0.000050"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_21&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_22&quot;" assertions="1" time="0.000040"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_23&quot;" assertions="1" time="0.000038"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_24&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_25&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_26&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_27&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_28&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_29&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_30&quot;" assertions="1" time="0.000039"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_31&quot;" assertions="1" time="0.000038"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_32&quot;" assertions="1" time="0.000038"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_33&quot;" assertions="1" time="0.000042"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_34&quot;" assertions="1" time="0.000072"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_35&quot;" assertions="1" time="0.000066"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_36&quot;" assertions="1" time="0.000188"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_37&quot;" assertions="1" time="0.000087"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_38&quot;" assertions="1" time="0.000070"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_39&quot;" assertions="1" time="0.000047"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_40&quot;" assertions="1" time="0.000046"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_41&quot;" assertions="1" time="0.000046"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_42&quot;" assertions="1" time="0.000046"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_43&quot;" assertions="1" time="0.000047"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_44&quot;" assertions="1" time="0.000045"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_45&quot;" assertions="1" time="0.000045"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_46&quot;" assertions="1" time="0.000043"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_47&quot;" assertions="1" time="0.000043"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_48&quot;" assertions="1" time="0.000044"/>
+            <testcase name="testNamedDataProvider50 with data set &quot;name_of_test_49&quot;" assertions="1" time="0.000043"/>
+        </testsuite>
+    </testsuite>
+</testsuites>

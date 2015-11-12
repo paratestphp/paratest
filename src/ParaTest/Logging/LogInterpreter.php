@@ -74,24 +74,25 @@ class LogInterpreter extends MetaProvider
             foreach ($reader->getSuites() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
                 while (list( , $nested) = each($suite->suites)) {
-                    $this->extendEmptyCasesFromSuites($nested->cases, $suite);
+                    $this->extendEmptyCasesFromSuites($nested->cases, $suite, $nested);
                     $cases = array_merge($cases, $nested->cases);
                 }
             }
         }
         return $cases;
     }
-    
+
     /**
      * Fix problem with log from DataProvider
      *
      * @param array $cases
      * @param TestSuite $suite
+     * @param TestSuite $nestedSuite
      */
-    protected function extendEmptyCasesFromSuites($cases, TestSuite $suite)
+    protected function extendEmptyCasesFromSuites($cases, TestSuite $suite,TestSuite $nestedSuite)
     {
-        $class = !empty($suite->name)?$suite->name:"";
-        $file = !empty($suite->file)?$suite->file:"";
+        $class = !empty($nestedSuite->name)?$nestedSuite->name:(!empty($suite->name)?$suite->name:"");
+        $file = !empty($nestedSuite->file)?$nestedSuite->file:(!empty($suite->file)?$suite->file:"");
 
         /** @var TestCase $case */
         foreach ($cases as $case) {

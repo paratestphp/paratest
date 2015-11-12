@@ -10,6 +10,7 @@ abstract class ResultTester extends \TestBase
     protected $otherErrorSuite;
     protected $mixedSuite;
     protected $passingSuite;
+    protected $dataProviderSuite;
 
     public function setUp()
     {
@@ -18,6 +19,7 @@ abstract class ResultTester extends \TestBase
         $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml', 3);
         $this->mixedSuite = $this->getSuiteWithResult('mixed-results.xml', 7);
         $this->passingSuite = $this->getSuiteWithResult('single-passing.xml', 3);
+        $this->dataProviderSuite = $this->getSuiteWithResult('data-provider-result.xml', 50);
     }
 
     public function getSuiteWithResult($result, $methodCount)

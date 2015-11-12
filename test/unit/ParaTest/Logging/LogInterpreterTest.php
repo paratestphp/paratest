@@ -111,6 +111,17 @@ class LogInterpreterTest extends ResultTester
         $this->assertEquals(10, sizeof($cases));
     }
 
+    public function testGetCasesExtendEmptyCasesFromSuites()
+    {
+        $interpreter = new LogInterpreter();
+        $dataProviderReader = $this->getReader('dataProviderSuite');
+        $interpreter->addReader($dataProviderReader);
+        foreach($interpreter->getCases() as $case){
+            $this->assertAttributeNotEmpty('class',$case);
+            $this->assertAttributeNotEmpty('file',$case);
+        }
+    }
+
     public function testFlattenCasesReturnsCorrectNumberOfSuites()
     {
         $suites = $this->interpreter->flattenCases();
