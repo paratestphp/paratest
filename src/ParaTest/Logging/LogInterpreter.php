@@ -91,7 +91,7 @@ class LogInterpreter extends MetaProvider
      */
     protected function extendEmptyCasesFromSuites($cases, TestSuite $suite,TestSuite $nestedSuite)
     {
-        $class = !empty($nestedSuite->name)?$nestedSuite->name:(!empty($suite->name)?$suite->name:"");
+        $class = !empty($nestedSuite->class)?$nestedSuite->class:(!empty($suite->name)?$suite->name:"");
         $file = !empty($nestedSuite->file)?$nestedSuite->file:(!empty($suite->file)?$suite->file:"");
 
         /** @var TestCase $case */
