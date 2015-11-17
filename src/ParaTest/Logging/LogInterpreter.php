@@ -74,11 +74,34 @@ class LogInterpreter extends MetaProvider
             foreach ($reader->getSuites() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
                 while (list( , $nested) = each($suite->suites)) {
+                    $this->extendEmptyCasesFromSuites($nested->cases, $suite);
                     $cases = array_merge($cases, $nested->cases);
                 }
             }
         }
         return $cases;
+    }
+
+    /**
+     * Fix problem with empty testcase from DataProvider
+     *
+     * @param array $cases
+     * @param TestSuite $suite
+     */
+    protected function extendEmptyCasesFromSuites($cases, TestSuite $suite)
+    {
+        $class = $suite->name;
+        $file = $suite->file;
+
+        /** @var TestCase $case */
+        foreach ($cases as $case) {
+            if (empty($case->class)) {
+                $case->class = $class;
+            }
+            if (empty($case->file)) {
+                $case->file = $file;
+            }
+        }
     }
 
     /**

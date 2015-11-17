@@ -111,6 +111,35 @@ class LogInterpreterTest extends ResultTester
         $this->assertEquals(10, sizeof($cases));
     }
 
+    public function testGetCasesExtendEmptyCasesFromSuites()
+    {
+        $interpreter = new LogInterpreter();
+        $dataProviderReader = $this->getReader('dataProviderSuite');
+        $interpreter->addReader($dataProviderReader);
+        $cases = $interpreter->getCases();
+        $this->assertEquals(10, count($cases));
+        foreach($cases as $name => $case){
+            $this->assertAttributeNotEmpty('class',$case);
+            $this->assertAttributeNotEmpty('file',$case);
+            if($case->name == "testNumericDataProvider5 with data set #3"){
+                $this->assertEquals($case->class,'DataProviderTest1');
+            }elseif($case->name == "testNamedDataProvider5 with data set #3"){
+                $this->assertEquals($case->class,'DataProviderTest2');
+            }else{
+                $this->assertEquals($case->class,'DataProviderTest');
+            }
+            if($case->name == "testNumericDataProvider5 with data set #4"){
+                $this->assertEquals($case->file,'/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest1.php');
+            }
+            elseif($case->name == "testNamedDataProvider5 with data set #4"){
+                $this->assertEquals($case->file,'/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest2.php');
+            }
+            else{
+                $this->assertEquals($case->file,'/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php');
+            }
+        }
+    }
+
     public function testFlattenCasesReturnsCorrectNumberOfSuites()
     {
         $suites = $this->interpreter->flattenCases();
