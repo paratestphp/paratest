@@ -3,7 +3,6 @@ language: php
 sudo: false
 
 php:
-    - 5.4
     - 5.5
     - 5.6
     - 7.0
@@ -16,13 +15,14 @@ cache:
 matrix:
   fast_finish: true
   allow_failures:
-    - env: PHPUNIT_VERSION='4.*@dev'
+    - env: PHPUNIT_VERSION='*@dev'
     - php: 7.0
 
 env:
-    - PHPUNIT_VERSION='3.7.*'
-    - PHPUNIT_VERSION='4.*@dev'
+    - PHPUNIT_VERSION='3.7.*@stable'
     - PHPUNIT_VERSION='4.*@stable'
+    - PHPUNIT_VERSION='5.*@stable'
+    - PHPUNIT_VERSION='*@dev'
 
 before_script:
     - composer self-update
