@@ -15,16 +15,16 @@ cache:
 matrix:
   fast_finish: true
   exclude:
-    - php: 5.4
-        env: PHPUNIT_VERSION='5.*@stable'
-        env: PHPUNIT_VERSION='*@dev'
-    - php: 5.5
-        env: PHPUNIT_VERSION='5.*@stable'
-        env: PHPUNIT_VERSION='*@dev'
-    - php: 7.0
-        env: PHPUNIT_VERSION='4.*@stable'
-    - php: 7.0
-        env: PHPUNIT_VERSION='3.7.*@stable'
+  - php: 5.4
+      env: PHPUNIT_VERSION='5.*@stable'
+      env: PHPUNIT_VERSION='*@dev'
+  - php: 5.5
+      env: PHPUNIT_VERSION='5.*@stable'
+      env: PHPUNIT_VERSION='*@dev'
+  - php: 7.0
+      env: PHPUNIT_VERSION='4.*@stable'
+  - php: 7.0
+      env: PHPUNIT_VERSION='3.7.*@stable'
   allow_failures:
     - env: PHPUNIT_VERSION='*@dev'
     - php: 7.0
