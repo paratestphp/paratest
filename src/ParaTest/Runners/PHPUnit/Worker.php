@@ -32,7 +32,7 @@ class Worker
         if ($uniqueToken) {
             $bin .= "UNIQUE_TEST_TOKEN=$uniqueToken ";
         }
-        $bin .= "exec $wrapperBinary";
+        $bin .= "exec \"$wrapperBinary\"";
         $pipes = array();
         $this->proc = proc_open($bin, self::$descriptorspec, $pipes);
         $this->pipes = $pipes;
