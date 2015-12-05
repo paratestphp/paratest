@@ -2,6 +2,7 @@
 
 class RunnerIntegrationTest extends \TestBase
 {
+    /** @var Runner $runner */
     protected $runner;
     protected $options;
 
@@ -15,6 +16,7 @@ class RunnerIntegrationTest extends \TestBase
 
         $this->options = array(
             'path' => FIXTURES . DS . 'failing-tests',
+            'whitelist' => FIXTURES . DS . 'failing-tests',
             'phpunit' => PHPUNIT,
             'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
             'bootstrap' => BOOTSTRAP
