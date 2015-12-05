@@ -213,6 +213,9 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testRunWithFatalRuntimeErrorsHasExitCode1()
     {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
+        }
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
             'bootstrap' => BOOTSTRAP
         ));
@@ -221,6 +224,9 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testRunWithFatalRuntimeErrorOutputsError()
     {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
+        }
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
             'bootstrap' => BOOTSTRAP
         ));
@@ -229,6 +235,9 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testRunWithFatalRuntimeErrorWithTheWrapperRunnerOutputsError()
     {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
+        }
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
             'bootstrap' => BOOTSTRAP,
             'runner' => 'WrapperRunner'

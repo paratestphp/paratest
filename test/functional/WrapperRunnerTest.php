@@ -42,6 +42,9 @@ class WrapperRunnerTest extends FunctionalTestBase
 
     public function testFatalErrorsAreReported()
     {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
+        }
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
             'runner' => 'WrapperRunner',
             'processes' => 1,
