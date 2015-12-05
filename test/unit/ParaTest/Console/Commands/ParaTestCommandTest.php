@@ -28,7 +28,7 @@ class ParaTestCommandTest extends \TestBase
      */
     public function testConfiguredDefinitionWithPHPUnitTester()
     {
-        $expected = new InputDefinition(array(
+        $options = array(
             new InputOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 5),
             new InputOption('functional', 'f', InputOption::VALUE_NONE, 'Run methods instead of suites in separate processes.'),
             new InputOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.'),
@@ -47,11 +47,14 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('coverage-clover', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in Clover XML format.'),
             new InputOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.'),
             new InputOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.'),
-            new InputOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
             new InputOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0),
             new InputOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).'),
-        ));
+        );
+        if (ParaTestCommand::isWhitelistSupported()) {
+            $options[] = new InputOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
+        }
+        $expected = new InputDefinition($options);
         $definition = $this->command->getDefinition();
         $this->assertEquals($expected, $definition);
     }

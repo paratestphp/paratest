@@ -9,7 +9,8 @@
         "brianium/habitat": "1.0.0",
         "ext-reflection": "*",
         "ext-simplexml": "*",
-        "ext-pcre": "*"
+        "ext-pcre": "*",
+        "composer/semver": "~1.2.0"
     },
     "type": "library",
     "description": "Parallel testing for PHP",
