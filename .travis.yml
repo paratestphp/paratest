@@ -16,6 +16,9 @@ matrix:
   fast_finish: true
   allow_failures:
     - env: PHPUNIT_VERSION='*@dev'
+  exclude:
+    - php: 5.5
+      env: PHPUNIT_VERSION='5.*@stable'
 
 env:
     - PHPUNIT_VERSION='3.7.*@stable'
