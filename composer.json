@@ -1,5 +1,5 @@
 {
-    "name": "brianium/paratest",
+    "name": "grkej/paratest",
     "require": {
         "php": ">=5.4.0",
         "phpunit/phpunit": ">=3.7.8",
