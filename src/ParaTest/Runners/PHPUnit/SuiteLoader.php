@@ -91,6 +91,9 @@ class SuiteLoader
             $configuration = new Configuration('');
         }
 
+        $excludedGroups = array_merge($this->options->excludeGroups, $configuration->getExcludedGroups());
+        $this->options->excludeGroups = $excludedGroups;
+
         if ($path) {
             $this->loadPath($path);
         } elseif (isset($this->options->testsuite) && $this->options->testsuite) {
@@ -193,7 +196,10 @@ class SuiteLoader
             try {
                 $parser = new Parser($path);
                 if ($class = $parser->getClass()) {
-                    $this->loadedSuites[$path] = $this->createSuite($path, $class);
+                    $suite = $this->createSuite($path, $class);
+                    if ($suite) {
+                        $this->loadedSuites[$path] = $suite;
+                    }
                 }
             } catch (NoClassInFileException $e) {
                 continue;
@@ -221,13 +227,15 @@ class SuiteLoader
      * @param  ParsedClass $class
      * @return array of MethodBatches. Each MethodBatch has an array of method names
      */
-    private function getMethodBatches($class)
+    private function getMethodBatches(ParsedClass $class)
     {
+        $classGroups = $this->classGroups($class);
         $classMethods = $class->getMethods($this->options ? $this->options->annotations : array());
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
         $batches = array();
         foreach ($classMethods as $method) {
-            $tests = $this->getMethodTests($class, $method, $maxBatchSize != 0);
+            $tests = $this->getMethodTests($class, $classGroups, $method, $maxBatchSize != 0);
+
             // if filter passed to paratest then method tests can be blank if not match to filter
             if (!$tests) {
                 continue;
@@ -239,6 +247,7 @@ class SuiteLoader
                 $this->addTestsToBatchSet($batches, $tests, $maxBatchSize);
             }
         }
+
         return $batches;
     }
 
@@ -275,15 +284,16 @@ class SuiteLoader
      * data provider is not used and return all test if has data provider and data provider is used.
      *
      * @param  ParsedClass  $class            Parsed class.
+     * @param  array        $classGroups      Groups on the class.
      * @param  ParsedObject $method           Parsed method.
      * @param  bool         $useDataProvider  Try to use data provider or not.
      * @return string[]     Array of test names.
      */
-    private function getMethodTests($class, $method, $useDataProvider = false)
+    private function getMethodTests(ParsedClass $class, array $classGroups, ParsedObject $method, $useDataProvider = false)
     {
         $result = array();
 
-        $groups = $this->methodGroups($method);
+        $groups = array_merge($classGroups, $this->methodGroups($method));
 
         $dataProvider = $this->methodDataProvider($method);
         if ($useDataProvider && isset($dataProvider)) {
@@ -368,9 +378,19 @@ class SuiteLoader
         return null;
     }
 
-    private function methodGroups($method)
+    private function classGroups(ParsedClass $class)
     {
-        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        return $this->docBlockGroups($class->getDocBlock());
+    }
+
+    private function methodGroups(ParsedObject $method)
+    {
+        return $this->docBlockGroups($method->getDocBlock());
+    }
+
+    private function docBlockGroups($docBlock)
+    {
+        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $docBlock, $matches)) {
             return $matches[1];
         }
         return array();
@@ -378,13 +398,15 @@ class SuiteLoader
 
     private function createSuite($path, ParsedClass $class)
     {
-        return new Suite(
-            $path,
-            $this->executableTests(
-                $path,
-                $class
-            ),
-            $class->getName()
+        $executableTests = $this->executableTests(
+          $path,
+          $class
         );
+
+        if (count($executableTests) > 0) {
+            return new Suite($path, $executableTests, $class->getName());
+        }
+
+        return null;
     }
 }
