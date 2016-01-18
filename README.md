@@ -70,7 +70,7 @@ To get the most out of paratest, you have to adjust the parameters carefully.
  3. ***Use the WrapperRunner if possible***
 
     The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process. Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the WrapperRunner with ```--runner WrapperRunner```. It spawns one "worker"-process for each parallel process (```-p```), executes the bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and bootstrapping is reduced to the minimum.
- 4. ***Tune batch max size ```--batch-max-size```***.
+ 4. ***Tune batch max size ```--max-batch-size```***.
 
     Batch size will affect on max amount of atomic tests which will be used for single test method.
     One atomic test will be either one test method from test class if no data provider available for
