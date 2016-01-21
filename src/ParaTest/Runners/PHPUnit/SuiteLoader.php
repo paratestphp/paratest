@@ -74,20 +74,20 @@ class SuiteLoader
         }
 
         if ($path) {
-            $testLoader = new TestLoader($this->options);
-            $this->files = array_merge($this->files, $testLoader->loadPath($path));
+            $testFileLoader = new TestFileLoader($this->options);
+            $this->files = array_merge($this->files, $testFileLoader->loadPath($path));
         } elseif (isset($this->options->testsuite) && $this->options->testsuite) {
             foreach ($configuration->getSuiteByName($this->options->testsuite) as $suite) {
                 foreach ($suite as $suitePath) {
-                    $testLoader = new TestLoader($this->options);
-                    $this->files = array_merge($this->files, $testLoader->loadSuitePath($suitePath));
+                    $testFileLoader = new TestFileLoader($this->options);
+                    $this->files = array_merge($this->files, $testFileLoader->loadSuitePath($suitePath));
                 }
             }
         } elseif ($suites = $configuration->getSuites()) {
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {
-                    $testLoader = new TestLoader($this->options);
-                    $this->files = array_merge($this->files, $testLoader->loadSuitePath($suitePath));
+                    $testFileLoader = new TestFileLoader($this->options);
+                    $this->files = array_merge($this->files, $testFileLoader->loadSuitePath($suitePath));
                 }
             }
         }

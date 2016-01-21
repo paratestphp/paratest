@@ -107,21 +107,28 @@ class Configuration
                     switch ($nodeName) {
                         case 'exclude':
                             foreach ($this->getSuitePaths((string)$nodeContent) as $excludedPath) {
-                                $excludedPaths[] = $excludedPath;
+                                $excludedPaths[$excludedPath] = $excludedPath;
                             }
                             break;
                         case 'testsuite':
                             $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$nodeContent));
                             break;
+                        case 'directory':
+                            // Replicate behaviour of PHPUnit
+                            // if a directory is included and excluded at the same time, then it is considered included
+                            foreach ($this->getSuitePaths((string)$nodeContent) as $dir) {
+                                if (array_key_exists($dir, $excludedPaths)) {
+                                    unset($excludedPaths[$dir]);
+                                }
+                            }
+                            // not breaking on purpose
                         default:
                             foreach ($this->getSuitePaths((string)$nodeContent) as $path) {
-                                if (!array_key_exists($path, $excludedPaths)) {
-                                    $suites[(string)$node['name']][] = new SuitePath(
-                                        $path,
-                                        $excludedPaths,
-                                        $nodeContent->attributes()->suffix
-                                    );
-                                }
+                                $suites[(string)$node['name']][] = new SuitePath(
+                                    $path,
+                                    $excludedPaths,
+                                    $nodeContent->attributes()->suffix
+                                );
                             }
                             break;
                     }

@@ -4,7 +4,7 @@
 namespace ParaTest\Runners\PHPUnit;
 
 
-class TestLoader
+class TestFileLoader
 {
     /**
      * The pattern used for grabbing test files. Uses the *Test.php convention
@@ -43,7 +43,7 @@ class TestLoader
      *
      * @var bool
      */
-    protected $excludingFiles;
+    protected $excludingFiles = false;
 
 
     public function __construct($options = null)
@@ -64,7 +64,7 @@ class TestLoader
      */
     public function loadSuitePath(SuitePath $path)
     {
-        // First create the list of excluded files
+        // First initialize the list of files and excluded files
         $this->files          = array();
         $this->excludedFiles  = array();
         $this->excludingFiles = true;
