@@ -20,7 +20,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testOptionsMustBeInstanceOfOptionsIfNotNull()
     {
-        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));
+        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'four'));
     }
 
     /**
@@ -46,6 +46,45 @@ class SuiteLoaderTest extends \TestBase
     {
         $options = new Options(
             array('configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 1;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag() 
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-excluded-including-file.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 1;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag() 
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-excluded-including-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 2;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory() 
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
         );
         $loader = new SuiteLoader($options);
         $loader->load();

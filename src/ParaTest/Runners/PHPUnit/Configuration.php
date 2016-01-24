@@ -23,7 +23,7 @@ class Configuration
      */
     protected $xml;
 
-    protected $availableNodes = array('file', 'directory', 'testsuite');
+    protected $availableNodes = array('exclude', 'file', 'directory', 'testsuite');
 
     /**
      * A collection of datastructures
@@ -71,7 +71,7 @@ class Configuration
      * Return the contents of the <testsuite> nodes
      * contained in a PHPUnit configuration
      *
-     * @return array|null
+     * @return SuitePath[][]|null
      */
     public function getSuites()
     {
@@ -79,7 +79,7 @@ class Configuration
             return null;
         }
         $suites = array();
-        $nodes = $this->xml->xpath('//testsuites/testsuite');
+        $nodes  = $this->xml->xpath('//testsuites/testsuite');
 
         while (list(, $node) = each($nodes)) {
             $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$node['name']));
@@ -93,24 +93,40 @@ class Configuration
      *
      * @param string $suiteName
      *
-     * @return array
+     * @return SuitePath[]|null
      */
     public function getSuiteByName($suiteName)
     {
         $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
 
-        $suites = array();
+        $suites        = array();
+        $excludedPaths = array();
         while (list(, $node) = each($nodes)) {
             foreach ($this->availableNodes as $nodeName) {
                 foreach ($node->{$nodeName} as $nodeContent) {
                     switch ($nodeName) {
+                        case 'exclude':
+                            foreach ($this->getSuitePaths((string)$nodeContent) as $excludedPath) {
+                                $excludedPaths[$excludedPath] = $excludedPath;
+                            }
+                            break;
                         case 'testsuite':
                             $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$nodeContent));
                             break;
+                        case 'directory':
+                            // Replicate behaviour of PHPUnit
+                            // if a directory is included and excluded at the same time, then it is considered included
+                            foreach ($this->getSuitePaths((string)$nodeContent) as $dir) {
+                                if (array_key_exists($dir, $excludedPaths)) {
+                                    unset($excludedPaths[$dir]);
+                                }
+                            }
+                            // not breaking on purpose
                         default:
                             foreach ($this->getSuitePaths((string)$nodeContent) as $path) {
                                 $suites[(string)$node['name']][] = new SuitePath(
                                     $path,
+                                    $excludedPaths,
                                     $nodeContent->attributes()->suffix
                                 );
                             }
@@ -131,7 +147,7 @@ class Configuration
      */
     public function getConfigDir()
     {
-        return dirname($this->path) . DIRECTORY_SEPARATOR;
+        return dirname($this->path).DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -142,7 +158,7 @@ class Configuration
      */
     public function getSuitePaths($path)
     {
-        $real = realpath($this->getConfigDir() . $path);
+        $real = realpath($this->getConfigDir().$path);
 
         if ($real !== false) {
             return array($real);
@@ -150,12 +166,11 @@ class Configuration
 
         if ($this->isGlobRequired($path)) {
             $paths = array();
-            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
+            foreach (glob($this->getConfigDir().$path, GLOB_ONLYDIR) as $path) {
                 if (($path = realpath($path)) !== false) {
                     $paths[] = $path;
                 }
             }
-
             return $paths;
         }
 
