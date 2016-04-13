@@ -1,7 +1,10 @@
 <?php namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Console\Commands\ParaTestCommand;
+
 class RunnerIntegrationTest extends \TestBase
 {
+    /** @var Runner $runner */
     protected $runner;
     protected $options;
 
@@ -19,6 +22,9 @@ class RunnerIntegrationTest extends \TestBase
             'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
             'bootstrap' => BOOTSTRAP
         );
+        if (ParaTestCommand::isWhitelistSupported()) {
+            $this->options['whitelist'] = FIXTURES . DS . 'failing-tests';
+        }
         $this->runner = new Runner($this->options);
     }
 

@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
@@ -41,11 +42,25 @@ abstract class ExecutableTest
      */
     protected $token;
 
+    /**
+     * Last executed process command
+     *
+     * @var string
+     */
+    protected $lastCommand;
+
     public function __construct($path, $fullyQualifiedClassName = null)
     {
         $this->path = $path;
         $this->fullyQualifiedClassName = $fullyQualifiedClassName;
     }
+
+    /**
+     * Get the expected count of tests to be executed
+     *
+     * @return int
+     */
+    abstract public function getTestCount();
 
     /**
      * Get the path to the test being executed
@@ -66,8 +81,9 @@ abstract class ExecutableTest
      */
     public function getTempFile()
     {
-        if(is_null($this->temp))
+        if (is_null($this->temp)) {
             $this->temp = tempnam(sys_get_temp_dir(), "PT_");
+        }
 
         return $this->temp;
     }
@@ -88,8 +104,9 @@ abstract class ExecutableTest
      */
     public function getWarnings()
     {
-        if(!$this->process)
+        if (!$this->process) {
             return false;
+        }
 
         // PHPUnit has a bug where by it doesn't include warnings in the junit
         // output, but still fails. This is a hacky, imperfect method for extracting them
@@ -144,6 +161,16 @@ abstract class ExecutableTest
     }
 
     /**
+     * Return the last process command
+     *
+     * @return string
+     */
+    public function getLastCommand()
+    {
+        return $this->lastCommand;
+    }
+
+    /**
      * Executes the test by creating a separate process
      *
      * @param $binary
@@ -156,6 +183,8 @@ abstract class ExecutableTest
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
         $command = $this->command($binary, $options);
+        $this->assertValidCommandLineLength($command);
+        $this->lastCommand = $command;
         $this->process = new Process($command, null, $environmentVariables);
         $this->process->start();
         return $this;
@@ -171,11 +200,78 @@ abstract class ExecutableTest
         return $this->token;
     }
 
+    /**
+     * Generate command line with passed options suitable to handle through paratest.
+     *
+     * @param  string $binary  Executable binary name.
+     * @param  array  $options Command line options.
+     * @return string          Command line.
+     */
     public function command($binary, $options = array())
     {
         $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
         $options = $this->redirectCoverageOption($options);
         return $this->getCommandString($binary, $options);
+    }
+
+    /**
+     * Get covertage filename
+     *
+     * @return string
+     */
+    public function getCoverageFileName()
+    {
+        if ($this->coverageFileName === null) {
+            $this->coverageFileName = tempnam(sys_get_temp_dir(), "CV_");
+        }
+
+        return $this->coverageFileName;
+    }
+
+    /**
+     * Get process stdout content
+     *
+     * @return string
+     */
+    public function getStdout()
+    {
+        return $this->process->getOutput();
+    }
+
+    /**
+     * Set process termporary filename
+     *
+     * @param string $temp
+     */
+    public function setTempFile($temp)
+    {
+        $this->temp = $temp;
+    }
+
+    /**
+     * Assert that command line lenght is valid.
+     *
+     * In some situations process command line can became too long when combining different test
+     * cases in single --filter arguments so it's better to show error regarding that to user
+     * and propose him to decrease max batch size.
+     *
+     * @param  string $cmd Command line
+     * @throws \RuntimeException on too long command line
+     */
+    protected function assertValidCommandLineLength($cmd)
+    {
+        if (DIRECTORY_SEPARATOR == "\\") { // windows
+            // symfony's process wrapper
+            $cmd = 'cmd /V:ON /E:ON /C "('.$cmd.')';
+            if (strlen($cmd) > 32767) {
+                throw new \RuntimeException("Command line is too long, try to decrease max batch size");
+            }
+        } else {
+            // TODO: Implement command line length validation for linux/osx/freebsd
+            //       Please note that on unix environment variables also became part of command line
+            // linux: echo | xargs --show-limits
+            // osx/linux: getconf ARG_MAX
+        }
     }
 
     /**
@@ -201,7 +297,7 @@ abstract class ExecutableTest
     {
         $builder = new ProcessBuilder();
         $builder->setPrefix($binary);
-        foreach($options as $key => $value) {
+        foreach ($options as $key => $value) {
             $builder->add("--$key");
             if ($value !== null) {
                 $builder->add($value);
@@ -224,7 +320,9 @@ abstract class ExecutableTest
      */
     protected function handleEnvironmentVariables($environmentVariables)
     {
-        if (isset($environmentVariables['TEST_TOKEN'])) $this->token = $environmentVariables['TEST_TOKEN'];
+        if (isset($environmentVariables['TEST_TOKEN'])) {
+            $this->token = $environmentVariables['TEST_TOKEN'];
+        }
     }
 
     /**
@@ -234,7 +332,7 @@ abstract class ExecutableTest
      * @param array $options
      * @return array $options
      */
-    private function redirectCoverageOption($options)
+    protected function redirectCoverageOption($options)
     {
         if (isset($options['coverage-php'])) {
             $options['coverage-php'] = $this->getCoverageFileName();
@@ -244,22 +342,5 @@ abstract class ExecutableTest
         unset($options['coverage-clover']);
 
         return $options;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCoverageFileName()
-    {
-        if ($this->coverageFileName === null) {
-            $this->coverageFileName = tempnam(sys_get_temp_dir(), "CV_");
-        }
-
-        return $this->coverageFileName;
-    }
-
-    public function getStdout()
-    {
-        return $this->process->getOutput();
     }
 }

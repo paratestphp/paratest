@@ -33,4 +33,14 @@ class Suite extends ExecutableTest
     {
         return $this->functions;
     }
+
+    /**
+     * Get the expected count of tests to be executed
+     *
+     * @return int
+     */
+    public function getTestCount()
+    {
+        return count($this->functions);
+    }
 }

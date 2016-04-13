@@ -1,5 +1,6 @@
 <?php namespace ParaTest\Console\Commands;
 
+use Composer\Semver\Comparator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +22,14 @@ class ParaTestCommand extends Command
     }
 
     /**
+     * @return bool
+     */
+    public static function isWhitelistSupported()
+    {
+        return Comparator::greaterThanOrEqualTo(\PHPUnit_Runner_Version::id(), '5.0.0');
+    }
+
+    /**
      * Ubiquitous configuration options for ParaTest
      */
     protected function configure()
@@ -32,7 +41,13 @@ class ParaTestCommand extends Command
             ->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.')
             ->addOption('coverage-clover', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in Clover XML format.')
             ->addOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.')
-            ->addOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.');
+            ->addOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.')
+            ->addOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0)
+            ->addOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).');
+
+        if (self::isWhitelistSupported()) {
+            $this->addOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
+        }
     }
 
     /**

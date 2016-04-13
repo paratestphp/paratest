@@ -1,7 +1,7 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 use Habitat\Habitat;
-
 
 class Runner extends BaseRunner
 {
@@ -28,7 +28,7 @@ class Runner extends BaseRunner
         parent::run();
 
         while (count($this->running) || count($this->pending)) {
-            foreach($this->running as $key => $test) {
+            foreach ($this->running as $key => $test) {
                 if (!$this->testIsStillRunning($test)) {
                     unset($this->running[$key]);
                     $this->releaseToken($key);
@@ -67,11 +67,11 @@ class Runner extends BaseRunner
     {
         $opts = $this->options;
         while (sizeof($this->pending) && sizeof($this->running) < $opts->processes) {
-            $token = $this->getNextAvailableToken();
-            if ($token !== false) {
-                $this->acquireToken($token);
-                $env = array('TEST_TOKEN' => $token) + Habitat::getAll();
-                $this->running[$token] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env);
+            $tokenData = $this->getNextAvailableToken();
+            if ($tokenData !== false) {
+                $this->acquireToken($tokenData['token']);
+                $env = array('TEST_TOKEN' => $tokenData['token'], 'UNIQUE_TEST_TOKEN' => $tokenData['unique']) + Habitat::getAll();
+                $this->running[$tokenData['token']] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env);
             }
         }
     }
@@ -88,7 +88,9 @@ class Runner extends BaseRunner
      */
     private function testIsStillRunning($test)
     {
-        if(!$test->isDoneRunning()) return true;
+        if (!$test->isDoneRunning()) {
+            return true;
+        }
         $this->setExitCode($test);
         $test->stop();
         if ($this->options->stopOnFailure && $test->getExitCode() > 0) {
@@ -119,8 +121,9 @@ class Runner extends BaseRunner
     private function setExitCode(ExecutableTest $test)
     {
         $exit = $test->getExitCode();
-        if($exit > $this->exitcode)
+        if ($exit > $this->exitcode) {
             $this->exitcode = $exit;
+        }
     }
 
     /**
@@ -130,8 +133,8 @@ class Runner extends BaseRunner
     protected function initTokens()
     {
         $this->tokens = array();
-        for ($i=0; $i< $this->options->processes; $i++) {
-            $this->tokens[$i] = true;
+        for ($i = 0; $i < $this->options->processes; $i++) {
+            $this->tokens[$i] = array('token' => $i, 'unique' => uniqid($i), 'available' => true);
         }
     }
 
@@ -139,14 +142,15 @@ class Runner extends BaseRunner
      * Gets the next token that is available to be acquired
      * from a finished process
      *
-     * @return bool|int
+     * @return bool|array
      */
     protected function getNextAvailableToken()
     {
-        for ($i=0; $i< count($this->tokens); $i++) {
-            if ($this->tokens[$i]) return $i;
+        foreach ($this->tokens as $data) {
+            if ($data['available']) {
+                return $data;
+            }
         }
-
         return false;
     }
 
@@ -157,7 +161,11 @@ class Runner extends BaseRunner
      */
     protected function releaseToken($tokenIdentifier)
     {
-        $this->tokens[$tokenIdentifier] = true;
+        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+            return ($val['token'] === $tokenIdentifier);
+        });
+        $keys = array_keys($filtered);
+        $this->tokens[$keys[0]]['available'] = true;
     }
 
     /**
@@ -167,7 +175,11 @@ class Runner extends BaseRunner
      */
     protected function acquireToken($tokenIdentifier)
     {
-        $this->tokens[$tokenIdentifier] = false;
+        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+            return ($val['token'] === $tokenIdentifier);
+        });
+        $keys = array_keys($filtered);
+        $this->tokens[$keys[0]]['available'] = false;
     }
 
     /**
@@ -178,5 +190,4 @@ class Runner extends BaseRunner
         $coverageFile = $test->getCoverageFileName();
         $this->addCoverageFromFile($coverageFile);
     }
-
 }

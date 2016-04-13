@@ -5,6 +5,7 @@ checks:
   php:
     parameter_doc_comments: false
 tools:
+  external_code_coverage: true
   php_cpd: true
   php_changetracking: true
   php_mess_detector:
@@ -27,3 +28,5 @@ tools:
     enabled: true
     config:
       standard: "PSR2"
+  
+  php_code_coverage: true

@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Console\Testers;
+<?php 
+namespace ParaTest\Console\Testers;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,6 +43,7 @@ class PHPUnit extends Tester
             ->addOption('stop-on-failure', null, InputOption::VALUE_NONE, 'Don\'t start any more processes after a failure.')
             ->addOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.')
             ->addOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.')
+            ->addOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
             ->addArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.');
         $this->command = $command;
@@ -57,13 +59,27 @@ class PHPUnit extends Tester
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        if(!$this->hasConfig($input) && !$this->hasPath($input))
+        if (!$this->hasConfig($input) && !$this->hasPath($input)) {
             $this->displayHelp($input, $output);
+        }
+
         if ($input->getOption('runner') === 'WrapperRunner') {
             $runner = new WrapperRunner($this->getRunnerOptions($input));
         } else {
+            if ($input->getOption('runner') !== '') {
+                // because we want to have to bootstrap script inherited before check/initialization
+                $runnerOption = $this->getRunnerOptions($input);
+                $runnerClass = $input->getOption('runner');
+                if (class_exists($runnerClass)) {
+                    $runner = new $runnerClass($runnerOption);
+                }
+            }
+        }
+
+        if (!isset($runner)) {
             $runner = new Runner($this->getRunnerOptions($input));
         }
+
         $runner->run();
         return $runner->getExitCode();
     }
@@ -101,14 +117,15 @@ class PHPUnit extends Tester
     {
         $cwd = getcwd() . DIRECTORY_SEPARATOR;
 
-        if($input->getOption('configuration'))
+        if ($input->getOption('configuration')) {
             $configFilename = $input->getOption('configuration');
-        elseif(file_exists($cwd . 'phpunit.xml.dist'))
+        } elseif (file_exists($cwd . 'phpunit.xml.dist')) {
             $configFilename = $cwd . 'phpunit.xml.dist';
-        elseif(file_exists($cwd . 'phpunit.xml'))
+        } elseif (file_exists($cwd . 'phpunit.xml')) {
             $configFilename = $cwd . 'phpunit.xml';
-        else
+        } else {
             return false;
+        }
 
         return new Configuration($configFilename);
     }
@@ -122,35 +139,47 @@ class PHPUnit extends Tester
     {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
+        $bootstrap = $this->getBootstrapFile($input, $options);
+        $this->requireBootstrap($bootstrap);
 
-        if($this->hasConfig($input) && !isset($options['bootstrap'])) {
-            $config = $this->getConfig($input);
-            if($config->getBootstrap())
-                $options['bootstrap'] = $config->getConfigDir() . $config->getBootstrap();
-        }
-        if(isset($options['bootstrap'])) {
-            if(file_exists($options['bootstrap']))
-                $this->requireBootstrap($options['bootstrap']);
-            else
-                throw new \RuntimeException(
-                    sprintf('Bootstrap specified but could not be found (%s)',
-                    $options['bootstrap']));
-        }
-
-        if ($this->hasCoverage($options) && !isset($options['coverage-php'])) {
+        if ($this->hasCoverage($options)) {
             $options['coverage-php'] = sys_get_temp_dir() . '/will_be_overwritten.php';
         }
 
-        $options = ($path) ? array_merge(array('path' => $path), $options) : $options;
+        if ($path) {
+            $options = array_merge(array('path' => $path), $options);
+        }
+
         return $options;
     }
 
     /**
-     * This function limits the scope affected by the bootstrap,
-     * so that $options variable defined in it doesn't break
-     * this object's configuration.
+     * Require the bootstrap. If the file is specified, but does not exist
+     * then an exception will be raised.
+     *
+     * @param $file
+     * @throws \RuntimeException
      */
     public function requireBootstrap($file)
+    {
+        if (! $file) {
+            return;
+        }
+
+        if (! file_exists($file)) {
+            $message = sprintf('Bootstrap specified but could not be found (%s)', $file);
+            throw new \RuntimeException($message);
+        }
+
+        $this->scopedRequire($file);
+    }
+
+    /**
+     * This function limits the scope of a required file
+     * so that variables defined in it do not break
+     * this object's configuration.
+     */
+    protected function scopedRequire($file)
     {
         $cwd = getcwd();
         require_once $file;
@@ -158,11 +187,38 @@ class PHPUnit extends Tester
     }
 
     /**
+     * Return whether or not code coverage information should be collected.
+     *
      * @param $options
      * @return bool
      */
     protected function hasCoverage($options)
     {
-        return isset($options['coverage-html']) || isset($options['coverage-clover']);
+        $isFileFormat = isset($options['coverage-html']) || isset($options['coverage-clover']);
+        $isPHP = isset($options['coverage-php']);
+        return $isFileFormat && ! $isPHP;
+    }
+
+    /**
+     * Fetch the path to the bootstrap file.
+     *
+     * @param InputInterface $input
+     * @param array $options
+     * @return string
+     */
+    protected function getBootstrapFile(InputInterface $input, array $options)
+    {
+        if (isset($options['bootstrap'])) {
+            return $options['bootstrap'];
+        }
+
+        if (! $this->hasConfig($input)) {
+            return '';
+        }
+
+        $config = $this->getConfig($input);
+        $bootstrap = $config->getBootstrap();
+
+        return ($bootstrap) ? $config->getConfigDir() . $bootstrap : '';
     }
 }

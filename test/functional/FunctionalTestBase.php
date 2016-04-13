@@ -14,10 +14,10 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         return $fixture;
     }
 
-    protected function invokeParatest($path, $options = array())
+    protected function invokeParatest($path, $options = array(), $callback = null)
     {
         $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
-        return $invoker->execute($options);
+        return $invoker->execute($options, $callback);
     }
 
     protected function assertTestsPassed(Process $proc, $testPattern='\d+', $assertionPattern='\d+')

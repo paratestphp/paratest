@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 /**
  * Class Options
@@ -66,8 +67,9 @@ class Options
 
     public function __construct($opts = array())
     {
-        foreach(self::defaults() as $opt => $value)
-            $opts[$opt] = (isset($opts[$opt])) ? $opts[$opt] : $value;
+        foreach (self::defaults() as $opt => $value) {
+            $opts[$opt] = isset($opts[$opt]) ? $opts[$opt] : $value;
+        }
 
         $this->processes = $opts['processes'];
         $this->path = $opts['path'];
@@ -77,6 +79,25 @@ class Options
         $this->runner = $opts['runner'];
         $this->noTestTokens = $opts['no-test-tokens'];
         $this->colors = $opts['colors'];
+        $this->testsuite = $opts['testsuite'];
+        $this->maxBatchSize = $opts['max-batch-size'];
+        $this->filter = $opts['filter'];
+
+        // we need to register that options if they are blank but do not get them as
+        // key with null value in $this->filtered as it will create problems for
+        // phpunit command line generation (it will add them in command line with no value
+        // and it's wrong because group and exclude-group options require value when passed
+        // to phpunit)
+        $this->groups = isset($opts['group']) && $opts['group'] !== ""
+                      ? explode(",", $opts['group'])
+                      : array();
+        $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ""
+                             ? explode(",", $opts['exclude-group'])
+                             : array();
+
+        if (strlen($opts['filter']) > 0 && !$this->functional) {
+            throw new \RuntimeException("Option --filter is not implemented for non functional mode");
+        }
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
@@ -110,6 +131,9 @@ class Options
             'runner' => 'Runner',
             'no-test-tokens' => false,
             'colors' => false,
+            'testsuite' => '',
+            'max-batch-size' => 0,
+            'filter' => null
         );
     }
 
@@ -126,8 +150,14 @@ class Options
         $vendor  = static::vendorDir();
         $phpunit = $vendor . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
         $batch = $phpunit . '.bat';
-        if(file_exists($batch)) return $batch;
-        if(file_exists($phpunit)) return $phpunit;
+
+        if (file_exists($batch)) {
+            return $batch;
+        }
+
+        if (file_exists($phpunit)) {
+            return $phpunit;
+        }
 
         return 'phpunit';
     }
@@ -140,8 +170,9 @@ class Options
     protected static function vendorDir()
     {
         $vendor = dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'vendor';
-        if(!file_exists($vendor))
+        if (!file_exists($vendor)) {
             $vendor = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+        }
 
         return $vendor;
     }
@@ -163,9 +194,13 @@ class Options
             'runner' => $this->runner,
             'no-test-tokens' => $this->noTestTokens,
             'colors' => $this->colors,
+            'testsuite' => $this->testsuite,
+            'max-batch-size' => $this->maxBatchSize,
+            'filter' => $this->filter
         ));
-        if($configuration = $this->getConfigurationPath($filtered))
+        if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
+        }
 
         return $filtered;
     }
@@ -179,15 +214,35 @@ class Options
      */
     protected function getConfigurationPath($filtered)
     {
-        if(isset($filtered['configuration']))
+        if (isset($filtered['configuration'])) {
+            return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
+        }
+        return $this->getDefaultConfigurationForPath();
+    }
 
-            return file_exists($filtered['configuration']) ? realpath($filtered['configuration']) : $filtered['configuration'];
-        if(file_exists('phpunit.xml'))
+    /**
+     * Retrieve the default configuration given a path (directory or file).
+     * This will search into the directory, if a directory is specified
+     *
+     * @param string $path The path to search into
+     * @param string $default The default value to give back
+     * @return string|null
+     */
+    private function getDefaultConfigurationForPath($path = '.', $default = null)
+    {
+        if ($this->isFile($path)) {
+            return realpath($path);
+        }
 
-            return realpath('phpunit.xml');
-        if(file_exists('phpunit.xml.dist'))
+        $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $suffixes = array('phpunit.xml', 'phpunit.xml.dist');
 
-            return realpath('phpunit.xml.dist');
+        foreach ($suffixes as $suffix) {
+            if ($this->isFile($path . $suffix)) {
+                return realpath($path . $suffix);
+            }
+        }
+        return $default;
     }
 
     /**
@@ -197,8 +252,19 @@ class Options
     protected function initAnnotations()
     {
         $annotatedOptions = array('group');
-        foreach($this->filtered as $key => $value)
-            if(array_search($key, $annotatedOptions) !== false)
+        foreach ($this->filtered as $key => $value) {
+            if (array_search($key, $annotatedOptions) !== false) {
                 $this->annotations[$key] = $value;
+            }
+        }
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    private function isFile($file)
+    {
+        return file_exists($file) && !is_dir($file);
     }
 }

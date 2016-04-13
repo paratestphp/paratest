@@ -20,7 +20,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testOptionsMustBeInstanceOfOptionsIfNotNull()
     {
-        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'foure'));
+        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'four'));
     }
 
     /**
@@ -40,6 +40,132 @@ class SuiteLoaderTest extends \TestBase
     {
         $loader = new SuiteLoader();
         $loader->load();
+    }
+
+    public function testLoadTestsuiteFileFromConfig()
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 1;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag() 
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-excluded-including-file.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 1;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag() 
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-excluded-including-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 2;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory() 
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 1;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteFilesFromConfig()
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-multifile.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = 2;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteWithDirectory()
+    {
+        $options = new Options(array('configuration' => $this->fixture('phpunit-passing.xml'), 'testsuite' => 'ParaTest Fixtures'));
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteWithDirectories()
+    {
+        $options = new Options(array('configuration' => $this->fixture('phpunit-multidir.xml'), 'testsuite' => 'ParaTest Fixtures'));
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            sizeof($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteWithFilesDirsMixed()
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteWithNestedSuite()
+    {
+        $options = new Options(
+            array('configuration' => $this->fixture('phpunit-files-dirs-mix-nested.xml'), 'testsuite' => 'ParaTest Fixtures')
+        );
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            sizeof($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
+        $this->assertEquals($expected, sizeof($files));
+    }
+
+    public function testLoadTestsuiteWithDuplicateFilesDirMixed()
+    {
+        $options = new Options(array('configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'), 'testsuite' => 'ParaTest Fixtures'));
+        $loader = new SuiteLoader($options);
+        $loader->load();
+        $files = $this->getObjectValue($loader, 'files');
+
+        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) + 1;
+        $this->assertEquals($expected, sizeof($files));
     }
 
     public function testLoadSuiteFromConfig()
@@ -83,6 +209,15 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals($path, array_shift($paths));
     }
 
+    protected function getLoadedPaths($path, $loader=null)
+    {
+        $loader = $loader ?: new SuiteLoader();
+        $loader->load($path);
+        $loaded = $this->getObjectValue($loader, 'loadedSuites');
+        $paths = array_keys($loaded);
+        return $paths;
+    }
+
     public function testLoadFileShouldLoadFileWhereNameDoesNotEndInTest()
     {
         $path = $this->fixture('passing-tests/TestOfUnits.php');
@@ -118,6 +253,16 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testAddition', $functions[4]->getName());
     }
 
+    private function suiteByPath($path, array $paraSuites)
+    {
+        foreach ($paraSuites as $completePath => $suite) {
+            if (strstr($completePath, $path)) {
+                return $suite;
+            }
+        }
+        throw new \RuntimeException("Suite $path not found.");
+    }
+
     /**
      * @depends testLoadDirGetsPathOfAllTestsWithKeys
      */
@@ -140,6 +285,13 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testFalsehood', $methods[1]->getName());
     }
 
+    public function testLoadIgnoresFilesWithoutClasses()
+    {
+        $loader = new SuiteLoader();
+        $fileWithoutClass = $this->fixture('special-classes/FileWithoutClass.php');
+        $loader->load($fileWithoutClass);
+    }
+
     public function testExecutableTestsForFunctionalModeUse()
     {
         $path = $this->fixture('passing-tests/DependsOnChain.php');
@@ -148,29 +300,8 @@ class SuiteLoaderTest extends \TestBase
         $tests = $loader->getTestMethods();
         $this->assertEquals(2, count($tests));
         $testMethod = $tests[0];
-        $testMethodName = $this->getObjectValue($testMethod, 'name');
-        $this->assertEquals($testMethodName, 'testOneA|testOneBDependsOnA|testOneCDependsOnB');
+        $this->assertEquals($testMethod->getName(), 'testOneA|testOneBDependsOnA|testOneCDependsOnB');
         $testMethod = $tests[1];
-        $testMethodName = $this->getObjectValue($testMethod, 'name');
-        $this->assertEquals($testMethodName, 'testTwoA|testTwoBDependsOnA');
-    }
-
-    protected function getLoadedPaths($path, $loader=null)
-    {
-        $loader = $loader ?: new SuiteLoader();
-        $loader->load($path);
-        $loaded = $this->getObjectValue($loader, 'loadedSuites');
-        $paths = array_keys($loaded);
-        return $paths;
-    }
-
-    private function suiteByPath($path, array $paraSuites)
-    {
-        foreach ($paraSuites as $completePath => $suite) {
-            if (strstr($completePath, $path)) {
-                return $suite;
-            }
-        }
-        throw new \RuntimeException("Suite $path not found.");
+        $this->assertEquals($testMethod->getName(), 'testTwoA|testTwoBDependsOnA');
     }
 }

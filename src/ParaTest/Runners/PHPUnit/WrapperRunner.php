@@ -1,5 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
-
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 class WrapperRunner extends BaseRunner
 {
@@ -48,10 +48,12 @@ class WrapperRunner extends BaseRunner
             $worker = new Worker();
             if ($this->options->noTestTokens) {
                 $token = null;
+                $uniqueToken = null;
             } else {
                 $token = $i;
+                $uniqueToken = uniqid();
             }
-            $worker->start($wrapper, $token);
+            $worker->start($wrapper, $token, $uniqueToken);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
@@ -62,7 +64,7 @@ class WrapperRunner extends BaseRunner
         $phpunit = $this->options->phpunit;
         $phpunitOptions = $this->options->filtered;
         $phpunitOptions['no-globals-backup'] = null;
-        while(count($this->pending)) {
+        while (count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $worker) {
                 if ($worker->isFree()) {
@@ -118,7 +120,7 @@ class WrapperRunner extends BaseRunner
     private function progressedWorkers()
     {
         $result = array();
-        foreach($this->modified as $modifiedStream) {
+        foreach ($this->modified as $modifiedStream) {
             $found = null;
             foreach ($this->streams as $index => $stream) {
                 if ($modifiedStream == $stream) {
@@ -154,7 +156,7 @@ class WrapperRunner extends BaseRunner
         $this->log();
         $this->logCoverage();
         $readers = $this->interpreter->getReaders();
-        foreach($readers as $reader) {
+        foreach ($readers as $reader) {
             $reader->removeLog();
         }
     }

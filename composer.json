@@ -1,15 +1,16 @@
 {
     "name": "brianium/paratest",
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=5.4.0",
         "phpunit/phpunit": ">=3.7.8",
         "phpunit/php-timer": ">=1.0.4",
-        "symfony/console": "~2.3",
-        "symfony/process": "~2.3",
+        "symfony/console": "~2.3|~3.0",
+        "symfony/process": "~2.3|~3.0",
         "brianium/habitat": "1.0.0",
         "ext-reflection": "*",
         "ext-simplexml": "*",
-        "ext-pcre": "*"
+        "ext-pcre": "*",
+        "composer/semver": "~1.2.0"
     },
     "type": "library",
     "description": "Parallel testing for PHP",
@@ -27,8 +28,12 @@
     "bin": ["bin/paratest"],
     "autoload": {
         "psr-0": {
-            "": ["test/unit", "test/functional"],
             "ParaTest": ["src/"]
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "": ["test/unit", "test/functional"]
         }
     }
 }

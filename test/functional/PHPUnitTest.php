@@ -34,6 +34,21 @@ class PHPUnitTest extends FunctionalTestBase
         )));
     }
 
+    public function testWithCustomRunner()
+    {
+        $cb = new ProcessCallback();
+
+        $this->invokeParatest(
+            'passing-tests',
+            array(
+                'configuration' => PHPUNIT_CONFIGURATION,
+                'runner'        => 'EmptyRunnerStub'
+            ),
+            array($cb, 'callback')
+        );
+        $this->assertEquals('EXECUTED', $cb->getBuffer());
+    }
+
     public function testWithColorsGreenBar()
     {
         $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
@@ -198,6 +213,9 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testRunWithFatalRuntimeErrorsHasExitCode1()
     {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
+        }
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
             'bootstrap' => BOOTSTRAP
         ));
@@ -206,6 +224,9 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testRunWithFatalRuntimeErrorOutputsError()
     {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
+        }
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
             'bootstrap' => BOOTSTRAP
         ));
@@ -214,6 +235,9 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testRunWithFatalRuntimeErrorWithTheWrapperRunnerOutputsError()
     {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
+        }
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
             'bootstrap' => BOOTSTRAP,
             'runner' => 'WrapperRunner'
@@ -289,12 +313,9 @@ class PHPUnitTest extends FunctionalTestBase
             array('bootstrap' => BOOTSTRAP)
         );
 
-        $output = $proc->getOutput();
+        $proc->getOutput();
 
         $this->assertEquals(1, $proc->getExitCode(), "Test should fail with 1");
-        $this->assertRegExp("/There were 2 warnings/", $output);
-        $this->assertRegExp("/FAILURES!\n".
-        "Tests: 1, Assertions: 1, Failures: 0, Errors: 0./", $output);
     }
 
     public function setsCoveragePhpDataProvider()

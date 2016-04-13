@@ -1,8 +1,9 @@
-<?php namespace ParaTest\Logging;
+<?php 
+namespace ParaTest\Logging;
 
-use ParaTest\Logging\JUnit\Reader,
-    ParaTest\Logging\JUnit\TestSuite,
-    ParaTest\Logging\MetaProvider;
+use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\TestSuite;
+use ParaTest\Logging\MetaProvider;
 
 class LogInterpreter extends MetaProvider
 {
@@ -69,14 +70,38 @@ class LogInterpreter extends MetaProvider
     public function getCases()
     {
         $cases = array();
-        while(list( , $reader) = each($this->readers)) {
-            foreach($reader->getSuites() as $suite) {
+        while (list( , $reader) = each($this->readers)) {
+            foreach ($reader->getSuites() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
-                while(list( , $nested) = each($suite->suites))
+                while (list( , $nested) = each($suite->suites)) {
+                    $this->extendEmptyCasesFromSuites($nested->cases, $suite);
                     $cases = array_merge($cases, $nested->cases);
+                }
             }
         }
         return $cases;
+    }
+
+    /**
+     * Fix problem with empty testcase from DataProvider
+     *
+     * @param array $cases
+     * @param TestSuite $suite
+     */
+    protected function extendEmptyCasesFromSuites($cases, TestSuite $suite)
+    {
+        $class = $suite->name;
+        $file = $suite->file;
+
+        /** @var TestCase $case */
+        foreach ($cases as $case) {
+            if (empty($case->class)) {
+                $case->class = $class;
+            }
+            if (empty($case->file)) {
+                $case->file = $file;
+            }
+        }
     }
 
     /**
@@ -86,8 +111,10 @@ class LogInterpreter extends MetaProvider
     public function flattenCases()
     {
         $dict = array();
-        foreach($this->getCases() as $case) {
-            if(!isset($dict[$case->file])) $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0);
+        foreach ($this->getCases() as $case) {
+            if (!isset($dict[$case->file])) {
+                $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0);
+            }
             $dict[$case->file]->cases[] = $case;
             $dict[$case->file]->tests += 1;
             $dict[$case->file]->assertions += $case->assertions;
@@ -107,7 +134,7 @@ class LogInterpreter extends MetaProvider
      */
     protected function getNumericValue($property)
     {
-        return ($property === 'time') 
+        return ($property === 'time')
                ? floatval($this->accumulate('getTotalTime'))
                : intval($this->accumulate('getTotal' . ucfirst($property)));
     }
@@ -134,8 +161,9 @@ class LogInterpreter extends MetaProvider
     private function mergeMessages($method)
     {
         $messages = array();
-        foreach($this->readers as $reader)
+        foreach ($this->readers as $reader) {
             $messages = array_merge($messages, $reader->$method());
+        }
         return $messages;
     }
 
@@ -148,7 +176,7 @@ class LogInterpreter extends MetaProvider
      */
     private function accumulate($method)
     {
-        return array_reduce($this->readers, function($result, $reader) use($method){
+        return array_reduce($this->readers, function ($result, $reader) use ($method) {
             $result += $reader->$method();
             return $result;
         }, 0);

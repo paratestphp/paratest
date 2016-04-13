@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Console\Testers;
+<?php
+namespace ParaTest\Console\Testers;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,8 +41,11 @@ abstract class Tester
     protected function getOptions(InputInterface $input)
     {
         $options = $input->getOptions();
-        foreach($options as $key => $value)
-            if(empty($options[$key])) unset($options[$key]);
+        foreach ($options as $key => $value) {
+            if (empty($options[$key])) {
+                unset($options[$key]);
+            }
+        }
         return $options;
     }
 

@@ -78,6 +78,42 @@ class WorkerTest extends \TestBase
         $this->assertFalse($worker->isRunning());
     }
 
+    public function testProcessIsNotMarkedAsCrashedWhenItFinishesCorrectly()
+    {
+
+        // fake state: process has already exited (clean) but worker did not yet notice
+        $worker = new Worker();
+        $this->setPerReflection($worker, 'isRunning', false);
+        $this->setPerReflection($worker, 'proc', $this->createSomeClosedProcess());
+        $this->setPerReflection($worker, 'pipes', array(0 => true));
+        $this->assertFalse($worker->isCrashed());
+    }
+
+    private function createSomeClosedProcess()
+    {
+        $descriptorspec = array(
+            0 => array("pipe", "r"),
+            1 => array("pipe", "w"),
+            2 => array("pipe", "w")
+        );
+
+        $proc = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
+        $running = true;
+        while($running) {
+            $status = proc_get_status($proc);
+            $running = $status['running'];
+        }
+        return $proc;
+    }
+
+    private function setPerReflection($instance, $property, $value)
+    {
+        $reflectionProperty = new \ReflectionProperty(get_class($instance), $property);
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($instance, $value);
+    }
+
+
     public function testCanExecuteMultiplePHPUnitCommands()
     {
         $bin = 'bin/phpunit-wrapper';

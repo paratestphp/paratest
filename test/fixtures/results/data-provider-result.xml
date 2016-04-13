@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="DataProviderTest" file="/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php" tests="10" assertions="10" failures="0" errors="0" time="0.001107">
+        <testsuite name="DataProviderTest::testNumericDataProvider5" tests="5" assertions="5" failures="0" errors="0" time="0.000773">
+            <testcase name="testNumericDataProvider5 with data set #0" assertions="1" time="0.000435"/>
+            <testcase name="testNumericDataProvider5 with data set #1" assertions="1" time="0.000132"/>
+            <testcase name="testNumericDataProvider5 with data set #2" assertions="1" time="0.000055"/>
+            <testcase name="testNumericDataProvider5 with data set #3" class="DataProviderTest1" assertions="1" time="0.000046"/>
+            <testcase name="testNumericDataProvider5 with data set #4" file="/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest1.php" assertions="1" time="0.000105"/>
+        </testsuite>
+        <testsuite name="DataProviderTest::testNamedDataProvider5" tests="5" assertions="5" failures="0" errors="0" time="0.000334">
+            <testcase name="testNamedDataProvider5 with data set #0" assertions="1" time="0.000063"/>
+            <testcase name="testNamedDataProvider5 with data set #1" assertions="1" time="0.000055"/>
+            <testcase name="testNamedDataProvider5 with data set #2" assertions="1" time="0.000053"/>
+            <testcase name="testNamedDataProvider5 with data set #3" class="DataProviderTest2" assertions="1" time="0.000044"/>
+            <testcase name="testNamedDataProvider5 with data set #4" file="/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest2.php" assertions="1" time="0.000119"/>
+        </testsuite>
+    </testsuite>
+</testsuites>

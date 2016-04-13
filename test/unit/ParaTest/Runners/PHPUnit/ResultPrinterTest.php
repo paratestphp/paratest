@@ -9,18 +9,18 @@ class ResultPrinterTest extends ResultTester
     protected $printer;
     protected $interpreter;
 
+    protected $passingSuiteWithWrongTestCountEsimation;
+
     public function setUp()
     {
         parent::setUp();
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
-        $this->mockFunctions($this->errorSuite, 1);
-        $this->mockFunctions($this->failureSuite, 3);
-        $this->mockFunctions($this->mixedSuite, 7);
-        $this->mockFunctions($this->passingSuite, 3);
         chdir(__DIR__);
         if(file_exists('myconfig.xml'))
             unlink('myconfig.xml');
+
+        $this->passingSuiteWithWrongTestCountEsimation = $this->getSuiteWithResult('single-passing.xml', 1);
     }
 
     public function testConstructor()
@@ -55,7 +55,7 @@ class ResultPrinterTest extends ResultTester
         $options = new Options();
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\n", $options->phpunit);
-        $this->assertEquals($expected, $contents);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testStartSetsWidthAndMaxColumn()
@@ -80,15 +80,15 @@ class ResultPrinterTest extends ResultTester
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\nConfiguration read from %s\n\n",
                             $options->phpunit,
                             __DIR__ . DS . 'myconfig.xml');
-        $this->assertEquals($expected, $contents);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithFunctionalMode()
     {
         $options = new Options(array('functional' => true));
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is on\n\n", $options->phpunit);
-        $this->assertEquals($expected, $contents);
+        $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is ON.\n\n", $options->phpunit);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess()
@@ -96,7 +96,7 @@ class ResultPrinterTest extends ResultTester
         $options = new Options(array('processes' => 1));
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
-        $this->assertEquals($expected, $contents);
+        $this->assertStringStartsWith($expected, $contents);
     }
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases()
@@ -252,6 +252,44 @@ class ResultPrinterTest extends ResultTester
         for($i = 0; $i < 57; $i++)
             $expected .= '.';
         $this->assertEquals($expected, $feedback);
+    }
+
+    public function testResultPrinterAdjustsTotalCountForDataProviders()
+    {
+        //add tests
+        for ($i = 0; $i < 22; $i++)
+            $this->printer->addTest($this->passingSuiteWithWrongTestCountEsimation);
+
+        //start the printer so boundaries are established
+        ob_start();
+        $this->printer->start(new Options());
+        ob_end_clean();
+
+        //get the feedback string
+        ob_start();
+        for ($i = 0; $i < 22; $i++)
+            $this->printer->printFeedback($this->passingSuiteWithWrongTestCountEsimation);
+        $feedback = ob_get_clean();
+
+        //assert it is as expected
+        $expected = '';
+        for($i = 0; $i < 65; $i++)
+            $expected .= '.';
+        $expected .= " 65 / 66 ( 98%)\n";
+        for($i = 0; $i < 1; $i++)
+            $expected .= '.';
+        $this->assertEquals($expected, $feedback);
+
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testEmptyResultsLog(){
+        $suite = new Suite('/path/to/ResultSuite.php', array());
+        $empty = FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml';
+        file_put_contents($suite->getTempFile(), file_get_contents($empty));
+        $this->printer->printFeedback($suite);
     }
 
     protected function getStartOutput(Options $options)

@@ -12,8 +12,8 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function testTestTokenVariableIsDefinedCorrectly()
     {
         $token = getenv('TEST_TOKEN');
+        $unqiueToken = getenv('UNIQUE_TEST_TOKEN');
         $this->assertTrue(is_numeric($token));
-        $this->assertGreaterThanOrEqual(0, $token);
-        $this->assertLessThanOrEqual(5, $token);
+        $this->assertTrue(!empty($unqiueToken));
     }
 }

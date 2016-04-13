@@ -45,36 +45,51 @@ class RunnerTest extends \TestBase
 
     public function testGetsNextAvailableTokenReturnsTokenIdentifier()
     {
-        $tokens = array(0 => false, 1 => false, 2 => true, 3 => false);
+        $tokens = array(
+            0 => array('token' => 0, 'unique' => uniqid(), 'available' => false),
+            1 => array('token' => 1, 'unique' => uniqid(), 'available' => false),
+            2 => array('token' => 2, 'unique' => uniqid(), 'available' => true),
+            3 => array('token' => 3, 'unique' => uniqid(), 'available' => false)
+        );
         $opts = array('processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true);
         $runner = new Runner($opts);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
-        $token = $this->call($runner, 'getNextAvailableToken');
-        $this->assertEquals(2, $token);
+        $tokenData = $this->call($runner, 'getNextAvailableToken');
+        $this->assertEquals(2, $tokenData['token']);
     }
 
     public function testGetNextAvailableTokenReturnsFalseWhenNoTokensAreAvailable()
     {
-        $tokens = array(0 => false, 1 => false, 2 => false, 3 => false);
+        $tokens = array(
+            0 => array('token' => 0, 'unique' => uniqid(), 'available' => false),
+            1 => array('token' => 1, 'unique' => uniqid(), 'available' => false),
+            2 => array('token' => 2, 'unique' => uniqid(), 'available' => false),
+            3 => array('token' => 3, 'unique' => uniqid(), 'available' => false)
+        );
         $opts = array('processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true);
         $runner = new Runner($opts);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
-        $token = $this->call($runner, 'getNextAvailableToken');
-        $this->assertTrue($token === false);
+        $tokenData = $this->call($runner, 'getNextAvailableToken');
+        $this->assertTrue($tokenData === false);
     }
 
     public function testReleaseTokenMakesTokenAvailable()
     {
-        $tokens = array(0 => false, 1 => false, 2 => false, 3 => false);
+        $tokens = array(
+            0 => array('token' => 0, 'unique' => uniqid(), 'available' => false),
+            1 => array('token' => 1, 'unique' => uniqid(), 'available' => false),
+            2 => array('token' => 2, 'unique' => uniqid(), 'available' => false),
+            3 => array('token' => 3, 'unique' => uniqid(), 'available' => false)
+        );
         $opts = array('processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true);
         $runner = new Runner($opts);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
-        $this->assertFalse($tokens[1]);
+        $this->assertFalse($tokens[1]['available']);
         $this->call($runner, 'releaseToken', 1);
         $tokens = $this->getObjectValue($runner, 'tokens');
-        $this->assertTrue($tokens[1]);
+        $this->assertTrue($tokens[1]['available']);
     }
 }

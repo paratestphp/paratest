@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+namespace ParaTest\Runners\PHPUnit;
 
 /**
  * Class Configuration
@@ -22,6 +23,8 @@ class Configuration
      */
     protected $xml;
 
+    protected $availableNodes = array('exclude', 'file', 'directory', 'testsuite');
+
     /**
      * A collection of datastructures
      * build from the <testsuite> nodes inside of a
@@ -34,10 +37,8 @@ class Configuration
     public function __construct($path)
     {
         $this->path = $path;
-        if(file_exists($path)) {
-            $before = libxml_disable_entity_loader(false);
-            $this->xml = simplexml_load_file($path);
-            libxml_disable_entity_loader($before);
+        if (file_exists($path)) {
+            $this->xml = simplexml_load_string(file_get_contents($path));
         }
     }
 
@@ -48,10 +49,11 @@ class Configuration
      */
     public function getBootstrap()
     {
-        if($this->xml)
+        if ($this->xml) {
             return (string)$this->xml->attributes()->bootstrap;
-        else
+        } else {
             return '';
+        }
     }
 
     /**
@@ -69,20 +71,71 @@ class Configuration
      * Return the contents of the <testsuite> nodes
      * contained in a PHPUnit configuration
      *
-     * @return array|null
+     * @return SuitePath[][]|null
      */
     public function getSuites()
     {
-        if(!$this->xml) return null;
+        if (!$this->xml) {
+            return null;
+        }
         $suites = array();
-        $nodes = $this->xml->xpath('//testsuite');
-        while(list(, $node) = each($nodes)) {
-            foreach ($node->directory as $dir) {
-                foreach ($this->getSuitePaths((string) $dir) as $path) {
-                    $suites[(string)$node['name']][] = new SuitePath($path, $dir->attributes()->suffix);
+        $nodes  = $this->xml->xpath('//testsuites/testsuite');
+
+        while (list(, $node) = each($nodes)) {
+            $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$node['name']));
+        }
+        return $suites;
+    }
+
+    /**
+     * Return the contents of the <testsuite> nodes
+     * contained in a PHPUnit configuration
+     *
+     * @param string $suiteName
+     *
+     * @return SuitePath[]|null
+     */
+    public function getSuiteByName($suiteName)
+    {
+        $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
+
+        $suites        = array();
+        $excludedPaths = array();
+        while (list(, $node) = each($nodes)) {
+            foreach ($this->availableNodes as $nodeName) {
+                foreach ($node->{$nodeName} as $nodeContent) {
+                    switch ($nodeName) {
+                        case 'exclude':
+                            foreach ($this->getSuitePaths((string)$nodeContent) as $excludedPath) {
+                                $excludedPaths[$excludedPath] = $excludedPath;
+                            }
+                            break;
+                        case 'testsuite':
+                            $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$nodeContent));
+                            break;
+                        case 'directory':
+                            // Replicate behaviour of PHPUnit
+                            // if a directory is included and excluded at the same time, then it is considered included
+                            foreach ($this->getSuitePaths((string)$nodeContent) as $dir) {
+                                if (array_key_exists($dir, $excludedPaths)) {
+                                    unset($excludedPaths[$dir]);
+                                }
+                            }
+                            // not breaking on purpose
+                        default:
+                            foreach ($this->getSuitePaths((string)$nodeContent) as $path) {
+                                $suites[(string)$node['name']][] = new SuitePath(
+                                    $path,
+                                    $excludedPaths,
+                                    $nodeContent->attributes()->suffix
+                                );
+                            }
+                            break;
+                    }
                 }
             }
         }
+
         return $suites;
     }
 
@@ -94,7 +147,7 @@ class Configuration
      */
     public function getConfigDir()
     {
-        return dirname($this->path) . DIRECTORY_SEPARATOR;
+        return dirname($this->path).DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -105,7 +158,7 @@ class Configuration
      */
     public function getSuitePaths($path)
     {
-        $real = realpath($this->getConfigDir() . $path);
+        $real = realpath($this->getConfigDir().$path);
 
         if ($real !== false) {
             return array($real);
@@ -113,12 +166,11 @@ class Configuration
 
         if ($this->isGlobRequired($path)) {
             $paths = array();
-            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
+            foreach (glob($this->getConfigDir().$path, GLOB_ONLYDIR) as $path) {
                 if (($path = realpath($path)) !== false) {
                     $paths[] = $path;
                 }
             }
-
             return $paths;
         }
 

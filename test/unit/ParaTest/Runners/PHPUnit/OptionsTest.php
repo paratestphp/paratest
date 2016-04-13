@@ -48,28 +48,17 @@ class OptionsTest extends \TestBase
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd()
     {
-        file_put_contents('phpunit.xml', '<root />');
-        $this->unfiltered['path'] = getcwd();
-        $options = new Options($this->unfiltered);
-        $this->assertEquals(__DIR__ . DS . 'phpunit.xml', $options->filtered['configuration']->getPath());
+        $this->assertConfigurationFileFiltered('phpunit.xml', getcwd());
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd()
     {
-        file_put_contents('phpunit.xml.dist', '<root />');
-        $this->unfiltered['path'] = getcwd();
-        $options = new Options($this->unfiltered);
-        $this->assertEquals(__DIR__ . DS . 'phpunit.xml.dist', $options->filtered['configuration']->getPath());
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', getcwd());
     }
 
     public function testConfigurationShouldReturnSpecifiedConfigurationIfFileExists()
     {
-        file_put_contents('myconfig.xml', '<root />');
-        $this->unfiltered['configuration'] = 'myconfig.xml';
-        $this->unfiltered['path'] = getcwd();
-        $options = new Options($this->unfiltered);
-
-        $this->assertEquals(__DIR__ . DS . 'myconfig.xml', $options->filtered['configuration']->getPath());
+        $this->assertConfigurationFileFiltered('myconfig.xml', getcwd(), 'myconfig.xml');
     }
 
     public function testConfigurationShouldBeSetEvenIfFileDoesNotExist()
@@ -104,5 +93,31 @@ class OptionsTest extends \TestBase
             unlink('phpunit.xml.dist');
         if(file_exists('myconfig.xml'))
             unlink('myconfig.xml');
+    }
+
+    public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists()
+    {
+        $this->assertConfigurationFileFiltered('phpunit.xml', getcwd(), getcwd());
+    }
+
+    public function testConfigurationShouldReturnXmlDistIfConfigSpecifiedAsDirectoryAndFileExists()
+    {
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', getcwd(), getcwd());
+    }
+
+    /**
+     * @param $configFileName
+     * @param $path
+     * @param $configurationParameter
+     */
+    private function assertConfigurationFileFiltered($configFileName, $path, $configurationParameter = null)
+    {
+        file_put_contents($configFileName, '<root />');
+        $this->unfiltered['path'] = $path;
+        if ($configurationParameter !== null) {
+            $this->unfiltered['configuration'] = $configurationParameter;
+        }
+        $options = new Options($this->unfiltered);
+        $this->assertEquals(__DIR__ . DS . $configFileName, $options->filtered['configuration']->getPath());
     }
 }

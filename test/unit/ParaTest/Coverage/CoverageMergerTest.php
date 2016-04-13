@@ -18,7 +18,9 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
         $firstFile = PARATEST_ROOT . '/src/ParaTest/Logging/LogInterpreter.php';
         $secondFile = PARATEST_ROOT . '/src/ParaTest/Logging/MetaProvider.php';
 
-        $coverage1 = new \PHP_CodeCoverage();
+        $filter = new \PHP_CodeCoverage_Filter();
+        $filter->addFilesToWhitelist([$firstFile, $secondFile]);
+        $coverage1 = new \PHP_CodeCoverage(null, $filter);
         $coverage1->append(
             array(
                 $firstFile => array(35 => 1),
@@ -26,7 +28,7 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
             ),
             'Test1'
         );
-        $coverage2 = new \PHP_CodeCoverage();
+        $coverage2 = new \PHP_CodeCoverage(null, $filter);
         $coverage2->append(
             array(
                 $firstFile => array(35 => 1, 36 => 1)

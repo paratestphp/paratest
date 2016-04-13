@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Parser;
+<?php
+namespace ParaTest\Parser;
 
 abstract class ParsedObject
 {
@@ -49,8 +50,11 @@ abstract class ParsedObject
      */
     public function hasAnnotation($anno, $value = null)
     {
-        $pattern = sprintf('/@%s%s/', $anno, 
-                           !is_null($value) ? "[\s]+$value" : '\b');
+        $pattern = sprintf(
+            '/@%s%s/',
+            $anno,
+            !is_null($value) ? "[\s]+$value" : '\b'
+        );
         return (bool) preg_match($pattern, $this->docBlock);
     }
 }

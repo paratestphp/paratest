@@ -1,4 +1,5 @@
-<?php namespace ParaTest\Parser;
+<?php
+namespace ParaTest\Parser;
 
 class Parser
 {
@@ -31,14 +32,22 @@ class Parser
 
     public function __construct($srcPath)
     {
-        if(!file_exists($srcPath))
-            throw new \InvalidArgumentException("file not found");
+        if (!file_exists($srcPath)) {
+            throw new \InvalidArgumentException("file not found: " . $srcPath);
+        }
 
         $this->path = $srcPath;
         $declaredClasses = get_declared_classes();
         require_once($this->path);
         $class = $this->getClassName($this->path, $declaredClasses);
-        $this->refl = new \ReflectionClass($class);
+        if (!$class) {
+            throw new NoClassInFileException();
+        }
+        try {
+            $this->refl = new \ReflectionClass($class);
+        } catch (\ReflectionException $e) {
+            throw new \InvalidArgumentException("Unable to instantiate ReflectionClass. " . $class . " not found in: " . $srcPath);
+        }
     }
 
     /**
@@ -55,7 +64,8 @@ class Parser
                 $this->refl->getDocComment(),
                 $this->refl->getName(),
                 $this->refl->getNamespaceName(),
-                $this->getMethods());
+                $this->getMethods()
+            );
     }
 
     /**
@@ -67,9 +77,13 @@ class Parser
     {
         $tests = array();
         $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
-        foreach($methods as $method) {
-            if(preg_match(self::$testName, $method->getName()) || preg_match(self::$testAnnotation, $method->getDocComment()))
+        foreach ($methods as $method) {
+            $hasTestName = preg_match(self::$testName, $method->getName());
+            $hasTestAnnotation = preg_match(self::$testAnnotation, $method->getDocComment());
+            $isTestMethod = $hasTestName || $hasTestAnnotation;
+            if ($isTestMethod) {
                 $tests[] = new ParsedFunction($method->getDocComment(), 'public', $method->getName());
+            }
         }
         return $tests;
     }
@@ -89,7 +103,9 @@ class Parser
         foreach ($newClasses as $className) {
             $class = new \ReflectionClass($className);
             if ($class->getFileName() == $filename) {
-                return $className;
+                if ($this->classNameMatchesFileName($filename, $className)) {
+                    return $className;
+                }
             }
         }
 
@@ -100,5 +116,21 @@ class Parser
                 return $className;
             }
         }
+    }
+
+    /**
+     * @param $filename
+     * @param $className
+     * @return bool
+     */
+    private function classNameMatchesFileName($filename, $className)
+    {
+        return strpos($filename, $className) !== false
+            || strpos($filename, $this->invertSlashes($className)) !== false;
+    }
+
+    private function invertSlashes($className)
+    {
+        return str_replace('\\', '/', $className);
     }
 }
