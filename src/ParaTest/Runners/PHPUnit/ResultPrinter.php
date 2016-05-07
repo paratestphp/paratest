@@ -437,7 +437,7 @@ class ResultPrinter
             ($count == 1) ? '' : 's'
         );
 
-        for ($i = 1; $i <= sizeof($defects); $i++) {
+        for ($i = 1, $max = sizeof($defects); $i <= $max; $i++) {
             $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
         }
 

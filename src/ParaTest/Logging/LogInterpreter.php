@@ -5,6 +5,12 @@ use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\MetaProvider;
 
+/**
+ * Class LogInterpreter
+ * @package ParaTest\Logging
+ * @method array getFailures
+ * @method array getErrors
+ */
 class LogInterpreter extends MetaProvider
 {
     /**
