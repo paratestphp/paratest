@@ -12,6 +12,14 @@ namespace ParaTest\Runners\PHPUnit;
  * @property-read string $phpunit
  * @property-read string $functional
  * @property-read array $filtered
+ * @property-read $runner
+ * @property-read $noTestTokens
+ * @property-read string $colors
+ * @property-read string $testsuite
+ * @property-read int $maxBatchSize
+ * @property-read $filter
+ * @property-read string[] $groups
+ * @property-read string[] $excludeGroups
  */
 class Options
 {
