@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Specifically tests warnings when using PHPUnit 4.8 and below
+ * Specifically tests warnings in PHPUnit
  */
 class PHPUnitWarningsTest extends FunctionalTestBase
 {
