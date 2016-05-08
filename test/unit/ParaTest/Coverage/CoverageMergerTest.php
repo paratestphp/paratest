@@ -42,7 +42,6 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
         $coverage = $merger->getCoverage();
 
         $data = $coverage->getData();
-        var_dump($data);
 
         $this->assertEquals(2, count($data[$firstFile][35]));
         $this->assertEquals('Test1', $data[$firstFile][35][0]);
