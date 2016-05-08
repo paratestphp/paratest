@@ -6,8 +6,6 @@ use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\MetaProvider;
 
 /**
- * Class LogInterpreter
- * @package ParaTest\Logging
  * @method array getFailures
  * @method array getErrors
  */
