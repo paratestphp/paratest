@@ -8,8 +8,9 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
     protected function fixture($fixture)
     {
         $fixture = FIXTURES . DS . $fixture;
-        if(!file_exists($fixture))
+        if (!file_exists($fixture)) {
             throw new Exception("Fixture $fixture not found");
+        }
 
         return $fixture;
     }
@@ -20,7 +21,7 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
         return $invoker->execute($options, $callback);
     }
 
-    protected function assertTestsPassed(Process $proc, $testPattern='\d+', $assertionPattern='\d+')
+    protected function assertTestsPassed(Process $proc, $testPattern = '\d+', $assertionPattern = '\d+')
     {
         $this->assertRegExp(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
