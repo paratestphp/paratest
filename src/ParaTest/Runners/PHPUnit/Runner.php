@@ -37,7 +37,6 @@ class Runner extends BaseRunner
             $this->fillRunQueue();
             usleep(10000);
         }
-        $this->complete();
     }
 
     /**
@@ -46,7 +45,7 @@ class Runner extends BaseRunner
      * logs any results to JUnit, and cleans up temporary
      * files
      */
-    private function complete()
+    public function complete()
     {
         $this->printer->printResults();
         $this->interpreter->rewind();
