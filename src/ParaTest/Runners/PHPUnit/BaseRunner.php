@@ -45,6 +45,14 @@ abstract class BaseRunner
     protected $running = array();
 
     /**
+     * A collection of ExecutableTest objects that have already been completed
+     * and were successful.
+     *
+     * @var array
+     */
+    public $succeeded = array();
+
+    /**
      * A tallied exit code that returns the highest exit
      * code returned out of the entire collection of tests
      *
@@ -111,6 +119,16 @@ abstract class BaseRunner
         $loader = new SuiteLoader($this->options);
         $loader->load($this->options->path);
         $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
+        // Skip successful tests.
+        if ($this->options->functional && $this->options->only_repeat_failed) {
+            foreach ($this->succeeded as $test) {
+                foreach ($executables as $key => $executable) {
+                    if ($test->getPath() == $executable->getPath() && $test->getName() == $executable->getName()) {
+                        unset($executables[$key]);
+                    }
+                }
+            }
+        }
         $this->pending = array_merge($this->pending, $executables);
         foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);

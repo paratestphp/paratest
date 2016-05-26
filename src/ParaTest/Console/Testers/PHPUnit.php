@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace ParaTest\Console\Testers;
 
 use Symfony\Component\Console\Command\Command;
