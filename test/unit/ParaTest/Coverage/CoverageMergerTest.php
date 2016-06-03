@@ -7,7 +7,7 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         try {
-            $coverage = new \PHP_CodeCoverage();
+            $coverage = new \SebastianBergmann\CodeCoverage\CodeCoverage();
         } catch (\Exception $e) {
             $this->markTestSkipped($e->getMessage());
         }
@@ -20,7 +20,7 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
 
         $filter = new \PHP_CodeCoverage_Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
-        $coverage1 = new \PHP_CodeCoverage(null, $filter);
+        $coverage1 = new \SebastianBergmann\CodeCoverage\CodeCoverage(null, $filter);
         $coverage1->append(
             array(
                 $firstFile => array(35 => 1),
@@ -28,7 +28,7 @@ class CoverageMergerTest extends \PHPUnit_Framework_TestCase
             ),
             'Test1'
         );
-        $coverage2 = new \PHP_CodeCoverage(null, $filter);
+        $coverage2 = new \SebastianBergmann\CodeCoverage\CodeCoverage(null, $filter);
         $coverage2->append(
             array(
                 $firstFile => array(35 => 1, 36 => 1)

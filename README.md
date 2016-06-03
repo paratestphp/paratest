@@ -40,7 +40,7 @@ Options:
  --help (-h)           Display this help message.
  --coverage-clover     Generate code coverage report in Clover XML format.
  --coverage-html       Generate code coverage report in HTML format.
- --coverage-php        Serialize PHP_CodeCoverage object to file.
+ --coverage-php        Serialize \SebastianBergmann\CodeCoverage\CodeCoverage object to file.
  --max-batch-size (-m) Max batch size (only for functional mode). (default: 0)
  --filter              Filter (only for functional mode).
  --phpunit             The PHPUnit binary to execute. (default: vendor/bin/phpunit)

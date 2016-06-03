@@ -46,7 +46,7 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
             new InputOption('coverage-clover', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in Clover XML format.'),
             new InputOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.'),
-            new InputOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.'),
+            new InputOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize \SebastianBergmann\CodeCoverage\CodeCoverage object to file.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
             new InputOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0),
             new InputOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).'),
@@ -61,9 +61,9 @@ class ParaTestCommandTest extends \TestBase
 
     public function testExecuteInvokesTestersExecuteMethod()
     {
-        $input = $this->getMock('Symfony\\Component\\Console\\Input\\InputInterface');
-        $output = $this->getMock('Symfony\\Component\\Console\\Output\\OutputInterface');
-        $tester = $this->getMock('ParaTest\\Console\\Testers\\Tester');
+        $input = $this->createMock('Symfony\\Component\\Console\\Input\\InputInterface');
+        $output = $this->createMock('Symfony\\Component\\Console\\Output\\OutputInterface');
+        $tester = $this->createMock('ParaTest\\Console\\Testers\\Tester');
         $tester
             ->expects($this->once())
             ->method('execute')

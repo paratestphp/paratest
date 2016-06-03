@@ -180,7 +180,7 @@ abstract class BaseRunner
      *
      * @param string $coverageFile Coverage file.
      *
-     * @return \PHP_CodeCoverage
+     * @return \SebastianBergmann\CodeCoverage\CodeCoverage
      */
     protected function getCoverageObject($coverageFile)
     {
@@ -189,7 +189,7 @@ abstract class BaseRunner
         if (substr($coverage, 0, 5) === '<?php') {
             return include $coverageFile;
         }
-        
+
         // the PHPUnit 3.x and below
         return unserialize($coverage);
     }
