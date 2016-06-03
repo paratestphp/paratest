@@ -11,7 +11,7 @@ class RunnerIntegrationTest extends \TestBase
     public function setUp()
     {
         try {
-            $coverage = new \PHP_CodeCoverage();
+            $coverage = new \SebastianBergmann\CodeCoverage\CodeCoverage();
         } catch(\Exception $e) {
             $this->markTestSkipped($e->getMessage());
         }
