@@ -2,16 +2,14 @@
 
 namespace ParaTest\Coverage;
 
-use \SebastianBergmann\CodeCoverage\CodeCoverage as CodeCoverage;
-
 class CoverageMerger
 {
     /**
-     * @var \CodeCoverage
+     * @var \SebastianBergmann\CodeCoverage\CodeCoverage
      */
     private $coverage = null;
 
-    public function addCoverage(\CodeCoverage $coverage)
+    public function addCoverage(\SebastianBergmann\CodeCoverage\CodeCoverage $coverage)
     {
         if ($this->coverage == null) {
             $this->setCoverage($coverage);
@@ -21,23 +19,23 @@ class CoverageMerger
     }
 
     /**
-     * @param \CodeCoverage $coverage
+     * @param \SebastianBergmann\CodeCoverage\CodeCoverage $coverage
      */
-    private function setCoverage(\CodeCoverage $coverage)
+    private function setCoverage(\SebastianBergmann\CodeCoverage\CodeCoverage $coverage)
     {
         $this->coverage = unserialize(serialize($coverage));
     }
 
     /**
-     * @param \CodeCoverage $coverage
+     * @param \SebastianBergmann\CodeCoverage\CodeCoverage $coverage
      */
-    private function mergeCoverage(\CodeCoverage $coverage)
+    private function mergeCoverage(\SebastianBergmann\CodeCoverage\CodeCoverage $coverage)
     {
         $this->coverage->merge($coverage);
     }
 
     /**
-     * @return \CodeCoverage
+     * @return \SebastianBergmann\CodeCoverage\CodeCoverage
      */
     public function getCoverage()
     {
