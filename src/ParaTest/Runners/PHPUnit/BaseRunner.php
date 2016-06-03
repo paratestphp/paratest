@@ -4,9 +4,9 @@ namespace ParaTest\Runners\PHPUnit;
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Logging\JUnit\Writer;
-use PHP_CodeCoverage_Report_Clover;
-use PHP_CodeCoverage_Report_HTML;
-use PHP_CodeCoverage_Report_PHP;
+use SebastianBergmann\CodeCoverage\Report\Clover;
+use SebastianBergmann\CodeCoverage\Report\Html;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 use RuntimeException;
 
 abstract class BaseRunner
@@ -140,16 +140,16 @@ abstract class BaseRunner
 
         $filteredOptions = $this->options->filtered;
         if (isset($filteredOptions['coverage-clover'])) {
-            $clover = new PHP_CodeCoverage_Report_Clover();
+            $clover = new Clover();
             $clover->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-clover']);
         }
 
         if (isset($filteredOptions['coverage-html'])) {
-            $html = new PHP_CodeCoverage_Report_HTML();
+            $html = new Html();
             $html->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-html']);
         }
 
-        $php = new PHP_CodeCoverage_Report_PHP();
+        $php = new PHP();
         $php->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-php']);
     }
 
