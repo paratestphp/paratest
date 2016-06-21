@@ -206,7 +206,7 @@ class Options
             'testsuite' => $this->testsuite,
             'max-batch-size' => $this->maxBatchSize,
             'filter' => $this->filter,
-            'repeat' => $this->repeat,
+            'repeat' => $this->repeat
         ));
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
