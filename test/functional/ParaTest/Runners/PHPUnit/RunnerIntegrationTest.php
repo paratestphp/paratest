@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+
+namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Console\Commands\ParaTestCommand;
 
@@ -6,15 +8,12 @@ class RunnerIntegrationTest extends \TestBase
 {
     /** @var Runner $runner */
     protected $runner;
+    /** @var  array */
     protected $options;
 
-    public function setUp()
+    protected function setUp()
     {
-        try {
-            $coverage = new \PHP_CodeCoverage();
-        } catch(\Exception $e) {
-            $this->markTestSkipped($e->getMessage());
-        }
+        $this->skipIfCodeCoverageNotEnabled();
 
         $this->options = array(
             'path' => FIXTURES . DS . 'failing-tests',

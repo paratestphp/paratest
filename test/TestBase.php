@@ -1,4 +1,7 @@
 <?php
+
+use SebastianBergmann\CodeCoverage\CodeCoverage;
+
 class TestBase extends PHPUnit_Framework_TestCase
 {
     protected function fixture($fixture)
@@ -89,5 +92,18 @@ class TestBase extends PHPUnit_Framework_TestCase
         $method->setAccessible(true);
 
         return $method->invokeArgs($object, $args);
+    }
+
+    protected function skipIfCodeCoverageNotEnabled()
+    {
+        try {
+            if (class_exists('PHP_CodeCoverage')) {
+                new \PHP_CodeCoverage();
+            } else if (class_exists('\\SebastianBergmann\\CodeCoverage\\CodeCoverage')) {
+                new CodeCoverage();
+            }
+        } catch(\Exception $e) {
+            $this->markTestSkipped($e->getMessage());
+        }
     }
 }

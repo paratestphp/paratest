@@ -10,8 +10,7 @@
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "ext-pcre": "*",
-        "composer/semver": "~1.2",
-        "phpunit/php-code-coverage": "<=3.3.9"
+        "composer/semver": "~1.2"
     },
     "type": "library",
     "description": "Parallel testing for PHP",
