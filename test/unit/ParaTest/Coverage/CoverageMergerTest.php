@@ -17,7 +17,7 @@ class CoverageMergerTest extends \TestBase
      *
      * @requires function \PHP_CodeCoverage::merge
      */
-    public function testSimpleMerge3()
+    public function testSimpleMergeLegacy()
     {
         $firstFile = PARATEST_ROOT . '/src/ParaTest/Logging/LogInterpreter.php';
         $secondFile = PARATEST_ROOT . '/src/ParaTest/Logging/MetaProvider.php';
@@ -67,7 +67,7 @@ class CoverageMergerTest extends \TestBase
      *
      * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
      */
-    public function testSimpleMerge4()
+    public function testSimpleMerge()
     {
         $firstFile = PARATEST_ROOT . '/src/ParaTest/Logging/LogInterpreter.php';
         $secondFile = PARATEST_ROOT . '/src/ParaTest/Logging/MetaProvider.php';

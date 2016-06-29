@@ -85,9 +85,9 @@ class CoverageMerger
     public function getReporter()
     {
         if ($this->coverage instanceof \PHP_CodeCoverage) {
-            return new CoverageReporter3($this->coverage);
-        } else {
-            return new CoverageReporter4($this->coverage);
+            return new CoverageReporterLegacy($this->coverage);
         }
+
+        return new CoverageReporter($this->coverage);
     }
 }

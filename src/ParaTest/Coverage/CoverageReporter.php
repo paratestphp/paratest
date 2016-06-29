@@ -4,10 +4,10 @@ namespace ParaTest\Coverage;
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Report\Clover;
-use SebastianBergmann\CodeCoverage\Report\Html\Facade;
+use SebastianBergmann\CodeCoverage\Report\Html;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 
-class CoverageReporter4 implements CoverageReporterInterface
+class CoverageReporter implements CoverageReporterInterface
 {
     /**
      * @var CodeCoverage
@@ -40,7 +40,7 @@ class CoverageReporter4 implements CoverageReporterInterface
      */
     public function html($target)
     {
-        $html = new Facade();
+        $html = new Html\Facade();
         $html->process($this->coverage, $target);
     }
 

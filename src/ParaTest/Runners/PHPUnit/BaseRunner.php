@@ -3,13 +3,8 @@
 namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Coverage\CoverageMerger;
-use ParaTest\Coverage\CoverageReporter3;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Logging\JUnit\Writer;
-use PHP_CodeCoverage_Report_Clover;
-use PHP_CodeCoverage_Report_HTML;
-use PHP_CodeCoverage_Report_PHP;
-use RuntimeException;
 
 abstract class BaseRunner
 {

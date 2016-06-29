@@ -2,7 +2,10 @@
 
 namespace ParaTest\Coverage;
 
-class CoverageReporter3 implements CoverageReporterInterface
+/**
+ * Coverage reporter for phpunit/php-code-coverage version 3 and older
+ */
+class CoverageReporterLegacy implements CoverageReporterInterface
 {
     /**
      * @var \PHP_CodeCoverage
