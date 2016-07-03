@@ -16,51 +16,34 @@ class CoverageMerger
      */
     private function addCoverage($coverage)
     {
-        if ($this->coverage == null) {
-            $this->setCoverage($coverage);
+        if (null === $this->coverage) {
+            $this->coverage = $coverage;
         } else {
-            $this->mergeCoverage($coverage);
+            $this->coverage->merge($coverage);
         }
-    }
-
-    /**
-     * @param \PHP_CodeCoverage|CodeCoverage $coverage
-     */
-    private function setCoverage($coverage)
-    {
-        $this->coverage = unserialize(serialize($coverage));
-    }
-
-    /**
-     * @param \PHP_CodeCoverage|CodeCoverage $coverage
-     */
-    private function mergeCoverage($coverage)
-    {
-        $this->coverage->merge($coverage);
     }
 
     /**
      * Returns coverage object from file.
      *
-     * @param string $coverageFile Coverage file.
+     * @param \SplFileObject $coverageFile Coverage file.
      *
      * @return \PHP_CodeCoverage|CodeCoverage
      */
-    private function getCoverageObject($coverageFile)
+    private function getCoverageObject(\SplFileObject $coverageFile)
     {
-        $coverage = file_get_contents($coverageFile);
-
-        if (substr($coverage, 0, 5) === '<?php') {
-            return include $coverageFile;
+        if ('<?php' === $coverageFile->fread(5)) {
+            return include $coverageFile->getRealPath();
         }
 
+        $coverageFile->fseek(0);
         // the PHPUnit 3.x and below
-        return unserialize($coverage);
+        return unserialize($coverageFile->fread($coverageFile->getSize()));
     }
 
     /**
      * Adds the coverage contained in $coverageFile and deletes the file afterwards
-     * @param string $coverageFile
+     * @param string $coverageFile Code coverage file
      * @throws \RuntimeException When coverage file is empty
      */
     public function addCoverageFromFile($coverageFile)
@@ -69,12 +52,17 @@ class CoverageMerger
             return;
         }
 
-        if (filesize($coverageFile) === 0) {
-            throw new \RuntimeException("Coverage file $coverageFile is empty. This means a PHPUnit process has crashed.");
+        $file = new \SplFileObject($coverageFile);
+
+        if (0 === $file->getSize()) {
+            throw new \RuntimeException(
+                "Coverage file {$file->getRealPath()} is empty. This means a PHPUnit process has crashed."
+            );
         }
 
-        $this->addCoverage($this->getCoverageObject($coverageFile));
-        unlink($coverageFile);
+        $this->addCoverage($this->getCoverageObject($file));
+
+        unlink($file->getRealPath());
     }
 
     /**
