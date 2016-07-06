@@ -157,7 +157,7 @@ class Runner extends BaseRunner
     /**
      * Flag a token as available for use
      *
-     * @param $tokenIdentifier
+     * @param string $tokenIdentifier
      */
     protected function releaseToken($tokenIdentifier)
     {
@@ -171,7 +171,7 @@ class Runner extends BaseRunner
     /**
      * Flag a token as acquired and not available for use
      *
-     * @param $tokenIdentifier
+     * @param string $tokenIdentifier
      */
     protected function acquireToken($tokenIdentifier)
     {
@@ -185,9 +185,9 @@ class Runner extends BaseRunner
     /**
      * @param ExecutableTest $test
      */
-    private function addCoverage($test)
+    private function addCoverage(ExecutableTest $test)
     {
         $coverageFile = $test->getCoverageFileName();
-        $this->addCoverageFromFile($coverageFile);
+        $this->getCoverage()->addCoverageFromFile($coverageFile);
     }
 }

@@ -196,7 +196,7 @@ class ResultPrinter
                 "%s\n" .
                 "The process: %s\n" .
                 "This means a PHPUnit process was unable to run \"%s\"\n" ,
-                $e->getmessage(),
+                $e->getMessage(),
                 $test->getLastCommand(),
                 $test->getPath()
             ));
