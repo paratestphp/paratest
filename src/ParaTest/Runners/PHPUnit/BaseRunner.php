@@ -118,9 +118,9 @@ abstract class BaseRunner
     {
         $loader = new SuiteLoader($this->options);
         $loader->load($this->options->path);
-        $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
+        $executables = $this->options->functional || $this->options->only_repeat_failed ? $loader->getTestMethods() : $loader->getSuites();
         // Skip successful tests.
-        if ($this->options->functional && $this->options->only_repeat_failed) {
+        if ($this->options->only_repeat_failed) {
             foreach ($this->succeeded as $test) {
                 foreach ($executables as $key => $executable) {
                     if ($test->getPath() == $executable->getPath() && $test->getName() == $executable->getName()) {
