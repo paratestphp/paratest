@@ -50,6 +50,8 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
             new InputOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0),
             new InputOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).'),
+            new InputOption('repeat', null, InputOption::VALUE_REQUIRED, 'Repeat tests.', 0),
+            new InputOption('only-repeat-failed', null, InputOption::VALUE_NONE, 'Repeat only failing tests.', null),
         );
         if (ParaTestCommand::isWhitelistSupported()) {
             $options[] = new InputOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
@@ -61,9 +63,9 @@ class ParaTestCommandTest extends \TestBase
 
     public function testExecuteInvokesTestersExecuteMethod()
     {
-        $input = $this->getMock('Symfony\\Component\\Console\\Input\\InputInterface');
-        $output = $this->getMock('Symfony\\Component\\Console\\Output\\OutputInterface');
-        $tester = $this->getMock('ParaTest\\Console\\Testers\\Tester');
+        $input = $this->createMock('Symfony\\Component\\Console\\Input\\InputInterface');
+        $output = $this->createMock('Symfony\\Component\\Console\\Output\\OutputInterface');
+        $tester = $this->createMock('ParaTest\\Console\\Testers\\Tester');
         $tester
             ->expects($this->once())
             ->method('execute')

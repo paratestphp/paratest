@@ -227,6 +227,15 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals('.F.E.F.', $contents);
     }
 
+    public function testPrintFeedbackForSkipped()
+    {
+        $this->printer->addTest($this->skippedSuite);
+        ob_start();
+        $this->printer->printFeedback($this->skippedSuite);
+        $contents = ob_get_clean();
+        $this->assertEquals('.FES', $contents);
+    }
+
     public function testPrintFeedbackForMoreThan100Suites()
     {
         //add tests
