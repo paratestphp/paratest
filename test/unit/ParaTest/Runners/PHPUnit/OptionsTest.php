@@ -46,7 +46,7 @@ class OptionsTest extends \TestBase
         $this->assertEmpty($options->path);
         $this->assertEquals(PHPUNIT, $options->phpunit);
         $this->assertFalse($options->functional);
-        $this->assertEquals(0, $options->repeat);
+        $this->assertEquals(1, $options->repeat);
         $this->assertEquals(0, $options->only_repeat_failed);
 
     }
