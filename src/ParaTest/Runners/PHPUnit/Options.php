@@ -150,7 +150,7 @@ class Options
             'testsuite' => '',
             'max-batch-size' => 0,
             'filter' => null,
-            'repeat' => 0,
+            'repeat' => 1,
             'only-repeat-failed' => 0,
         );
     }
