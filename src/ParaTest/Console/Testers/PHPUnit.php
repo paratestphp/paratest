@@ -154,7 +154,7 @@ class PHPUnit extends Tester
         $this->requireBootstrap($bootstrap);
 
         if ($this->hasCoverage($options)) {
-            $options['coverage-php'] = sys_get_temp_dir() . '/will_be_overwritten.php';
+            $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');
         }
 
         if ($path) {

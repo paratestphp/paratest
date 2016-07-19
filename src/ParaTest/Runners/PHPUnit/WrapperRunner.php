@@ -161,7 +161,6 @@ class WrapperRunner extends BaseRunner
         }
     }
 
-
     private function setExitCode()
     {
         if ($this->interpreter->getTotalErrors()) {
@@ -173,10 +172,10 @@ class WrapperRunner extends BaseRunner
         }
     }
 
-    private function flushWorker($worker)
+    private function flushWorker(Worker $worker)
     {
         if ($this->hasCoverage()) {
-            $this->addCoverageFromFile($worker->getCoverageFileName());
+            $this->getCoverage()->addCoverageFromFile($worker->getCoverageFileName());
         }
         $worker->printFeedback($this->printer);
         $worker->reset();

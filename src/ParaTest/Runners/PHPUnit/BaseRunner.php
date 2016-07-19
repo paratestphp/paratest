@@ -1,13 +1,10 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Logging\JUnit\Writer;
-use PHP_CodeCoverage_Report_Clover;
-use PHP_CodeCoverage_Report_HTML;
-use PHP_CodeCoverage_Report_PHP;
-use RuntimeException;
 
 abstract class BaseRunner
 {
@@ -169,18 +166,18 @@ abstract class BaseRunner
         }
 
         $filteredOptions = $this->options->filtered;
+
+        $reporter = $this->getCoverage()->getReporter();
+
         if (isset($filteredOptions['coverage-clover'])) {
-            $clover = new PHP_CodeCoverage_Report_Clover();
-            $clover->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-clover']);
+            $reporter->clover($filteredOptions['coverage-clover']);
         }
 
         if (isset($filteredOptions['coverage-html'])) {
-            $html = new PHP_CodeCoverage_Report_HTML();
-            $html->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-html']);
+            $reporter->html($filteredOptions['coverage-html']);
         }
 
-        $php = new PHP_CodeCoverage_Report_PHP();
-        $php->process($this->getCoverage()->getCoverage(), $filteredOptions['coverage-php']);
+        $reporter->php($filteredOptions['coverage-php']);
     }
 
     protected function initCoverage()
@@ -192,54 +189,20 @@ abstract class BaseRunner
         $this->coverage = new CoverageMerger();
     }
 
+    /**
+     * @return bool
+     */
     protected function hasCoverage()
     {
-        return $this->getCoverage() != null;
+        return $this->getCoverage() !== null;
     }
 
     /**
      * @return CoverageMerger
      */
-    public function getCoverage()
+    protected function getCoverage()
     {
         return $this->coverage;
     }
 
-    /**
-     * Returns coverage object from file.
-     *
-     * @param string $coverageFile Coverage file.
-     *
-     * @return \PHP_CodeCoverage
-     */
-    protected function getCoverageObject($coverageFile)
-    {
-        $coverage = file_get_contents($coverageFile);
-
-        if (substr($coverage, 0, 5) === '<?php') {
-            return include $coverageFile;
-        }
-        
-        // the PHPUnit 3.x and below
-        return unserialize($coverage);
-    }
-
-    /**
-     * Adds the coverage contained in $coverageFile and deletes the file afterwards
-     * @param $coverageFile
-     * @throws RuntimeException
-     */
-    protected function addCoverageFromFile($coverageFile)
-    {
-        if ($coverageFile === null || !file_exists($coverageFile)) {
-            return;
-        }
-
-        if (filesize($coverageFile) == 0) {
-            throw new RuntimeException("Coverage file $coverageFile is empty. This means a PHPUnit process has crashed.");
-        }
-
-        $this->getCoverage()->addCoverage($this->getCoverageObject($coverageFile));
-        unlink($coverageFile);
-    }
 }

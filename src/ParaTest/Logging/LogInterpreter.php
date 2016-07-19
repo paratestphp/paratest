@@ -3,7 +3,6 @@ namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\TestSuite;
-use ParaTest\Logging\MetaProvider;
 
 class LogInterpreter extends MetaProvider
 {

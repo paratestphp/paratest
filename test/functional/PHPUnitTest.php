@@ -307,27 +307,16 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertTestsPassed($proc, 2, 2);
     }
 
-    public function testTestsWithWarningsResultInFailure()
-    {
-        $proc = $this->invokeParatest("warning-tests/HasWarningsTest.php",
-            array('bootstrap' => BOOTSTRAP)
-        );
-
-        $proc->getOutput();
-
-        $this->assertEquals(1, $proc->getExitCode(), "Test should fail with 1");
-    }
-
     public function setsCoveragePhpDataProvider()
     {
         return array(
             array(
                 array('coverage-html' => 'wayne'),
-                sys_get_temp_dir() . '/will_be_overwritten.php'
+                ''
             ),
             array(
                 array('coverage-clover' => 'wayne'),
-                sys_get_temp_dir() . '/will_be_overwritten.php'
+                ''
             ),
             array(
                 array('coverage-php' => 'notWayne'),
@@ -358,6 +347,10 @@ class PHPUnitTest extends FunctionalTestBase
         $input->setArgument('path', '.');
         $options = $phpUnit->getRunnerOptions($input);
 
-        $this->assertEquals($coveragePhp, $options['coverage-php']);
+        if ($coveragePhp) {
+            $this->assertEquals($coveragePhp, $options['coverage-php']);
+        } else {
+            $this->assertStringStartsWith(sys_get_temp_dir() . '/paratest_', $options['coverage-php']);
+        }
     }
 }

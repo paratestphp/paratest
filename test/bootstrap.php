@@ -1,6 +1,8 @@
 <?php
-if(!defined('DS'))
+
+if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
+}
 
 require_once dirname(__DIR__) . DS . 'vendor' . DS . 'autoload.php';
 
@@ -16,7 +18,7 @@ define("PARATEST_ROOT", dirname(__DIR__));
 
 //check for .bat first if on windows.
 $phpunit_path = PARATEST_ROOT . DS . 'vendor' . DS . 'bin' . DS . 'phpunit';
-if(file_exists($phpunit_path . '.bat')) {
+if (file_exists($phpunit_path . '.bat')) {
     $phpunit_path = $phpunit_path . '.bat';
 }
 define("PHPUNIT", $phpunit_path);

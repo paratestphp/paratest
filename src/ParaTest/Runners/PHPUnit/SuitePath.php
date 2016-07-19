@@ -25,7 +25,7 @@ class SuitePath
     
     public function __construct($path, $excludedPaths, $suffix)
     {
-        if ($suffix === null) {
+        if (empty($suffix)) {
             $suffix = self::DEFAULT_SUFFIX;
         }
         $this->path = $path;

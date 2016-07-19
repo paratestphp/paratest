@@ -63,9 +63,9 @@ class ParaTestCommandTest extends \TestBase
 
     public function testExecuteInvokesTestersExecuteMethod()
     {
-        $input = $this->createMock('Symfony\\Component\\Console\\Input\\InputInterface');
-        $output = $this->createMock('Symfony\\Component\\Console\\Output\\OutputInterface');
-        $tester = $this->createMock('ParaTest\\Console\\Testers\\Tester');
+        $input = $this->getMockBuilder('Symfony\\Component\\Console\\Input\\InputInterface')->getMock();
+        $output = $this->getMockBuilder('Symfony\\Component\\Console\\Output\\OutputInterface')->getMock();
+        $tester = $this->getMockBuilder('ParaTest\\Console\\Testers\\Tester')->getMock();
         $tester
             ->expects($this->once())
             ->method('execute')

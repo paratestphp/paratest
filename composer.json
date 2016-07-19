@@ -1,7 +1,7 @@
 {
     "name": "brianium/paratest",
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.11",
         "phpunit/phpunit": ">=3.7.8",
         "phpunit/php-timer": ">=1.0.4",
         "symfony/console": "~2.3|~3.0",
@@ -10,7 +10,7 @@
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "ext-pcre": "*",
-        "composer/semver": "~1.2.0"
+        "composer/semver": "~1.2"
     },
     "type": "library",
     "description": "Parallel testing for PHP",
