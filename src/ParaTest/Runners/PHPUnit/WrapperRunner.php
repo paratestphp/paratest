@@ -148,7 +148,7 @@ class WrapperRunner extends BaseRunner
         return $streams;
     }
 
-    private function complete()
+    public function complete()
     {
         $this->setExitCode();
         $this->printer->printResults();

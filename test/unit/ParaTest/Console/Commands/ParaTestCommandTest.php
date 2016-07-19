@@ -50,7 +50,7 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
             new InputOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0),
             new InputOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).'),
-            new InputOption('repeat', null, InputOption::VALUE_REQUIRED, 'Repeat tests.', 1),
+            new InputOption('repeat', null, InputOption::VALUE_REQUIRED, 'Runs the test(s) repeatedly.', 1),
             new InputOption('only-repeat-failed', null, InputOption::VALUE_NONE, 'Repeat only failing tests.', null),
         );
         if (ParaTestCommand::isWhitelistSupported()) {

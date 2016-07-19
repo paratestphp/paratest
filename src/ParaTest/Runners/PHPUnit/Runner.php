@@ -41,6 +41,7 @@ class Runner extends BaseRunner
             $this->fillRunQueue();
             usleep(10000);
         }
+        $this->complete();
     }
 
     /**
