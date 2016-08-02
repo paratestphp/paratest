@@ -1,5 +1,5 @@
 {
-    "name": "brianium/paratest",
+    "name": "tayguara/paratest",
     "require": {
         "php": ">=5.5.11",
         "phpunit/phpunit": ">=3.7.8",
