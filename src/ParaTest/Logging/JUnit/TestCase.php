@@ -129,8 +129,14 @@ class TestCase
             $node->failure  = (string)$node->failure . (string)$node->{$sys};
         }
 
-        $failures       = $node->xpath('failure');
-        $errors         = $node->xpath('error');
+        if(!empty($node->error))
+        {
+            $sys            = "system-out";
+            $node->error    = (string)$node->error . (string)$node->{$sys};
+        }
+
+        $failures   = $node->xpath('failure');
+        $errors     = $node->xpath('error');
 
         while (list( , $fail) = each($failures)) {
             $case->addFailure((string)$fail['type'], (string)$fail);
