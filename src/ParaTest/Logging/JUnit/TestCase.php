@@ -123,7 +123,7 @@ class TestCase
             (string) $node['time']
         );
 
-        $sys = "system-out";
+        $sys = 'system-out';
 
         if(!empty($node->failure)) {
             $node->failure = (string)$node->failure . (string)$node->{$sys};
