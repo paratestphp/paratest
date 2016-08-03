@@ -122,14 +122,20 @@ class TestCase
             (string) $node['assertions'],
             (string) $node['time']
         );
-        $failures = $node->xpath('failure');
-        $errors = $node->xpath('error');
+
+        $sys            = "system-out";
+        $node->failure  = (string)$node->failure . (string)$node->{$sys};
+        $failures       = $node->xpath('failure');
+        $errors         = $node->xpath('error');
+
         while (list( , $fail) = each($failures)) {
             $case->addFailure((string)$fail['type'], (string)$fail);
         }
+
         while (list( , $err) = each($errors)) {
             $case->addError((string)$err['type'], (string)$err);
         }
+
         return $case;
     }
 }
