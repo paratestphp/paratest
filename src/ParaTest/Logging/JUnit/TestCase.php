@@ -123,16 +123,14 @@ class TestCase
             (string) $node['time']
         );
 
-        if(!empty($node->failure))
-        {
-            $sys            = "system-out";
-            $node->failure  = (string)$node->failure . (string)$node->{$sys};
+        $sys = "system-out";
+
+        if(!empty($node->failure)) {
+            $node->failure = (string)$node->failure . (string)$node->{$sys};
         }
 
-        if(!empty($node->error))
-        {
-            $sys            = "system-out";
-            $node->error    = (string)$node->error . (string)$node->{$sys};
+        if(!empty($node->error)) {
+            $node->error = (string)$node->error . (string)$node->{$sys};
         }
 
         $failures   = $node->xpath('failure');
