@@ -202,4 +202,30 @@ class ReaderTest extends \TestBase
         $reader->removeLog();
         $this->assertFalse(file_exists($tmp));
     }
+
+    public function testResultWithoutSystemOut()
+    {
+        $result         = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
+        $failLog        = "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20";
+        $errorLog       = "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12";
+        $node           = new Reader($result);
+        $resultFail     = $node->getSuites()[0]->suites[0]->cases[1]->failures[0]['text'];
+        $resultError    = $node->getSuites()[0]->suites[1]->cases[0]->errors[0]['text'];
+
+        \PHPUnit_Framework_TestCase::assertEquals($failLog, $resultFail);
+        \PHPUnit_Framework_TestCase::assertEquals($errorLog, $resultError);
+    }
+
+    public function testResultWithSystemOut()
+    {
+        $result         = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
+        $failLog        = "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\nCustom error log on result test with failure!";
+        $errorLog       = "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\nCustom error log on result test with error!";
+        $node           = new Reader($result);
+        $resultFail     = $node->getSuites()[0]->suites[2]->cases[1]->failures[0]['text'];
+        $resultError    = $node->getSuites()[0]->suites[1]->cases[1]->errors[0]['text'];
+
+        \PHPUnit_Framework_TestCase::assertEquals($failLog, $resultFail);
+        \PHPUnit_Framework_TestCase::assertEquals($errorLog, $resultError);
+    }
 }
