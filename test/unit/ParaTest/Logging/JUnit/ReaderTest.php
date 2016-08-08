@@ -202,4 +202,34 @@ class ReaderTest extends \TestBase
         $reader->removeLog();
         $this->assertFalse(file_exists($tmp));
     }
+
+    /**
+     * Extraction of log from xml file to use in test of validation "SystemOut" result
+     *
+     * @return \stdClass $log
+     */
+    public static function extractLog()
+    {
+        $log            = new \stdClass();
+        $result         = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
+        $node           = new Reader($result);
+        $log->failure   = $node->getSuites()[0]->suites[0]->cases[1]->failures[0]['text'];
+        $log->error     = $node->getSuites()[0]->suites[1]->cases[0]->errors[0]['text'];
+
+        return $log;
+    }
+
+    public function testResultWithSystemOut()
+    {
+        $customLog      = "\nCustom error log on result test with ";
+        $result         = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
+        $failLog        = self::extractLog()->failure . $customLog . "failure!";
+        $errorLog       = self::extractLog()->error . $customLog . "error!";
+        $node           = new Reader($result);
+        $resultFail     = $node->getSuites()[0]->suites[2]->cases[1]->failures[0]['text'];
+        $resultError    = $node->getSuites()[0]->suites[1]->cases[1]->errors[0]['text'];
+
+        $this->assertEquals($failLog, $resultFail);
+        $this->assertEquals($errorLog, $resultError);
+    }
 }

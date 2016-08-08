@@ -106,6 +106,27 @@ class TestCase
     }
 
     /**
+     * Add systemOut result on test (if has failed or have error)
+     *
+     * @param mixed $node
+     * @return mixed
+     */
+    public static function addSystemOut($node)
+    {
+        $sys = 'system-out';
+
+        if(!empty($node->failure)) {
+            $node->failure = (string)$node->failure . (string)$node->{$sys};
+        }
+
+        if(!empty($node->error)) {
+            $node->error = (string)$node->error . (string)$node->{$sys};
+        }
+
+        return $node;
+    }
+
+    /**
      * Factory method that creates a TestCase object
      * from a SimpleXMLElement
      *
@@ -122,14 +143,19 @@ class TestCase
             (string) $node['assertions'],
             (string) $node['time']
         );
-        $failures = $node->xpath('failure');
-        $errors = $node->xpath('error');
+
+        $node       = self::addSystemOut($node);
+        $failures   = $node->xpath('failure');
+        $errors     = $node->xpath('error');
+
         while (list( , $fail) = each($failures)) {
             $case->addFailure((string)$fail['type'], (string)$fail);
         }
+
         while (list( , $err) = each($errors)) {
             $case->addError((string)$err['type'], (string)$err);
         }
+
         return $case;
     }
 }
