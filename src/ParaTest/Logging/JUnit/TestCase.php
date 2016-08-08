@@ -106,7 +106,7 @@ class TestCase
     }
 
     /**
-     * Add systemOut result on test (if has fail or have error)
+     * Add systemOut result on test (if has failed or have error)
      *
      * @param mixed $node
      * @return mixed
