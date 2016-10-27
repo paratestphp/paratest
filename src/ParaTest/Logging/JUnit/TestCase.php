@@ -67,7 +67,8 @@ class TestCase
         $this->name = $name;
         $this->class = $class;
         $this->file = $file;
-        $this->line = $line;
+        // Fix empty line numbers, for proper xml parsing
+        $this->line = empty($line) ? '0' : $line;
         $this->assertions = $assertions;
         $this->time = $time;
     }
