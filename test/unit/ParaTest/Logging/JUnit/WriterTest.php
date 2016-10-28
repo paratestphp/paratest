@@ -73,6 +73,5 @@ class WriterTest extends \TestBase
         $xml = $writer->getXml();
 
         $this->assertFalse(strpos($xml, 'line=""'), 'Expected no empty line attributes (line=""), but found one.');
-        $this->assertNotEmpty(strpos($xml, 'line="0"'), 'Expected at least one (line="0"), but found none.');
     }
 }

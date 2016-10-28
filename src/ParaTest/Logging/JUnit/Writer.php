@@ -133,6 +133,10 @@ class Writer
         $vars = get_object_vars($case);
         foreach ($vars as $name => $value) {
             if (preg_match(static::$caseAttrs, $name)) {
+                if ($name === 'line' && empty($value)) {
+                    // Don't output blank line attributes
+                    continue;
+                }
                 $caseNode->setAttribute($name, $value);
             }
         }
