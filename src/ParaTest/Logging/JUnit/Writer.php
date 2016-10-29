@@ -133,8 +133,7 @@ class Writer
         $vars = get_object_vars($case);
         foreach ($vars as $name => $value) {
             if (preg_match(static::$caseAttrs, $name)) {
-                if ($name === 'line' && empty($value)) {
-                    // Don't output blank line attributes
+                if ($this->isEmptyLineAttribute($name, $value)) {
                     continue;
                 }
                 $caseNode->setAttribute($name, $value);
@@ -201,5 +200,16 @@ class Writer
             $result['time'] += $suite->time;
             return $result;
         }, array_merge(array('name' => $this->name), self::$defaultSuite));
+    }
+
+    /**
+     * Prevent writing empty "line" XML attributes which could break parsers.
+     * @param string $name
+     * @param mixed $value
+     * @return bool
+     */
+    private function isEmptyLineAttribute($name, $value)
+    {
+        return $name === 'line' && empty($value);
     }
 }
