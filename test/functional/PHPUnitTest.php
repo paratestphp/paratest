@@ -350,7 +350,8 @@ class PHPUnitTest extends FunctionalTestBase
         if ($coveragePhp) {
             $this->assertEquals($coveragePhp, $options['coverage-php']);
         } else {
-            $this->assertStringStartsWith(sys_get_temp_dir() . '/paratest_', $options['coverage-php']);
+            $dir = tempnam(sys_get_temp_dir(), 'paratest_');
+            $this->assertStringStartsWith(dirname($dir), $options['coverage-php']);
         }
     }
 }
