@@ -6,6 +6,7 @@ class ReaderTest extends \TestBase
     protected $mixedPath;
     protected $mixed;
     protected $single;
+    protected $empty;
 
     public function setUp()
     {
@@ -13,6 +14,8 @@ class ReaderTest extends \TestBase
         $single = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
         $this->mixed = new Reader($this->mixedPath);
         $this->single = new Reader($single);
+        $empty = FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml';
+        $this->empty = new Reader($empty);
     }
 
     /**
@@ -143,6 +146,21 @@ class ReaderTest extends \TestBase
         $failure = $case->failures[0];
         $this->assertEquals('PHPUnit_Framework_ExpectationFailedException', $failure['type']);
         $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18", $failure['text']);
+    }
+
+    public function testEmptySuiteConstructsTestCase()
+    {
+        $suites = $this->empty->getSuites();
+        $this->assertEquals(1, sizeof($suites));
+
+        $suite = $suites[0];
+        $this->assertEquals('', $suite->name);
+        $this->assertEquals('', $suite->file);
+        $this->assertEquals(0, $suite->tests);
+        $this->assertEquals(0, $suite->assertions);
+        $this->assertEquals(0, $suite->failures);
+        $this->assertEquals(0, $suite->errors);
+        $this->assertEquals(0, $suite->time);
     }
 
     public function testMixedGetTotals()

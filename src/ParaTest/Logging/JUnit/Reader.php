@@ -216,6 +216,8 @@ class Reader extends MetaProvider
 
         if ($node !== false) {
             $this->suites[] = TestSuite::suiteFromNode($node);
+        } else {
+            $this->suites[] = TestSuite::suiteFromArray(self::$defaultSuite);
         }
     }
 }
