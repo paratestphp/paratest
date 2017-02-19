@@ -4,7 +4,7 @@ namespace Sublevel;
 /**
  * @runParallel
  */
-class UnitTestInSubLevelTest extends \PHPUnit_Framework_TestCase
+class UnitTestInSubLevelTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

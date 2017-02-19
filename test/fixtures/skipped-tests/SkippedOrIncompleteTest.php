@@ -1,6 +1,6 @@
 <?php
 
-class SkippedOrIncompleteTest extends \PHPUnit_Framework_TestCase
+class SkippedOrIncompleteTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @group skipped-group

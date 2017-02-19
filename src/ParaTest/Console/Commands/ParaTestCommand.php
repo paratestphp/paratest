@@ -26,7 +26,7 @@ class ParaTestCommand extends Command
      */
     public static function isWhitelistSupported()
     {
-        return Comparator::greaterThanOrEqualTo(\PHPUnit_Runner_Version::id(), '5.0.0');
+        return Comparator::greaterThanOrEqualTo(\PHPUnit\Runner\Version::id(), '5.0.0');
     }
 
     /**

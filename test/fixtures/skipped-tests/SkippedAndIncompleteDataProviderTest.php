@@ -1,6 +1,6 @@
 <?php
 
-class SkippedAndIncompleteDataProviderTest extends \PHPUnit_Framework_TestCase
+class SkippedAndIncompleteDataProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function dataProviderNumeric100()
     {

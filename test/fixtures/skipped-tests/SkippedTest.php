@@ -1,6 +1,6 @@
 <?php
 
-class SkippedTest extends \PHPUnit_Framework_TestCase
+class SkippedTest extends \PHPUnit\Framework\TestCase
 {
     public function testSkipped()
     {

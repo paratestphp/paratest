@@ -4,7 +4,7 @@
  * @runParallel
  * @pizzaBox
  */
-class UnitTestWithClassAnnotationTest extends \PHPUnit_Framework_TestCase
+class UnitTestWithClassAnnotationTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures
