@@ -6,7 +6,17 @@ ParaTest
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brianium/paratest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brianium/paratest/?branch=master)
 [![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
 
-The objective of ParaTest is to support parallel testing in PHPUnit.
+The objective of ParaTest is to support parallel testing in PHPUnit. Provided you have well-written PHPUnit tests, you can drop `paratest` in your project and
+start using it with no additional bootstrap or configurations!
+
+Benefits
+------------
+
+Why use `paratest` over the alternative parallel test runners out there?
+
+* Code Coverage report combining. *Run your tests in N parallel processes and all the code coverage output will be combined into one report.*
+* Zero configuration. *After composer install, run with `vendor/bin/paratest -p4 path/to/tests`. That's it!*
+* Flexible. *Isolate test files in separate processes or take advantage of WrapperRunner for even faster runs.*
 
 Installation
 ------------
@@ -61,16 +71,19 @@ Options:
 
 To get the most out of paratest, you have to adjust the parameters carefully.
 
- 1. ***Adjust the number of processes with ```-p```***
+ 1. **Adjust the number of processes with `-p`**
 
     To allow full usage of your cpu cores, you should have at least one process per core. More processes allow better resource usage but keep in mind that each process has it's own costs for spawning.
- 2. ***Choose between per-testcase- and per-testmethod-parallelization with ```-f```***
 
-    Given you have few testcases (classes) with many long running methods, you should use the ```-f``` option to enable the ```functional mode``` and allow different methods of the same class to be executed in parallel. Keep in mind that the default is per-testcase-parallelization to address inter-testmethod dependencies.
- 3. ***Use the WrapperRunner if possible***
+ 2. **Choose between per-testcase- and per-testmethod-parallelization with `-f`**
 
-    The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process. Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the WrapperRunner with ```--runner WrapperRunner```. It spawns one "worker"-process for each parallel process (```-p```), executes the bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and bootstrapping is reduced to the minimum.
- 4. ***Tune batch max size ```--max-batch-size```***.
+    Given you have few testcases (classes) with many long running methods, you should use the `-f` option to enable the `functional mode` and allow different methods of the same class to be executed in parallel. Keep in mind that the default is per-testcase-parallelization to address inter-testmethod dependencies. Note that in most projects, using `-f` is **slower** since each test **method** will need to be bootstrapped separately.
+
+ 3. **Use the WrapperRunner if possible**
+
+    The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process. Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the WrapperRunner with `--runner WrapperRunner`. It spawns one "worker"-process for each parallel process (`-p`), executes the bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and bootstrapping is reduced to the minimum.
+
+ 4. **Tune batch max size `--max-batch-size`**
 
     Batch size will affect on max amount of atomic tests which will be used for single test method.
     One atomic test will be either one test method from test class if no data provider available for
@@ -88,6 +101,22 @@ To get the most out of paratest, you have to adjust the parameters carefully.
     Bigger max batch size can significantly increase phpunit command line length so process can failed.
     Decrease max batch size to reduce command line length.
     Windows has limit around 32k, Linux - 2048k, Mac OS X - 256k.
+
+### Examples ###
+
+Examples assume your tests are located under `./test/unit`.
+
+```
+# Run all unit tests in 8 parallel processes
+vendor/bin/paratest -p8 test/unit
+```
+
+```
+# Run all unit tests in 4 parallel processes with WrapperRunner and output html code coverage report to /tmp/coverage
+# (Code coverage requires Xdebug to be installed)
+vendor/bin/paratest -p8 --runner=WrapperRunner --coverage-html=/tmp/coverage test/unit
+```
+
 
 ### Windows ###
 
@@ -148,7 +177,7 @@ if (getenv('TEST_TOKEN') !== false) {  // Using partest
 }
 ```
 
-Running Tests
+For Contributors: Testing paratest itself
 -------------
 
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
