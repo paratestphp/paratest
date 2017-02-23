@@ -81,7 +81,7 @@ class Reader extends MetaProvider
      */
     public function hasResults()
     {
-        return $this->xml->count() > 0;
+        return count($this->xml->xpath('//testsuites')) === 1;
     }
 
     /**
