@@ -282,16 +282,6 @@ class ResultPrinterTest extends ResultTester
 
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testEmptyResultsLog(){
-        $suite = new Suite('/path/to/ResultSuite.php', array());
-        $empty = FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml';
-        file_put_contents($suite->getTempFile(), file_get_contents($empty));
-        $this->printer->printFeedback($suite);
-    }
-
     protected function getStartOutput(Options $options)
     {
         ob_start();

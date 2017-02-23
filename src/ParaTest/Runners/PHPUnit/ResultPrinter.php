@@ -201,16 +201,6 @@ class ResultPrinter
                 $test->getPath()
             ));
         }
-        if (!$reader->hasResults()) {
-            throw new \RuntimeException(sprintf(
-                "The process: %s\nLog file \"%s\" is empty.\n" .
-                "This means a PHPUnit process was unable to run \"%s\"\n" .
-                "Maybe there is more than one class in this file.",
-                $test->getLastCommand(),
-                $test->getTempFile(),
-                $test->getPath()
-            ));
-        }
         $this->results->addReader($reader);
         $this->processReaderFeedback($reader, $test->getTestCount());
         $this->printTestWarnings($test);
