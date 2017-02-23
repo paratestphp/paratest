@@ -203,12 +203,17 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals(2, $proc->getExitCode());
     }
 
-    public function testRunWithFatalParseErrorsHasExitCode255()
+    /**
+     * Paratest itself will throw a catchable exception while parsing the unit test before even opening a process and
+     * running it. In some PHP/library versions, the exception code would be 255. Otherwise, the exception code was 0
+     * and is manually converted to 1 inside the Symfony Console runner.
+     */
+    public function testRunWithFatalParseErrorsHasExitCode255or1()
     {
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalParseErrorTest.php', array(
             'bootstrap' => BOOTSTRAP
         ));
-        $this->assertEquals(255, $proc->getExitCode());
+        $this->assertTrue(in_array($proc->getExitCode(), [1, 255], true));
     }
 
     public function testRunWithFatalRuntimeErrorsHasExitCode1()
