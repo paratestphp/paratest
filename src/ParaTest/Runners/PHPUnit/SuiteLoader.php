@@ -109,10 +109,16 @@ class SuiteLoader
      */
     private function initSuites()
     {
-        foreach ($this->files as $path) {
+        foreach ($this->files as $i => $path) {
             try {
                 $parser = new Parser($path);
                 if ($class = $parser->getClass()) {
+                    $classGroups = $this->methodGroups($class);
+                    $methodBatches = $this->getMethodBatches($class);
+                    if (!$this->testMatchGroupOptions($classGroups) && !$methodBatches) {
+                        unset($this->files[$i]);
+                        continue;
+                    }
                     $this->loadedSuites[$path] = $this->createSuite($path, $class);
                 }
             } catch (NoClassInFileException $e) {
@@ -230,7 +236,7 @@ class SuiteLoader
 
     private function testMatchGroupOptions($groups)
     {
-        if (empty($groups)) {
+        if (empty($this->options->groups) && empty($this->options->excludeGroups) && empty($groups)) {
             return true;
         }
 
@@ -293,6 +299,11 @@ class SuiteLoader
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
+
+        if (preg_match_all("/@\b(small|medium|large)\b/", $method->getDocBlock(), $matches)) {
+            return $matches[1];
+        }
+
         return array();
     }
 
