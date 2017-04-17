@@ -178,6 +178,23 @@ class Configuration
     }
 
     /**
+     * @return array
+     */
+    public function getExcludedGroups()
+    {
+        if ($this->xml) {
+            $groups = $this->xml->groups;
+            if ($groups) {
+                $exclude = $groups->exclude;
+                if ($exclude && $exclude->group) {
+                    return (array)$exclude->group;
+                }
+            }
+        }
+        return [];
+    }
+
+    /**
      * Returns true if path needs globbing (like a /path/*-to/string)
      *
      * @param string $path
