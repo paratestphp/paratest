@@ -8,6 +8,20 @@ namespace ParaTest\Runners\PHPUnit;
  * to run PHPUnit via ParaTest
  *
  * @package ParaTest\Runners\PHPUnit
+ * @property-read int $processes
+ * @property-read string $phpunit
+ * @property-read string $functional
+ * @property-read array $filtered
+ * @property-read $runner
+ * @property-read bool $noTestTokens
+ * @property-read string $colors
+ * @property-read string $testsuite
+ * @property-read int $maxBatchSize
+ * @property-read string $filter
+ * @property-read string[] $groups
+ * @property-read string[] $excludeGroups
+ * @property-read array $annotations
+ * @property-read string $path
  */
 class Options
 {
@@ -64,6 +78,15 @@ class Options
      * @var array
      */
     protected $annotations = array();
+
+    protected $runner;
+    protected $noTestTokens;
+    protected $colors;
+    protected $testsuite;
+    protected $maxBatchSize;
+    protected $filter;
+    protected $groups;
+    protected $excludeGroups;
 
     public function __construct($opts = array())
     {

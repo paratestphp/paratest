@@ -4,6 +4,10 @@ namespace ParaTest\Logging;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\TestSuite;
 
+/**
+ * @method array getFailures
+ * @method array getErrors
+ */
 class LogInterpreter extends MetaProvider
 {
     /**

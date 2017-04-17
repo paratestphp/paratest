@@ -22,6 +22,11 @@ class SuiteLoader
      */
     protected $loadedSuites = array();
 
+    /**
+     * @var Options
+     */
+    private $options;
+
     public function __construct($options = null)
     {
         if ($options && !$options instanceof Options) {
