@@ -42,6 +42,14 @@ abstract class BaseRunner
     protected $running = array();
 
     /**
+     * A collection of ExecutableTest objects that have already been completed
+     * and were successful.
+     *
+     * @var array
+     */
+    public $succeeded = array();
+
+    /**
      * A tallied exit code that returns the highest exit
      * code returned out of the entire collection of tests
      *
@@ -56,6 +64,13 @@ abstract class BaseRunner
      */
     protected $coverage = null;
 
+    /**
+     * Indicates whether the starting messages were printed or not.
+     *
+     * @var bool
+     */
+    protected $starting_messages_printed = false;
+
 
     public function __construct($opts = array())
     {
@@ -69,7 +84,12 @@ abstract class BaseRunner
         $this->verifyConfiguration();
         $this->initCoverage();
         $this->load();
-        $this->printer->start($this->options);
+
+        // Print the starting messages only if they were not printed yet.
+        if (!$this->starting_messages_printed) {
+            $this->printer->start($this->options);
+            $this->starting_messages_printed = true;
+        }
     }
 
     /**
@@ -95,7 +115,17 @@ abstract class BaseRunner
     {
         $loader = new SuiteLoader($this->options);
         $loader->load($this->options->path);
-        $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
+        $executables = $this->options->functional || $this->options->only_repeat_failed ? $loader->getTestMethods() : $loader->getSuites();
+        // Skip successful tests.
+        if ($this->options->only_repeat_failed) {
+            foreach ($this->succeeded as $test) {
+                foreach ($executables as $key => $executable) {
+                    if ($test->getPath() == $executable->getPath() && $test->getName() == $executable->getName()) {
+                        unset($executables[$key]);
+                    }
+                }
+            }
+        }
         $this->pending = array_merge($this->pending, $executables);
         foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);

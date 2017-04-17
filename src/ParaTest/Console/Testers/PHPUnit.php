@@ -80,8 +80,19 @@ class PHPUnit extends Tester
             $runner = new Runner($this->getRunnerOptions($input));
         }
 
-        $runner->run();
-        return $runner->getExitCode();
+        // Allow the tests to be repeated.
+        $statusCode = 0;
+        $repeat = $input->getOption('repeat') ?: 1;
+        for ($i = 0; $i < $repeat; $i++) {
+            $runner->run();
+            $status = $runner->getExitCode();
+            $statusCode = $status ? $status : $statusCode;
+        }
+
+        // Print all messages at the end.
+        $runner->complete();
+
+        return $statusCode;
     }
 
     /**

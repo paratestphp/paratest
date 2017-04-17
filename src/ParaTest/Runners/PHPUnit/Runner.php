@@ -28,8 +28,12 @@ class Runner extends BaseRunner
         parent::run();
 
         while (count($this->running) || count($this->pending)) {
+            /** @var ExecutableTest $test */
             foreach ($this->running as $key => $test) {
                 if (!$this->testIsStillRunning($test)) {
+                    if ($test->getExitCode() === 0) {
+                        $this->succeeded[] = $test;
+                    }
                     unset($this->running[$key]);
                     $this->releaseToken($key);
                 }
@@ -46,7 +50,7 @@ class Runner extends BaseRunner
      * logs any results to JUnit, and cleans up temporary
      * files
      */
-    private function complete()
+    public function complete()
     {
         $this->printer->printResults();
         $this->interpreter->rewind();

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="test/fixtures/tests/" tests="4" assertions="2" failures="1" errors="1" skipped="1" time="0.007625">
+        <testsuite name="UnitTestWithClassAnnotationTest" tests="2" assertions="2" failures="1" errors="0"
+                   time="0.006109"
+                   file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php">
+            <testcase name="testTruth" class="UnitTestWithClassAnnotationTest"
+                      file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php"
+                      line="10" assertions="1" time="0.001760"/>
+            <testcase name="testFalsehood" class="UnitTestWithClassAnnotationTest"
+                      file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php"
+                      line="18" assertions="1" time="0.001195">
+                <failure type="PHPUnit_Framework_ExpectationFailedException">
+                    UnitTestWithClassAnnotationTest::testFalsehood
+                    Failed asserting that true is false.
+
+                    /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20
+                </failure>
+            </testcase>
+        </testsuite>
+        <testsuite name="UnitTestWithErrorTest"
+                   file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" tests="1"
+                   assertions="0" failures="0" errors="1" time="0.000397">
+            <testcase name="testTruth" class="UnitTestWithErrorTest"
+                      file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php"
+                      line="10" assertions="0" time="0.000397">
+                <error type="Exception">UnitTestWithErrorTest::testTruth
+                    Exception: Error!!!
+
+                    /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12
+                </error>
+            </testcase>
+        </testsuite>
+    </testsuite>
+</testsuites>

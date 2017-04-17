@@ -13,7 +13,9 @@ class OptionsTest extends \TestBase
             'phpunit' => 'phpunit',
             'functional' => true,
             'group' => 'group1',
-            'bootstrap' => '/path/to/bootstrap'
+            'bootstrap' => '/path/to/bootstrap',
+            'repeat' => 2,
+            'only-repeat-failed' => true
         ); 
         $this->options = new Options($this->unfiltered);
         $this->cleanUpConfigurations();
@@ -44,6 +46,9 @@ class OptionsTest extends \TestBase
         $this->assertEmpty($options->path);
         $this->assertEquals(PHPUNIT, $options->phpunit);
         $this->assertFalse($options->functional);
+        $this->assertEquals(1, $options->repeat);
+        $this->assertEquals(0, $options->only_repeat_failed);
+
     }
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd()

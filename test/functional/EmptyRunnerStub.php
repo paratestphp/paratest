@@ -10,6 +10,10 @@
  */
 class EmptyRunnerStub extends \ParaTest\Runners\PHPUnit\BaseRunner
 {
+    public function complete()
+    {
+    }
+
     public function run()
     {
         echo "EXECUTED";

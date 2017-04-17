@@ -308,7 +308,7 @@ class ResultPrinter
             $this->printFeedbackItem($item);
         }
 
-        if ($this->processSkipped) {
+        if (isset($this->processSkipped)) {
             $this->printSkippedAndIncomplete($actualTestCount, $expectedTestCount);
         }
     }

@@ -9,6 +9,7 @@ abstract class ResultTester extends \TestBase
     protected $failureSuite;
     protected $otherErrorSuite;
     protected $mixedSuite;
+    protected $skippedSuite;
     protected $passingSuite;
     protected $dataProviderSuite;
 
@@ -18,6 +19,7 @@ abstract class ResultTester extends \TestBase
         $this->otherErrorSuite = $this->getSuiteWithResult('single-werror2.xml', 1);
         $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml', 3);
         $this->mixedSuite = $this->getSuiteWithResult('mixed-results.xml', 7);
+        $this->skippedSuite = $this->getSuiteWithResult('mixed-results-with-skipped.xml', 4);
         $this->passingSuite = $this->getSuiteWithResult('single-passing.xml', 3);
         $this->dataProviderSuite = $this->getSuiteWithResult('data-provider-result.xml', 50);
     }

@@ -58,6 +58,20 @@ class Options
     protected $filtered;
 
     /**
+     * The number of times that a test needs to be repeated.
+     *
+     * @var int
+     */
+    protected $repeat;
+
+    /**
+     * Whether or not should repeat only the failing tests.
+     *
+     * @var int
+     */
+    protected $only_repeat_failed;
+
+    /**
      * A collection of option values directly corresponding
      * to certain annotations - i.e group
      *
@@ -82,6 +96,8 @@ class Options
         $this->testsuite = $opts['testsuite'];
         $this->maxBatchSize = $opts['max-batch-size'];
         $this->filter = $opts['filter'];
+        $this->repeat = $opts['repeat'];
+        $this->only_repeat_failed = $opts['only-repeat-failed'];
 
         // we need to register that options if they are blank but do not get them as
         // key with null value in $this->filtered as it will create problems for
@@ -133,7 +149,9 @@ class Options
             'colors' => false,
             'testsuite' => '',
             'max-batch-size' => 0,
-            'filter' => null
+            'filter' => null,
+            'repeat' => 1,
+            'only-repeat-failed' => 0,
         );
     }
 
@@ -196,7 +214,9 @@ class Options
             'colors' => $this->colors,
             'testsuite' => $this->testsuite,
             'max-batch-size' => $this->maxBatchSize,
-            'filter' => $this->filter
+            'filter' => $this->filter,
+            'repeat' => $this->repeat,
+            'only-repeat-failed' => $this->only_repeat_failed,
         ));
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
