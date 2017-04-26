@@ -3,7 +3,7 @@
 use \Habitat\Habitat;
 use \Symfony\Component\Process\Process;
 
-class FunctionalTestBase extends PHPUnit_Framework_TestCase
+class FunctionalTestBase extends \PHPUnit\Framework\TestCase
 {
     protected function fixture($fixture)
     {
@@ -23,9 +23,10 @@ class FunctionalTestBase extends PHPUnit_Framework_TestCase
 
     protected function assertTestsPassed(Process $proc, $testPattern = '\d+', $assertionPattern = '\d+')
     {
+        $output = $proc->getOutput();
         $this->assertRegExp(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
-            $proc->getOutput()
+            $output
         );
         $this->assertEquals(0, $proc->getExitCode());
     }

@@ -1,6 +1,6 @@
 <?php
 
-class IncompleteTest extends \PHPUnit_Framework_TestCase
+class IncompleteTest extends \PHPUnit\Framework\TestCase
 {
     public function testIncomplete()
     {

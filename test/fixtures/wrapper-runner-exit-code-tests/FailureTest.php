@@ -1,6 +1,6 @@
 <?php
 
-class FailureTest extends \PHPUnit_Framework_TestCase
+class FailureTest extends \PHPUnit\Framework\TestCase
 {
     public function testFailure()
     {
