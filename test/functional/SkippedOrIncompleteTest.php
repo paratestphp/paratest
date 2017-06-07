@@ -90,6 +90,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $proc = $this->invoker->execute();
 
+        // TODO: What happened to the incomplete test?
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
                   . "Tests: 1, Assertions: 0, Incomplete: 1.";
         $this->assertContains($expected, $proc->getOutput());
@@ -98,6 +99,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
     public function testDataProviderWithSkippedInDefaultMode()
     {
+        // TODO: update comments
         // amount of tests is known, but based on amount of methods,
         // but test has more actual tests from data provider so
         // we can't identify skipped tests
@@ -109,7 +111,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $proc = $this->invoker->execute();
 
-        $expected = "OK (33 tests, 33 assertions)";
+        $expected = "OK (100 tests, 33 assertions)";
         $this->assertContains($expected, $proc->getOutput());
     }
 
