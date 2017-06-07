@@ -2,7 +2,7 @@
     "name": "brianium/paratest",
     "require": {
         "php": ">=7.0",
-        "phpunit/phpunit": "~6.0.0",
+        "phpunit/phpunit": "~6.0",
         "phpunit/php-timer": ">=1.0.4",
         "symfony/console": "~2.3|~3.0",
         "symfony/process": "~2.3|~3.0",
