@@ -19,6 +19,7 @@ matrix:
     - env: PHPUNIT_VERSION='*@dev'
 
 env:
+    - PHPUNIT_VERSION='6.0.*@stable'
     - PHPUNIT_VERSION='6.*@stable'
     - PHPUNIT_VERSION='*@dev'
 
