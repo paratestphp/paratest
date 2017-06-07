@@ -117,8 +117,28 @@ class PHPUnit extends Tester
     {
         $cwd = getcwd() . DIRECTORY_SEPARATOR;
 
-        if ($input->getOption('configuration')) {
+        if ($config = $input->getOption('configuration')) {
+          // Make it possible to not specify the exact location but rather just
+          // the folder.
+          if (\is_dir($config)) {
+            $configurationFile = $config . '/phpunit.xml';
+            if (\file_exists($configurationFile)) {
+              $configFilename = \realpath(
+                $configurationFile
+              );
+            }
+            elseif (\file_exists($configurationFile . '.dist')) {
+              $configFilename = \realpath(
+                $configurationFile . '.dist'
+              );
+            }
+            else {
+              throw new \InvalidArgumentException('No configuration file found in the specified directory.');
+            }
+          }
+          else {
             $configFilename = $input->getOption('configuration');
+          }
         } elseif (file_exists($cwd . 'phpunit.xml.dist')) {
             $configFilename = $cwd . 'phpunit.xml.dist';
         } elseif (file_exists($cwd . 'phpunit.xml')) {
