@@ -4,10 +4,10 @@ sudo: false
 
 dist: trusty
 
+# hhvm won't work with phpunit 6.x due to lack of Throwable support, see https://github.com/facebook/hhvm/issues/6037
 php:
     - 7.0
     - 7.1
-    - hhvm
 
 cache:
   directories:
