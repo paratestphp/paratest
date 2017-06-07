@@ -1,5 +1,5 @@
 <?php
-class PreviouslyLoadedTest extends PHPUnit_Framework_TestCase
+class PreviouslyLoadedTest extends PHPUnit\Framework\TestCase
 {
     public function testRuns() {
         $this->assertTrue(true);

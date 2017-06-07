@@ -1,6 +1,6 @@
 <?php
 
-class TestOfUnits extends PHPUnit_Framework_TestCase
+class TestOfUnits extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

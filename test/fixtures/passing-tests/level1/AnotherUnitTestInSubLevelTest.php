@@ -1,5 +1,5 @@
 <?php
-class AnotherUnitTestInSubLevelTest extends PHPUnit_Framework_TestCase
+class AnotherUnitTestInSubLevelTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

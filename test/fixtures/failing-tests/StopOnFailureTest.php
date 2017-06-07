@@ -1,5 +1,5 @@
 <?php
-class StopOnFailureTest extends PHPUnit_Framework_TestCase
+class StopOnFailureTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

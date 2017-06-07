@@ -1,5 +1,5 @@
 <?php
-class LongRunningTest extends PHPUnit_Framework_TestCase
+class LongRunningTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

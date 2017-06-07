@@ -2,7 +2,7 @@
 /**
  * @runParallel
  */
-class UnitTestInSubSubLevelTest extends PHPUnit_Framework_TestCase
+class UnitTestInSubSubLevelTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

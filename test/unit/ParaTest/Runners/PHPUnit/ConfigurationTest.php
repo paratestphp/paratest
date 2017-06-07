@@ -54,13 +54,13 @@ class ConfigurationTest extends \TestBase
         $this->assertInternalType('array', $unitSuite);
         $this->assertCount(1, $unitSuite);
         $unitSuitePath = $unitSuite[0];
-        $this->assertInstanceOf('ParaTest\Runners\PHPUnit\SuitePath', $unitSuitePath);
+        $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\SuitePath', $unitSuitePath);
         $this->assertEquals($basePath . 'test' . DS . 'unit', $unitSuitePath->getPath());
         $functionalSuite = $suites["ParaTest Functional Tests"];
         $this->assertInternalType('array', $functionalSuite);
         $this->assertCount(1, $functionalSuite);
         $functionalSuitePath = $functionalSuite[0];
-        $this->assertInstanceOf('ParaTest\Runners\PHPUnit\SuitePath', $functionalSuitePath);
+        $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\SuitePath', $functionalSuitePath);
         $this->assertEquals($basePath . 'test' . DS . 'functional', $functionalSuitePath->getPath());
     }
 

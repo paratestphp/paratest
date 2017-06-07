@@ -26,7 +26,7 @@ class TestGenerator
 
     private function generateTestString($testName, $methods=1)
     {
-        $php = "<"."?php\n\nclass $testName extends PHPUnit_Framework_TestCase\n{\n";
+        $php = "<"."?php\n\nclass $testName extends PHPUnit\Framework\TestCase\n{\n";
 
         for($i=0; $i<$methods; $i++) {
             $php .= "\tpublic function testMethod{$i}(){";

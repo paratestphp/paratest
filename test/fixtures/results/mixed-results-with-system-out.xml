@@ -4,7 +4,7 @@
     <testsuite name="UnitTestWithClassAnnotationTest" tests="3" assertions="3" failures="1" errors="0" time="0.006109" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php">
       <testcase name="testTruth" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="10" assertions="1" time="0.001760"/>
       <testcase name="testFalsehood" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="18" assertions="1" time="0.001195">
-        <failure type="PHPUnit_Framework_ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
+        <failure type="PHPUnit\Framework\ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
 Failed asserting that true is false.
 
 /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18
@@ -34,7 +34,7 @@ Exception: Error!!!
     <testsuite name="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" tests="3" assertions="3" failures="1" errors="0" time="0.001119">
       <testcase name="testTruth" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="7" assertions="1" time="0.000341"/>
       <testcase name="testFalsehood" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="16" assertions="1" time="0.000402">
-        <failure type="PHPUnit_Framework_ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
+        <failure type="PHPUnit\Framework\ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
 Failed asserting that true is false.
 
 /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18

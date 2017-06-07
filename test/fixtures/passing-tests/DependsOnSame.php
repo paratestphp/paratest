@@ -1,6 +1,6 @@
 <?php
 
-class DependsOnSame extends PHPUnit_Framework_TestCase
+class DependsOnSame extends PHPUnit\Framework\TestCase
 {
     public function testOneA()
     {

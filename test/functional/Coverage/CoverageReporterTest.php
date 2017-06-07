@@ -100,7 +100,7 @@ class CoverageReporterTest extends TestBase
 
         static::assertFileExists($target);
 
-        $reportXml = \PHPUnit_Util_XML::loadFile($target);
+        $reportXml = \PHPUnit\Util\XML::loadFile($target);
         static::assertInstanceOf('DomDocument', $reportXml, 'Incorrect clover report xml was generated');
     }
 
