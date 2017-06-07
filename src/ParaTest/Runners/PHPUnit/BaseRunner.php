@@ -56,6 +56,13 @@ abstract class BaseRunner
      */
     protected $coverage = null;
 
+    /**
+     * Indicates whether the starting messages were printed or not.
+     *
+     * @var bool
+     */
+    protected $starting_messages_printed = false;
+
 
     public function __construct($opts = array())
     {
@@ -69,7 +76,12 @@ abstract class BaseRunner
         $this->verifyConfiguration();
         $this->initCoverage();
         $this->load();
-        $this->printer->start($this->options);
+
+        // Print the starting messages only if they were not printed yet.
+        if (!$this->starting_messages_printed) {
+            $this->printer->start($this->options);
+            $this->starting_messages_printed = true;
+        }
     }
 
     /**
