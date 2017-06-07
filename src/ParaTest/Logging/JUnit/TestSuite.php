@@ -80,6 +80,7 @@ class TestSuite
         $this->tests = $tests;
         $this->assertions = $assertions;
         $this->failures = $failures;
+        $this->skipped = $skipped;
         $this->errors = $errors;
         $this->time = $time;
         $this->file = $file;

@@ -50,6 +50,7 @@ class LogInterpreter extends MetaProvider
     /**
      * Returns true if total errors and failures
      * equals 0, false otherwise
+     * TODO: Remove this comment if we don't care about skipped tests in callers
      *
      * @return bool
      */
@@ -119,6 +120,7 @@ class LogInterpreter extends MetaProvider
             $dict[$case->file]->assertions += $case->assertions;
             $dict[$case->file]->failures += sizeof($case->failures);
             $dict[$case->file]->errors += sizeof($case->errors);
+            $dict[$case->file]->skipped += sizeof($case->skipped);
             $dict[$case->file]->time += $case->time;
             $dict[$case->file]->file = $case->file;
         }
