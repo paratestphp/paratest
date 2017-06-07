@@ -14,13 +14,11 @@ class PHPUnitWarningsTest extends FunctionalTestBase
 
         $output = $proc->getOutput();
 
-        if (version_compare(PHPUnit\Runner\Version::id(), '5.1.0', '>=')) {
-            // PHPUnit 5.1+ Changed how it handles test warnings (not E_WARNINGS)
-            $this->assertContains("Warnings", $output, "Test should output warnings");
-            $this->assertEquals(0, $proc->getExitCode(), "Test suite should succeed with 0");
-        } else {
-            // PHPUnit 4.8 and below failed the test suite if a test warning occurred
-            $this->assertEquals(1, $proc->getExitCode(), "Test suite should fail with 1");
-        }
+        $this->assertTrue(version_compare(PHPUnit\Runner\Version::id(), '6.0.0', '>='), 'Expected phpunit 6.0.0+');
+        // PHPUnit 5.1+ Changed how it handles test warnings (not E_WARNINGS)
+        // PHPUnit 6.0 changed it back to non-zero exit code : https://github.com/sebastianbergmann/phpunit/issues/2446
+        // TODO: Does this have any consequences for paratest?
+        $this->assertContains("Warnings", $output, "Test should output warnings");
+        $this->assertEquals(1, $proc->getExitCode(), "Test suite should succeed with 0");
     }
 }

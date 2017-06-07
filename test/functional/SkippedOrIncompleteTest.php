@@ -111,7 +111,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $proc = $this->invoker->execute();
 
-        $expected = "OK (100 tests, 33 assertions)";
+        $expected = "OK, but incomplete, skipped, or risky tests!\nTests: 100, Assertions: 33, Incomplete: 67.";
         $this->assertContains($expected, $proc->getOutput());
     }
 
