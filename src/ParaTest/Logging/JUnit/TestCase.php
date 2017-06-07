@@ -51,10 +51,13 @@ class TestCase
 
     /**
      * Number of errors in this test case
+     * TODO: Not a number?
      *
      * @var array
      */
     public $errors = array();
+
+    public $skipped = array();
 
     public function __construct(
         $name,

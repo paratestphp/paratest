@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
@@ -112,7 +112,7 @@ class LogInterpreter extends MetaProvider
         $dict = array();
         foreach ($this->getCases() as $case) {
             if (!isset($dict[$case->file])) {
-                $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0);
+                $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0, 0);
             }
             $dict[$case->file]->cases[] = $case;
             $dict[$case->file]->tests += 1;

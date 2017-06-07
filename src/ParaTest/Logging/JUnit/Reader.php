@@ -34,6 +34,7 @@ class Reader extends MetaProvider
                                            'assertions' => 0,
                                            'failures' => 0,
                                            'errors' => 0,
+                                           'skipped' => 0,
                                            'time' => 0);
 
     public function __construct($logFile)
@@ -79,6 +80,7 @@ class Reader extends MetaProvider
      * logs do not contain skipped or incomplete
      * tests this array will contain any number of the following
      * characters: .,F,E
+     * TODO: Update this, skipped was added in phpunit
      *
      * @return array
      */
@@ -92,6 +94,8 @@ class Reader extends MetaProvider
                     $feedback[] = 'F';
                 } elseif ($case->errors) {
                     $feedback[] = 'E';
+                } elseif ($case->skipped) {
+                    $feedback[] = 'S';
                 } else {
                     $feedback[] = '.';
                 }
@@ -167,6 +171,7 @@ class Reader extends MetaProvider
             $result['assertions'] += (int)$c['assertions'];
             $result['failures'] += sizeof($c->xpath('failure'));
             $result['errors'] += sizeof($c->xpath('error'));
+            $result['skipped'] += sizeof($c->xpath('skipped'));
             $result['time'] += floatval($c['time']);
             return $result;
         }, static::$defaultSuite);
