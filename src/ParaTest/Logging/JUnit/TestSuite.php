@@ -38,6 +38,11 @@ class TestSuite
     public $errors;
 
     /**
+     * @var int
+     */
+    public $skipped;
+
+    /**
      * @var string
      */
     public $time;
@@ -67,6 +72,7 @@ class TestSuite
         $assertions,
         $failures,
         $errors,
+        $skipped,
         $time,
         $file = null
     ) {
@@ -74,6 +80,7 @@ class TestSuite
         $this->tests = $tests;
         $this->assertions = $assertions;
         $this->failures = $failures;
+        $this->skipped = $skipped;
         $this->errors = $errors;
         $this->time = $time;
         $this->file = $file;
@@ -94,6 +101,7 @@ class TestSuite
             $arr['assertions'],
             $arr['failures'],
             $arr['errors'],
+            $arr['skipped'],
             $arr['time'],
             $arr['file']
         );
@@ -113,6 +121,7 @@ class TestSuite
             (string) $node['assertions'],
             (string) $node['failures'],
             (string) $node['errors'],
+            (string) $node['skipped'],
             (string) $node['time'],
             (string) $node['file']
         );

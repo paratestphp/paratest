@@ -47,6 +47,7 @@ class Writer
                                         'tests' => 0,
                                         'assertions' => 0,
                                         'failures' => 0,
+                                        'skipped' => 0,
                                         'errors' => 0,
                                         'time' => 0
                                     );
@@ -196,6 +197,7 @@ class Writer
             $result['tests'] += $suite->tests;
             $result['assertions'] += $suite->assertions;
             $result['failures'] += $suite->failures;
+            $result['skipped'] += $suite->skipped;
             $result['errors'] += $suite->errors;
             $result['time'] += $suite->time;
             return $result;

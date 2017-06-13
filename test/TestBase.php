@@ -2,7 +2,7 @@
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 
-class TestBase extends PHPUnit_Framework_TestCase
+class TestBase extends PHPUnit\Framework\TestCase
 {
     /**
      * Get PHPUnit version
@@ -11,10 +11,10 @@ class TestBase extends PHPUnit_Framework_TestCase
      */
     protected static function getPhpUnitVersion()
     {
-        if (method_exists('\\PHPUnit_Runner_Version', 'id')) {
-            return \PHPUnit_Runner_Version::id();
+        if (method_exists('\\PHPUnit\\Runner\\Version', 'id')) {
+            return \PHPUnit\Runner\Version::id();
         }
-        return \PHPUnit_Runner_Version::VERSION;
+        return \PHPUnit\Runner\Version::VERSION;
     }
 
     protected function fixture($fixture)
@@ -108,7 +108,7 @@ class TestBase extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @throws \PHPUnit_Framework_SkippedTestError When code coverage library is not found
+     * @throws \PHPUnit\Framework\SkippedTestError When code coverage library is not found
      */
     protected static function skipIfCodeCoverageNotEnabled()
     {

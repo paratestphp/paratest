@@ -1,6 +1,6 @@
 <?php
 
-class HasWarningsTest extends PHPUnit_Framework_TestCase
+class HasWarningsTest extends PHPUnit\Framework\TestCase
 {
     public function testPassingTest()
     {

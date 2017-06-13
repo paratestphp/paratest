@@ -55,7 +55,7 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals($expected, sizeof($files));
     }
 
-    public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag() 
+    public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag()
     {
         $options = new Options(
             array('configuration' => $this->fixture('phpunit-excluded-including-file.xml'), 'testsuite' => 'ParaTest Fixtures')
@@ -68,7 +68,7 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals($expected, sizeof($files));
     }
 
-    public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag() 
+    public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag()
     {
         $options = new Options(
             array('configuration' => $this->fixture('phpunit-excluded-including-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
@@ -81,7 +81,7 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals($expected, sizeof($files));
     }
 
-    public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory() 
+    public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory()
     {
         $options = new Options(
             array('configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
@@ -290,6 +290,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader();
         $fileWithoutClass = $this->fixture('special-classes/FileWithoutClass.php');
         $loader->load($fileWithoutClass);
+        $this->assertSame(0, count($loader->getTestMethods()));
     }
 
     public function testExecutableTestsForFunctionalModeUse()

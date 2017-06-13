@@ -3,7 +3,7 @@
 use \Habitat\Habitat;
 use \Symfony\Component\Process\Process;
 
-class FunctionalTestBase extends PHPUnit_Framework_TestCase
+class FunctionalTestBase extends PHPUnit\Framework\TestCase
 {
     protected function fixture($fixture)
     {

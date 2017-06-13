@@ -51,10 +51,13 @@ class TestCase
 
     /**
      * Number of errors in this test case
+     * TODO: Not a number?
      *
      * @var array
      */
     public $errors = array();
+
+    public $skipped = array();
 
     public function __construct(
         $name,
@@ -88,6 +91,15 @@ class TestCase
     public function addError($type, $text)
     {
         $this->addDefect('errors', $type, $text);
+    }
+
+    /**
+     * @param string $type
+     * @param string $text
+     */
+    public function addSkipped($type, $text)
+    {
+        $this->addDefect('skipped', $type, $text);
     }
 
     /**
@@ -146,14 +158,20 @@ class TestCase
 
         $node       = self::addSystemOut($node);
         $failures   = $node->xpath('failure');
+        $skipped    = $node->xpath('skipped');
         $errors     = $node->xpath('error');
 
+        // TODO: each will be deprecated in 7.2, change to foreach
         while (list( , $fail) = each($failures)) {
             $case->addFailure((string)$fail['type'], (string)$fail);
         }
 
         while (list( , $err) = each($errors)) {
             $case->addError((string)$err['type'], (string)$err);
+        }
+
+        while (list( , $err) = each($skipped)) {
+            $case->addSkipped((string)$err['type'], (string)$err);
         }
 
         return $case;

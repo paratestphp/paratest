@@ -1,6 +1,6 @@
 <?php
 
-class DependsOnChain extends PHPUnit_Framework_TestCase
+class DependsOnChain extends PHPUnit\Framework\TestCase
 {
 
     public function testOneA()

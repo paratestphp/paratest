@@ -4,11 +4,10 @@ sudo: false
 
 dist: trusty
 
+# hhvm won't work with phpunit 6.x due to lack of Throwable support, see https://github.com/facebook/hhvm/issues/6037
 php:
-    - 5.6
     - 7.0
     - 7.1
-    - hhvm
 
 cache:
   directories:
@@ -17,18 +16,10 @@ cache:
 matrix:
   fast_finish: true
   allow_failures:
-    - env: PHPUNIT_VERSION='3.7.*@stable'
-    - env: PHPUNIT_VERSION='4.*@stable'
-    - env: PHPUNIT_VERSION='6.*@stable'
     - env: PHPUNIT_VERSION='*@dev'
-  exclude:
-    - php: 5.5
-      env: PHPUNIT_VERSION='5.*@stable'
 
 env:
-    - PHPUNIT_VERSION='3.7.*@stable'
-    - PHPUNIT_VERSION='4.*@stable'
-    - PHPUNIT_VERSION='5.7.*@stable'
+    - PHPUNIT_VERSION='6.0.*@stable'
     - PHPUNIT_VERSION='6.*@stable'
     - PHPUNIT_VERSION='*@dev'
 

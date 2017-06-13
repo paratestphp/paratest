@@ -1,5 +1,5 @@
 <?php
-class UnitTestWithMethodAnnotationsTest extends PHPUnit_Framework_TestCase
+class UnitTestWithMethodAnnotationsTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

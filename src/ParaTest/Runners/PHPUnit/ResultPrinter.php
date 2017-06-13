@@ -306,6 +306,9 @@ class ResultPrinter
 
         foreach ($feedbackItems as $item) {
             $this->printFeedbackItem($item);
+            if ($item === 'S')  {
+                $this->totalSkippedOrIncomplete++;
+            }
         }
 
         if ($this->processSkipped) {
