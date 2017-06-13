@@ -1,3 +1,3 @@
 <?php
 
-class ParserTestClassFallsBack extends PHPUnit_Framework_TestCase{}
+class ParserTestClassFallsBack extends PHPUnit\Framework\TestCase{}

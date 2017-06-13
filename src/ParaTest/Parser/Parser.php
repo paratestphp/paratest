@@ -133,7 +133,7 @@ class Parser
         foreach ($classes as $className) {
             $class = new \ReflectionClass($className);
             if ($class->getFileName() == $filename) {
-                if ($class->isSubclassOf('PHPUnit_Framework_TestCase')) {
+                if ($class->isSubclassOf('PHPUnit\Framework\TestCase')) {
                     if ($this->classNameMatchesFileName($filename, $className)) {
                         return $className;
                     } else if ($matchingClassName === null) {
