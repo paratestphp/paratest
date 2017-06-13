@@ -1,7 +1,9 @@
 <?php
 namespace SomeNamespace;
 
-class SomeOtherClass{}
+// Test that it gives the class matching the file name priority.
+class SomeOtherClass extends \PHPUnit_Framework_TestCase{}
 
-class ParserTestClass{}
- 
+class ParserTestClass extends \PHPUnit_Framework_TestCase{}
+
+class AnotherClass extends \PHPUnit_Framework_TestCase{}

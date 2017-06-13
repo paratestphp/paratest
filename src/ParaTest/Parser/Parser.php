@@ -110,23 +110,39 @@ class Parser
         $classes = get_declared_classes();
         $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
-        foreach ($newClasses as $className) {
-            $class = new \ReflectionClass($className);
-            if ($class->getFileName() == $filename) {
-                if ($this->classNameMatchesFileName($filename, $className)) {
-                    return $className;
-                }
-            }
+        $className = $this->_searchForUnitTestClass($newClasses, $filename);
+        if (isset($className)) {
+            return $className;
         }
 
-        // Test class was loaded before somehow
-        // (referenced from other test class, explicitly loaded, or filename does not match classname)
+        $className = $this->_searchForUnitTestClass($classes, $filename);
+        if (isset($className)) {
+            return $className;
+        }
+    }
+
+    /**
+     * Search for the name of the unit test
+     * @param string[] $classes
+     * @param string $filename
+     * @return string|null
+     */
+    private function _searchForUnitTestClass(array $classes, $filename) {
+        // TODO: After merging this PR or other PR for phpunit 6 support, keep only the applicable subclass name
+        $matchingClassName = null;
         foreach ($classes as $className) {
             $class = new \ReflectionClass($className);
             if ($class->getFileName() == $filename) {
-                return $className;
+                if ($class->isSubclassOf('PHPUnit_Framework_TestCase')) {
+                    if ($this->classNameMatchesFileName($filename, $className)) {
+                        return $className;
+                    } else if ($matchingClassName === null) {
+                        $matchingClassName = $className;
+                    }
+                }
             }
         }
+        return $matchingClassName;
     }
 
     /**
