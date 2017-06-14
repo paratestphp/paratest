@@ -43,7 +43,7 @@ class WrapperRunner extends BaseRunner
 
     private function startWorkers()
     {
-        $wrapper = realpath(__DIR__ . '/../../../../bin/phpunit-wrapper');
+        $wrapper = realpath(__DIR__ . '/../../../bin/phpunit-wrapper');
         for ($i = 1; $i <= $this->options->processes; $i++) {
             $worker = new Worker();
             if ($this->options->noTestTokens) {

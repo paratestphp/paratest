@@ -19,8 +19,8 @@ class CoverageMergerTest extends \TestBase
      */
     public function testSimpleMergeLegacy()
     {
-        $firstFile = PARATEST_ROOT . '/src/ParaTest/Logging/LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . '/src/ParaTest/Logging/MetaProvider.php';
+        $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
 
         $filter = new \PHP_CodeCoverage_Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -69,8 +69,8 @@ class CoverageMergerTest extends \TestBase
      */
     public function testSimpleMerge()
     {
-        $firstFile = PARATEST_ROOT . '/src/ParaTest/Logging/LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . '/src/ParaTest/Logging/MetaProvider.php';
+        $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
