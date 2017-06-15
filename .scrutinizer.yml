@@ -24,9 +24,9 @@ tools:
       method_contract_checks:
         verify_documented_constraints: false
   sensiolabs_security_checker: true
-  php_code_sniffer: 
+  php_code_sniffer:
     enabled: true
     config:
       standard: "PSR2"
-  
+
   php_code_coverage: true
