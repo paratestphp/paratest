@@ -9,7 +9,7 @@ class PHPUnitWarningsTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             "warning-tests/HasWarningsTest.php",
-            array('bootstrap' => BOOTSTRAP)
+            ['bootstrap' => BOOTSTRAP]
         );
 
         $output = $proc->getOutput();

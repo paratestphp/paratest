@@ -23,7 +23,7 @@ class ParaTestInvoker
      *
      * @return Process
      */
-    public function execute($options=array(), $callback = null)
+    public function execute($options=[], $callback = null)
     {
         $cmd = $this->buildCommand($options);
         $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
@@ -38,7 +38,7 @@ class ParaTestInvoker
         return $proc;
     }
 
-    private function buildCommand($options=array())
+    private function buildCommand($options=[])
     {
         $cmd = sprintf("%s --bootstrap %s --phpunit %s", PARA_BINARY, $this->bootstrap, PHPUNIT);
         foreach($options as $switch => $value) {

@@ -10,10 +10,10 @@ class WrapperRunnerTest extends FunctionalTestBase
         $generator = new TestGenerator();
         $generator->generate(self::TEST_CLASSES, self::TEST_METHODS_PER_CLASS);
 
-        $proc = $this->invokeParatest($generator->path, array(
+        $proc = $this->invokeParatest($generator->path, [
             'runner' => 'WrapperRunner',
             'processes' => 3,
-        ));
+        ]);
 
         $expected = self::TEST_CLASSES * self::TEST_METHODS_PER_CLASS;
         $this->assertTestsPassed($proc, $expected, $expected);
@@ -21,10 +21,10 @@ class WrapperRunnerTest extends FunctionalTestBase
 
     public function testMultiLineClassDeclarationWithFilenameDifferentThanClassnameIsSupported()
     {
-        $this->assertTestsPassed($this->invokeParatest('special-classes', array(
+        $this->assertTestsPassed($this->invokeParatest('special-classes', [
             'runner' => 'WrapperRunner',
             'processes' => 3,
-        )));
+        ]));
     }
 
     public function testRunningFewerTestsThanTheWorkersIsPossible()
@@ -32,10 +32,10 @@ class WrapperRunnerTest extends FunctionalTestBase
         $generator = new TestGenerator();
         $generator->generate(1, 1);
 
-        $proc = $this->invokeParatest($generator->path, array(
+        $proc = $this->invokeParatest($generator->path, [
             'runner' => 'WrapperRunner',
             'processes' => 2,
-        ));
+        ]);
 
         $this->assertTestsPassed($proc, 1, 1);
     }
@@ -45,10 +45,10 @@ class WrapperRunnerTest extends FunctionalTestBase
         if (PHP_VERSION_ID >= 70000) {
             $this->markTestSkipped('fatals are handled like normal exceptions with php7');
         }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
+        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
             'runner' => 'WrapperRunner',
             'processes' => 1,
-        ));
+        ]);
 
         $errors = $proc->getErrorOutput();
         $this->assertContains('This worker has crashed', $errors);
@@ -56,7 +56,7 @@ class WrapperRunnerTest extends FunctionalTestBase
 
     public function functionalModeEnabledDataProvider()
     {
-        return array(array(false));
+        return [[false]];
     }
 
     /**
@@ -64,10 +64,10 @@ class WrapperRunnerTest extends FunctionalTestBase
      */
     public function testExitCodes($functionalModeEnabled)
     {
-        $options = array(
+        $options = [
             'runner' => 'WrapperRunner',
             'processes' => 1,
-        );
+        ];
         $proc = $this->invokeParatest('wrapper-runner-exit-code-tests/ErrorTest.php', $options);
         $output = $proc->getOutput();
 

@@ -208,7 +208,7 @@ class ReaderTest extends \TestBase
         $totalCases = 7;
         $casesProcessed = 0;
         $feedback = $this->mixed->getFeedback($totalCases, $casesProcessed);
-        $this->assertEquals(array('.', 'F', '.', 'E', '.', 'F', '.'), $feedback);
+        $this->assertEquals(['.', 'F', '.', 'E', '.', 'F', '.'], $feedback);
     }
 
     public function testRemoveLog()

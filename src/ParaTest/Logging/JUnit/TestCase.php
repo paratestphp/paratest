@@ -47,7 +47,7 @@ class TestCase
      *
      * @var array
      */
-    public $failures = array();
+    public $failures = [];
 
     /**
      * Number of errors in this test case
@@ -55,9 +55,9 @@ class TestCase
      *
      * @var array
      */
-    public $errors = array();
+    public $errors = [];
 
-    public $skipped = array();
+    public $skipped = [];
 
     public function __construct(
         $name,
@@ -111,10 +111,10 @@ class TestCase
      */
     protected function addDefect($collName, $type, $text)
     {
-        $this->{$collName}[] = array(
+        $this->{$collName}[] = [
             'type' => $type,
             'text' => trim($text)
-        );
+        ];
     }
 
     /**

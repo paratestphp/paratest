@@ -149,33 +149,33 @@ class CoverageMergerTest extends TestBase
     public static function getCoverageFileProvider()
     {
         $version = 'CodeCoverage >4.0';
-        $filenames = array(
+        $filenames = [
             'coverage-tests/runner_test.cov',
             'coverage-tests/result_printer_test.cov',
-        );
+        ];
         $coverageClass = 'SebastianBergmann\\CodeCoverage\\CodeCoverage';
         if (class_exists('PHP_CodeCoverage')) {
             $version = 'Legacy CodeCoverage';
-            $filenames = array(
+            $filenames = [
                 'coverage-tests/runner_test.cov4',
                 'coverage-tests/result_printer_test.cov4',
-            );
+            ];
             $coverageClass = 'PHP_CodeCoverage';
             if (Semver::satisfies(static::getPhpUnitVersion(), '3.7.*')) {
                 $version = 'PHPUnit 3.7';
-                $filenames = array(
+                $filenames = [
                     'coverage-tests/runner_test.cov3',
                     'coverage-tests/result_printer_test.cov3',
-                );
+                ];
             }
         }
 
-        return array(
-            $version => array(
+        return [
+            $version => [
                 'filenames' => $filenames,
                 'expected coverage class' => $coverageClass,
-            ),
-        );
+            ],
+        ];
     }
 
     /**

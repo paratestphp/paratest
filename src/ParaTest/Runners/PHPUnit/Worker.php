@@ -5,17 +5,17 @@ use Exception;
 
 class Worker
 {
-    private static $descriptorspec = array(
-       0 => array("pipe", "r"),
-       1 => array("pipe", "w"),
-       2 => array("pipe", "w")
-    );
+    private static $descriptorspec = [
+       0 => ["pipe", "r"],
+       1 => ["pipe", "w"],
+       2 => ["pipe", "w"]
+    ];
     private $proc;
     private $pipes;
     private $inExecution = 0;
     private $isRunning = false;
     private $exitCode = null;
-    private $commands = array();
+    private $commands = [];
     private $chunks = '';
     private $alreadyReadOutput = '';
     /**
@@ -33,7 +33,7 @@ class Worker
             $bin .= "UNIQUE_TEST_TOKEN=$uniqueToken ";
         }
         $bin .= "exec \"$wrapperBinary\"";
-        $pipes = array();
+        $pipes = [];
         $this->proc = proc_open($bin, self::$descriptorspec, $pipes);
         $this->pipes = $pipes;
         $this->isRunning = true;

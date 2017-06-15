@@ -29,14 +29,14 @@ class TestFileLoader
      *
      * @var array
      */
-    protected $files = array();
+    protected $files = [];
 
     /**
      * The collection of excluded files
      *
      * @var array
      */
-    protected $excludedFiles = array();
+    protected $excludedFiles = [];
 
     /**
      * When true, the SuiteLoader add the files to excluded files
@@ -65,8 +65,8 @@ class TestFileLoader
     public function loadSuitePath(SuitePath $path)
     {
         // First initialize the list of files and excluded files
-        $this->files          = array();
-        $this->excludedFiles  = array();
+        $this->files          = [];
+        $this->excludedFiles  = [];
         $this->excludingFiles = true;
         foreach ($path->getExcludedPaths() as $excludedPath) {
             $this->loadPath($excludedPath, $path->getPattern());
@@ -77,7 +77,7 @@ class TestFileLoader
         $this->loadPath($path->getPath(), $path->getPattern());
 
         // Reinitialise the excluded files
-        $this->excludedFiles = array();
+        $this->excludedFiles = [];
 
         return $this->files;
     }
@@ -93,7 +93,7 @@ class TestFileLoader
      */
     public function loadPath($path, $pattern = null)
     {
-        $this->files = array();
+        $this->files = [];
         $path        = $path ?: $this->options->path;
         $pattern     = is_null($pattern) ? self::TEST_PATTERN : $pattern;
 

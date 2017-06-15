@@ -15,7 +15,7 @@ class TestOfUnits extends PHPUnit\Framework\TestCase
      */
     public function testArrayLength()
     {
-        $elems = array(1,2,3,4,5);
+        $elems = [1,2,3,4,5];
         $this->assertEquals(5, sizeof($elems));
     }
 }

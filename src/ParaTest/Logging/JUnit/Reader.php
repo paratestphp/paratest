@@ -18,7 +18,7 @@ class Reader extends MetaProvider
     /**
      * @var array
      */
-    protected $suites = array();
+    protected $suites = [];
 
     /**
      * @var string
@@ -28,14 +28,14 @@ class Reader extends MetaProvider
     /**
      * @var array
      */
-    protected static $defaultSuite = array('name' => '',
-                                           'file' => '',
-                                           'tests' => 0,
-                                           'assertions' => 0,
-                                           'failures' => 0,
-                                           'errors' => 0,
-                                           'skipped' => 0,
-                                           'time' => 0);
+    protected static $defaultSuite = ['name' => '',
+                                      'file' => '',
+                                      'tests' => 0,
+                                      'assertions' => 0,
+                                      'failures' => 0,
+                                      'errors' => 0,
+                                      'skipped' => 0,
+                                      'time' => 0];
 
     public function __construct($logFile)
     {
@@ -86,7 +86,7 @@ class Reader extends MetaProvider
      */
     public function getFeedback()
     {
-        $feedback = array();
+        $feedback = [];
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach ($suites as $suite) {
             foreach ($suite->cases as $case) {
@@ -131,7 +131,7 @@ class Reader extends MetaProvider
      */
     protected function initSuiteFromCases($nodeArray)
     {
-        $testCases = array();
+        $testCases = [];
         $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
         if (!$this->isSingle) {
             $this->addSuite($properties, $testCases);
@@ -160,11 +160,11 @@ class Reader extends MetaProvider
      * @param array $testCases an array reference. Individual testcases will be placed here.
      * @return mixed
      */
-    protected function caseNodesToSuiteProperties($nodeArray, &$testCases = array())
+    protected function caseNodesToSuiteProperties($nodeArray, &$testCases = [])
     {
-        $cb = array('ParaTest\\Logging\\JUnit\\TestCase', 'caseFromNode');
+        $cb = ['ParaTest\\Logging\\JUnit\\TestCase', 'caseFromNode'];
         return array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
-            $testCases[] = call_user_func_array($cb, array($c));
+            $testCases[] = call_user_func_array($cb, [$c]);
             $result['name'] = (string)$c['class'];
             $result['file'] = (string)$c['file'];
             $result['tests'] = $result['tests'] + 1;
@@ -186,11 +186,11 @@ class Reader extends MetaProvider
     protected function getCaseNodes()
     {
         $caseNodes = $this->xml->xpath('//testcase');
-        $cases = array();
+        $cases = [];
         while (list( , $node) = each($caseNodes)) {
             $case = $node;
             if (!isset($cases[(string)$node['file']])) {
-                $cases[(string)$node['file']] = array();
+                $cases[(string)$node['file']] = [];
             }
             $cases[(string)$node['file']][] = $node;
         }

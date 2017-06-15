@@ -26,17 +26,17 @@ class CoverageMergerTest extends \TestBase
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
         $coverage1 = new \PHP_CodeCoverage(null, $filter);
         $coverage1->append(
-            array(
-                $firstFile => array(35 => 1),
-                $secondFile => array(34 => 1)
-            ),
+            [
+                $firstFile => [35 => 1],
+                $secondFile => [34 => 1]
+            ],
             'Test1'
         );
         $coverage2 = new \PHP_CodeCoverage(null, $filter);
         $coverage2->append(
-            array(
-                $firstFile => array(35 => 1, 36 => 1)
-            ),
+            [
+                $firstFile => [35 => 1, 36 => 1]
+            ],
             'Test2'
         );
 
@@ -76,17 +76,17 @@ class CoverageMergerTest extends \TestBase
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
         $coverage1 = new CodeCoverage(null, $filter);
         $coverage1->append(
-            array(
-                $firstFile => array(35 => 1),
-                $secondFile => array(34 => 1)
-            ),
+            [
+                $firstFile => [35 => 1],
+                $secondFile => [34 => 1]
+            ],
             'Test1'
         );
         $coverage2 = new CodeCoverage(null, $filter);
         $coverage2->append(
-            array(
-                $firstFile => array(35 => 1, 36 => 1)
-            ),
+            [
+                $firstFile => [35 => 1, 36 => 1]
+            ],
             'Test2'
         );
 

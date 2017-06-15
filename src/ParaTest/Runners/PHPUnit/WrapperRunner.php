@@ -103,8 +103,8 @@ class WrapperRunner extends BaseRunner
     // put on WorkersPool
     private function waitForStreamsToChange($modified)
     {
-        $write = array();
-        $except = array();
+        $write = [];
+        $except = [];
         $result = stream_select($modified, $write, $except, 1);
         if ($result === false) {
             throw new \RuntimeException("stream_select() returned an error while waiting for all workers to finish.");
@@ -119,7 +119,7 @@ class WrapperRunner extends BaseRunner
      */
     private function progressedWorkers()
     {
-        $result = array();
+        $result = [];
         foreach ($this->modified as $modifiedStream) {
             $found = null;
             foreach ($this->streams as $index => $stream) {
@@ -130,7 +130,7 @@ class WrapperRunner extends BaseRunner
             }
             $result[$found] = $this->workers[$found];
         }
-        $this->modified = array();
+        $this->modified = [];
         return $result;
     }
 
@@ -141,7 +141,7 @@ class WrapperRunner extends BaseRunner
      */
     private function streamsOf($workers)
     {
-        $streams = array();
+        $streams = [];
         foreach (array_keys($workers) as $index) {
             $streams[$index] = $this->streams[$index];
         }

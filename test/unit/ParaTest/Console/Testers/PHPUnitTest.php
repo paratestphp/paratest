@@ -11,7 +11,7 @@ class PHPUnitTest extends \TestBase
     public function testConfigureAddsOptionsAndArgumentsToCommand()
     {
         $testCommand = new TestCommand();
-        $definition = new InputDefinition(array(
+        $definition = new InputDefinition([
             new InputOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'),
             new InputOption('runner', null, InputOption::VALUE_REQUIRED, 'Runner or WrapperRunner. <comment>(default: Runner)</comment>'),
             new InputOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.'),
@@ -24,7 +24,7 @@ class PHPUnitTest extends \TestBase
             new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'),
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
-        ));
+        ]);
         $tester = new PHPUnit();
         $tester->configure($testCommand);
         $this->assertEquals($definition, $testCommand->getDefinition());

@@ -8,7 +8,7 @@ class TestFileLoaderTest extends \TestBase
 {
     public function testConstructor()
     {
-        $options = new Options(array('group' => 'group1'));
+        $options = new Options(['group' => 'group1']);
         $testFileLoader = new TestFileLoader($options);
         $this->assertEquals($options, $this->getObjectValue($testFileLoader, 'options'));
     }
@@ -24,7 +24,7 @@ class TestFileLoaderTest extends \TestBase
      */
     public function testOptionsMustBeInstanceOfOptionsIfNotNull()
     {
-        $testFileLoader = new TestFileLoader(array('one' => 'two', 'three' => 'four'));
+        $testFileLoader = new TestFileLoader(['one' => 'two', 'three' => 'four']);
     }
 
     /**

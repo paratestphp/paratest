@@ -16,7 +16,7 @@ class ParsedClass extends ParsedObject
      */
     private $methods;
 
-    public function __construct($doc, $name, $namespace, $methods = array())
+    public function __construct($doc, $name, $namespace, $methods = [])
     {
         parent::__construct($doc, $name);
         $this->namespace = $namespace;
@@ -31,7 +31,7 @@ class ParsedClass extends ParsedObject
      * @param array $annotations
      * @return array
      */
-    public function getMethods($annotations = array())
+    public function getMethods($annotations = [])
     {
         $methods = array_filter($this->methods, function ($m) use ($annotations) {
             foreach ($annotations as $a => $v) {

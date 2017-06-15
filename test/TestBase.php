@@ -28,7 +28,7 @@ class TestBase extends PHPUnit\Framework\TestCase
 
     protected function findTests($dir)
     {
-        $files = array();
+        $files = [];
         foreach(new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST)) as $file){
             if(preg_match('/Test\.php$/', $file)) $files []= $file;

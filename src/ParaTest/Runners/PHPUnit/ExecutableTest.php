@@ -21,7 +21,7 @@ abstract class ExecutableTest
      */
     protected $temp;
     protected $fullyQualifiedClassName;
-    protected $pipes = array();
+    protected $pipes = [];
 
     /**
      * Path where the coveragereport is stored
@@ -178,7 +178,7 @@ abstract class ExecutableTest
      * @param array $environmentVariables
      * @return $this
      */
-    public function run($binary, $options = array(), $environmentVariables = array())
+    public function run($binary, $options = [], $environmentVariables = [])
     {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
@@ -207,9 +207,9 @@ abstract class ExecutableTest
      * @param  array  $options Command line options.
      * @return string          Command line.
      */
-    public function command($binary, $options = array())
+    public function command($binary, $options = [])
     {
-        $options = array_merge($this->prepareOptions($options), array('log-junit' => $this->getTempFile()));
+        $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         $options = $this->redirectCoverageOption($options);
         return $this->getCommandString($binary, $options);
     }
@@ -293,7 +293,7 @@ abstract class ExecutableTest
      * @param array $options
      * @return mixed
      */
-    protected function getCommandString($binary, $options = array())
+    protected function getCommandString($binary, $options = [])
     {
         $builder = new ProcessBuilder();
         $builder->setPrefix($binary);

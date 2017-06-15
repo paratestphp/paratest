@@ -58,7 +58,7 @@ abstract class Tester
     protected function displayHelp(InputInterface $input, OutputInterface $output)
     {
         $help = $this->command->getApplication()->find('help');
-        $input = new ArrayInput(array('command_name' => 'paratest'));
+        $input = new ArrayInput(['command_name' => 'paratest']);
         $help->run($input, $output);
         exit(0);
     }

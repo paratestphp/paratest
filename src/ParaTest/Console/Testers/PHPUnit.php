@@ -147,7 +147,7 @@ class PHPUnit extends Tester
         }
 
         if ($path) {
-            $options = array_merge(array('path' => $path), $options);
+            $options = array_merge(['path' => $path], $options);
         }
 
         return $options;

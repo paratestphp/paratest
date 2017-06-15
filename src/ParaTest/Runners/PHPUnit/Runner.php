@@ -11,10 +11,10 @@ class Runner extends BaseRunner
      *
      * @var array
      */
-    protected $tokens = array();
+    protected $tokens = [];
 
 
-    public function __construct($opts = array())
+    public function __construct($opts = [])
     {
         parent::__construct($opts);
         $this->initTokens();
@@ -70,7 +70,7 @@ class Runner extends BaseRunner
             $tokenData = $this->getNextAvailableToken();
             if ($tokenData !== false) {
                 $this->acquireToken($tokenData['token']);
-                $env = array('TEST_TOKEN' => $tokenData['token'], 'UNIQUE_TEST_TOKEN' => $tokenData['unique']) + Habitat::getAll();
+                $env = ['TEST_TOKEN' => $tokenData['token'], 'UNIQUE_TEST_TOKEN' => $tokenData['unique']] + Habitat::getAll();
                 $this->running[$tokenData['token']] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env);
             }
         }
@@ -94,7 +94,7 @@ class Runner extends BaseRunner
         $this->setExitCode($test);
         $test->stop();
         if ($this->options->stopOnFailure && $test->getExitCode() > 0) {
-            $this->pending = array();
+            $this->pending = [];
         }
         if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode()) {
             $errorOutput = $test->getStderr();
@@ -132,9 +132,9 @@ class Runner extends BaseRunner
      */
     protected function initTokens()
     {
-        $this->tokens = array();
+        $this->tokens = [];
         for ($i = 0; $i < $this->options->processes; $i++) {
-            $this->tokens[$i] = array('token' => $i, 'unique' => uniqid($i), 'available' => true);
+            $this->tokens[$i] = ['token' => $i, 'unique' => uniqid($i), 'available' => true];
         }
     }
 

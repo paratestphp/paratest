@@ -18,7 +18,7 @@ class ResultPrinter
      *
      * @var array
      */
-    protected $suites = array();
+    protected $suites = [];
 
     /**
      * @var \ParaTest\Logging\LogInterpreter
@@ -79,7 +79,7 @@ class ResultPrinter
      *
      * @var array
      */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /**
      * Number of columns
