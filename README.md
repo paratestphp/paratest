@@ -2,7 +2,6 @@ ParaTest
 ========
 
 [![Build Status](https://travis-ci.org/brianium/paratest.svg?branch=master)](https://travis-ci.org/brianium/paratest)
-[![HHVM Status](http://hhvm.h4cc.de/badge/brianium/paratest.svg)](http://hhvm.h4cc.de/package/brianium/paratest)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brianium/paratest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brianium/paratest/?branch=master)
 [![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
 
