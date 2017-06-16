@@ -7,7 +7,7 @@ namespace ParaTest\Runners\PHPUnit;
 class SuitePath
 {
     const DEFAULT_SUFFIX = 'Test.php';
-    
+
     /**
      * @var string
      */
@@ -22,7 +22,7 @@ class SuitePath
      * @var string[]s
      */
     protected $excludedPaths;
-    
+
     public function __construct($path, $excludedPaths, $suffix)
     {
         if (empty($suffix)) {
