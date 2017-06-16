@@ -169,9 +169,9 @@ class Options
      */
     protected static function vendorDir()
     {
-        $vendor = dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'vendor';
+        $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
         if (!file_exists($vendor)) {
-            $vendor = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+            $vendor = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
         }
 
         return $vendor;
