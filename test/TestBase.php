@@ -64,11 +64,8 @@ class TestBase extends PHPUnit\Framework\TestCase
      * @param mixed $args 0 or more arguments passed in the function
      * @return mixed returns what the object's method call will return
      */
-    public function call($object, $methodName, $args = null)
+    public function call($object, $methodName, ...$args)
     {
-        $args = func_get_args();
-        array_shift($args);
-        array_shift($args);
         return self::_callMethod($object, $methodName, $args);
     }
 
@@ -79,11 +76,8 @@ class TestBase extends PHPUnit\Framework\TestCase
      * @param mixed $args 0 or more arguments passed in the function
      * @return mixed returns what the object's method call will return
      */
-    public function callStatic($class, $methodName, $args = null)
+    public function callStatic($class, $methodName, ...$args)
     {
-        $args = func_get_args();
-        array_shift($args);
-        array_shift($args);
         return self::_callMethod($class, $methodName, $args);
     }
 
