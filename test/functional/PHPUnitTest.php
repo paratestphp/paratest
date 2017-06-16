@@ -4,15 +4,15 @@ class PHPUnitTest extends FunctionalTestBase
 {
     public function testWithJustBootstrap()
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests', array(
+        $this->assertTestsPassed($this->invokeParatest('passing-tests', [
             'bootstrap' => BOOTSTRAP
-        )));
+        ]));
     }
 
     public function testWithBootstrapThatDoesNotExist()
     {
         $bootstrap = '/fileThatDoesNotExist.php';
-        $proc = $this->invokeParatest('passing-tests', array('bootstrap' => $bootstrap));
+        $proc = $this->invokeParatest('passing-tests', ['bootstrap' => $bootstrap]);
         $errors = $proc->getErrorOutput();
         $this->assertEquals(1, $proc->getExitCode(), 'Unexpected exit code');
         $this->assertContains('[RuntimeException]', $errors, 'Expected exception name not found in output');
@@ -21,17 +21,17 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testWithJustConfiguration()
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests', array(
+        $this->assertTestsPassed($this->invokeParatest('passing-tests', [
             'configuration' => PHPUNIT_CONFIGURATION
-        )));
+        ]));
     }
 
     public function testWithWrapperRunner()
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests', array(
+        $this->assertTestsPassed($this->invokeParatest('passing-tests', [
             'configuration' => PHPUNIT_CONFIGURATION,
             'runner' => 'WrapperRunner'
-        )));
+        ]));
     }
 
     public function testWithCustomRunner()
@@ -40,11 +40,11 @@ class PHPUnitTest extends FunctionalTestBase
 
         $this->invokeParatest(
             'passing-tests',
-            array(
+            [
                 'configuration' => PHPUNIT_CONFIGURATION,
                 'runner'        => 'EmptyRunnerStub'
-            ),
-            array($cb, 'callback')
+            ],
+            [$cb, 'callback']
         );
         $this->assertEquals('EXECUTED', $cb->getBuffer());
     }
@@ -52,7 +52,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithColorsGreenBar()
     {
         $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
-            array('bootstrap' => BOOTSTRAP, 'colors'));
+            ['bootstrap' => BOOTSTRAP, 'colors']);
         $this->assertContains(
             "[30;42m[2KOK",
             $proc->getOutput()
@@ -62,7 +62,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithColorsRedBar()
     {
         $proc = $this->invokeParatest('failing-tests/UnitTestWithErrorTest.php',
-            array('bootstrap' => BOOTSTRAP, 'colors'));
+            ['bootstrap' => BOOTSTRAP, 'colors']);
         $this->assertContains(
             "[37;41m[2KFAILURES",
             $proc->getOutput()
@@ -72,21 +72,21 @@ class PHPUnitTest extends FunctionalTestBase
     public function testParatestEnvironmentVariable()
     {
         $this->assertTestsPassed($this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
-            array('bootstrap' => BOOTSTRAP)
+            ['bootstrap' => BOOTSTRAP]
         ));
     }
 
     public function testParatestEnvironmentVariableWithWrapperRunner()
     {
         $this->assertTestsPassed($this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
-            array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner')
+            ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner']
         ));
     }
 
     public function testParatestEnvironmentVariableWithWrapperRunnerandWithoutTestTokens()
     {
         $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
-            array('bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0));
+            ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0]);
         $this->assertRegexp('/Failures: 1/', $proc->getOutput());
     }
 
@@ -99,28 +99,28 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithConfigurationThatDoesNotExist()
     {
         $proc = $this->invokeParatest('passing-tests',
-            array('configuration' => FIXTURES . DS . 'phpunit.xml.disto'));
+            ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']);
         $this->assertRegExp('/Could not read ".*phpunit.xml.disto"./', $proc->getOutput());
     }
 
     public function testFunctionalWithBootstrap()
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests',
-            array('bootstrap' => BOOTSTRAP, 'functional')
+            ['bootstrap' => BOOTSTRAP, 'functional']
         ));
     }
 
     public function testFunctionalWithConfiguration()
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests',
-            array('configuration' => PHPUNIT_CONFIGURATION, 'functional')
+            ['configuration' => PHPUNIT_CONFIGURATION, 'functional']
         ));
     }
 
     public function testWithBootstrapAndProcessesSwitch()
     {
         $proc = $this->invokeParatest('passing-tests',
-            array('bootstrap' => BOOTSTRAP, 'processes' => 6));
+            ['bootstrap' => BOOTSTRAP, 'processes' => 6]);
         $this->assertRegExp('/Running phpunit in 6 processes/', $proc->getOutput());
         $this->assertTestsPassed($proc);
     }
@@ -128,7 +128,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithBootstrapAndManuallySpecifiedPHPUnit()
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests',
-            array('bootstrap' => BOOTSTRAP, 'phpunit' => PHPUNIT)
+            ['bootstrap' => BOOTSTRAP, 'phpunit' => PHPUNIT]
         ));
     }
 
@@ -142,7 +142,7 @@ class PHPUnitTest extends FunctionalTestBase
     {
         chdir(PARATEST_ROOT);
         $this->assertTestsPassed($this->invokeParatest('passing-tests',
-            array('path' => 'test/fixtures/passing-tests')
+            ['path' => 'test/fixtures/passing-tests']
         ));
     }
 
@@ -150,9 +150,9 @@ class PHPUnitTest extends FunctionalTestBase
     {
         chdir(PARATEST_ROOT);
         $output = FIXTURES . DS . 'logs' . DS . 'functional-directory.xml';
-        $proc = $this->invokeParatest('passing-tests', array(
+        $proc = $this->invokeParatest('passing-tests', [
             'log-junit' => $output
-        ));
+        ]);
         $this->assertTestsPassed($proc);
         $this->assertTrue(file_exists($output));
         if(file_exists($output)) unlink($output);
@@ -162,7 +162,7 @@ class PHPUnitTest extends FunctionalTestBase
     {
         chdir(PARATEST_ROOT);
         $proc = $this->invokeParatest('passing-tests',
-            array('path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php'));
+            ['path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php']);
         $this->assertTestsPassed($proc, 1, 1);
     }
 
@@ -170,10 +170,10 @@ class PHPUnitTest extends FunctionalTestBase
     {
         chdir(PARATEST_ROOT);
         $output = FIXTURES . DS . 'logs' . DS . 'functional-file.xml';
-        $proc = $this->invokeParatest('passing-tests/GroupsTest.php', array(
+        $proc = $this->invokeParatest('passing-tests/GroupsTest.php', [
             'log-junit' => $output,
             'bootstrap' => BOOTSTRAP
-        ));
+        ]);
         $this->assertTestsPassed($proc, 5, 5);
         $this->assertTrue(file_exists($output));
         if(file_exists($output)) unlink($output);
@@ -181,25 +181,25 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testSuccessfulRunHasExitCode0()
     {
-        $proc = $this->invokeParatest('passing-tests/GroupsTest.php', array(
+        $proc = $this->invokeParatest('passing-tests/GroupsTest.php', [
             'bootstrap' => BOOTSTRAP
-        ));
+        ]);
         $this->assertEquals(0, $proc->getExitCode());
     }
 
     public function testFailedRunHasExitCode1()
     {
-        $proc = $this->invokeParatest('failing-tests/FailingTest.php',array(
+        $proc = $this->invokeParatest('failing-tests/FailingTest.php',[
             'bootstrap' => BOOTSTRAP
-        ));
+        ]);
         $this->assertEquals(1, $proc->getExitCode());
     }
 
     public function testRunWithErrorsHasExitCode2()
     {
-        $proc = $this->invokeParatest('failing-tests/UnitTestWithErrorTest.php', array(
+        $proc = $this->invokeParatest('failing-tests/UnitTestWithErrorTest.php', [
             'bootstrap' => BOOTSTRAP
-        ));
+        ]);
         $this->assertEquals(2, $proc->getExitCode());
     }
 
@@ -210,9 +210,9 @@ class PHPUnitTest extends FunctionalTestBase
      */
     public function testRunWithFatalParseErrorsHasExitCode255or1()
     {
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalParseErrorTest.php', array(
+        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalParseErrorTest.php', [
             'bootstrap' => BOOTSTRAP
-        ));
+        ]);
         $this->assertTrue(in_array($proc->getExitCode(), [1, 255], true));
     }
 
@@ -221,9 +221,9 @@ class PHPUnitTest extends FunctionalTestBase
         if (PHP_VERSION_ID >= 70000) {
             $this->markTestSkipped('fatals are handled like normal exceptions with php7');
         }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
+        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
             'bootstrap' => BOOTSTRAP
-        ));
+        ]);
         $this->assertEquals(1, $proc->getExitCode());
     }
 
@@ -232,9 +232,9 @@ class PHPUnitTest extends FunctionalTestBase
         if (PHP_VERSION_ID >= 70000) {
             $this->markTestSkipped('fatals are handled like normal exceptions with php7');
         }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
+        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
             'bootstrap' => BOOTSTRAP
-        ));
+        ]);
         $this->assertContains('Call to undefined function inexistent', $proc->getErrorOutput());
     }
 
@@ -243,21 +243,21 @@ class PHPUnitTest extends FunctionalTestBase
         if (PHP_VERSION_ID >= 70000) {
             $this->markTestSkipped('fatals are handled like normal exceptions with php7');
         }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', array(
+        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
             'bootstrap' => BOOTSTRAP,
             'runner' => 'WrapperRunner'
-        ));
+        ]);
         $this->assertContains('Call to undefined function inexistent', $proc->getErrorOutput());
     }
 
     public function testStopOnFailurePreventsStartingFurtherTestsAfterFailure()
     {
-        $proc = $this->invokeParatest('failing-tests/StopOnFailureTest.php', array(
+        $proc = $this->invokeParatest('failing-tests/StopOnFailureTest.php', [
             'bootstrap' => BOOTSTRAP,
             'stop-on-failure' => '',
             'f' => '',
             'p' => '1'
-        ));
+        ]);
         $results = $proc->getOutput();
         $this->assertContains('Tests: 2,', $results);     // The suite actually has 4 tests
         $this->assertContains('Failures: 1,', $results);  // The suite actually has 2 failing tests
@@ -266,13 +266,13 @@ class PHPUnitTest extends FunctionalTestBase
     public function testFullyConfiguredRun()
     {
         $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';
-        $proc = $this->invokeParatest('passing-tests', array(
+        $proc = $this->invokeParatest('passing-tests', [
             'bootstrap' => BOOTSTRAP,
             'phpunit' => PHPUNIT,
             'f' => '',
             'p' => '6',
             'log-junit' => $output
-        ));
+        ]);
         $this->assertTestsPassed($proc);
         $results = $proc->getOutput();
         $this->assertRegExp('/Running phpunit in 6 processes/', $results);
@@ -284,14 +284,14 @@ class PHPUnitTest extends FunctionalTestBase
     public function testUsingDefaultLoadedConfiguration()
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests',
-            array('functional')
+            ['functional']
         ));
     }
 
     public function testEachTestRunsExactlyOnceOnChainDependencyOnFunctionalMode()
     {
         $proc = $this->invokeParatest('passing-tests/DependsOnChain.php',
-            array('bootstrap' => BOOTSTRAP, 'functional')
+            ['bootstrap' => BOOTSTRAP, 'functional']
         );
         $this->assertTestsPassed($proc, 5, 5);
     }
@@ -299,7 +299,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testEachTestRunsExactlyOnceOnSameDependencyOnFunctionalMode()
     {
         $proc = $this->invokeParatest('passing-tests/DependsOnSame.php',
-            array('bootstrap' => BOOTSTRAP, 'functional')
+            ['bootstrap' => BOOTSTRAP, 'functional']
         );
         $this->assertTestsPassed($proc, 3, 3);
     }
@@ -307,31 +307,31 @@ class PHPUnitTest extends FunctionalTestBase
     public function testFunctionalModeEachTestCalledOnce()
     {
         $proc = $this->invokeParatest("passing-tests/FunctionalModeEachTestCalledOnce.php",
-            array('bootstrap' => BOOTSTRAP, 'functional')
+            ['bootstrap' => BOOTSTRAP, 'functional']
         );
         $this->assertTestsPassed($proc, 2, 2);
     }
 
     public function setsCoveragePhpDataProvider()
     {
-        return array(
-            array(
-                array('coverage-html' => 'wayne'),
+        return [
+            [
+                ['coverage-html' => 'wayne'],
                 ''
-            ),
-            array(
-                array('coverage-clover' => 'wayne'),
+            ],
+            [
+                ['coverage-clover' => 'wayne'],
                 ''
-            ),
-            array(
-                array('coverage-php' => 'notWayne'),
+            ],
+            [
+                ['coverage-php' => 'notWayne'],
                 'notWayne'
-            ),
-            array(
-                array('coverage-clover' => 'wayne', 'coverage-php' => 'notWayne'),
+            ],
+            [
+                ['coverage-clover' => 'wayne', 'coverage-php' => 'notWayne'],
                 'notWayne'
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -345,7 +345,7 @@ class PHPUnitTest extends FunctionalTestBase
         $phpUnit = new \ParaTest\Console\Testers\PHPUnit();
         $c = new \ParaTest\Console\Commands\ParaTestCommand($phpUnit);
 
-        $input = new \Symfony\Component\Console\Input\ArrayInput(array(), $c->getDefinition());
+        $input = new \Symfony\Component\Console\Input\ArrayInput([], $c->getDefinition());
         foreach ($options as $key => $value) {
             $input->setOption($key, $value);
         }

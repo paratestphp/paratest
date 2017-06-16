@@ -4,7 +4,7 @@ class SuiteLoaderTest extends \TestBase
 {
     public function testConstructor()
     {
-        $options = new Options(array('group' => 'group1'));
+        $options = new Options(['group' => 'group1']);
         $loader = new SuiteLoader($options);
         $this->assertEquals($options, $this->getObjectValue($loader, 'options'));
     }
@@ -20,7 +20,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testOptionsMustBeInstanceOfOptionsIfNotNull()
     {
-        $loader = new SuiteLoader(array('one' => 'two', 'three' => 'four'));
+        $loader = new SuiteLoader(['one' => 'two', 'three' => 'four']);
     }
 
     /**
@@ -45,7 +45,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFileFromConfig()
     {
         $options = new Options(
-            array('configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => 'ParaTest Fixtures')
+            ['configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => 'ParaTest Fixtures']
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -58,7 +58,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag()
     {
         $options = new Options(
-            array('configuration' => $this->fixture('phpunit-excluded-including-file.xml'), 'testsuite' => 'ParaTest Fixtures')
+            ['configuration' => $this->fixture('phpunit-excluded-including-file.xml'), 'testsuite' => 'ParaTest Fixtures']
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -71,7 +71,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag()
     {
         $options = new Options(
-            array('configuration' => $this->fixture('phpunit-excluded-including-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
+            ['configuration' => $this->fixture('phpunit-excluded-including-dir.xml'), 'testsuite' => 'ParaTest Fixtures']
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -84,7 +84,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory()
     {
         $options = new Options(
-            array('configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'), 'testsuite' => 'ParaTest Fixtures')
+            ['configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'), 'testsuite' => 'ParaTest Fixtures']
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -97,7 +97,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromConfig()
     {
         $options = new Options(
-            array('configuration' => $this->fixture('phpunit-multifile.xml'), 'testsuite' => 'ParaTest Fixtures')
+            ['configuration' => $this->fixture('phpunit-multifile.xml'), 'testsuite' => 'ParaTest Fixtures']
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -109,7 +109,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadTestsuiteWithDirectory()
     {
-        $options = new Options(array('configuration' => $this->fixture('phpunit-passing.xml'), 'testsuite' => 'ParaTest Fixtures'));
+        $options = new Options(['configuration' => $this->fixture('phpunit-passing.xml'), 'testsuite' => 'ParaTest Fixtures']);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -120,7 +120,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadTestsuiteWithDirectories()
     {
-        $options = new Options(array('configuration' => $this->fixture('phpunit-multidir.xml'), 'testsuite' => 'ParaTest Fixtures'));
+        $options = new Options(['configuration' => $this->fixture('phpunit-multidir.xml'), 'testsuite' => 'ParaTest Fixtures']);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -133,7 +133,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteWithFilesDirsMixed()
     {
         $options = new Options(
-            array('configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => 'ParaTest Fixtures')
+            ['configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => 'ParaTest Fixtures']
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -146,7 +146,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteWithNestedSuite()
     {
         $options = new Options(
-            array('configuration' => $this->fixture('phpunit-files-dirs-mix-nested.xml'), 'testsuite' => 'ParaTest Fixtures')
+            ['configuration' => $this->fixture('phpunit-files-dirs-mix-nested.xml'), 'testsuite' => 'ParaTest Fixtures']
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -159,7 +159,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadTestsuiteWithDuplicateFilesDirMixed()
     {
-        $options = new Options(array('configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'), 'testsuite' => 'ParaTest Fixtures'));
+        $options = new Options(['configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'), 'testsuite' => 'ParaTest Fixtures']);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -170,7 +170,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadSuiteFromConfig()
     {
-        $options = new Options(array('configuration' => $this->fixture('phpunit-passing.xml')));
+        $options = new Options(['configuration' => $this->fixture('phpunit-passing.xml')]);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -181,7 +181,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadSuiteFromConfigWithMultipleDirs()
     {
-        $options = new Options(array('configuration' => $this->fixture('phpunit-multidir.xml')));
+        $options = new Options(['configuration' => $this->fixture('phpunit-multidir.xml')]);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -197,7 +197,7 @@ class SuiteLoaderTest extends \TestBase
      */
     public function testLoadSuiteFromConfigWithBadSuitePath()
     {
-        $options = new Options(array('configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml')));
+        $options = new Options(['configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml')]);
         $loader = new SuiteLoader($options);
         $loader->load();
     }
@@ -275,7 +275,7 @@ class SuiteLoaderTest extends \TestBase
 
     public function testGetTestMethodsOnlyReturnsMethodsOfGroupIfOptionIsSpecified()
     {
-        $options = new Options(array('group' => 'group1'));
+        $options = new Options(['group' => 'group1']);
         $loader = new SuiteLoader($options);
         $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
         $loader->load($groupsTest);

@@ -23,7 +23,7 @@ class Configuration
      */
     protected $xml;
 
-    protected $availableNodes = array('exclude', 'file', 'directory', 'testsuite');
+    protected $availableNodes = ['exclude', 'file', 'directory', 'testsuite'];
 
     /**
      * A collection of datastructures
@@ -32,7 +32,7 @@ class Configuration
      *
      * @var array
      */
-    protected $suites = array();
+    protected $suites = [];
 
     public function __construct($path)
     {
@@ -78,7 +78,7 @@ class Configuration
         if (!$this->xml) {
             return null;
         }
-        $suites = array();
+        $suites = [];
         $nodes  = $this->xml->xpath('//testsuites/testsuite');
 
         while (list(, $node) = each($nodes)) {
@@ -99,8 +99,8 @@ class Configuration
     {
         $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
 
-        $suites        = array();
-        $excludedPaths = array();
+        $suites        = [];
+        $excludedPaths = [];
         while (list(, $node) = each($nodes)) {
             foreach ($this->availableNodes as $nodeName) {
                 foreach ($node->{$nodeName} as $nodeContent) {
@@ -161,11 +161,11 @@ class Configuration
         $real = realpath($this->getConfigDir().$path);
 
         if ($real !== false) {
-            return array($real);
+            return [$real];
         }
 
         if ($this->isGlobRequired($path)) {
-            $paths = array();
+            $paths = [];
             foreach (glob($this->getConfigDir().$path, GLOB_ONLYDIR) as $path) {
                 if (($path = realpath($path)) !== false) {
                     $paths[] = $path;

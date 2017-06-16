@@ -85,7 +85,7 @@ class Parser
      */
     private function getMethods()
     {
-        $tests = array();
+        $tests = [];
         $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
             $hasTestName = preg_match(self::$testName, $method->getName());

@@ -22,7 +22,7 @@ class ExecutableTestTest extends \TestBase
 
     public function testGetCommandStringIncludesOptions()
     {
-        $options = array('bootstrap' => 'test/bootstrap.php');
+        $options = ['bootstrap' => 'test/bootstrap.php'];
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
@@ -31,7 +31,7 @@ class ExecutableTestTest extends \TestBase
 
     public function testCommandRedirectsCoverage()
     {
-        $options = array('a' => 'b', 'coverage-php' => 'target_html', 'coverage-php' => 'target.php');
+        $options = ['a' => 'b', 'coverage-php' => 'target_html', 'coverage-php' => 'target.php'];
         $binary = '/usr/bin/phpunit';
 
         $command = $this->executableTestChild->command($binary, $options);
@@ -41,9 +41,9 @@ class ExecutableTestTest extends \TestBase
 
     public function testGetCommandStringDoesNotIncludeEnvironmentVariablesToKeepCompatibilityWithWindows()
     {
-        $options = array('bootstrap' => 'test/bootstrap.php');
+        $options = ['bootstrap' => 'test/bootstrap.php'];
         $binary = '/usr/bin/phpunit';
-        $environmentVariables = array('APPLICATION_ENVIRONMENT_VAR' => 'abc');
+        $environmentVariables = ['APPLICATION_ENVIRONMENT_VAR' => 'abc'];
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options, $environmentVariables);
 
         $this->assertEquals("'/usr/bin/phpunit' '--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'", $command);
@@ -51,7 +51,7 @@ class ExecutableTestTest extends \TestBase
 
     public function testGetCommandStringIncludesTheClassName()
     {
-        $options = array();
+        $options = [];
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
@@ -60,7 +60,7 @@ class ExecutableTestTest extends \TestBase
 
     public function testHandleEnvironmentVariablesAssignsToken()
     {
-        $environmentVariables = array('TEST_TOKEN' => 3, 'APPLICATION_ENVIRONMENT_VAR' => 'abc');
+        $environmentVariables = ['TEST_TOKEN' => 3, 'APPLICATION_ENVIRONMENT_VAR' => 'abc'];
         $this->call($this->executableTestChild, 'handleEnvironmentVariables', $environmentVariables);
         $this->assertEquals(3, $this->getObjectValue($this->executableTestChild, 'token'));
     }

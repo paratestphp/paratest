@@ -85,17 +85,17 @@ class WorkerTest extends \TestBase
         $worker = new Worker();
         $this->setPerReflection($worker, 'isRunning', false);
         $this->setPerReflection($worker, 'proc', $this->createSomeClosedProcess());
-        $this->setPerReflection($worker, 'pipes', array(0 => true));
+        $this->setPerReflection($worker, 'pipes', [0 => true]);
         $this->assertFalse($worker->isCrashed());
     }
 
     private function createSomeClosedProcess()
     {
-        $descriptorspec = array(
-            0 => array("pipe", "r"),
-            1 => array("pipe", "w"),
-            2 => array("pipe", "w")
-        );
+        $descriptorspec = [
+            0 => ["pipe", "r"],
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"]
+        ];
 
         $proc = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
         $running = true;
@@ -136,11 +136,11 @@ class WorkerTest extends \TestBase
         $this->assertJUnitLogIsValid($testLog2);
     }
 
-    protected static $descriptorspec = array(
-       0 => array("pipe", "r"),
-       1 => array("pipe", "w"),
-       2 => array("pipe", "w")
-    );
+    protected static $descriptorspec = [
+       0 => ["pipe", "r"],
+       1 => ["pipe", "w"],
+       2 => ["pipe", "w"]
+    ];
 
     private function getCommand($testFile, $logFile)
     {

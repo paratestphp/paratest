@@ -43,14 +43,14 @@ class Writer
      *
      * @var array
      */
-    protected static $defaultSuite = array(
+    protected static $defaultSuite = [
                                         'tests' => 0,
                                         'assertions' => 0,
                                         'failures' => 0,
                                         'skipped' => 0,
                                         'errors' => 0,
                                         'time' => 0
-                                    );
+                                    ];
 
     public function __construct(LogInterpreter $interpreter, $name = '')
     {
@@ -201,7 +201,7 @@ class Writer
             $result['errors'] += $suite->errors;
             $result['time'] += $suite->time;
             return $result;
-        }, array_merge(array('name' => $this->name), self::$defaultSuite));
+        }, array_merge(['name' => $this->name], self::$defaultSuite));
     }
 
     /**

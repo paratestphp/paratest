@@ -63,9 +63,9 @@ class Options
      *
      * @var array
      */
-    protected $annotations = array();
+    protected $annotations = [];
 
-    public function __construct($opts = array())
+    public function __construct($opts = [])
     {
         foreach (self::defaults() as $opt => $value) {
             $opts[$opt] = isset($opts[$opt]) ? $opts[$opt] : $value;
@@ -90,10 +90,10 @@ class Options
         // to phpunit)
         $this->groups = isset($opts['group']) && $opts['group'] !== ""
                       ? explode(",", $opts['group'])
-                      : array();
+                      : [];
         $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ""
                              ? explode(",", $opts['exclude-group'])
-                             : array();
+                             : [];
 
         if (strlen($opts['filter']) > 0 && !$this->functional) {
             throw new \RuntimeException("Option --filter is not implemented for non functional mode");
@@ -122,7 +122,7 @@ class Options
      */
     protected static function defaults()
     {
-        return array(
+        return [
             'processes' => 5,
             'path' => '',
             'phpunit' => static::phpunit(),
@@ -134,7 +134,7 @@ class Options
             'testsuite' => '',
             'max-batch-size' => 0,
             'filter' => null
-        );
+        ];
     }
 
     /**
@@ -185,7 +185,7 @@ class Options
      */
     protected function filterOptions($options)
     {
-        $filtered = array_diff_key($options, array(
+        $filtered = array_diff_key($options, [
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
@@ -197,7 +197,7 @@ class Options
             'testsuite' => $this->testsuite,
             'max-batch-size' => $this->maxBatchSize,
             'filter' => $this->filter
-        ));
+        ]);
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
         }
@@ -235,7 +235,7 @@ class Options
         }
 
         $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        $suffixes = array('phpunit.xml', 'phpunit.xml.dist');
+        $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
             if ($this->isFile($path . $suffix)) {
@@ -251,7 +251,7 @@ class Options
      */
     protected function initAnnotations()
     {
-        $annotatedOptions = array('group');
+        $annotatedOptions = ['group'];
         foreach ($this->filtered as $key => $value) {
             if (array_search($key, $annotatedOptions) !== false) {
                 $this->annotations[$key] = $value;

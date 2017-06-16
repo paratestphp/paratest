@@ -15,12 +15,12 @@ class RunnerIntegrationTest extends \TestBase
     {
         $this->skipIfCodeCoverageNotEnabled();
 
-        $this->options = array(
+        $this->options = [
             'path' => FIXTURES . DS . 'failing-tests',
             'phpunit' => PHPUNIT,
             'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
             'bootstrap' => BOOTSTRAP
-        );
+        ];
         if (ParaTestCommand::isWhitelistSupported()) {
             $this->options['whitelist'] = FIXTURES . DS . 'failing-tests';
         }

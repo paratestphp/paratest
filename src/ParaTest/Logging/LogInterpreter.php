@@ -12,7 +12,7 @@ class LogInterpreter extends MetaProvider
      *
      * @var array
      */
-    protected $readers = array();
+    protected $readers = [];
 
     /**
      * Reset the array pointer of the internal
@@ -69,7 +69,7 @@ class LogInterpreter extends MetaProvider
      */
     public function getCases()
     {
-        $cases = array();
+        $cases = [];
         while (list( , $reader) = each($this->readers)) {
             foreach ($reader->getSuites() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
@@ -110,7 +110,7 @@ class LogInterpreter extends MetaProvider
      */
     public function flattenCases()
     {
-        $dict = array();
+        $dict = [];
         foreach ($this->getCases() as $case) {
             if (!isset($dict[$case->file])) {
                 $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0, 0);
@@ -161,7 +161,7 @@ class LogInterpreter extends MetaProvider
      */
     private function mergeMessages($method)
     {
-        $messages = array();
+        $messages = [];
         foreach ($this->readers as $reader) {
             $messages = array_merge($messages, $reader->$method());
         }

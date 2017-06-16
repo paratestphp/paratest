@@ -7,14 +7,14 @@ class OptionsTest extends \TestBase
 
     public function setUp()
     {
-        $this->unfiltered = array(
+        $this->unfiltered = [
             'processes' => 5,
             'path' => '/path/to/tests',
             'phpunit' => 'phpunit',
             'functional' => true,
             'group' => 'group1',
             'bootstrap' => '/path/to/bootstrap'
-        );
+        ];
         $this->options = new Options($this->unfiltered);
         $this->cleanUpConfigurations();
     }
@@ -33,7 +33,7 @@ class OptionsTest extends \TestBase
 
     public function testAnnotationsDefaultsToEmptyArray()
     {
-        $options = new Options(array());
+        $options = new Options([]);
         $this->assertEmpty($options->annotations);
     }
 

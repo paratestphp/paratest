@@ -23,7 +23,7 @@ class GroupsTest extends PHPUnit\FrameWork\TestCase
      */
     public function testArrayLength()
     {
-        $values = array(1, 3, 4, 7);
+        $values = [1, 3, 4, 7];
         $this->assertEquals(4, count($values));
     }
 

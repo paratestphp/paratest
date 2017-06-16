@@ -12,9 +12,9 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
 
     public function dataProviderNumeric50()
     {
-        $result = array();
+        $result = [];
         for ($i = 0; $i < 50; $i++) {
-            $result[] = array($i, $i);
+            $result[] = [$i, $i];
         }
 
         return $result;
@@ -30,10 +30,10 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
 
     public function dataProviderNamed50()
     {
-        $result = array();
+        $result = [];
         for ($i = 0; $i < 50; $i++) {
             $name = "name_of_test_" . $i;
-            $result[$name] = array($i, $i);
+            $result[$name] = [$i, $i];
         }
 
         return $result;
@@ -49,9 +49,9 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
 
     public function dataProviderNumeric1000()
     {
-        $result = array();
+        $result = [];
         for ($i = 0; $i < 1000; $i++) {
-            $result[] = array($i, $i);
+            $result[] = [$i, $i];
         }
 
         return $result;

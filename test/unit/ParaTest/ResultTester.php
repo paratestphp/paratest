@@ -25,7 +25,7 @@ abstract class ResultTester extends \TestBase
     public function getSuiteWithResult($result, $methodCount)
     {
         $result = FIXTURES . DS . 'results' . DS . $result;
-        $functions = array();
+        $functions = [];
         for ($i = 0; $i < $methodCount; $i++) {
             $functions[] = $this->mockFunction($i);
         }

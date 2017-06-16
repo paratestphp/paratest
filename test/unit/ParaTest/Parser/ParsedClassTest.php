@@ -7,7 +7,7 @@ class ParsedClassTest extends \TestBase
 
     public function setUp()
     {
-        $this->methods = array(
+        $this->methods = [
             new ParsedFunction(
                 "/**
               * @group group1
@@ -21,7 +21,7 @@ class ParsedClassTest extends \TestBase
                 'public', 'testFunction2'
             ),
             new ParsedFunction('', 'public', 'testFunction3')
-        );
+        ];
         $this->class = new ParsedClass('', 'MyTestClass', '', $this->methods);
     }
 
@@ -50,14 +50,14 @@ class ParsedClassTest extends \TestBase
               */",
             'public', 'testFunction2'
         );
-        $annotatedClass = new ParsedClass('', 'MyTestClass', '', array($goodMethod, $goodMethod2, $badMethod));
-        $methods = $annotatedClass->getMethods(array('group' => 'group1,group2'));
-        $this->assertEquals(array($goodMethod, $goodMethod2), $methods);
+        $annotatedClass = new ParsedClass('', 'MyTestClass', '', [$goodMethod, $goodMethod2, $badMethod]);
+        $methods = $annotatedClass->getMethods(['group' => 'group1,group2']);
+        $this->assertEquals([$goodMethod, $goodMethod2], $methods);
     }
 
     public function testGetMethodsExceptsAdditionalAnnotationFilter()
     {
-        $group1 = $this->class->getMethods(array('group' => 'group1'));
+        $group1 = $this->class->getMethods(['group' => 'group1']);
         $this->assertEquals(1, sizeof($group1));
         $this->assertEquals($this->methods[0], $group1[0]);
     }

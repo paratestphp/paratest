@@ -25,7 +25,7 @@ class LongRunningTest extends PHPUnit\Framework\TestCase
     public function testThree()
     {
         sleep(5);
-        $elems = array(1,2,3,4,5);
+        $elems = [1,2,3,4,5];
         $this->assertEquals(5, sizeof($elems));
     }
 }

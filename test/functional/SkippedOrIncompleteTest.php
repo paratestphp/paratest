@@ -20,10 +20,10 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
     public function testSkippedInFunctionalMode()
     {
-        $proc = $this->invoker->execute(array(
+        $proc = $this->invoker->execute([
             "functional" => null,
             "filter"     => "testSkipped"
-        ));
+        ]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
                   . "Tests: 1, Assertions: 0, Incomplete: 1.";
@@ -34,10 +34,10 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
     public function testIncompleteInFunctionalMode()
     {
-        $proc = $this->invoker->execute(array(
+        $proc = $this->invoker->execute([
             "functional" => null,
             "filter"     => "testIncomplete"
-        ));
+        ]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
                   . "Tests: 1, Assertions: 0, Incomplete: 1.";
@@ -48,11 +48,11 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
     public function testDataProviderWithSkippedInFunctionalMode()
     {
-        $proc = $this->invoker->execute(array(
+        $proc = $this->invoker->execute([
             "functional"     => null,
             "max-batch-size" => 50,
             "filter"         => "testDataProviderWithSkipped"
-        ));
+        ]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
                   . "Tests: 100, Assertions: 33, Incomplete: 67.";

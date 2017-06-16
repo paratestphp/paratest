@@ -4,9 +4,9 @@ class SkippedAndIncompleteDataProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function dataProviderNumeric100()
     {
-        $result = array();
+        $result = [];
         for ($i = 0; $i < 100; $i++) {
-            $result[] = array($i, $i);
+            $result[] = [$i, $i];
         }
 
         return $result;

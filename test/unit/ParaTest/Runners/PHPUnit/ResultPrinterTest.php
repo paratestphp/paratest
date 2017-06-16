@@ -25,7 +25,7 @@ class ResultPrinterTest extends ResultTester
 
     public function testConstructor()
     {
-        $this->assertEquals(array(), $this->getObjectValue($this->printer, 'suites'));
+        $this->assertEquals([], $this->getObjectValue($this->printer, 'suites'));
         $this->assertInstanceOf(
             'ParaTest\\Logging\\LogInterpreter',
             $this->getObjectValue($this->printer, 'results')
@@ -34,16 +34,16 @@ class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldaddTest()
     {
-        $suite = new Suite('/path/to/ResultSuite.php', array());
+        $suite = new Suite('/path/to/ResultSuite.php', []);
 
         $this->printer->addTest($suite);
 
-        $this->assertEquals(array($suite), $this->getObjectValue($this->printer, 'suites'));
+        $this->assertEquals([$suite], $this->getObjectValue($this->printer, 'suites'));
     }
 
     public function testAddTestReturnsSelf()
     {
-        $suite = new Suite('/path/to/ResultSuite.php', array());
+        $suite = new Suite('/path/to/ResultSuite.php', []);
 
         $self = $this->printer->addTest($suite);
 
@@ -60,7 +60,7 @@ class ResultPrinterTest extends ResultTester
 
     public function testStartSetsWidthAndMaxColumn()
     {
-        $funcs = array();
+        $funcs = [];
         for($i = 0; $i < 120; $i++)
             $funcs[] = new ParsedFunction('doc', 'public', 'function' . $i);
         $suite = new Suite('/path', $funcs);
@@ -75,7 +75,7 @@ class ResultPrinterTest extends ResultTester
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
     {
         file_put_contents('myconfig.xml', '<root />');
-        $options = new Options(array('configuration' => 'myconfig.xml'));
+        $options = new Options(['configuration' => 'myconfig.xml']);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\nConfiguration read from %s\n\n",
                             $options->phpunit,
@@ -85,7 +85,7 @@ class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithFunctionalMode()
     {
-        $options = new Options(array('functional' => true));
+        $options = new Options(['functional' => true]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is ON.\n\n", $options->phpunit);
         $this->assertStringStartsWith($expected, $contents);
@@ -93,7 +93,7 @@ class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess()
     {
-        $options = new Options(array('processes' => 1));
+        $options = new Options(['processes' => 1]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
         $this->assertStringStartsWith($expected, $contents);
@@ -101,10 +101,10 @@ class ResultPrinterTest extends ResultTester
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases()
     {
-        $suite = new Suite('/path', array(
+        $suite = new Suite('/path', [
             new ParsedFunction('doc', 'public', 'funcOne'),
             new ParsedFunction('doc', 'public', 'funcTwo')
-        ));
+        ]);
         $this->printer->addTest($suite);
         $this->assertEquals(2, $this->printer->getTotalCases());
     }

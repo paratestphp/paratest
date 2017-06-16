@@ -31,7 +31,7 @@ abstract class BaseRunner
      *
      * @var array
      */
-    protected $pending = array();
+    protected $pending = [];
 
     /**
      * A collection of ExecutableTest objects that have processes
@@ -39,7 +39,7 @@ abstract class BaseRunner
      *
      * @var array
      */
-    protected $running = array();
+    protected $running = [];
 
     /**
      * A tallied exit code that returns the highest exit
@@ -57,7 +57,7 @@ abstract class BaseRunner
     protected $coverage = null;
 
 
-    public function __construct($opts = array())
+    public function __construct($opts = [])
     {
         $this->options = new Options($opts);
         $this->interpreter = new LogInterpreter();

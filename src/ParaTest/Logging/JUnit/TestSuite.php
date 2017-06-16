@@ -57,14 +57,14 @@ class TestSuite
      *
      * @var array
      */
-    public $suites = array();
+    public $suites = [];
 
     /**
      * Cases belonging to this suite
      *
      * @var array
      */
-    public $cases = array();
+    public $cases = [];
 
     public function __construct(
         $name,

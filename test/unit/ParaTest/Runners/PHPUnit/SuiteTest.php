@@ -6,7 +6,7 @@ class SuiteTest extends \TestBase
 
     public function setUp()
     {
-        $this->suite = new Suite('/path/to/UnitTest.php', array());
+        $this->suite = new Suite('/path/to/UnitTest.php', []);
     }
 
     public function testConstruction()
