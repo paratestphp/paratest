@@ -14,7 +14,7 @@ class OptionsTest extends \TestBase
             'functional' => true,
             'group' => 'group1',
             'bootstrap' => '/path/to/bootstrap'
-        ]; 
+        ];
         $this->options = new Options($this->unfiltered);
         $this->cleanUpConfigurations();
     }

@@ -6,4 +6,3 @@ guard 'phpunit', :all_on_start => false, :tests_path => 'test', :cli => '--color
   watch(%r{^src/(.+)\.php}) { |m| "test/#{m[1]}Test\.php" }
 
 end
-
