@@ -81,7 +81,7 @@ class Configuration
         $suites = [];
         $nodes  = $this->xml->xpath('//testsuites/testsuite');
 
-        while (list(, $node) = each($nodes)) {
+        foreach ($nodes as $node) {
             $suites = array_merge_recursive($suites, $this->getSuiteByName((string)$node['name']));
         }
         return $suites;
@@ -101,7 +101,7 @@ class Configuration
 
         $suites        = [];
         $excludedPaths = [];
-        while (list(, $node) = each($nodes)) {
+        foreach ($nodes as $node) {
             foreach ($this->availableNodes as $nodeName) {
                 foreach ($node->{$nodeName} as $nodeContent) {
                     switch ($nodeName) {

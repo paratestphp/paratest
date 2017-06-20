@@ -187,7 +187,7 @@ class Reader extends MetaProvider
     {
         $caseNodes = $this->xml->xpath('//testcase');
         $cases = [];
-        while (list( , $node) = each($caseNodes)) {
+        foreach ($caseNodes as $node) {
             $case = $node;
             if (!isset($cases[(string)$node['file']])) {
                 $cases[(string)$node['file']] = [];
