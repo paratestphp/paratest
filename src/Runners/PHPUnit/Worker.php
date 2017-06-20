@@ -101,7 +101,7 @@ class Worker
             return;
         }
         $tellsUsItHasFinished = false;
-        stream_set_blocking($this->pipes[1], 1);
+        stream_set_blocking($this->pipes[1], true);
         while ($line = fgets($this->pipes[1])) {
             if (strstr($line, "FINISHED\n")) {
                 $tellsUsItHasFinished = true;
@@ -207,7 +207,7 @@ class Worker
     private function updateStateFromAvailableOutput()
     {
         if (isset($this->pipes[1])) {
-            stream_set_blocking($this->pipes[1], 0);
+            stream_set_blocking($this->pipes[1], false);
             while ($chunk = fread($this->pipes[1], 4096)) {
                 $this->chunks .= $chunk;
                 $this->alreadyReadOutput .= $chunk;
@@ -227,7 +227,7 @@ class Worker
                     $this->isRunning = false;
                 }
             }
-            stream_set_blocking($this->pipes[1], 1);
+            stream_set_blocking($this->pipes[1], true);
         }
     }
 }

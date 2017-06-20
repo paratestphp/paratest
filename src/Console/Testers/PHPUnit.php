@@ -29,7 +29,7 @@ class PHPUnit extends Tester
      * definitions
      *
      * @param Command $command
-     * @return mixed
+     * @return void
      */
     public function configure(Command $command)
     {

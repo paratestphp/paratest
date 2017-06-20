@@ -28,7 +28,7 @@ class TestCase
     public $file;
 
     /**
-     * @var string
+     * @var int
      */
     public $line;
 
@@ -38,27 +38,39 @@ class TestCase
     public $assertions;
 
     /**
-     * @var string
+     * @var string|float (a stringified float, from phpunit XML output)
      */
     public $time;
 
     /**
-     * Number of failures in this test case
+     * List of failures in this test case
      *
      * @var array
      */
     public $failures = [];
 
     /**
-     * Number of errors in this test case
-     * TODO: Not a number?
+     * List of errors in this test case
      *
      * @var array
      */
     public $errors = [];
 
+    /**
+     * List of errors in this test case
+     *
+     * @var array
+     */
     public $skipped = [];
 
+    /**
+     * @param string $name
+     * @param string $class
+     * @param string $file
+     * @param int $line
+     * @param int $assertions
+     * @param string $time
+     */
     public function __construct(
         $name,
         $class,
@@ -151,8 +163,8 @@ class TestCase
             (string) $node['name'],
             (string) $node['class'],
             (string) $node['file'],
-            (string) $node['line'],
-            (string) $node['assertions'],
+            (int) $node['line'],
+            (int) $node['assertions'],
             (string) $node['time']
         );
 
