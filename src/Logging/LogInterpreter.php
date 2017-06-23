@@ -70,10 +70,10 @@ class LogInterpreter extends MetaProvider
     public function getCases()
     {
         $cases = [];
-        while (list( , $reader) = each($this->readers)) {
+        foreach ($this->readers as $reader) {
             foreach ($reader->getSuites() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
-                while (list( , $nested) = each($suite->suites)) {
+                foreach ($suite->suites as $nested) {
                     $this->extendEmptyCasesFromSuites($nested->cases, $suite);
                     $cases = array_merge($cases, $nested->cases);
                 }

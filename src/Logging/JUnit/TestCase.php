@@ -161,17 +161,16 @@ class TestCase
         $skipped    = $node->xpath('skipped');
         $errors     = $node->xpath('error');
 
-        // TODO: each will be deprecated in 7.2, change to foreach
-        while (list( , $fail) = each($failures)) {
+        foreach ($failures as $fail) {
             $case->addFailure((string)$fail['type'], (string)$fail);
         }
 
-        while (list( , $err) = each($errors)) {
+        foreach ($errors as $err) {
             $case->addError((string)$err['type'], (string)$err);
         }
 
-        while (list( , $err) = each($skipped)) {
-            $case->addSkipped((string)$err['type'], (string)$err);
+        foreach ($skipped as $skip) {
+            $case->addSkipped((string)$skip['type'], (string)$skip);
         }
 
         return $case;
