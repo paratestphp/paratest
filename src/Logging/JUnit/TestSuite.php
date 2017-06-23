@@ -73,7 +73,7 @@ class TestSuite
      * @param int $failures
      * @param int $skipped
      * @param float $time
-     * @param ?string $file
+     * @param string|null $file
      */
     public function __construct(
         $name,

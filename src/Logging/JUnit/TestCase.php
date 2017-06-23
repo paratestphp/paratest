@@ -56,11 +56,7 @@ class TestCase
      */
     public $errors = [];
 
-    /**
-     * List of errors in this test case
-     *
-     * @var array
-     */
+    /** @var array */
     public $skipped = [];
 
     /**
