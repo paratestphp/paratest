@@ -74,12 +74,12 @@ class Options
 
     /**
      * Filters which tests to run.
-     * @var ?string
+     * @var string|null
      */
     protected $testsuite;
 
     /**
-     * @var ?int
+     * @var int|null
      */
     protected $maxBatchSize;
 
