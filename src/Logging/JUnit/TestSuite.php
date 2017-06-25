@@ -43,7 +43,7 @@ class TestSuite
     public $skipped;
 
     /**
-     * @var string
+     * @var float
      */
     public $time;
 
@@ -66,6 +66,15 @@ class TestSuite
      */
     public $cases = [];
 
+    /**
+     * @param string $name
+     * @param int $tests
+     * @param int $assertions
+     * @param int $failures
+     * @param int $skipped
+     * @param float $time
+     * @param string|null $file
+     */
     public function __construct(
         $name,
         $tests,
@@ -90,7 +99,7 @@ class TestSuite
      * Create a TestSuite from an associative
      * array
      *
-     * @param $arr
+     * @param array $arr
      * @return TestSuite
      */
     public static function suiteFromArray($arr)
@@ -117,12 +126,12 @@ class TestSuite
     {
         return new TestSuite(
             (string) $node['name'],
-            (string) $node['tests'],
-            (string) $node['assertions'],
-            (string) $node['failures'],
-            (string) $node['errors'],
-            (string) $node['skipped'],
-            (string) $node['time'],
+            (int) $node['tests'],
+            (int) $node['assertions'],
+            (int) $node['failures'],
+            (int) $node['errors'],
+            (int) $node['skipped'],
+            (float) $node['time'],
             (string) $node['file']
         );
     }

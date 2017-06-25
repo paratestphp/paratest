@@ -58,6 +58,47 @@ class Options
     protected $filtered;
 
     /**
+     * @var string
+     */
+    protected $runner;
+
+    /**
+     * @var bool
+     */
+    protected $noTestTokens;
+
+    /**
+     * @var bool
+     */
+    protected $colors;
+
+    /**
+     * Filters which tests to run.
+     * @var string|null
+     */
+    protected $testsuite;
+
+    /**
+     * @var int|null
+     */
+    protected $maxBatchSize;
+
+    /**
+     * @var string
+     */
+    protected $filter;
+
+    /**
+     * @var string[]
+     */
+    protected $groups;
+
+    /**
+     * @var string[]
+     */
+    protected $excludeGroups;
+
+    /**
      * A collection of option values directly corresponding
      * to certain annotations - i.e group
      *
@@ -106,12 +147,24 @@ class Options
     /**
      * Public read accessibility
      *
-     * @param $var
+     * @param string $var
      * @return mixed
      */
     public function __get($var)
     {
         return $this->$var;
+    }
+
+    /**
+     * Public read accessibility
+     * (e.g. to make empty($options->property) work as expected)
+     *
+     * @param string $var
+     * @return mixed
+     */
+    public function __isset($var)
+    {
+        return isset($this->$var);
     }
 
     /**
@@ -180,10 +233,8 @@ class Options
     /**
      * Filter options to distinguish between paratest
      * internal options and any other options
-     * @param  array $options
-     * @return array
      */
-    protected function filterOptions($options)
+    protected function filterOptions(array $options) : array
     {
         $filtered = array_diff_key($options, [
             'processes' => $this->processes,
