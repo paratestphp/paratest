@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Parser;
 
 class ParsedClass extends ParsedObject
@@ -10,7 +11,7 @@ class ParsedClass extends ParsedObject
 
     /**
      * A collection of methods belonging
-     * to the parsed class
+     * to the parsed class.
      *
      * @var array
      */
@@ -26,9 +27,10 @@ class ParsedClass extends ParsedObject
     /**
      * Return the methods of this parsed class
      * optionally filtering on annotations present
-     * on a method
+     * on a method.
      *
      * @param array $annotations
+     *
      * @return array
      */
     public function getMethods($annotations = [])
@@ -41,13 +43,15 @@ class ParsedClass extends ParsedObject
                     }
                 }
             }
+
             return false;
         });
+
         return $methods ? $methods : $this->methods;
     }
 
     /**
-     * Return the namespace of the parsed class
+     * Return the namespace of the parsed class.
      *
      * @return string
      */

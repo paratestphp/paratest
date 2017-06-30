@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+
+namespace ParaTest\Runners\PHPUnit;
 
 class OptionsTest extends \TestBase
 {
@@ -13,7 +15,7 @@ class OptionsTest extends \TestBase
             'phpunit' => 'phpunit',
             'functional' => true,
             'group' => 'group1',
-            'bootstrap' => '/path/to/bootstrap'
+            'bootstrap' => '/path/to/bootstrap',
         ];
         $this->options = new Options($this->unfiltered);
         $this->cleanUpConfigurations();
@@ -27,7 +29,7 @@ class OptionsTest extends \TestBase
 
     public function testAnnotationsReturnsAnnotations()
     {
-        $this->assertEquals(1, sizeof($this->options->annotations));
+        $this->assertEquals(1, count($this->options->annotations));
         $this->assertEquals('group1', $this->options->annotations['group']);
     }
 
@@ -73,13 +75,13 @@ class OptionsTest extends \TestBase
     {
         $this->unfiltered['path'] = getcwd();
         $options = new Options($this->unfiltered);
-        $this->assertFalse(array_key_exists('configuration', $options->filtered));
+        $this->assertArrayNotHasKey('configuration', $options->filtered);
     }
 
     /**
      * Sets the current working directory to this source
      * directory so we can test configuration details without
-     * using ParaTest's own configuration
+     * using ParaTest's own configuration.
      *
      * Performs any cleanup to make sure no config files are
      * present when a test starts
@@ -87,12 +89,15 @@ class OptionsTest extends \TestBase
     protected function cleanUpConfigurations()
     {
         chdir(__DIR__);
-        if(file_exists('phpunit.xml'))
+        if (file_exists('phpunit.xml')) {
             unlink('phpunit.xml');
-        if(file_exists('phpunit.xml.dist'))
+        }
+        if (file_exists('phpunit.xml.dist')) {
             unlink('phpunit.xml.dist');
-        if(file_exists('myconfig.xml'))
+        }
+        if (file_exists('myconfig.xml')) {
             unlink('myconfig.xml');
+        }
     }
 
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists()

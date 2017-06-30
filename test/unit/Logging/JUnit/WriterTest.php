@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Logging\JUnit;
+<?php
+
+namespace ParaTest\Logging\JUnit;
 
 use ParaTest\Logging\LogInterpreter;
 
@@ -13,7 +15,7 @@ class WriterTest extends \TestBase
     public function setUp()
     {
         $this->interpreter = new LogInterpreter();
-        $this->writer = new Writer($this->interpreter, "test/fixtures/tests/");
+        $this->writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $this->passing = FIXTURES . DS . 'results' . DS . 'single-passing.xml';
     }
 
@@ -23,7 +25,7 @@ class WriterTest extends \TestBase
             'ParaTest\\Logging\\LogInterpreter',
             $this->getObjectValue($this->writer, 'interpreter')
         );
-        $this->assertEquals("test/fixtures/tests/", $this->writer->getName());
+        $this->assertEquals('test/fixtures/tests/', $this->writer->getName());
     }
 
     public function testSingleFileLog()
@@ -38,7 +40,7 @@ class WriterTest extends \TestBase
         $mixed = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
         $reader = new Reader($mixed);
         $this->interpreter->addReader($reader);
-        $writer = new Writer($this->interpreter, "test/fixtures/tests/");
+        $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml = $writer->getXml();
         $this->assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
     }
@@ -69,7 +71,7 @@ class WriterTest extends \TestBase
         $mixed = FIXTURES . DS . 'results' . DS . 'junit-example-result.xml';
         $reader = new Reader($mixed);
         $this->interpreter->addReader($reader);
-        $writer = new Writer($this->interpreter, "test/fixtures/tests/");
+        $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml = $writer->getXml();
 
         $this->assertFalse(strpos($xml, 'line=""'), 'Expected no empty line attributes (line=""), but found one.');

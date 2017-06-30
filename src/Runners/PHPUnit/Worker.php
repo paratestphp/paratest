@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 use Exception;
@@ -6,9 +7,9 @@ use Exception;
 class Worker
 {
     private static $descriptorspec = [
-       0 => ["pipe", "r"],
-       1 => ["pipe", "w"],
-       2 => ["pipe", "w"]
+       0 => ['pipe', 'r'],
+       1 => ['pipe', 'w'],
+       2 => ['pipe', 'w'],
     ];
     private $proc;
     private $pipes;
@@ -49,13 +50,13 @@ class Worker
         $this->checkStarted();
         $this->commands[] = $testCmd;
         fwrite($this->pipes[0], $testCmd . "\n");
-        $this->inExecution++;
+        ++$this->inExecution;
     }
 
     public function assign(ExecutableTest $test, $phpunit, $phpunitOptions)
     {
         if ($this->currentlyExecuting !== null) {
-            throw new Exception("Worker already has a test assigned - did you forget to call reset()?");
+            throw new Exception('Worker already has a test assigned - did you forget to call reset()?');
         }
         $this->currentlyExecuting = $test;
         $this->execute($test->command($phpunit, $phpunitOptions));
@@ -81,7 +82,7 @@ class Worker
     private function checkStarted()
     {
         if (!$this->isStarted()) {
-            throw new \RuntimeException("You have to start the Worker first!");
+            throw new \RuntimeException('You have to start the Worker first!');
         }
     }
 
@@ -97,7 +98,7 @@ class Worker
      */
     public function waitForFinishedJob()
     {
-        if ($this->inExecution == 0) {
+        if ($this->inExecution === 0) {
             return;
         }
         $tellsUsItHasFinished = false;
@@ -105,12 +106,12 @@ class Worker
         while ($line = fgets($this->pipes[1])) {
             if (strstr($line, "FINISHED\n")) {
                 $tellsUsItHasFinished = true;
-                $this->inExecution--;
+                --$this->inExecution;
                 break;
             }
         }
         if (!$tellsUsItHasFinished) {
-            throw new \RuntimeException("The Worker terminated without finishing the job.");
+            throw new \RuntimeException('The Worker terminated without finishing the job.');
         }
     }
 
@@ -118,7 +119,8 @@ class Worker
     {
         $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
-        return $this->inExecution == 0;
+
+        return $this->inExecution === 0;
     }
 
     /**
@@ -140,8 +142,6 @@ class Worker
     {
         if ($this->currentlyExecuting !== null) {
             return $this->currentlyExecuting->getCoverageFileName();
-        } else {
-            return null;
         }
     }
 
@@ -158,6 +158,7 @@ class Worker
     {
         $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
+
         return $this->isRunning;
     }
 
@@ -177,18 +178,19 @@ class Worker
         if ($this->exitCode === null) {
             return false;
         }
-        return $this->exitCode != 0;
+
+        return $this->exitCode !== 0;
     }
 
     private function checkNotCrashed()
     {
         if ($this->isCrashed()) {
             throw new \RuntimeException(
-                "This worker has crashed. Last executed command: " . end($this->commands) . PHP_EOL
-                . "Output:" . PHP_EOL
-                . "----------------------" . PHP_EOL
+                'This worker has crashed. Last executed command: ' . end($this->commands) . PHP_EOL
+                . 'Output:' . PHP_EOL
+                . '----------------------' . PHP_EOL
                 . $this->alreadyReadOutput . PHP_EOL
-                . "----------------------" . PHP_EOL
+                . '----------------------' . PHP_EOL
                 . $this->readAllStderr()
             );
         }
@@ -221,7 +223,7 @@ class Worker
             foreach ($lines as $line) {
                 $line .= "\n";
                 if (strstr($line, "FINISHED\n")) {
-                    $this->inExecution--;
+                    --$this->inExecution;
                 }
                 if (strstr($line, "EXITED\n")) {
                     $this->isRunning = false;

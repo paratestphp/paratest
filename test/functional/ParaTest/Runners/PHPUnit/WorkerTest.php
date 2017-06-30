@@ -1,9 +1,17 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
+
 use SimpleXMLElement;
 
 class WorkerTest extends \TestBase
 {
+    protected static $descriptorspec = [
+       0 => ['pipe', 'r'],
+       1 => ['pipe', 'w'],
+       2 => ['pipe', 'w'],
+    ];
+
     public function setUp()
     {
         parent::setUp();
@@ -80,7 +88,6 @@ class WorkerTest extends \TestBase
 
     public function testProcessIsNotMarkedAsCrashedWhenItFinishesCorrectly()
     {
-
         // fake state: process has already exited (clean) but worker did not yet notice
         $worker = new Worker();
         $this->setPerReflection($worker, 'isRunning', false);
@@ -92,17 +99,18 @@ class WorkerTest extends \TestBase
     private function createSomeClosedProcess()
     {
         $descriptorspec = [
-            0 => ["pipe", "r"],
-            1 => ["pipe", "w"],
-            2 => ["pipe", "w"]
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
         ];
 
         $proc = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
         $running = true;
-        while($running) {
+        while ($running) {
             $status = proc_get_status($proc);
             $running = $status['running'];
         }
+
         return $proc;
     }
 
@@ -112,7 +120,6 @@ class WorkerTest extends \TestBase
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($instance, $value);
     }
-
 
     public function testCanExecuteMultiplePHPUnitCommands()
     {
@@ -136,12 +143,6 @@ class WorkerTest extends \TestBase
         $this->assertJUnitLogIsValid($testLog2);
     }
 
-    protected static $descriptorspec = [
-       0 => ["pipe", "r"],
-       1 => ["pipe", "w"],
-       2 => ["pipe", "w"]
-    ];
-
     private function getCommand($testFile, $logFile)
     {
         return sprintf(
@@ -155,9 +156,9 @@ class WorkerTest extends \TestBase
 
     private function assertJUnitLogIsValid($logFile)
     {
-        $this->assertTrue(file_exists($logFile), "Failed asserting that $logFile exists.");
+        $this->assertFileExists($logFile, "Failed asserting that $logFile exists.");
         $log = new SimpleXMLElement(file_get_contents($logFile));
         $count = count($log->testsuite->testcase);
-        $this->assertTrue($count > 1, "Not even a test has been executed");
+        $this->assertTrue($count > 1, 'Not even a test has been executed');
     }
 }

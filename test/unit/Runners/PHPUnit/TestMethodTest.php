@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+
+namespace ParaTest\Runners\PHPUnit;
 
 class TestMethodTest extends \TestBase
 {

@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Parser;
+<?php
+
+namespace ParaTest\Parser;
 
 class ParserTest extends \TestBase
 {
@@ -23,14 +25,13 @@ class ParserTest extends \TestBase
     {
         $filename = FIXTURES . DS . 'special-classes' . DS . 'SomeNamespace' . DS . 'ParserTestClass.php';
         $parser = new Parser($filename);
-        $this->assertEquals("SomeNamespace\\ParserTestClass", $parser->getClass()->getName());
+        $this->assertEquals('SomeNamespace\\ParserTestClass', $parser->getClass()->getName());
     }
 
     public function testClassFallsBackOnExisting()
     {
         $filename = FIXTURES . DS . 'special-classes' . DS . 'NameDoesNotMatch.php';
         $parser = new Parser($filename);
-        $this->assertEquals("ParserTestClassFallsBack", $parser->getClass()->getName());
+        $this->assertEquals('ParserTestClassFallsBack', $parser->getClass()->getName());
     }
-
 }

@@ -196,4 +196,7 @@ You can run all tests at once by running phpunit from the project directory.
 ParaTest can run its own test suite by running it from the `bin` directory.
 `bin/paratest`
 
+Before creating a Pull Request be sure to run `vendor/bin/php-cs-fixer fix` and
+commit the eventual changes.
+
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).

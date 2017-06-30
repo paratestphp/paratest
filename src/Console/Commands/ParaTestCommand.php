@@ -1,11 +1,13 @@
-<?php namespace ParaTest\Console\Commands;
+<?php
+
+namespace ParaTest\Console\Commands;
 
 use Composer\Semver\Comparator;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use ParaTest\Console\Testers\Tester;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ParaTestCommand extends Command
 {
@@ -30,7 +32,7 @@ class ParaTestCommand extends Command
     }
 
     /**
-     * Ubiquitous configuration options for ParaTest
+     * Ubiquitous configuration options for ParaTest.
      */
     protected function configure()
     {
@@ -51,10 +53,11 @@ class ParaTestCommand extends Command
     }
 
     /**
-     * Executes the specified tester
+     * Executes the specified tester.
      *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @return int|mixed|null
      */
     public function execute(InputInterface $input, OutputInterface $output)

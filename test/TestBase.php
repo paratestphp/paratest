@@ -5,8 +5,8 @@ use SebastianBergmann\CodeCoverage\CodeCoverage;
 class TestBase extends PHPUnit\Framework\TestCase
 {
     /**
-     * Get PHPUnit version
-
+     * Get PHPUnit version.
+     *
      * @return string
      */
     protected static function getPhpUnitVersion()
@@ -14,14 +14,16 @@ class TestBase extends PHPUnit\Framework\TestCase
         if (method_exists('\\PHPUnit\\Runner\\Version', 'id')) {
             return \PHPUnit\Runner\Version::id();
         }
+
         return \PHPUnit\Runner\Version::VERSION;
     }
 
     protected function fixture($fixture)
     {
         $fixture = FIXTURES . DS . $fixture;
-        if(!file_exists($fixture))
+        if (!file_exists($fixture)) {
             throw new Exception("Fixture $fixture not found");
+        }
 
         return $fixture;
     }
@@ -29,9 +31,11 @@ class TestBase extends PHPUnit\Framework\TestCase
     protected function findTests($dir)
     {
         $files = [];
-        foreach(new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST)) as $file){
-            if(preg_match('/Test\.php$/', $file)) $files []= $file;
+        foreach (new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST)) as $file) {
+            if (preg_match('/Test\.php$/', $file)) {
+                $files[] = $file;
+            }
         }
 
         return $files;
@@ -40,12 +44,14 @@ class TestBase extends PHPUnit\Framework\TestCase
     protected function getObjectValue($object, $property)
     {
         $prop = $this->getAccessibleProperty($object, $property);
+
         return $prop->getValue($object);
     }
 
     protected function setObjectValue($object, $property, $value)
     {
         $prop = $this->getAccessibleProperty($object, $property);
+
         return $prop->setValue($object, $value);
     }
 
@@ -54,14 +60,17 @@ class TestBase extends PHPUnit\Framework\TestCase
         $refl = new \ReflectionObject($object);
         $prop = $refl->getProperty($property);
         $prop->setAccessible(true);
+
         return $prop;
     }
 
     /**
-     * Calls an object method even if it is protected or private
-     * @param Object $object the object to call a method on
+     * Calls an object method even if it is protected or private.
+     *
+     * @param object $object     the object to call a method on
      * @param string $methodName the method name to be called
-     * @param mixed $args 0 or more arguments passed in the function
+     * @param mixed  $args       0 or more arguments passed in the function
+     *
      * @return mixed returns what the object's method call will return
      */
     public function call($object, $methodName, ...$args)
@@ -70,10 +79,12 @@ class TestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * Calls a class method even if it is protected or private
-     * @param string $class the class to call a method on
+     * Calls a class method even if it is protected or private.
+     *
+     * @param string $class      the class to call a method on
      * @param string $methodName the method name to be called
-     * @param mixed $args 0 or more arguments passed in the function
+     * @param mixed  $args       0 or more arguments passed in the function
+     *
      * @return mixed returns what the object's method call will return
      */
     public function callStatic($class, $methodName, ...$args)
@@ -109,16 +120,17 @@ class TestBase extends PHPUnit\Framework\TestCase
         try {
             if (class_exists('\\PHP_CodeCoverage')) {
                 new \PHP_CodeCoverage();
-            } else if (class_exists('\\SebastianBergmann\\CodeCoverage\\CodeCoverage')) {
+            } elseif (class_exists('\\SebastianBergmann\\CodeCoverage\\CodeCoverage')) {
                 new CodeCoverage();
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             static::markTestSkipped($e->getMessage());
         }
     }
 
     /**
-     * Remove dir and its files
+     * Remove dir and its files.
+     *
      * @param string $dirname
      */
     protected function removeDirectory($dirname)
@@ -147,9 +159,9 @@ class TestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * Copy fixture file to tmp folder, cause coverage file will be deleted by merger
+     * Copy fixture file to tmp folder, cause coverage file will be deleted by merger.
      *
-     * @param string $fixture Fixture coverage file name
+     * @param string $fixture   Fixture coverage file name
      * @param string $directory
      *
      * @return string Copied coverage file
@@ -159,6 +171,7 @@ class TestBase extends PHPUnit\Framework\TestCase
         $fixturePath = $this->fixture($fixture);
         $filename = str_replace('.', '_', uniqid($directory . '/cov-', true));
         copy($fixturePath, $filename);
+
         return $filename;
     }
 }

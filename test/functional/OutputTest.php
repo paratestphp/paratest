@@ -2,7 +2,6 @@
 
 class OutputTest extends FunctionalTestBase
 {
-
     public function setUp()
     {
         parent::setUp();
@@ -15,8 +14,8 @@ class OutputTest extends FunctionalTestBase
     public function testDefaultMessagesDisplayed()
     {
         $output = $this->paratest->execute()->getOutput();
-        $this->assertContains("Running phpunit in 5 processes with " . PHPUNIT, $output);
-        $this->assertContains("Configuration read from " . getcwd() . DS . 'phpunit.xml.dist', $output);
+        $this->assertContains('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        $this->assertContains('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 
@@ -33,16 +32,16 @@ class OutputTest extends FunctionalTestBase
         $output = $this->paratest
             ->execute(['functional'])
             ->getOutput();
-        $this->assertContains("Running phpunit in 5 processes with " . PHPUNIT, $output);
-        $this->assertContains("Functional mode is ON.", $output);
+        $this->assertContains('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        $this->assertContains('Functional mode is ON.', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 
     public function testProcCountIsReportedWithProcOption()
     {
-        $output = $this->paratest->execute(['p'=>1])
+        $output = $this->paratest->execute(['p' => 1])
             ->getOutput();
-        $this->assertContains("Running phpunit in 1 process with " . PHPUNIT, $output);
+        $this->assertContains('Running phpunit in 1 process with ' . PHPUNIT, $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 }

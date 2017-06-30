@@ -1,10 +1,10 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 class ExecutableTestTest extends \TestBase
 {
     /**
-     *
      * @var ExecutableTestChild
      */
     protected $executableTestChild;
@@ -17,7 +17,7 @@ class ExecutableTestTest extends \TestBase
 
     public function testConstructor()
     {
-          $this->assertEquals('pathToFile', $this->getObjectValue($this->executableTestChild, 'path'));
+        $this->assertEquals('pathToFile', $this->getObjectValue($this->executableTestChild, 'path'));
     }
 
     public function testGetCommandStringIncludesOptions()
@@ -74,7 +74,7 @@ class ExecutableTestTest extends \TestBase
     public function testGetTempFileShouldCreateTempFile()
     {
         $file = $this->executableTestChild->getTempFile();
-        $this->assertTrue(file_exists($file));
+        $this->assertFileExists($file);
         unlink($file);
     }
 
@@ -89,9 +89,8 @@ class ExecutableTestTest extends \TestBase
 
 class ExecutableTestChild extends ExecutableTest
 {
-
     /**
-     * Get the expected count of tests to be executed
+     * Get the expected count of tests to be executed.
      *
      * @return int
      */

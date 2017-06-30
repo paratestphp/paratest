@@ -23,7 +23,7 @@ class CoverageReporter implements CoverageReporterInterface
     }
 
     /**
-     * Generate clover coverage report
+     * Generate clover coverage report.
      *
      * @param string $target Report filename
      */
@@ -34,7 +34,7 @@ class CoverageReporter implements CoverageReporterInterface
     }
 
     /**
-     * Generate html coverage report
+     * Generate html coverage report.
      *
      * @param string $target Report filename
      */
@@ -45,7 +45,8 @@ class CoverageReporter implements CoverageReporterInterface
     }
 
     /**
-     * Generate php coverage report
+     * Generate php coverage report.
+     *
      * @param string $target Report filename
      */
     public function php($target)

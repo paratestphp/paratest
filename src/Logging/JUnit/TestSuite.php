@@ -1,14 +1,13 @@
 <?php
+
 namespace ParaTest\Logging\JUnit;
 
 /**
- * Class TestSuite
+ * Class TestSuite.
  *
  * A simple data structure for tracking
  * data associated with a testsuite node
  * in a JUnit xml document
- *
- * @package ParaTest\Logging\JUnit
  */
 class TestSuite
 {
@@ -53,27 +52,28 @@ class TestSuite
     public $file;
 
     /**
-     * Nested suites
+     * Nested suites.
      *
      * @var array
      */
     public $suites = [];
 
     /**
-     * Cases belonging to this suite
+     * Cases belonging to this suite.
      *
      * @var array
      */
     public $cases = [];
 
     /**
-     * @param string $name
-     * @param int $tests
-     * @param int $assertions
-     * @param int $failures
-     * @param int $skipped
-     * @param float $time
+     * @param string      $name
+     * @param int         $tests
+     * @param int         $assertions
+     * @param int         $failures
+     * @param int         $skipped
+     * @param float       $time
      * @param string|null $file
+     * @param mixed       $errors
      */
     public function __construct(
         $name,
@@ -97,14 +97,15 @@ class TestSuite
 
     /**
      * Create a TestSuite from an associative
-     * array
+     * array.
      *
      * @param array $arr
+     *
      * @return TestSuite
      */
     public static function suiteFromArray($arr)
     {
-        return new TestSuite(
+        return new self(
             $arr['name'],
             $arr['tests'],
             $arr['assertions'],
@@ -117,14 +118,15 @@ class TestSuite
     }
 
     /**
-     * Create a TestSuite from a SimpleXMLElement
+     * Create a TestSuite from a SimpleXMLElement.
      *
      * @param \SimpleXMLElement $node
+     *
      * @return TestSuite
      */
     public static function suiteFromNode(\SimpleXMLElement $node)
     {
-        return new TestSuite(
+        return new self(
             (string) $node['name'],
             (int) $node['tests'],
             (int) $node['assertions'],

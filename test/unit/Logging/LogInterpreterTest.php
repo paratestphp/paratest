@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Logging;
+<?php
+
+namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\ResultTester;
@@ -26,7 +28,7 @@ class LogInterpreterTest extends ResultTester
     {
         $reader = $this->getMockReader();
         $this->interpreter->addReader($reader);
-        $this->assertEquals(3, sizeof($this->getObjectValue($this->interpreter, 'readers')));
+        $this->assertEquals(3, count($this->getObjectValue($this->interpreter, 'readers')));
     }
 
     public function testAddReaderReturnsSelf()
@@ -41,7 +43,7 @@ class LogInterpreterTest extends ResultTester
         $reader = $this->getMockReader();
         $this->interpreter->addReader($reader);
         $readers = $this->interpreter->getReaders();
-        $this->assertEquals(3, sizeof($readers));
+        $this->assertEquals(3, count($readers));
         $last = array_pop($readers);
         $this->assertSame($reader, $last);
     }
@@ -100,15 +102,18 @@ class LogInterpreterTest extends ResultTester
 
     public function testGetFailuresReturnsArrayOfFailureMessages()
     {
-        $failures = ["UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
-"UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18"];
+        $failures = [
+            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
+            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
+        ];
+
         $this->assertEquals($failures, $this->interpreter->getFailures());
     }
 
     public function testGetCasesReturnsAllCases()
     {
         $cases = $this->interpreter->getCases();
-        $this->assertEquals(10, sizeof($cases));
+        $this->assertEquals(10, count($cases));
     }
 
     public function testGetCasesExtendEmptyCasesFromSuites()
@@ -118,24 +123,22 @@ class LogInterpreterTest extends ResultTester
         $interpreter->addReader($dataProviderReader);
         $cases = $interpreter->getCases();
         $this->assertEquals(10, count($cases));
-        foreach($cases as $name => $case){
-            $this->assertAttributeNotEmpty('class',$case);
-            $this->assertAttributeNotEmpty('file',$case);
-            if($case->name == "testNumericDataProvider5 with data set #3"){
-                $this->assertEquals($case->class,'DataProviderTest1');
-            }elseif($case->name == "testNamedDataProvider5 with data set #3"){
-                $this->assertEquals($case->class,'DataProviderTest2');
-            }else{
-                $this->assertEquals($case->class,'DataProviderTest');
+        foreach ($cases as $name => $case) {
+            $this->assertAttributeNotEmpty('class', $case);
+            $this->assertAttributeNotEmpty('file', $case);
+            if ($case->name === 'testNumericDataProvider5 with data set #3') {
+                $this->assertEquals($case->class, 'DataProviderTest1');
+            } elseif ($case->name === 'testNamedDataProvider5 with data set #3') {
+                $this->assertEquals($case->class, 'DataProviderTest2');
+            } else {
+                $this->assertEquals($case->class, 'DataProviderTest');
             }
-            if($case->name == "testNumericDataProvider5 with data set #4"){
-                $this->assertEquals($case->file,'/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest1.php');
-            }
-            elseif($case->name == "testNamedDataProvider5 with data set #4"){
-                $this->assertEquals($case->file,'/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest2.php');
-            }
-            else{
-                $this->assertEquals($case->file,'/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php');
+            if ($case->name === 'testNumericDataProvider5 with data set #4') {
+                $this->assertEquals($case->file, '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest1.php');
+            } elseif ($case->name === 'testNamedDataProvider5 with data set #4') {
+                $this->assertEquals($case->file, '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest2.php');
+            } else {
+                $this->assertEquals($case->file, '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php');
             }
         }
     }
@@ -143,18 +146,21 @@ class LogInterpreterTest extends ResultTester
     public function testFlattenCasesReturnsCorrectNumberOfSuites()
     {
         $suites = $this->interpreter->flattenCases();
-        $this->assertEquals(4, sizeof($suites));
+        $this->assertEquals(4, count($suites));
+
         return $suites;
     }
 
     /**
      * @depends testFlattenCasesReturnsCorrectNumberOfSuites
+     *
+     * @param mixed $suites
      */
     public function testFlattenedSuiteHasCorrectTotals($suites)
     {
         $first = $suites[0];
-        $this->assertEquals("UnitTestWithClassAnnotationTest", $first->name);
-        $this->assertEquals("/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php", $first->file);
+        $this->assertEquals('UnitTestWithClassAnnotationTest', $first->name);
+        $this->assertEquals('/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php', $first->file);
         $this->assertEquals('3', $first->tests);
         $this->assertEquals('3', $first->assertions);
         $this->assertEquals('1', $first->failures);

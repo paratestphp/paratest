@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+
+namespace ParaTest\Runners\PHPUnit;
 
 class RunnerTest extends \TestBase
 {
@@ -49,7 +51,7 @@ class RunnerTest extends \TestBase
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
             1 => ['token' => 1, 'unique' => uniqid(), 'available' => false],
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => true],
-            3 => ['token' => 3, 'unique' => uniqid(), 'available' => false]
+            3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
         $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);
@@ -65,7 +67,7 @@ class RunnerTest extends \TestBase
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
             1 => ['token' => 1, 'unique' => uniqid(), 'available' => false],
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
-            3 => ['token' => 3, 'unique' => uniqid(), 'available' => false]
+            3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
         $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);
@@ -81,7 +83,7 @@ class RunnerTest extends \TestBase
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
             1 => ['token' => 1, 'unique' => uniqid(), 'available' => false],
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
-            3 => ['token' => 3, 'unique' => uniqid(), 'available' => false]
+            3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
         $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);

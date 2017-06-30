@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Logging\JUnit;
 
 use ParaTest\Logging\MetaProvider;
@@ -28,14 +29,16 @@ class Reader extends MetaProvider
     /**
      * @var array
      */
-    protected static $defaultSuite = ['name' => '',
-                                      'file' => '',
-                                      'tests' => 0,
-                                      'assertions' => 0,
-                                      'failures' => 0,
-                                      'errors' => 0,
-                                      'skipped' => 0,
-                                      'time' => 0];
+    protected static $defaultSuite = [
+        'name' => '',
+        'file' => '',
+        'tests' => 0,
+        'assertions' => 0,
+        'failures' => 0,
+        'errors' => 0,
+        'skipped' => 0,
+        'time' => 0,
+    ];
 
     public function __construct($logFile)
     {
@@ -44,7 +47,7 @@ class Reader extends MetaProvider
         }
 
         $this->logFile = $logFile;
-        if (filesize($logFile) == 0) {
+        if (filesize($logFile) === 0) {
             throw new \InvalidArgumentException("Log file $logFile is empty. This means a PHPUnit process has crashed.");
         }
         $logFileContents = file_get_contents($this->logFile);
@@ -54,7 +57,7 @@ class Reader extends MetaProvider
 
     /**
      * Returns whether or not this reader contains only
-     * a single suite
+     * a single suite.
      *
      * @return bool
      */
@@ -65,7 +68,7 @@ class Reader extends MetaProvider
 
     /**
      * Return the Reader's collection
-     * of test suites
+     * of test suites.
      *
      * @return array
      */
@@ -80,7 +83,7 @@ class Reader extends MetaProvider
      * logs do not contain skipped or incomplete
      * tests this array will contain any number of the following
      * characters: .,F,E
-     * TODO: Update this, skipped was added in phpunit
+     * TODO: Update this, skipped was added in phpunit.
      *
      * @return array
      */
@@ -101,11 +104,12 @@ class Reader extends MetaProvider
                 }
             }
         }
+
         return $feedback;
     }
 
     /**
-     * Remove the JUnit xml file
+     * Remove the JUnit xml file.
      */
     public function removeLog()
     {
@@ -114,7 +118,7 @@ class Reader extends MetaProvider
 
     /**
      * Initialize the suite collection
-     * from the JUnit xml document
+     * from the JUnit xml document.
      */
     protected function init()
     {
@@ -126,7 +130,8 @@ class Reader extends MetaProvider
     }
 
     /**
-     * Uses an array of testcase nodes to build a suite
+     * Uses an array of testcase nodes to build a suite.
+     *
      * @param array $nodeArray an array of SimpleXMLElement nodes representing testcase elements
      */
     protected function initSuiteFromCases($nodeArray)
@@ -142,7 +147,7 @@ class Reader extends MetaProvider
 
     /**
      * Creates and adds a TestSuite based on the given
-     * suite properties and collection of test cases
+     * suite properties and collection of test cases.
      *
      * @param $properties
      * @param $testCases
@@ -155,31 +160,35 @@ class Reader extends MetaProvider
     }
 
     /**
-     * Fold an array of testcase nodes into a suite array
+     * Fold an array of testcase nodes into a suite array.
+     *
      * @param array $nodeArray an array of testcase nodes
      * @param array $testCases an array reference. Individual testcases will be placed here.
+     *
      * @return mixed
      */
     protected function caseNodesToSuiteProperties($nodeArray, &$testCases = [])
     {
         $cb = ['ParaTest\\Logging\\JUnit\\TestCase', 'caseFromNode'];
+
         return array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
             $testCases[] = call_user_func_array($cb, [$c]);
-            $result['name'] = (string)$c['class'];
-            $result['file'] = (string)$c['file'];
+            $result['name'] = (string) $c['class'];
+            $result['file'] = (string) $c['file'];
             $result['tests'] = $result['tests'] + 1;
-            $result['assertions'] += (int)$c['assertions'];
-            $result['failures'] += sizeof($c->xpath('failure'));
-            $result['errors'] += sizeof($c->xpath('error'));
-            $result['skipped'] += sizeof($c->xpath('skipped'));
-            $result['time'] += floatval($c['time']);
+            $result['assertions'] += (int) $c['assertions'];
+            $result['failures'] += count($c->xpath('failure'));
+            $result['errors'] += count($c->xpath('error'));
+            $result['skipped'] += count($c->xpath('skipped'));
+            $result['time'] += (float) ($c['time']);
+
             return $result;
         }, static::$defaultSuite);
     }
 
     /**
      * Return a collection of testcase nodes
-     * from the xml document
+     * from the xml document.
      *
      * @return array
      */
@@ -189,24 +198,25 @@ class Reader extends MetaProvider
         $cases = [];
         foreach ($caseNodes as $node) {
             $case = $node;
-            if (!isset($cases[(string)$node['file']])) {
-                $cases[(string)$node['file']] = [];
+            if (!isset($cases[(string) $node['file']])) {
+                $cases[(string) $node['file']] = [];
             }
-            $cases[(string)$node['file']][] = $node;
+            $cases[(string) $node['file']][] = $node;
         }
+
         return $cases;
     }
 
     /**
      * Determine if this reader is a single suite
      * and initialize the suite collection with the first
-     * suite
+     * suite.
      */
     protected function initSuite()
     {
         $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
-        $this->isSingle = sizeof($suiteNodes) === 0;
-        $node = current($this->xml->xpath("/testsuites/testsuite"));
+        $this->isSingle = count($suiteNodes) === 0;
+        $node = current($this->xml->xpath('/testsuites/testsuite'));
 
         if ($node !== false) {
             $this->suites[] = TestSuite::suiteFromNode($node);

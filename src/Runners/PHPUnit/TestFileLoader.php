@@ -1,8 +1,6 @@
 <?php
 
-
 namespace ParaTest\Runners\PHPUnit;
-
 
 class TestFileLoader
 {
@@ -13,43 +11,42 @@ class TestFileLoader
     const TEST_PATTERN = '/.+Test\.php$/';
 
     /**
-     * Matches php files
+     * Matches php files.
      */
     const FILE_PATTERN = '/.+\.php$/';
 
     /**
-     * Used to ignore directory paths '.' and '..'
+     * Used to ignore directory paths '.' and '..'.
      *
      * @var string
      */
     private static $dotPattern = '/([.]+)$/';
 
     /**
-     * The collection of loaded files for this test suite
+     * The collection of loaded files for this test suite.
      *
      * @var array
      */
     protected $files = [];
 
     /**
-     * The collection of excluded files
+     * The collection of excluded files.
      *
      * @var array
      */
     protected $excludedFiles = [];
 
     /**
-     * When true, the SuiteLoader add the files to excluded files
+     * When true, the SuiteLoader add the files to excluded files.
      *
      * @var bool
      */
     protected $excludingFiles = false;
 
-
     public function __construct($options = null)
     {
         if ($options && !$options instanceof Options) {
-            throw new \InvalidArgumentException("SuiteLoader options must be null or of type Options");
+            throw new \InvalidArgumentException('SuiteLoader options must be null or of type Options');
         }
 
         $this->options = $options;
@@ -57,16 +54,17 @@ class TestFileLoader
 
     /**
      * Loads a SuitePath and makes sure to
-     * take into account the excluded directory / files
+     * take into account the excluded directory / files.
      *
      * @param SuitePath $path
+     *
      * @return string[]
      */
     public function loadSuitePath(SuitePath $path)
     {
         // First initialize the list of files and excluded files
-        $this->files          = [];
-        $this->excludedFiles  = [];
+        $this->files = [];
+        $this->excludedFiles = [];
         $this->excludingFiles = true;
         foreach ($path->getExcludedPaths() as $excludedPath) {
             $this->loadPath($excludedPath, $path->getPattern());
@@ -84,18 +82,20 @@ class TestFileLoader
 
     /**
      * Loads suites based on a specific path.
-     * A valid path can be a directory or file
+     * A valid path can be a directory or file.
      *
      * @param $path
      * @param $pattern
+     *
      * @throws \InvalidArgumentException
+     *
      * @return string[]
      */
     public function loadPath($path, $pattern = null)
     {
         $this->files = [];
-        $path        = $path ?: $this->options->path;
-        $pattern     = is_null($pattern) ? self::TEST_PATTERN : $pattern;
+        $path = $path ?: $this->options->path;
+        $pattern = null === $pattern ? self::TEST_PATTERN : $pattern;
 
         if (!file_exists($path)) {
             throw new \InvalidArgumentException("$path is not a valid directory or file");
@@ -110,7 +110,7 @@ class TestFileLoader
     }
 
     /**
-     * Loads suites from a directory
+     * Loads suites from a directory.
      *
      * @param string $path
      * @param string $pattern
@@ -119,12 +119,12 @@ class TestFileLoader
     {
         $files = scandir($path);
         foreach ($files as $file) {
-            $this->tryLoadTests($path.DIRECTORY_SEPARATOR.$file, $pattern);
+            $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file, $pattern);
         }
     }
 
     /**
-     * Load a single suite file
+     * Load a single suite file.
      *
      * @param $path
      */
@@ -153,5 +153,4 @@ class TestFileLoader
             $this->loadDir($path, $pattern);
         }
     }
-
 }

@@ -1,9 +1,11 @@
-<?php namespace ParaTest\Console\Commands;
+<?php
 
-use ParaTest\Console\Testers\PHPUnit,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputDefinition;
+namespace ParaTest\Console\Commands;
+
+use ParaTest\Console\Testers\PHPUnit;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
 
 class ParaTestCommandTest extends \TestBase
 {
@@ -24,7 +26,7 @@ class ParaTestCommandTest extends \TestBase
 
     /**
      * Should be configured from the ParaTest command
-     * as well as the Tester it is composed of
+     * as well as the Tester it is composed of.
      */
     public function testConfiguredDefinitionWithPHPUnitTester()
     {

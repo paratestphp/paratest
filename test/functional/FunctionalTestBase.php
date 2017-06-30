@@ -1,6 +1,5 @@
 <?php
 
-use \Habitat\Habitat;
 use \Symfony\Component\Process\Process;
 
 class FunctionalTestBase extends PHPUnit\Framework\TestCase
@@ -18,6 +17,7 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
     protected function invokeParatest($path, $options = [], $callback = null)
     {
         $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
+
         return $invoker->execute($options, $callback);
     }
 

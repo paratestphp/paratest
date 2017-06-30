@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Parser;
+<?php
+
+namespace ParaTest\Parser;
 
 class ParsedClassTest extends \TestBase
 {
@@ -9,18 +11,18 @@ class ParsedClassTest extends \TestBase
     {
         $this->methods = [
             new ParsedFunction(
-                "/**
+                '/**
               * @group group1
-              */",
+              */',
                 'public', 'testFunction'
             ),
             new ParsedFunction(
-                "/**
+                '/**
               * @group group2
-              */",
+              */',
                 'public', 'testFunction2'
             ),
-            new ParsedFunction('', 'public', 'testFunction3')
+            new ParsedFunction('', 'public', 'testFunction3'),
         ];
         $this->class = new ParsedClass('', 'MyTestClass', '', $this->methods);
     }
@@ -33,21 +35,21 @@ class ParsedClassTest extends \TestBase
     public function testGetMethodsMultipleAnnotationsReturnsMethods()
     {
         $goodMethod = new ParsedFunction(
-            "/**
+            '/**
               * @group group1
-              */",
+              */',
             'public', 'testFunction'
         );
         $goodMethod2 = new ParsedFunction(
-            "/**
+            '/**
               * @group group2
-              */",
+              */',
             'public', 'testFunction2'
         );
         $badMethod = new ParsedFunction(
-            "/**
+            '/**
               * @group group3
-              */",
+              */',
             'public', 'testFunction2'
         );
         $annotatedClass = new ParsedClass('', 'MyTestClass', '', [$goodMethod, $goodMethod2, $badMethod]);
@@ -58,7 +60,7 @@ class ParsedClassTest extends \TestBase
     public function testGetMethodsExceptsAdditionalAnnotationFilter()
     {
         $group1 = $this->class->getMethods(['group' => 'group1']);
-        $this->assertEquals(1, sizeof($group1));
+        $this->assertEquals(1, count($group1));
         $this->assertEquals($this->methods[0], $group1[0]);
     }
 }

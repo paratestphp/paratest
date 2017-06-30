@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+
+namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Parser\ParsedFunction;
@@ -17,8 +19,9 @@ class ResultPrinterTest extends ResultTester
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
         chdir(__DIR__);
-        if(file_exists('myconfig.xml'))
+        if (file_exists('myconfig.xml')) {
             unlink('myconfig.xml');
+        }
 
         $this->passingSuiteWithWrongTestCountEsimation = $this->getSuiteWithResult('single-passing.xml', 1);
     }
@@ -61,8 +64,9 @@ class ResultPrinterTest extends ResultTester
     public function testStartSetsWidthAndMaxColumn()
     {
         $funcs = [];
-        for($i = 0; $i < 120; $i++)
+        for ($i = 0; $i < 120; ++$i) {
             $funcs[] = new ParsedFunction('doc', 'public', 'function' . $i);
+        }
         $suite = new Suite('/path', $funcs);
         $this->printer->addTest($suite);
         $this->getStartOutput(new Options());
@@ -103,7 +107,7 @@ class ResultPrinterTest extends ResultTester
     {
         $suite = new Suite('/path', [
             new ParsedFunction('doc', 'public', 'funcOne'),
-            new ParsedFunction('doc', 'public', 'funcTwo')
+            new ParsedFunction('doc', 'public', 'funcTwo'),
         ]);
         $this->printer->addTest($suite);
         $this->assertEquals(2, $this->printer->getTotalCases());
@@ -127,7 +131,7 @@ class ResultPrinterTest extends ResultTester
 
         $this->assertRegExp(
             "/\n\nTime: [0-9]+([.][0-9]{1,2})? " .
-            "(minute|minutes|second|seconds|ms)?," .
+            '(minute|minutes|second|seconds|ms)?,' .
             " Memory:[\s][0-9]+([.][0-9]{1,2})?M[Bb]\n\n/",
             $header
         );
@@ -142,7 +146,7 @@ class ResultPrinterTest extends ResultTester
 
         $errors = $this->printer->getErrors();
 
-        $eq  = "There was 1 error:\n\n";
+        $eq = "There was 1 error:\n\n";
         $eq .= "1) UnitTestWithErrorTest::testTruth\n";
         $eq .= "Exception: Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
@@ -159,7 +163,7 @@ class ResultPrinterTest extends ResultTester
 
         $errors = $this->printer->getErrors();
 
-        $eq  = "There were 2 errors:\n\n";
+        $eq = "There were 2 errors:\n\n";
         $eq .= "1) UnitTestWithErrorTest::testTruth\n";
         $eq .= "Exception: Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
@@ -172,14 +176,13 @@ class ResultPrinterTest extends ResultTester
 
     public function testGetFailures()
     {
-
         $this->printer->addTest($this->mixedSuite);
 
         $this->prepareReaders();
 
         $failures = $this->printer->getFailures();
 
-        $eq  = "There were 2 failures:\n\n";
+        $eq = "There were 2 failures:\n\n";
         $eq .= "1) UnitTestWithClassAnnotationTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20\n";
@@ -199,7 +202,7 @@ class ResultPrinterTest extends ResultTester
 
         $footer = $this->printer->getFooter();
 
-        $eq  = "\nFAILURES!\n";
+        $eq = "\nFAILURES!\n";
         $eq .= "Tests: 8, Assertions: 6, Failures: 2, Errors: 2.\n";
 
         $this->assertEquals($eq, $footer);
@@ -230,8 +233,9 @@ class ResultPrinterTest extends ResultTester
     public function testPrintFeedbackForMoreThan100Suites()
     {
         //add tests
-        for ($i = 0; $i < 40; $i++)
+        for ($i = 0; $i < 40; ++$i) {
             $this->printer->addTest($this->passingSuite);
+        }
 
         //start the printer so boundaries are established
         ob_start();
@@ -240,25 +244,29 @@ class ResultPrinterTest extends ResultTester
 
         //get the feedback string
         ob_start();
-        for ($i = 0; $i < 40; $i++)
+        for ($i = 0; $i < 40; ++$i) {
             $this->printer->printFeedback($this->passingSuite);
+        }
         $feedback = ob_get_clean();
 
         //assert it is as expected
         $expected = '';
-        for($i = 0; $i < 63; $i++)
+        for ($i = 0; $i < 63; ++$i) {
             $expected .= '.';
+        }
         $expected .= "  63 / 120 ( 52%)\n";
-        for($i = 0; $i < 57; $i++)
+        for ($i = 0; $i < 57; ++$i) {
             $expected .= '.';
+        }
         $this->assertEquals($expected, $feedback);
     }
 
     public function testResultPrinterAdjustsTotalCountForDataProviders()
     {
         //add tests
-        for ($i = 0; $i < 22; $i++)
+        for ($i = 0; $i < 22; ++$i) {
             $this->printer->addTest($this->passingSuiteWithWrongTestCountEsimation);
+        }
 
         //start the printer so boundaries are established
         ob_start();
@@ -267,19 +275,21 @@ class ResultPrinterTest extends ResultTester
 
         //get the feedback string
         ob_start();
-        for ($i = 0; $i < 22; $i++)
+        for ($i = 0; $i < 22; ++$i) {
             $this->printer->printFeedback($this->passingSuiteWithWrongTestCountEsimation);
+        }
         $feedback = ob_get_clean();
 
         //assert it is as expected
         $expected = '';
-        for($i = 0; $i < 65; $i++)
+        for ($i = 0; $i < 65; ++$i) {
             $expected .= '.';
+        }
         $expected .= " 65 / 66 ( 98%)\n";
-        for($i = 0; $i < 1; $i++)
+        for ($i = 0; $i < 1; ++$i) {
             $expected .= '.';
+        }
         $this->assertEquals($expected, $feedback);
-
     }
 
     protected function getStartOutput(Options $options)
@@ -287,6 +297,7 @@ class ResultPrinterTest extends ResultTester
         ob_start();
         $this->printer->start($options);
         $contents = ob_get_clean();
+
         return $contents;
     }
 
@@ -294,8 +305,9 @@ class ResultPrinterTest extends ResultTester
     {
         $suites = $this->getObjectValue($this->printer, 'suites');
         ob_start();
-        foreach($suites as $suite)
+        foreach ($suites as $suite) {
             $this->printer->printFeedback($suite);
+        }
         ob_end_clean();
     }
 }

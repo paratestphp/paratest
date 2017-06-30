@@ -1,8 +1,9 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+
+namespace ParaTest\Runners\PHPUnit;
 
 /**
- * The functionnalities of this class is tested in SuiteLoaderTest.php
- *
+ * The functionnalities of this class is tested in SuiteLoaderTest.php.
  */
 class TestFileLoaderTest extends \TestBase
 {

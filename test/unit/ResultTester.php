@@ -1,4 +1,6 @@
-<?php namespace ParaTest;
+<?php
+
+namespace ParaTest;
 
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Runners\PHPUnit\Suite;
@@ -26,7 +28,7 @@ abstract class ResultTester extends \TestBase
     {
         $result = FIXTURES . DS . 'results' . DS . $result;
         $functions = [];
-        for ($i = 0; $i < $methodCount; $i++) {
+        for ($i = 0; $i < $methodCount; ++$i) {
             $functions[] = $this->mockFunction($i);
         }
         $suite = new Suite('', $functions);

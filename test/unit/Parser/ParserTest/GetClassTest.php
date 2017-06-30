@@ -2,9 +2,7 @@
 
 namespace ParaTest\Parser;
 
-use ParaTest\Parser\ParsedClass;
-
-class ParserTest_GetClassTest extends \TestBase
+class GetClassTest extends \TestBase
 {
     public function testPreviouslyLoadedTestClassCanBeParsed()
     {
@@ -49,22 +47,26 @@ class ParserTest_GetClassTest extends \TestBase
     public function testParsedClassHasCorrectNumberOfTestMethods()
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
-        $this->assertEquals(4, sizeof($class->getMethods()));
+        $this->assertEquals(4, count($class->getMethods()));
     }
 
     public function testParsedClassWithParentHasCorrectNumberOfTestMethods()
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithErrorTest.php'));
-        $this->assertEquals(4, sizeof($class->getMethods()));
+        $this->assertEquals(4, count($class->getMethods()));
     }
 
     /**
-     * Parses a test case and returns the test class
+     * Parses a test case and returns the test class.
+     *
+     * @param mixed $path
+     *
      * @return ParsedClass
      */
     protected function parseFile($path)
     {
         $parser = new Parser($path);
+
         return $parser->getClass();
     }
 }
