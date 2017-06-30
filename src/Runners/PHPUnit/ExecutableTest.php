@@ -182,7 +182,7 @@ abstract class ExecutableTest
     {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
-        $command = $this->command($binary, $options);
+        $command = PHP_BINARY . ' ' . $this->command($binary, $options);
         $this->assertValidCommandLineLength($command);
         $this->lastCommand = $command;
         $this->process = new Process($command, null, $environmentVariables);
