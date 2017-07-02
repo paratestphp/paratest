@@ -11,7 +11,7 @@ use ParaTest\Console\Testers\PHPUnit;
 class ParaTestApplication extends Application
 {
     const NAME = 'ParaTest';
-    const VERSION = '0.14.0';
+    const VERSION = '1.0.1';
 
     public function __construct()
     {
