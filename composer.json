@@ -2,15 +2,15 @@
     "name": "brianium/paratest",
     "require": {
         "php": ">=7.0",
-        "phpunit/phpunit": "~6.0",
-        "phpunit/php-timer": "^1.0.4",
-        "symfony/console": "~2.3|~3.0",
-        "symfony/process": "~2.3|~3.0",
-        "brianium/habitat": "1.0.0",
+        "ext-pcre": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
-        "ext-pcre": "*",
-        "composer/semver": "~1.2"
+        "brianium/habitat": "1.0.0",
+        "composer/semver": "~1.2",
+        "phpunit/php-timer": "^1.0.4",
+        "phpunit/phpunit": "^6.0.13",
+        "symfony/console": "^3.0",
+        "symfony/process": "^3.0"
     },
     "type": "library",
     "description": "Parallel testing for PHP",
