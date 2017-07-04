@@ -1,6 +1,7 @@
 <?php
 
-use SebastianBergmann\CodeCoverage\CodeCoverage;
+use PHPUnit\Runner\Version;
+use SebastianBergmann\Environment\Runtime;
 
 class TestBase extends PHPUnit\Framework\TestCase
 {
@@ -11,11 +12,7 @@ class TestBase extends PHPUnit\Framework\TestCase
      */
     protected static function getPhpUnitVersion()
     {
-        if (method_exists('\\PHPUnit\\Runner\\Version', 'id')) {
-            return \PHPUnit\Runner\Version::id();
-        }
-
-        return \PHPUnit\Runner\Version::VERSION;
+        return Version::id();
     }
 
     protected function fixture($fixture)
@@ -117,14 +114,13 @@ class TestBase extends PHPUnit\Framework\TestCase
      */
     protected static function skipIfCodeCoverageNotEnabled()
     {
-        try {
-            if (class_exists('\\PHP_CodeCoverage')) {
-                new \PHP_CodeCoverage();
-            } elseif (class_exists('\\SebastianBergmann\\CodeCoverage\\CodeCoverage')) {
-                new CodeCoverage();
-            }
-        } catch (\Exception $e) {
-            static::markTestSkipped($e->getMessage());
+        static $runtime;
+        if (null === $runtime) {
+            $runtime = new Runtime();
+        }
+
+        if (!$runtime->canCollectCodeCoverage()) {
+            static::markTestSkipped('No code coverage driver available');
         }
     }
 

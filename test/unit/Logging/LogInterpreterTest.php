@@ -175,7 +175,7 @@ class LogInterpreterTest extends ResultTester
 
     protected function getMockReader()
     {
-        return $this->getMockBuilder('ParaTest\\Logging\\JUnit\\Reader')
+        return $this->getMockBuilder(Reader::class)
                     ->disableOriginalConstructor()
                     ->getMock();
     }

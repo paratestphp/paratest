@@ -3,9 +3,12 @@
 namespace ParaTest\Console\Commands;
 
 use ParaTest\Console\Testers\PHPUnit;
+use ParaTest\Console\Testers\Tester;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ParaTestCommandTest extends \TestBase
 {
@@ -63,9 +66,9 @@ class ParaTestCommandTest extends \TestBase
 
     public function testExecuteInvokesTestersExecuteMethod()
     {
-        $input = $this->getMockBuilder('Symfony\\Component\\Console\\Input\\InputInterface')->getMock();
-        $output = $this->getMockBuilder('Symfony\\Component\\Console\\Output\\OutputInterface')->getMock();
-        $tester = $this->getMockBuilder('ParaTest\\Console\\Testers\\Tester')->getMock();
+        $input = $this->getMockBuilder(InputInterface::class)->getMock();
+        $output = $this->getMockBuilder(OutputInterface::class)->getMock();
+        $tester = $this->getMockBuilder(Tester::class)->getMock();
         $tester
             ->expects($this->once())
             ->method('execute')

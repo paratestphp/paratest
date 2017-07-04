@@ -2,6 +2,8 @@
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Logging\LogInterpreter;
+
 class RunnerTest extends \TestBase
 {
     protected $runner;
@@ -28,8 +30,8 @@ class RunnerTest extends \TestBase
         //filter out processes and path and phpunit
         $config = new Configuration(getcwd() . DS . 'phpunit.xml.dist');
         $this->assertEquals(['bootstrap' => 'hello', 'configuration' => $config], $options->filtered);
-        $this->assertInstanceOf('ParaTest\\Logging\\LogInterpreter', $this->getObjectValue($runner, 'interpreter'));
-        $this->assertInstanceOf('ParaTest\\Runners\\PHPUnit\\ResultPrinter', $this->getObjectValue($runner, 'printer'));
+        $this->assertInstanceOf(LogInterpreter::class, $this->getObjectValue($runner, 'interpreter'));
+        $this->assertInstanceOf(ResultPrinter::class, $this->getObjectValue($runner, 'printer'));
     }
 
     public function testGetExitCode()

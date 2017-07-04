@@ -21,10 +21,6 @@ class GetClassTest extends \TestBase
 
     public function testParsedAnonymousClassNameHasNoNullByte()
     {
-        if (PHP_VERSION_ID < 70000) {
-            return $this->markTestSkipped('php versions prior to php7 does not support anonymous classes');
-        }
-
         $class = $this->parseFile($this->fixture('failing-tests/AnonymousClass.inc'));
         $this->assertNotContains("\x00", $class->getName());
     }
