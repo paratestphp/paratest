@@ -2,35 +2,44 @@ language: php
 
 sudo: false
 
-dist: trusty
-
-# hhvm won't work with phpunit 6.x due to lack of Throwable support, see https://github.com/facebook/hhvm/issues/6037
-php:
-    - 7.0
-    - 7.1
-
 cache:
   directories:
-    - $HOME/.composer/cache
+    - $HOME/.composer/
 
 matrix:
   fast_finish: true
+  include:
+    - php: 7
+      env:
+        - DEPS=lowest
+    - php: 7
+      env:
+        - CODE_COVERAGE=true
+    - php: 7
+      env:
+        - CS_CHECK=true
+    - php: 7.1
+      env:
+        - DEPS=lowest
+    - php: 7.1
+    - php: 7.1
+      env:
+        - PHPUNIT_DEV=true
+    - php: nightly
   allow_failures:
-    - env: PHPUNIT_VERSION='*@dev'
+    - php: nightly
 
-env:
-    - PHPUNIT_VERSION='6.0.*@stable'
-    - PHPUNIT_VERSION='6.*@stable'
-    - PHPUNIT_VERSION='*@dev'
-
-before_script:
-    - composer require --no-update phpunit/phpunit=$PHPUNIT_VERSION
-    - composer install --prefer-dist
+install:
+  - if [[ $CS_CHECK == 'true' ]]; then phpenv config-rm xdebug.ini || return 0; else composer remove --dev --no-update --no-scripts friendsofphp/php-cs-fixer; fi;
+  - if [[ $PHPUNIT_DEV == 'true' ]]; then composer require --no-update phpunit/phpunit=*@dev; fi;
+  - if [[ $DEPS == 'lowest' ]]; then COMPOSER_ARGS='--prefer-lowest --prefer-stable'; fi; composer update --no-interaction --prefer-dist $COMPOSER_ARGS
 
 script:
-    - vendor/bin/phpunit --coverage-clover=coverage.clover
-    - if [[ $TRAVIS_PHP_VERSION == "7.0" && $PHPUNIT_VERSION == '6.*@stable' ]]; then vendor/bin/php-cs-fixer fix --diff --dry-run --verbose ; fi
+  - if [[ $CS_CHECK == 'true' ]]; then vendor/bin/php-cs-fixer fix --diff --dry-run --verbose; fi;
+  - if [[ $CS_CHECK != 'true' ]]; then if [[ $CODE_COVERAGE == 'true' ]]; then COVERAGE_ARGS='--coverage-clover=coverage.clover'; fi; vendor/bin/phpunit $COVERAGE_ARGS; fi;
 
 after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - if [[ $CODE_COVERAGE == 'true' ]]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi;
+
+notifications:
+  email: false
