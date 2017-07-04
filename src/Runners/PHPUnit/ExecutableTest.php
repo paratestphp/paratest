@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 use Symfony\Component\Process\Process;
@@ -7,7 +8,7 @@ use Symfony\Component\Process\ProcessBuilder;
 abstract class ExecutableTest
 {
     /**
-     * The path to the test to run
+     * The path to the test to run.
      *
      * @var string
      */
@@ -15,7 +16,7 @@ abstract class ExecutableTest
 
     /**
      * A path to the temp file created
-     * for this test
+     * for this test.
      *
      * @var string
      */
@@ -24,7 +25,8 @@ abstract class ExecutableTest
     protected $pipes = [];
 
     /**
-     * Path where the coveragereport is stored
+     * Path where the coveragereport is stored.
+     *
      * @var string
      */
     protected $coverageFileName;
@@ -36,14 +38,14 @@ abstract class ExecutableTest
 
     /**
      * A unique token value for a given
-     * process
+     * process.
      *
      * @var int
      */
     protected $token;
 
     /**
-     * Last executed process command
+     * Last executed process command.
      *
      * @var string
      */
@@ -56,14 +58,14 @@ abstract class ExecutableTest
     }
 
     /**
-     * Get the expected count of tests to be executed
+     * Get the expected count of tests to be executed.
      *
      * @return int
      */
     abstract public function getTestCount();
 
     /**
-     * Get the path to the test being executed
+     * Get the path to the test being executed.
      *
      * @return string
      */
@@ -75,21 +77,21 @@ abstract class ExecutableTest
     /**
      * Returns the path to this test's temp file.
      * If the temp file does not exist, it will be
-     * created
+     * created.
      *
      * @return string
      */
     public function getTempFile()
     {
-        if (is_null($this->temp)) {
-            $this->temp = tempnam(sys_get_temp_dir(), "PT_");
+        if (null === $this->temp) {
+            $this->temp = tempnam(sys_get_temp_dir(), 'PT_');
         }
 
         return $this->temp;
     }
 
     /**
-     * Return the test process' stderr contents
+     * Return the test process' stderr contents.
      *
      * @return string
      */
@@ -99,7 +101,8 @@ abstract class ExecutableTest
     }
 
     /**
-     * Return any warnings that are in the test output, or false if there are none
+     * Return any warnings that are in the test output, or false if there are none.
+     *
      * @return mixed
      */
     public function getWarnings()
@@ -117,12 +120,12 @@ abstract class ExecutableTest
             $matches
         );
 
-        return isset($matches[1]) ? $matches[1] : false;
+        return $matches[1] ?? false;
     }
 
     /**
      * Stop the process and return it's
-     * exit code
+     * exit code.
      *
      * @return int
      */
@@ -132,7 +135,7 @@ abstract class ExecutableTest
     }
 
     /**
-     * Removes the test file
+     * Removes the test file.
      */
     public function deleteFile()
     {
@@ -151,7 +154,7 @@ abstract class ExecutableTest
     }
 
     /**
-     * Return the exit code of the process
+     * Return the exit code of the process.
      *
      * @return int
      */
@@ -161,7 +164,7 @@ abstract class ExecutableTest
     }
 
     /**
-     * Return the last process command
+     * Return the last process command.
      *
      * @return string
      */
@@ -171,11 +174,12 @@ abstract class ExecutableTest
     }
 
     /**
-     * Executes the test by creating a separate process
+     * Executes the test by creating a separate process.
      *
      * @param $binary
      * @param array $options
      * @param array $environmentVariables
+     *
      * @return $this
      */
     public function run($binary, $options = [], $environmentVariables = [])
@@ -187,11 +191,12 @@ abstract class ExecutableTest
         $this->lastCommand = $command;
         $this->process = new Process($command, null, $environmentVariables);
         $this->process->start();
+
         return $this;
     }
 
     /**
-     * Returns the unique token for this test process
+     * Returns the unique token for this test process.
      *
      * @return int
      */
@@ -203,33 +208,35 @@ abstract class ExecutableTest
     /**
      * Generate command line with passed options suitable to handle through paratest.
      *
-     * @param  string $binary  Executable binary name.
-     * @param  array  $options Command line options.
-     * @return string          Command line.
+     * @param string $binary  executable binary name
+     * @param array  $options command line options
+     *
+     * @return string command line
      */
     public function command($binary, $options = [])
     {
         $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         $options = $this->redirectCoverageOption($options);
+
         return $this->getCommandString($binary, $options);
     }
 
     /**
-     * Get covertage filename
+     * Get covertage filename.
      *
      * @return string
      */
     public function getCoverageFileName()
     {
         if ($this->coverageFileName === null) {
-            $this->coverageFileName = tempnam(sys_get_temp_dir(), "CV_");
+            $this->coverageFileName = tempnam(sys_get_temp_dir(), 'CV_');
         }
 
         return $this->coverageFileName;
     }
 
     /**
-     * Get process stdout content
+     * Get process stdout content.
      *
      * @return string
      */
@@ -239,7 +246,7 @@ abstract class ExecutableTest
     }
 
     /**
-     * Set process termporary filename
+     * Set process termporary filename.
      *
      * @param string $temp
      */
@@ -255,29 +262,30 @@ abstract class ExecutableTest
      * cases in single --filter arguments so it's better to show error regarding that to user
      * and propose him to decrease max batch size.
      *
-     * @param  string $cmd Command line
+     * @param string $cmd Command line
+     *
      * @throws \RuntimeException on too long command line
      */
     protected function assertValidCommandLineLength($cmd)
     {
-        if (DIRECTORY_SEPARATOR == "\\") { // windows
+        if (DIRECTORY_SEPARATOR === '\\') { // windows
             // symfony's process wrapper
-            $cmd = 'cmd /V:ON /E:ON /C "('.$cmd.')';
+            $cmd = 'cmd /V:ON /E:ON /C "(' . $cmd . ')';
             if (strlen($cmd) > 32767) {
-                throw new \RuntimeException("Command line is too long, try to decrease max batch size");
+                throw new \RuntimeException('Command line is too long, try to decrease max batch size');
             }
-        } else {
+        }
             // TODO: Implement command line length validation for linux/osx/freebsd
             //       Please note that on unix environment variables also became part of command line
             // linux: echo | xargs --show-limits
             // osx/linux: getconf ARG_MAX
-        }
     }
 
     /**
-     * A template method that can be overridden to add necessary options for a test
+     * A template method that can be overridden to add necessary options for a test.
      *
-     * @param  array $options the options that are passed to the run method
+     * @param array $options the options that are passed to the run method
+     *
      * @return array $options the prepared options
      */
     protected function prepareOptions($options)
@@ -287,10 +295,11 @@ abstract class ExecutableTest
 
     /**
      * Returns the command string that will be executed
-     * by proc_open
+     * by proc_open.
      *
      * @param $binary
      * @param array $options
+     *
      * @return mixed
      */
     protected function getCommandString($binary, $options = [])
@@ -314,7 +323,7 @@ abstract class ExecutableTest
 
     /**
      * Checks environment variables for the presence of a TEST_TOKEN
-     * variable and sets $this->token based on its value
+     * variable and sets $this->token based on its value.
      *
      * @param $environmentVariables
      */
@@ -330,6 +339,7 @@ abstract class ExecutableTest
      * This will ensure, that multiple tests write to separate coverage-files.
      *
      * @param array $options
+     *
      * @return array $options
      */
     protected function redirectCoverageOption($options)
@@ -338,8 +348,7 @@ abstract class ExecutableTest
             $options['coverage-php'] = $this->getCoverageFileName();
         }
 
-        unset($options['coverage-html']);
-        unset($options['coverage-clover']);
+        unset($options['coverage-html'], $options['coverage-clover']);
 
         return $options;
     }

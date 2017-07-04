@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Parser;
+<?php
+
+namespace ParaTest\Parser;
 
 class ParsedObjectTest extends \TestBase
 {

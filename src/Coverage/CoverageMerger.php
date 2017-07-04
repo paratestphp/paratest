@@ -26,7 +26,7 @@ class CoverageMerger
     /**
      * Returns coverage object from file.
      *
-     * @param \SplFileObject $coverageFile Coverage file.
+     * @param \SplFileObject $coverageFile coverage file
      *
      * @return \PHP_CodeCoverage|CodeCoverage
      */
@@ -42,8 +42,10 @@ class CoverageMerger
     }
 
     /**
-     * Adds the coverage contained in $coverageFile and deletes the file afterwards
+     * Adds the coverage contained in $coverageFile and deletes the file afterwards.
+     *
      * @param string $coverageFile Code coverage file
+     *
      * @throws \RuntimeException When coverage file is empty
      */
     public function addCoverageFromFile($coverageFile)
@@ -66,7 +68,7 @@ class CoverageMerger
     }
 
     /**
-     * Get coverage report generator
+     * Get coverage report generator.
      *
      * @return CoverageReporterInterface
      */

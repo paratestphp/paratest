@@ -8,3 +8,5 @@ composer.lock
 test/fixtures/small-tests/*Test.php
 test/fixtures/generated-tests
 nbproject
+.php_cs
+.php_cs.cache

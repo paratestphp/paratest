@@ -61,6 +61,8 @@ class WrapperRunnerTest extends FunctionalTestBase
 
     /**
      * @dataProvider functionalModeEnabledDataProvider
+     *
+     * @param mixed $functionalModeEnabled
      */
     public function testExitCodes($functionalModeEnabled)
     {

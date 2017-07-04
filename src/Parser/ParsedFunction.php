@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Parser;
+<?php
+
+namespace ParaTest\Parser;
 
 class ParsedFunction extends ParsedObject
 {
@@ -15,7 +17,7 @@ class ParsedFunction extends ParsedObject
 
     /**
      * Returns the accessibility level of the parsed
-     * method - i.e public, private, protected
+     * method - i.e public, private, protected.
      *
      * @return string
      */

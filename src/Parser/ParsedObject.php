@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Parser;
 
 abstract class ParsedObject
@@ -20,7 +21,7 @@ abstract class ParsedObject
     }
 
     /**
-     * Get the name of a parsed object
+     * Get the name of a parsed object.
      *
      * @return string
      */
@@ -30,7 +31,7 @@ abstract class ParsedObject
     }
 
     /**
-     * Get the doc block comments of a parsed object
+     * Get the doc block comments of a parsed object.
      *
      * @return string
      */
@@ -42,10 +43,11 @@ abstract class ParsedObject
     /**
      * Returns whether or not the parsed object
      * has an annotation matching the name and value
-     * if provided
+     * if provided.
      *
      * @param string $anno
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return bool
      */
     public function hasAnnotation($anno, $value = null)
@@ -53,8 +55,9 @@ abstract class ParsedObject
         $pattern = sprintf(
             '/@%s%s/',
             $anno,
-            !is_null($value) ? "[\s]+$value" : '\b'
+            null !== $value ? "[\s]+$value" : '\b'
         );
+
         return (bool) preg_match($pattern, $this->docBlock);
     }
 }

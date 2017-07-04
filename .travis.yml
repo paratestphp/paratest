@@ -24,12 +24,12 @@ env:
     - PHPUNIT_VERSION='*@dev'
 
 before_script:
-    - composer self-update
     - composer require --no-update phpunit/phpunit=$PHPUNIT_VERSION
     - composer install --prefer-dist
 
 script:
     - vendor/bin/phpunit --coverage-clover=coverage.clover
+    - if [[ $TRAVIS_PHP_VERSION == "7.0" && $PHPUNIT_VERSION == '6.*@stable' ]]; then vendor/bin/php-cs-fixer fix --diff --dry-run --verbose ; fi
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

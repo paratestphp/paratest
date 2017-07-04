@@ -1,10 +1,11 @@
-<?php namespace ParaTest\Console\Testers;
+<?php
 
-use Symfony\Component\Console\Command\Command,
-    Symfony\Component\Console\Input\InputDefinition,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\ArrayInput;
+namespace ParaTest\Console\Testers;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
 
 class PHPUnitTest extends \TestBase
 {
@@ -23,7 +24,7 @@ class PHPUnitTest extends \TestBase
             new InputOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.'),
             new InputArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'),
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
-            new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
+            new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
         ]);
         $tester = new PHPUnit();
         $tester->configure($testCommand);
@@ -32,8 +33,7 @@ class PHPUnitTest extends \TestBase
 
     public function testRequireBootstrapIsChdirResistent()
     {
-
-        $file = dirname(__FILE__) . '/../../../fixtures/chdirBootstrap.php';
+        $file = __DIR__ . '/../../../fixtures/chdirBootstrap.php';
         $tester = new PHPUnit();
         $cwd = getcwd();
 
@@ -44,7 +44,8 @@ class PHPUnitTest extends \TestBase
 
 class TestCommand extends Command
 {
-    public function __construct() {
-        parent::__construct("testcommand");
+    public function __construct()
+    {
+        parent::__construct('testcommand');
     }
 }

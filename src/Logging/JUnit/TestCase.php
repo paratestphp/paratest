@@ -1,14 +1,13 @@
 <?php
+
 namespace ParaTest\Logging\JUnit;
 
 /**
- * Class TestCase
+ * Class TestCase.
  *
  * A simple data structure for tracking
  * the results of a testcase node in a
  * JUnit xml document
- *
- * @package ParaTest\Logging\JUnit
  */
 class TestCase
 {
@@ -43,14 +42,14 @@ class TestCase
     public $time;
 
     /**
-     * List of failures in this test case
+     * List of failures in this test case.
      *
      * @var array
      */
     public $failures = [];
 
     /**
-     * List of errors in this test case
+     * List of errors in this test case.
      *
      * @var array
      */
@@ -63,8 +62,8 @@ class TestCase
      * @param string $name
      * @param string $class
      * @param string $file
-     * @param int $line
-     * @param int $assertions
+     * @param int    $line
+     * @param int    $assertions
      * @param string $time
      */
     public function __construct(
@@ -111,7 +110,7 @@ class TestCase
     }
 
     /**
-     * Add a defect type (error or failure)
+     * Add a defect type (error or failure).
      *
      * @param string $collName the name of the collection to add to
      * @param $type
@@ -121,26 +120,27 @@ class TestCase
     {
         $this->{$collName}[] = [
             'type' => $type,
-            'text' => trim($text)
+            'text' => trim($text),
         ];
     }
 
     /**
-     * Add systemOut result on test (if has failed or have error)
+     * Add systemOut result on test (if has failed or have error).
      *
      * @param mixed $node
+     *
      * @return mixed
      */
     public static function addSystemOut($node)
     {
         $sys = 'system-out';
 
-        if(!empty($node->failure)) {
-            $node->failure = (string)$node->failure . (string)$node->{$sys};
+        if (!empty($node->failure)) {
+            $node->failure = (string) $node->failure . (string) $node->{$sys};
         }
 
-        if(!empty($node->error)) {
-            $node->error = (string)$node->error . (string)$node->{$sys};
+        if (!empty($node->error)) {
+            $node->error = (string) $node->error . (string) $node->{$sys};
         }
 
         return $node;
@@ -148,14 +148,15 @@ class TestCase
 
     /**
      * Factory method that creates a TestCase object
-     * from a SimpleXMLElement
+     * from a SimpleXMLElement.
      *
      * @param \SimpleXMLElement $node
+     *
      * @return TestCase
      */
     public static function caseFromNode(\SimpleXMLElement $node)
     {
-        $case = new TestCase(
+        $case = new self(
             (string) $node['name'],
             (string) $node['class'],
             (string) $node['file'],
@@ -164,21 +165,21 @@ class TestCase
             (string) $node['time']
         );
 
-        $node       = self::addSystemOut($node);
-        $failures   = $node->xpath('failure');
-        $skipped    = $node->xpath('skipped');
-        $errors     = $node->xpath('error');
+        $node = self::addSystemOut($node);
+        $failures = $node->xpath('failure');
+        $skipped = $node->xpath('skipped');
+        $errors = $node->xpath('error');
 
         foreach ($failures as $fail) {
-            $case->addFailure((string)$fail['type'], (string)$fail);
+            $case->addFailure((string) $fail['type'], (string) $fail);
         }
 
         foreach ($errors as $err) {
-            $case->addError((string)$err['type'], (string)$err);
+            $case->addError((string) $err['type'], (string) $err);
         }
 
         foreach ($skipped as $skip) {
-            $case->addSkipped((string)$skip['type'], (string)$skip);
+            $case->addSkipped((string) $skip['type'], (string) $skip);
         }
 
         return $case;

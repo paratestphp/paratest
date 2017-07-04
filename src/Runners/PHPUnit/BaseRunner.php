@@ -3,8 +3,8 @@
 namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Coverage\CoverageMerger;
-use ParaTest\Logging\LogInterpreter;
 use ParaTest\Logging\JUnit\Writer;
+use ParaTest\Logging\LogInterpreter;
 
 abstract class BaseRunner
 {
@@ -27,7 +27,7 @@ abstract class BaseRunner
 
     /**
      * A collection of pending ExecutableTest objects that have
-     * yet to run
+     * yet to run.
      *
      * @var array
      */
@@ -35,7 +35,7 @@ abstract class BaseRunner
 
     /**
      * A collection of ExecutableTest objects that have processes
-     * currently running
+     * currently running.
      *
      * @var array
      */
@@ -43,19 +43,18 @@ abstract class BaseRunner
 
     /**
      * A tallied exit code that returns the highest exit
-     * code returned out of the entire collection of tests
+     * code returned out of the entire collection of tests.
      *
      * @var int
      */
     protected $exitcode = -1;
 
     /**
-     * CoverageMerger to hold track of the accumulated coverage
+     * CoverageMerger to hold track of the accumulated coverage.
      *
      * @var CoverageMerger
      */
     protected $coverage = null;
-
 
     public function __construct($opts = [])
     {
@@ -75,7 +74,7 @@ abstract class BaseRunner
     /**
      * Ensures a valid configuration was supplied. If not
      * causes ParaTest to print the error message and exit immediately
-     * with an exit code of 1
+     * with an exit code of 1.
      */
     protected function verifyConfiguration()
     {
@@ -89,7 +88,7 @@ abstract class BaseRunner
      * Builds the collection of pending ExecutableTest objects
      * to run. If functional mode is enabled $this->pending will
      * contain a collection of TestMethod objects instead of Suite
-     * objects
+     * objects.
      */
     protected function load()
     {
@@ -104,7 +103,7 @@ abstract class BaseRunner
 
     /**
      * Returns the highest exit code encountered
-     * throughout the course of test execution
+     * throughout the course of test execution.
      *
      * @return int
      */
@@ -114,7 +113,7 @@ abstract class BaseRunner
     }
 
     /**
-     * Write output to JUnit format if requested
+     * Write output to JUnit format if requested.
      */
     protected function log()
     {
@@ -127,7 +126,7 @@ abstract class BaseRunner
     }
 
     /**
-     * Write coverage to file if requested
+     * Write coverage to file if requested.
      */
     protected function logCoverage()
     {
@@ -174,5 +173,4 @@ abstract class BaseRunner
     {
         return $this->coverage;
     }
-
 }

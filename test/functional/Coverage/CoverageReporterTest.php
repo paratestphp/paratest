@@ -6,7 +6,8 @@ use ParaTest\Coverage\CoverageMerger;
 class CoverageReporterTest extends TestBase
 {
     /**
-     * Target directory for reports
+     * Target directory for reports.
+     *
      * @var string
      */
     private $targetDir;
@@ -39,7 +40,7 @@ class CoverageReporterTest extends TestBase
      * @dataProvider getReporterProvider
      *
      * @param string[] $coverageFiles
-     * @param string $expectedReportClass
+     * @param string   $expectedReportClass
      */
     public function testGetReporter(array $coverageFiles, $expectedReportClass)
     {
@@ -69,7 +70,7 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir.'/coverage.php';
+        $target = $this->targetDir . '/coverage.php';
 
         static::assertFileNotExists($target);
 
@@ -92,7 +93,7 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir.'/coverage.xml';
+        $target = $this->targetDir . '/coverage.xml';
 
         static::assertFileNotExists($target);
 
@@ -118,14 +119,14 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir.'/coverage';
+        $target = $this->targetDir . '/coverage';
 
         static::assertFileNotExists($target);
 
         $coverageMerger->getReporter()->html($target);
 
         static::assertFileExists($target);
-        static::assertFileExists($target.'/index.html', 'Index html file was not generated');
+        static::assertFileExists($target . '/index.html', 'Index html file was not generated');
     }
 
     /**

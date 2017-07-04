@@ -8,7 +8,7 @@ class RunnerIntegrationTest extends \TestBase
 {
     /** @var Runner $runner */
     protected $runner;
-    /** @var  array */
+    /** @var array */
     protected $options;
 
     protected function setUp()
@@ -19,12 +19,22 @@ class RunnerIntegrationTest extends \TestBase
             'path' => FIXTURES . DS . 'failing-tests',
             'phpunit' => PHPUNIT,
             'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
-            'bootstrap' => BOOTSTRAP
+            'bootstrap' => BOOTSTRAP,
         ];
         if (ParaTestCommand::isWhitelistSupported()) {
             $this->options['whitelist'] = FIXTURES . DS . 'failing-tests';
         }
         $this->runner = new Runner($this->options);
+    }
+
+    protected function tearDown()
+    {
+        $testcoverageFile = sys_get_temp_dir() . DS . 'testcoverage.php';
+        if (file_exists($testcoverageFile)) {
+            unlink($testcoverageFile);
+        }
+
+        parent::tearDown();
     }
 
     private function globTempDir($pattern)
@@ -60,9 +70,11 @@ class RunnerIntegrationTest extends \TestBase
         $runner->run();
         ob_end_clean();
 
-        $this->assertTrue(file_exists($outputPath));
+        $this->assertFileExists($outputPath);
         $this->assertJunitXmlIsCorrect($outputPath);
-        if(file_exists($outputPath)) unlink($outputPath);
+        if (file_exists($outputPath)) {
+            unlink($outputPath);
+        }
     }
 
     public function assertJunitXmlIsCorrect($path)
@@ -79,15 +91,5 @@ class RunnerIntegrationTest extends \TestBase
         $this->assertCount(16, $cases);
         $this->assertCount(6, $failures);
         $this->assertCount(1, $errors);
-    }
-
-    protected function tearDown()
-    {
-        $testcoverageFile = sys_get_temp_dir() . DS . 'testcoverage.php';
-        if (file_exists($testcoverageFile)) {
-            unlink($testcoverageFile);
-        }
-
-        parent::tearDown();
     }
 }

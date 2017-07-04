@@ -3,7 +3,7 @@
 namespace ParaTest\Coverage;
 
 /**
- * Coverage reporter for phpunit/php-code-coverage version 3 and older
+ * Coverage reporter for phpunit/php-code-coverage version 3 and older.
  */
 class CoverageReporterLegacy implements CoverageReporterInterface
 {
@@ -21,7 +21,7 @@ class CoverageReporterLegacy implements CoverageReporterInterface
     }
 
     /**
-     * Generate clover coverage report
+     * Generate clover coverage report.
      *
      * @param string $target Report filename
      */
@@ -32,7 +32,7 @@ class CoverageReporterLegacy implements CoverageReporterInterface
     }
 
     /**
-     * Generate html coverage report
+     * Generate html coverage report.
      *
      * @param string $target Report filename
      */
@@ -43,7 +43,8 @@ class CoverageReporterLegacy implements CoverageReporterInterface
     }
 
     /**
-     * Generate php coverage report
+     * Generate php coverage report.
+     *
      * @param string $target Report filename
      */
     public function php($target)

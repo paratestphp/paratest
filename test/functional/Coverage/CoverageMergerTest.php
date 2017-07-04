@@ -6,9 +6,8 @@ use SebastianBergmann\CodeCoverage\CodeCoverage;
 
 class CoverageMergerTest extends TestBase
 {
-
     /**
-     * Directory to store coverage files
+     * Directory to store coverage files.
      *
      * @var string
      */
@@ -180,12 +179,11 @@ class CoverageMergerTest extends TestBase
 
     /**
      * @param CoverageMerger $coverageMerger
+     *
      * @return CodeCoverage|\PHP_CodeCoverage
      */
     private function getCoverage(CoverageMerger $coverageMerger)
     {
         return $this->getObjectValue($coverageMerger, 'coverage');
     }
-
-
 }

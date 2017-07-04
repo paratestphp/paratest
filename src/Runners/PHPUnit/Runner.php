@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 use Habitat\Habitat;
@@ -7,12 +8,11 @@ class Runner extends BaseRunner
 {
     /**
      * A collection of available tokens based on the number
-     * of processes specified in $options
+     * of processes specified in $options.
      *
      * @var array
      */
     protected $tokens = [];
-
 
     public function __construct($opts = [])
     {
@@ -44,7 +44,7 @@ class Runner extends BaseRunner
      * Finalizes the run process. This method
      * prints all results, rewinds the log interpreter,
      * logs any results to JUnit, and cleans up temporary
-     * files
+     * files.
      */
     private function complete()
     {
@@ -61,12 +61,12 @@ class Runner extends BaseRunner
     /**
      * This method removes ExecutableTest objects from the pending collection
      * and adds them to the running collection. It is also in charge of recycling and
-     * acquiring available test tokens for use
+     * acquiring available test tokens for use.
      */
     private function fillRunQueue()
     {
         $opts = $this->options;
-        while (sizeof($this->pending) && sizeof($this->running) < $opts->processes) {
+        while (count($this->pending) && count($this->running) < $opts->processes) {
             $tokenData = $this->getNextAvailableToken();
             if ($tokenData !== false) {
                 $this->acquireToken($tokenData['token']);
@@ -80,11 +80,13 @@ class Runner extends BaseRunner
      * Returns whether or not a test has finished being
      * executed. If it has, this method also halts a test process - optionally
      * throwing an exception if a fatal error has occurred -
-     * prints feedback, and updates the overall exit code
+     * prints feedback, and updates the overall exit code.
      *
      * @param ExecutableTest $test
-     * @return bool
+     *
      * @throws \Exception
+     *
+     * @return bool
      */
     private function testIsStillRunning($test)
     {
@@ -114,7 +116,7 @@ class Runner extends BaseRunner
     /**
      * If the provided test object has an exit code
      * higher than the currently set exit code, that exit
-     * code will be set as the overall exit code
+     * code will be set as the overall exit code.
      *
      * @param ExecutableTest $test
      */
@@ -128,19 +130,19 @@ class Runner extends BaseRunner
 
     /**
      * Initialize the available test tokens based
-     * on how many processes ParaTest will be run in
+     * on how many processes ParaTest will be run in.
      */
     protected function initTokens()
     {
         $this->tokens = [];
-        for ($i = 0; $i < $this->options->processes; $i++) {
+        for ($i = 0; $i < $this->options->processes; ++$i) {
             $this->tokens[$i] = ['token' => $i, 'unique' => uniqid($i), 'available' => true];
         }
     }
 
     /**
      * Gets the next token that is available to be acquired
-     * from a finished process
+     * from a finished process.
      *
      * @return bool|array
      */
@@ -151,32 +153,33 @@ class Runner extends BaseRunner
                 return $data;
             }
         }
+
         return false;
     }
 
     /**
-     * Flag a token as available for use
+     * Flag a token as available for use.
      *
      * @param string $tokenIdentifier
      */
     protected function releaseToken($tokenIdentifier)
     {
         $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
-            return ($val['token'] === $tokenIdentifier);
+            return $val['token'] === $tokenIdentifier;
         });
         $keys = array_keys($filtered);
         $this->tokens[$keys[0]]['available'] = true;
     }
 
     /**
-     * Flag a token as acquired and not available for use
+     * Flag a token as acquired and not available for use.
      *
      * @param string $tokenIdentifier
      */
     protected function acquireToken($tokenIdentifier)
     {
         $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
-            return ($val['token'] === $tokenIdentifier);
+            return $val['token'] === $tokenIdentifier;
         });
         $keys = array_keys($filtered);
         $this->tokens[$keys[0]]['available'] = false;

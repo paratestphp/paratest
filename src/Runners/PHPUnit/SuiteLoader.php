@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Parser\NoClassInFileException;
@@ -9,14 +10,14 @@ use ParaTest\Parser\Parser;
 class SuiteLoader
 {
     /**
-     * The collection of loaded files
+     * The collection of loaded files.
      *
      * @var array
      */
     protected $files = [];
 
     /**
-     * The collection of parsed test classes
+     * The collection of parsed test classes.
      *
      * @var array
      */
@@ -30,7 +31,7 @@ class SuiteLoader
     public function __construct($options = null)
     {
         if ($options && !$options instanceof Options) {
-            throw new \InvalidArgumentException("SuiteLoader options must be null or of type Options");
+            throw new \InvalidArgumentException('SuiteLoader options must be null or of type Options');
         }
 
         $this->options = $options;
@@ -38,7 +39,7 @@ class SuiteLoader
 
     /**
      * Returns all parsed suite objects as ExecutableTest
-     * instances
+     * instances.
      *
      * @return array
      */
@@ -49,7 +50,7 @@ class SuiteLoader
 
     /**
      * Returns a collection of TestMethod objects
-     * for all loaded ExecutableTest instances
+     * for all loaded ExecutableTest instances.
      *
      * @return array
      */
@@ -65,9 +66,10 @@ class SuiteLoader
 
     /**
      * Populates the loaded suite collection. Will load suites
-     * based off a phpunit xml configuration or a specified path
+     * based off a phpunit xml configuration or a specified path.
      *
      * @param string $path
+     *
      * @throws \RuntimeException
      */
     public function load($path = '')
@@ -97,9 +99,8 @@ class SuiteLoader
             }
         }
 
-
         if (!$this->files) {
-            throw new \RuntimeException("No path or configuration provided (tests must end with Test.php)");
+            throw new \RuntimeException('No path or configuration provided (tests must end with Test.php)');
         }
 
         $this->files = array_unique($this->files); // remove duplicates
@@ -107,10 +108,9 @@ class SuiteLoader
         $this->initSuites();
     }
 
-
     /**
      * Called after all files are loaded. Parses loaded files into
-     * ExecutableTest objects - either Suite or TestMethod
+     * ExecutableTest objects - either Suite or TestMethod.
      */
     private function initSuites()
     {
@@ -134,6 +134,7 @@ class SuiteLoader
             $executableTest = new TestMethod($path, $methodBatch);
             $executableTests[] = $executableTest;
         }
+
         return $executableTests;
     }
 
@@ -143,7 +144,8 @@ class SuiteLoader
      * Identify method dependencies, and group dependents and dependees on a single methodBatch.
      * Use max batch size to fill batches.
      *
-     * @param  ParsedClass $class
+     * @param ParsedClass $class
+     *
      * @return array of MethodBatches. Each MethodBatch has an array of method names
      */
     private function getMethodBatches($class)
@@ -152,18 +154,19 @@ class SuiteLoader
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
         $batches = [];
         foreach ($classMethods as $method) {
-            $tests = $this->getMethodTests($class, $method, $maxBatchSize != 0);
+            $tests = $this->getMethodTests($class, $method, $maxBatchSize !== 0);
             // if filter passed to paratest then method tests can be blank if not match to filter
             if (!$tests) {
                 continue;
             }
 
-            if (($dependsOn = $this->methodDependency($method)) != null) {
+            if (($dependsOn = $this->methodDependency($method)) !== null) {
                 $this->addDependentTestsToBatchSet($batches, $dependsOn, $tests);
             } else {
                 $this->addTestsToBatchSet($batches, $tests, $maxBatchSize);
             }
         }
+
         return $batches;
     }
 
@@ -183,7 +186,7 @@ class SuiteLoader
     {
         foreach ($tests as $test) {
             $lastIndex = count($batches) - 1;
-            if ($lastIndex != -1
+            if ($lastIndex !== -1
                 && count($batches[$lastIndex]) < $maxBatchSize
             ) {
                 $batches[$lastIndex][] = $test;
@@ -199,10 +202,11 @@ class SuiteLoader
      * With empty filter this method returns single test if doesnt' have data provider or
      * data provider is not used and return all test if has data provider and data provider is used.
      *
-     * @param  ParsedClass  $class            Parsed class.
-     * @param  ParsedObject $method           Parsed method.
-     * @param  bool         $useDataProvider  Try to use data provider or not.
-     * @return string[]     Array of test names.
+     * @param ParsedClass  $class           parsed class
+     * @param ParsedObject $method          parsed method
+     * @param bool         $useDataProvider try to use data provider or not
+     *
+     * @return string[] array of test names
      */
     private function getMethodTests($class, $method, $useDataProvider = false)
     {
@@ -212,15 +216,15 @@ class SuiteLoader
 
         $dataProvider = $this->methodDataProvider($method);
         if ($useDataProvider && isset($dataProvider)) {
-            $testFullClassName = "\\" . $class->getName();
+            $testFullClassName = '\\' . $class->getName();
             $testClass = new $testFullClassName();
             $result = [];
             $datasetKeys = array_keys($testClass->$dataProvider());
             foreach ($datasetKeys as $key) {
                 $test = sprintf(
-                    "%s with data set %s",
+                    '%s with data set %s',
                     $method->getName(),
-                    is_int($key) ? "#" . $key : "\"" . $key . "\""
+                    is_int($key) ? '#' . $key : '"' . $key . '"'
                 );
                 if ($this->testMatchOptions($class->getName(), $test, $groups)) {
                     $result[] = $test;
@@ -260,10 +264,10 @@ class SuiteLoader
             return true;
         }
 
-        $re = substr($this->options->filter, 0, 1) == "/"
+        $re = substr($this->options->filter, 0, 1) === '/'
             ? $this->options->filter
-            : "/" . $this->options->filter . "/";
-        $fullName = $className . "::" . $name;
+            : '/' . $this->options->filter . '/';
+        $fullName = $className . '::' . $name;
         $result = preg_match($re, $fullName);
 
         return $result;
@@ -282,7 +286,6 @@ class SuiteLoader
         if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
-        return null;
     }
 
     private function methodDependency($method)
@@ -290,7 +293,6 @@ class SuiteLoader
         if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
-        return null;
     }
 
     private function methodGroups($method)
@@ -298,6 +300,7 @@ class SuiteLoader
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
+
         return [];
     }
 

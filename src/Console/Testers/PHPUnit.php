@@ -1,21 +1,20 @@
 <?php
+
 namespace ParaTest\Console\Testers;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class PHPUnit
+ * Class PHPUnit.
  *
  * Creates the interface for PHPUnit testing
- *
- * @package ParaTest\Console\Testers
  */
 class PHPUnit extends Tester
 {
@@ -26,10 +25,9 @@ class PHPUnit extends Tester
 
     /**
      * Configures the ParaTestCommand with PHPUnit specific
-     * definitions
+     * definitions.
      *
      * @param Command $command
-     * @return void
      */
     public function configure(Command $command)
     {
@@ -51,10 +49,11 @@ class PHPUnit extends Tester
 
     /**
      * Executes the PHPUnit Runner. Will Display help if no config and no path
-     * supplied
+     * supplied.
      *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @return int|mixed
      */
     public function execute(InputInterface $input, OutputInterface $output)
@@ -81,37 +80,42 @@ class PHPUnit extends Tester
         }
 
         $runner->run();
+
         return $runner->getExitCode();
     }
 
     /**
      * Returns whether or not a test path has been supplied
-     * via option or regular input
+     * via option or regular input.
      *
      * @param InputInterface $input
+     *
      * @return bool
      */
     protected function hasPath(InputInterface $input)
     {
         $argument = $input->getArgument('path');
         $option = $input->getOption('path');
+
         return $argument || $option;
     }
 
     /**
-     * Is there a PHPUnit xml configuration present
+     * Is there a PHPUnit xml configuration present.
      *
      * @param InputInterface $input
+     *
      * @return bool
      */
     protected function hasConfig(InputInterface $input)
     {
-        return (false !== $this->getConfig($input));
+        return false !== $this->getConfig($input);
     }
 
     /**
      * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @return \ParaTest\Runners\PHPUnit\Configuration|boolean
+     *
+     * @return \ParaTest\Runners\PHPUnit\Configuration|bool
      */
     protected function getConfig(InputInterface $input)
     {
@@ -132,8 +136,10 @@ class PHPUnit extends Tester
 
     /**
      * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @return array
+     *
      * @throws \RuntimeException
+     *
+     * @return array
      */
     public function getRunnerOptions(InputInterface $input)
     {
@@ -158,15 +164,16 @@ class PHPUnit extends Tester
      * then an exception will be raised.
      *
      * @param $file
+     *
      * @throws \RuntimeException
      */
     public function requireBootstrap($file)
     {
-        if (! $file) {
+        if (!$file) {
             return;
         }
 
-        if (! file_exists($file)) {
+        if (!file_exists($file)) {
             $message = sprintf('Bootstrap specified but could not be found (%s)', $file);
             throw new \RuntimeException($message);
         }
@@ -178,6 +185,8 @@ class PHPUnit extends Tester
      * This function limits the scope of a required file
      * so that variables defined in it do not break
      * this object's configuration.
+     *
+     * @param mixed $file
      */
     protected function scopedRequire($file)
     {
@@ -190,20 +199,23 @@ class PHPUnit extends Tester
      * Return whether or not code coverage information should be collected.
      *
      * @param $options
+     *
      * @return bool
      */
     protected function hasCoverage($options)
     {
         $isFileFormat = isset($options['coverage-html']) || isset($options['coverage-clover']);
         $isPHP = isset($options['coverage-php']);
-        return $isFileFormat && ! $isPHP;
+
+        return $isFileFormat && !$isPHP;
     }
 
     /**
      * Fetch the path to the bootstrap file.
      *
      * @param InputInterface $input
-     * @param array $options
+     * @param array          $options
+     *
      * @return string
      */
     protected function getBootstrapFile(InputInterface $input, array $options)
@@ -212,7 +224,7 @@ class PHPUnit extends Tester
             return $options['bootstrap'];
         }
 
-        if (! $this->hasConfig($input)) {
+        if (!$this->hasConfig($input)) {
             return '';
         }
 

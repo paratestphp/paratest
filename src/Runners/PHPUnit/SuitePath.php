@@ -1,8 +1,9 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 /**
- * Representation of test suite paths found in phpunit.xml
+ * Representation of test suite paths found in phpunit.xml.
  */
 class SuitePath
 {
@@ -62,6 +63,6 @@ class SuitePath
      */
     public function getPattern()
     {
-        return '|'. preg_quote($this->getSuffix()) . '$|';
+        return '|' . preg_quote($this->getSuffix()) . '$|';
     }
 }

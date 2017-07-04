@@ -38,5 +38,8 @@
         "psr-4": {
             "ParaTest\\": "test/unit/"
         }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.3"
     }
 }

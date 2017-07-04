@@ -1,10 +1,11 @@
 <?php
+
 namespace ParaTest\Parser;
 
 class Parser
 {
     /**
-     * The path to the source file to parse
+     * The path to the source file to parse.
      *
      * @var string
      */
@@ -17,14 +18,14 @@ class Parser
 
     /**
      * Matches a test method beginning with the conventional "test"
-     * word
+     * word.
      *
      * @var string
      */
     private static $testName = '/^test/';
 
     /**
-     * A pattern for matching test methods that use the @test annotation
+     * A pattern for matching test methods that use the @test annotation.
      *
      * @var string
      */
@@ -33,12 +34,12 @@ class Parser
     public function __construct($srcPath)
     {
         if (!file_exists($srcPath)) {
-            throw new \InvalidArgumentException("file not found: " . $srcPath);
+            throw new \InvalidArgumentException('file not found: ' . $srcPath);
         }
 
         $this->path = $srcPath;
         $declaredClasses = get_declared_classes();
-        require_once($this->path);
+        require_once $this->path;
         $class = $this->getClassName($this->path, $declaredClasses);
         if (!$class) {
             throw new NoClassInFileException();
@@ -46,13 +47,13 @@ class Parser
         try {
             $this->refl = new \ReflectionClass($class);
         } catch (\ReflectionException $e) {
-            throw new \InvalidArgumentException("Unable to instantiate ReflectionClass. " . $class . " not found in: " . $srcPath);
+            throw new \InvalidArgumentException('Unable to instantiate ReflectionClass. ' . $class . ' not found in: ' . $srcPath);
         }
     }
 
     /**
      * Returns the fully constructed class
-     * with methods or null if the class is abstract
+     * with methods or null if the class is abstract.
      *
      * @return null|ParsedClass
      */
@@ -69,7 +70,7 @@ class Parser
     }
 
     /**
-     * Return reflection name with null bytes stripped
+     * Return reflection name with null bytes stripped.
      *
      * @return string
      */
@@ -79,7 +80,7 @@ class Parser
     }
 
     /**
-     * Return all test methods present in the file
+     * Return all test methods present in the file.
      *
      * @return array
      */
@@ -95,12 +96,16 @@ class Parser
                 $tests[] = new ParsedFunction($method->getDocComment(), 'public', $method->getName());
             }
         }
+
         return $tests;
     }
 
     /**
      * Return the class name of the class contained
-     * in the file
+     * in the file.
+     *
+     * @param mixed $filename
+     * @param mixed $previousDeclaredClasses
      *
      * @return string
      */
@@ -122,32 +127,37 @@ class Parser
     }
 
     /**
-     * Search for the name of the unit test
+     * Search for the name of the unit test.
+     *
      * @param string[] $classes
-     * @param string $filename
+     * @param string   $filename
+     *
      * @return string|null
      */
-    private function _searchForUnitTestClass(array $classes, $filename) {
+    private function _searchForUnitTestClass(array $classes, $filename)
+    {
         // TODO: After merging this PR or other PR for phpunit 6 support, keep only the applicable subclass name
         $matchingClassName = null;
         foreach ($classes as $className) {
             $class = new \ReflectionClass($className);
-            if ($class->getFileName() == $filename) {
+            if ($class->getFileName() === $filename) {
                 if ($class->isSubclassOf('PHPUnit\Framework\TestCase')) {
                     if ($this->classNameMatchesFileName($filename, $className)) {
                         return $className;
-                    } else if ($matchingClassName === null) {
+                    } elseif ($matchingClassName === null) {
                         $matchingClassName = $className;
                     }
                 }
             }
         }
+
         return $matchingClassName;
     }
 
     /**
      * @param $filename
      * @param $className
+     *
      * @return bool
      */
     private function classNameMatchesFileName($filename, $className)

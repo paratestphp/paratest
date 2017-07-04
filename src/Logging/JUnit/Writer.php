@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Logging\JUnit;
 
 use ParaTest\Logging\LogInterpreter;
@@ -7,7 +8,7 @@ class Writer
 {
     /**
      * The name attribute of the testsuite being
-     * written
+     * written.
      *
      * @var string
      */
@@ -24,14 +25,14 @@ class Writer
     protected $document;
 
     /**
-     * A pattern for matching testsuite attributes
+     * A pattern for matching testsuite attributes.
      *
      * @var string
      */
     protected static $suiteAttrs = '/name|(?:test|assertion|failure|error)s|time|file/';
 
     /**
-     * A pattern for matching testcase attrs
+     * A pattern for matching testcase attrs.
      *
      * @var string
      */
@@ -39,7 +40,7 @@ class Writer
 
     /**
      * A default suite to ease flattening of
-     * suite structures
+     * suite structures.
      *
      * @var array
      */
@@ -49,19 +50,19 @@ class Writer
                                         'failures' => 0,
                                         'skipped' => 0,
                                         'errors' => 0,
-                                        'time' => 0
+                                        'time' => 0,
                                     ];
 
     public function __construct(LogInterpreter $interpreter, $name = '')
     {
         $this->name = $name;
         $this->interpreter = $interpreter;
-        $this->document = new \DOMDocument("1.0", "UTF-8");
+        $this->document = new \DOMDocument('1.0', 'UTF-8');
         $this->document->formatOutput = true;
     }
 
     /**
-     * Get the name of the root suite being written
+     * Get the name of the root suite being written.
      *
      * @return string
      */
@@ -72,7 +73,7 @@ class Writer
 
     /**
      * Returns the xml structure the writer
-     * will use
+     * will use.
      *
      * @return string
      */
@@ -86,11 +87,12 @@ class Writer
                 $cnode = $this->appendCase($snode, $case);
             }
         }
+
         return $this->document->saveXML();
     }
 
     /**
-     * Write the xml structure to a file path
+     * Write the xml structure to a file path.
      *
      * @param $path
      */
@@ -101,15 +103,16 @@ class Writer
 
     /**
      * Append a testsuite node to the given
-     * root element
+     * root element.
      *
      * @param $root
      * @param TestSuite $suite
+     *
      * @return \DOMElement
      */
     protected function appendSuite($root, TestSuite $suite)
     {
-        $suiteNode = $this->document->createElement("testsuite");
+        $suiteNode = $this->document->createElement('testsuite');
         $vars = get_object_vars($suite);
         foreach ($vars as $name => $value) {
             if (preg_match(static::$suiteAttrs, $name)) {
@@ -117,20 +120,22 @@ class Writer
             }
         }
         $root->appendChild($suiteNode);
+
         return $suiteNode;
     }
 
     /**
      * Append a testcase node to the given testsuite
-     * node
+     * node.
      *
      * @param $suiteNode
      * @param TestCase $case
+     *
      * @return \DOMElement
      */
     protected function appendCase($suiteNode, TestCase $case)
     {
-        $caseNode = $this->document->createElement("testcase");
+        $caseNode = $this->document->createElement('testcase');
         $vars = get_object_vars($case);
         foreach ($vars as $name => $value) {
             if (preg_match(static::$caseAttrs, $name)) {
@@ -143,11 +148,12 @@ class Writer
         $suiteNode->appendChild($caseNode);
         $this->appendDefects($caseNode, $case->failures, 'failure');
         $this->appendDefects($caseNode, $case->errors, 'error');
+
         return $caseNode;
     }
 
     /**
-     * Append error or failure nodes to the given testcase node
+     * Append error or failure nodes to the given testcase node.
      *
      * @param $caseNode
      * @param $defects
@@ -163,16 +169,17 @@ class Writer
     }
 
     /**
-     * Get the root level testsuite node
+     * Get the root level testsuite node.
      *
      * @param $suites
+     *
      * @return \DOMElement
      */
     protected function getSuiteRoot($suites)
     {
-        $testsuites = $this->document->createElement("testsuites");
+        $testsuites = $this->document->createElement('testsuites');
         $this->document->appendChild($testsuites);
-        if (sizeof($suites) == 1) {
+        if (count($suites) === 1) {
             return $testsuites;
         }
         $rootSuite = $this->document->createElement('testsuite');
@@ -181,14 +188,16 @@ class Writer
             $rootSuite->setAttribute($attr, $value);
         }
         $testsuites->appendChild($rootSuite);
+
         return $rootSuite;
     }
 
     /**
      * Get the attributes used on the root testsuite
-     * node
+     * node.
      *
      * @param $suites
+     *
      * @return mixed
      */
     protected function getSuiteRootAttributes($suites)
@@ -200,14 +209,17 @@ class Writer
             $result['skipped'] += $suite->skipped;
             $result['errors'] += $suite->errors;
             $result['time'] += $suite->time;
+
             return $result;
         }, array_merge(['name' => $this->name], self::$defaultSuite));
     }
 
     /**
      * Prevent writing empty "line" XML attributes which could break parsers.
+     *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return bool
      */
     private function isEmptyLineAttribute($name, $value)

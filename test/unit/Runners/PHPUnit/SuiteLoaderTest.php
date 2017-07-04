@@ -1,4 +1,6 @@
-<?php namespace ParaTest\Runners\PHPUnit;
+<?php
+
+namespace ParaTest\Runners\PHPUnit;
 
 class SuiteLoaderTest extends \TestBase
 {
@@ -52,7 +54,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 1;
-        $this->assertEquals($expected, sizeof($files));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag()
@@ -65,7 +67,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 1;
-        $this->assertEquals($expected, sizeof($files));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag()
@@ -78,7 +80,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 2;
-        $this->assertEquals($expected, sizeof($files));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory()
@@ -91,7 +93,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 1;
-        $this->assertEquals($expected, sizeof($files));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteFilesFromConfig()
@@ -104,7 +106,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 2;
-        $this->assertEquals($expected, sizeof($files));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteWithDirectory()
@@ -114,8 +116,8 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests'));
-        $this->assertEquals($expected, sizeof($files));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteWithDirectories()
@@ -125,9 +127,9 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            sizeof($this->findTests(FIXTURES . DS . 'failing-tests'));
-        $this->assertEquals($expected, sizeof($files));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            count($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteWithFilesDirsMixed()
@@ -139,8 +141,8 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = sizeof($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
-        $this->assertEquals($expected, sizeof($files));
+        $expected = count($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteWithNestedSuite()
@@ -152,9 +154,9 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            sizeof($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
-        $this->assertEquals($expected, sizeof($files));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            count($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadTestsuiteWithDuplicateFilesDirMixed()
@@ -164,8 +166,8 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) + 1;
-        $this->assertEquals($expected, sizeof($files));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) + 1;
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadSuiteFromConfig()
@@ -175,8 +177,8 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests'));
-        $this->assertEquals($expected, sizeof($files));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $this->assertEquals($expected, count($files));
     }
 
     public function testLoadSuiteFromConfigWithMultipleDirs()
@@ -186,9 +188,9 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = sizeof($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            sizeof($this->findTests(FIXTURES . DS . 'failing-tests'));
-        $this->assertEquals($expected, sizeof($files));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            count($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $this->assertEquals($expected, count($files));
     }
 
     /**
@@ -209,12 +211,13 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals($path, array_shift($paths));
     }
 
-    protected function getLoadedPaths($path, $loader=null)
+    protected function getLoadedPaths($path, $loader = null)
     {
         $loader = $loader ?: new SuiteLoader();
         $loader->load($path);
         $loaded = $this->getObjectValue($loader, 'loadedSuites');
         $paths = array_keys($loaded);
+
         return $paths;
     }
 
@@ -233,19 +236,23 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader();
         $loader->load($path);
         $loaded = $this->getObjectValue($loader, 'loadedSuites');
-        foreach($loaded as $path => $test)
+        foreach ($loaded as $path => $test) {
             $this->assertContains($path, $files);
+        }
+
         return $loaded;
     }
 
     /**
      * @depends testLoadDirGetsPathOfAllTestsWithKeys
+     *
+     * @param mixed $paraSuites
      */
     public function testFirstParallelSuiteHasCorrectFunctions($paraSuites)
     {
         $first = $this->suiteByPath('GroupsTest.php', $paraSuites);
         $functions = $first->getFunctions();
-        $this->assertEquals(5, sizeof($functions));
+        $this->assertEquals(5, count($functions));
         $this->assertEquals('testTruth', $functions[0]->getName());
         $this->assertEquals('testFalsehood', $functions[1]->getName());
         $this->assertEquals('testArrayLength', $functions[2]->getName());
@@ -265,12 +272,14 @@ class SuiteLoaderTest extends \TestBase
 
     /**
      * @depends testLoadDirGetsPathOfAllTestsWithKeys
+     *
+     * @param mixed $paraSuites
      */
     public function testSecondParallelSuiteHasCorrectFunctions($paraSuites)
     {
         $second = $this->suiteByPath('LegacyNamespaceTest.php', $paraSuites);
         $functions = $second->getFunctions();
-        $this->assertEquals(1, sizeof($functions));
+        $this->assertEquals(1, count($functions));
     }
 
     public function testGetTestMethodsOnlyReturnsMethodsOfGroupIfOptionIsSpecified()
@@ -280,7 +289,7 @@ class SuiteLoaderTest extends \TestBase
         $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
         $loader->load($groupsTest);
         $methods = $loader->getTestMethods();
-        $this->assertEquals(2, sizeof($methods));
+        $this->assertEquals(2, count($methods));
         $this->assertEquals('testTruth', $methods[0]->getName());
         $this->assertEquals('testFalsehood', $methods[1]->getName());
     }

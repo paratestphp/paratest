@@ -1,4 +1,5 @@
 <?php
+
 namespace ParaTest\Runners\PHPUnit;
 
 class WrapperRunner extends BaseRunner
@@ -21,7 +22,6 @@ class WrapperRunner extends BaseRunner
      */
     protected $modified;
 
-
     public function run()
     {
         parent::run();
@@ -36,7 +36,7 @@ class WrapperRunner extends BaseRunner
     protected function load()
     {
         if ($this->options->functional) {
-            throw new \RuntimeException("The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due to the current PHPUnit commands causing classloading issues.");
+            throw new \RuntimeException('The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due to the current PHPUnit commands causing classloading issues.');
         }
         parent::load();
     }
@@ -44,7 +44,7 @@ class WrapperRunner extends BaseRunner
     private function startWorkers()
     {
         $wrapper = realpath(__DIR__ . '/../../../bin/phpunit-wrapper');
-        for ($i = 1; $i <= $this->options->processes; $i++) {
+        for ($i = 1; $i <= $this->options->processes; ++$i) {
             $worker = new Worker();
             if ($this->options->noTestTokens) {
                 $token = null;
@@ -107,14 +107,16 @@ class WrapperRunner extends BaseRunner
         $except = [];
         $result = stream_select($modified, $write, $except, 1);
         if ($result === false) {
-            throw new \RuntimeException("stream_select() returned an error while waiting for all workers to finish.");
+            throw new \RuntimeException('stream_select() returned an error while waiting for all workers to finish.');
         }
         $this->modified = $modified;
+
         return $result;
     }
 
     /**
-     * put on WorkersPool
+     * put on WorkersPool.
+     *
      * @return Worker[]
      */
     private function progressedWorkers()
@@ -123,7 +125,7 @@ class WrapperRunner extends BaseRunner
         foreach ($this->modified as $modifiedStream) {
             $found = null;
             foreach ($this->streams as $index => $stream) {
-                if ($modifiedStream == $stream) {
+                if ($modifiedStream === $stream) {
                     $found = $index;
                     break;
                 }
@@ -131,12 +133,16 @@ class WrapperRunner extends BaseRunner
             $result[$found] = $this->workers[$found];
         }
         $this->modified = [];
+
         return $result;
     }
 
     /**
      * Returns the output streams of a subset of workers.
+     *
      * @param array    keys are positions in $this->workers
+     * @param mixed                          $workers
+     *
      * @return array
      */
     private function streamsOf($workers)
@@ -145,6 +151,7 @@ class WrapperRunner extends BaseRunner
         foreach (array_keys($workers) as $index) {
             $streams[$index] = $this->streams[$index];
         }
+
         return $streams;
     }
 
@@ -181,7 +188,7 @@ class WrapperRunner extends BaseRunner
         $worker->reset();
     }
 
-  /**
+  /*
     private function testIsStillRunning($test)
     {
         if(!$test->isDoneRunning()) return true;
