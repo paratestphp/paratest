@@ -7,14 +7,14 @@ use SebastianBergmann\CodeCoverage\CodeCoverage;
 class CoverageMerger
 {
     /**
-     * @var \PHP_CodeCoverage|CodeCoverage
+     * @var CodeCoverage
      */
     private $coverage = null;
 
     /**
-     * @param \PHP_CodeCoverage|CodeCoverage $coverage
+     * @param CodeCoverage $coverage
      */
-    private function addCoverage($coverage)
+    private function addCoverage(CodeCoverage $coverage)
     {
         if (null === $this->coverage) {
             $this->coverage = $coverage;
@@ -28,7 +28,7 @@ class CoverageMerger
      *
      * @param \SplFileObject $coverageFile coverage file
      *
-     * @return \PHP_CodeCoverage|CodeCoverage
+     * @return CodeCoverage
      */
     private function getCoverageObject(\SplFileObject $coverageFile)
     {
@@ -74,10 +74,6 @@ class CoverageMerger
      */
     public function getReporter()
     {
-        if ($this->coverage instanceof \PHP_CodeCoverage) {
-            return new CoverageReporterLegacy($this->coverage);
-        }
-
         return new CoverageReporter($this->coverage);
     }
 }

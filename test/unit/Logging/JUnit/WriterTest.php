@@ -22,7 +22,7 @@ class WriterTest extends \TestBase
     public function testConstructor()
     {
         $this->assertInstanceOf(
-            'ParaTest\\Logging\\LogInterpreter',
+            LogInterpreter::class,
             $this->getObjectValue($this->writer, 'interpreter')
         );
         $this->assertEquals('test/fixtures/tests/', $this->writer->getName());

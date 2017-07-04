@@ -2,6 +2,8 @@
 
 namespace ParaTest\Logging\JUnit;
 
+use PHPUnit\Framework\ExpectationFailedException;
+
 class ReaderTest extends \TestBase
 {
     protected $mixedPath;
@@ -94,7 +96,7 @@ class ReaderTest extends \TestBase
         $case = $suites[0]->suites[0]->cases[1];
         $this->assertEquals(1, count($case->failures));
         $failure = $case->failures[0];
-        $this->assertEquals('PHPUnit\\Framework\\ExpectationFailedException', $failure['type']);
+        $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals("UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20", $failure['text']);
     }
 
@@ -156,7 +158,7 @@ class ReaderTest extends \TestBase
         $case = $suites[0]->cases[1];
         $this->assertEquals(1, count($case->failures));
         $failure = $case->failures[0];
-        $this->assertEquals('PHPUnit\\Framework\\ExpectationFailedException', $failure['type']);
+        $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18", $failure['text']);
     }
 

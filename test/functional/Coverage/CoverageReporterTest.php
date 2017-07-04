@@ -1,7 +1,7 @@
 <?php
 
-use Composer\Semver\Semver;
 use ParaTest\Coverage\CoverageMerger;
+use ParaTest\Coverage\CoverageReporter;
 
 class CoverageReporterTest extends TestBase
 {
@@ -139,22 +139,7 @@ class CoverageReporterTest extends TestBase
             'coverage-tests/runner_test.cov',
             'coverage-tests/result_printer_test.cov',
         ];
-        $reporterClass = 'ParaTest\\Coverage\\CoverageReporter';
-        if (class_exists('\PHP_CodeCoverage')) {
-            $version = 'Legacy CodeCoverage';
-            $filenames = [
-                'coverage-tests/runner_test.cov4',
-                'coverage-tests/result_printer_test.cov4',
-            ];
-            $reporterClass = 'ParaTest\\Coverage\\CoverageReporterLegacy';
-            if (Semver::satisfies(static::getPhpUnitVersion(), '3.7.*')) {
-                $version = 'PHPUnit 3.7';
-                $filenames = [
-                    'coverage-tests/runner_test.cov3',
-                    'coverage-tests/result_printer_test.cov3',
-                ];
-            }
-        }
+        $reporterClass = CoverageReporter::class;
 
         return [
             $version => [

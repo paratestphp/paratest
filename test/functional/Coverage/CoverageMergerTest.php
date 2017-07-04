@@ -1,6 +1,5 @@
 <?php
 
-use Composer\Semver\Semver;
 use ParaTest\Coverage\CoverageMerger;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 
@@ -152,22 +151,7 @@ class CoverageMergerTest extends TestBase
             'coverage-tests/runner_test.cov',
             'coverage-tests/result_printer_test.cov',
         ];
-        $coverageClass = 'SebastianBergmann\\CodeCoverage\\CodeCoverage';
-        if (class_exists('PHP_CodeCoverage')) {
-            $version = 'Legacy CodeCoverage';
-            $filenames = [
-                'coverage-tests/runner_test.cov4',
-                'coverage-tests/result_printer_test.cov4',
-            ];
-            $coverageClass = 'PHP_CodeCoverage';
-            if (Semver::satisfies(static::getPhpUnitVersion(), '3.7.*')) {
-                $version = 'PHPUnit 3.7';
-                $filenames = [
-                    'coverage-tests/runner_test.cov3',
-                    'coverage-tests/result_printer_test.cov3',
-                ];
-            }
-        }
+        $coverageClass = CodeCoverage::class;
 
         return [
             $version => [
@@ -180,7 +164,7 @@ class CoverageMergerTest extends TestBase
     /**
      * @param CoverageMerger $coverageMerger
      *
-     * @return CodeCoverage|\PHP_CodeCoverage
+     * @return CodeCoverage
      */
     private function getCoverage(CoverageMerger $coverageMerger)
     {

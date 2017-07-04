@@ -30,7 +30,7 @@ class ResultPrinterTest extends ResultTester
     {
         $this->assertEquals([], $this->getObjectValue($this->printer, 'suites'));
         $this->assertInstanceOf(
-            'ParaTest\\Logging\\LogInterpreter',
+            LogInterpreter::class,
             $this->getObjectValue($this->printer, 'results')
         );
     }

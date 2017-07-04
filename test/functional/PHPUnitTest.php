@@ -220,40 +220,6 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertTrue(in_array($proc->getExitCode(), [1, 255], true));
     }
 
-    public function testRunWithFatalRuntimeErrorsHasExitCode1()
-    {
-        if (PHP_VERSION_ID >= 70000) {
-            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
-        }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
-            'bootstrap' => BOOTSTRAP,
-        ]);
-        $this->assertEquals(1, $proc->getExitCode());
-    }
-
-    public function testRunWithFatalRuntimeErrorOutputsError()
-    {
-        if (PHP_VERSION_ID >= 70000) {
-            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
-        }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
-            'bootstrap' => BOOTSTRAP,
-        ]);
-        $this->assertContains('Call to undefined function inexistent', $proc->getErrorOutput());
-    }
-
-    public function testRunWithFatalRuntimeErrorWithTheWrapperRunnerOutputsError()
-    {
-        if (PHP_VERSION_ID >= 70000) {
-            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
-        }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
-            'bootstrap' => BOOTSTRAP,
-            'runner' => 'WrapperRunner',
-        ]);
-        $this->assertContains('Call to undefined function inexistent', $proc->getErrorOutput());
-    }
-
     public function testStopOnFailurePreventsStartingFurtherTestsAfterFailure()
     {
         $proc = $this->invokeParatest('failing-tests/StopOnFailureTest.php', [

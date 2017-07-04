@@ -40,20 +40,6 @@ class WrapperRunnerTest extends FunctionalTestBase
         $this->assertTestsPassed($proc, 1, 1);
     }
 
-    public function testFatalErrorsAreReported()
-    {
-        if (PHP_VERSION_ID >= 70000) {
-            $this->markTestSkipped('fatals are handled like normal exceptions with php7');
-        }
-        $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalFunctionErrorTest.php', [
-            'runner' => 'WrapperRunner',
-            'processes' => 1,
-        ]);
-
-        $errors = $proc->getErrorOutput();
-        $this->assertContains('This worker has crashed', $errors);
-    }
-
     public function functionalModeEnabledDataProvider()
     {
         return [[false]];
