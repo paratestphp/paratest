@@ -138,7 +138,7 @@ class Options
                              ? explode(',', $opts['exclude-group'])
                              : [];
 
-        if (strlen($opts['filter']) > 0 && !$this->functional) {
+        if (isset($opts['filter']) && strlen($opts['filter']) > 0 && !$this->functional) {
             throw new \RuntimeException('Option --filter is not implemented for non functional mode');
         }
 

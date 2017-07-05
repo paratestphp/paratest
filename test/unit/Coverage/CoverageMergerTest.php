@@ -24,8 +24,8 @@ class CoverageMergerTest extends \TestBase
         $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
         $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
 
-        $firstFileFirstLine = 36;
-        $secondFileFirstLine = 36;
+        $firstFileFirstLine = 38;
+        $secondFileFirstLine = 38;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);

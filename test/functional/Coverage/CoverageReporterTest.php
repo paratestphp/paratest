@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Coverage\CoverageReporter;
 

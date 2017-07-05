@@ -285,21 +285,21 @@ class SuiteLoader
 
     private function methodDataProvider($method)
     {
-        if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        if (false !== ($docBlock = $method->getDocBlock()) && preg_match("/@\bdataProvider\b \b(.*)\b/", $docBlock, $matches)) {
             return $matches[1];
         }
     }
 
     private function methodDependency($method)
     {
-        if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        if (false !== ($docBlock = $method->getDocBlock()) && preg_match("/@\bdepends\b \b(.*)\b/", $docBlock, $matches)) {
             return $matches[1];
         }
     }
 
     private function methodGroups($method)
     {
-        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        if (false !== ($docBlock = $method->getDocBlock()) && preg_match_all("/@\bgroup\b \b(.*)\b/", $docBlock, $matches)) {
             return $matches[1];
         }
 

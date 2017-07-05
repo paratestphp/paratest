@@ -92,7 +92,8 @@ class Parser
         $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
             $hasTestName = preg_match(self::$testName, $method->getName());
-            $hasTestAnnotation = preg_match(self::$testAnnotation, $method->getDocComment());
+            $docComment = $method->getDocComment();
+            $hasTestAnnotation = false !== $docComment && preg_match(self::$testAnnotation, $docComment);
             $isTestMethod = $hasTestName || $hasTestAnnotation;
             if ($isTestMethod) {
                 $tests[] = new ParsedFunction($method->getDocComment(), 'public', $method->getName());

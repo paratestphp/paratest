@@ -71,7 +71,7 @@ class PHPUnit extends Tester
                 // because we want to have to bootstrap script inherited before check/initialization
                 $runnerOption = $this->getRunnerOptions($input);
                 $runnerClass = $input->getOption('runner');
-                if (class_exists($runnerClass)) {
+                if (null !== $runnerClass && class_exists($runnerClass)) {
                     $runner = new $runnerClass($runnerOption);
                 }
             }

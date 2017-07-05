@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 use PHPUnit\Runner\Version;
 use SebastianBergmann\Environment\Runtime;
 
@@ -28,10 +29,11 @@ class TestBase extends PHPUnit\Framework\TestCase
 
     protected function findTests($dir)
     {
+        $it = new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST);
+        $it = new \RecursiveIteratorIterator($it);
         $files = [];
-        foreach (new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST)) as $file) {
-            if (preg_match('/Test\.php$/', $file)) {
+        foreach ($it as $file) {
+            if (preg_match('/Test\.php$/', $file->getPathname())) {
                 $files[] = $file;
             }
         }
