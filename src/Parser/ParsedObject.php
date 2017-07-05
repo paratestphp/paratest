@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ParaTest\Parser;
 
 abstract class ParsedObject

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ParaTest\Runners\PHPUnit;
 
 class SuiteTest extends \TestBase

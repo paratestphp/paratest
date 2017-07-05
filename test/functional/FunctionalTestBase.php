@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 use \Symfony\Component\Process\Process;
 
 class FunctionalTestBase extends PHPUnit\Framework\TestCase

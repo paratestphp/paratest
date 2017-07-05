@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class PHPUnitTest extends FunctionalTestBase
 {
     public function testWithJustBootstrap()

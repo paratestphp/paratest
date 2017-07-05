@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class OutputTest extends FunctionalTestBase
 {
     public function setUp()

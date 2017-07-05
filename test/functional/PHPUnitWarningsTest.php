@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 /**
  * Specifically tests warnings in PHPUnit.
  */

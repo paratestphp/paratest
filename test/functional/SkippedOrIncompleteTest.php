@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 /**
  * @todo SkippedOrIncompleteTest can't be used in default mode with group filter
  *       (not implemented yet) so we have to split tests per file.
