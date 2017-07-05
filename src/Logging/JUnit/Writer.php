@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ParaTest\Logging\JUnit;
 
 use ParaTest\Logging\LogInterpreter;
@@ -116,7 +118,7 @@ class Writer
         $vars = get_object_vars($suite);
         foreach ($vars as $name => $value) {
             if (preg_match(static::$suiteAttrs, $name)) {
-                $suiteNode->setAttribute($name, $value);
+                $suiteNode->setAttribute($name, (string) $value);
             }
         }
         $root->appendChild($suiteNode);
@@ -142,7 +144,7 @@ class Writer
                 if ($this->isEmptyLineAttribute($name, $value)) {
                     continue;
                 }
-                $caseNode->setAttribute($name, $value);
+                $caseNode->setAttribute($name, (string) $value);
             }
         }
         $suiteNode->appendChild($caseNode);
@@ -185,7 +187,7 @@ class Writer
         $rootSuite = $this->document->createElement('testsuite');
         $attrs = $this->getSuiteRootAttributes($suites);
         foreach ($attrs as $attr => $value) {
-            $rootSuite->setAttribute($attr, $value);
+            $rootSuite->setAttribute($attr, (string) $value);
         }
         $testsuites->appendChild($rootSuite);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ParaTest\Console\Testers;
 
 use Symfony\Component\Console\Command\Command;

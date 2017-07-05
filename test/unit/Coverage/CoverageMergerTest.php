@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ParaTest\Coverage;
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
@@ -22,8 +24,10 @@ class CoverageMergerTest extends \TestBase
         $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
         $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
 
-        $firstFileFirstLine = 36;
-        $secondFileFirstLine = 36;
+        // Every time the two above files are changed, the line numbers
+        // may change, and so these two numbers may need adjustments
+        $firstFileFirstLine = 38;
+        $secondFileFirstLine = 38;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class WrapperRunnerTest extends FunctionalTestBase
 {
     const TEST_METHODS_PER_CLASS = 5;

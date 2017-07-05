@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ParaTest\Parser;
 
 abstract class ParsedObject
@@ -58,6 +60,6 @@ abstract class ParsedObject
             null !== $value ? "[\s]+$value" : '\b'
         );
 
-        return (bool) preg_match($pattern, $this->docBlock);
+        return false !== $this->docBlock && 1 === preg_match($pattern, $this->docBlock);
     }
 }
