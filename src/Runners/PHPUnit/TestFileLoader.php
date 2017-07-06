@@ -45,12 +45,8 @@ class TestFileLoader
      */
     protected $excludingFiles = false;
 
-    public function __construct($options = null)
+    public function __construct(Options $options = null)
     {
-        if ($options && !$options instanceof Options) {
-            throw new \InvalidArgumentException('SuiteLoader options must be null or of type Options');
-        }
-
         $this->options = $options;
     }
 
@@ -62,7 +58,7 @@ class TestFileLoader
      *
      * @return string[]
      */
-    public function loadSuitePath(SuitePath $path)
+    public function loadSuitePath(SuitePath $path): array
     {
         // First initialize the list of files and excluded files
         $this->files = [];
@@ -93,7 +89,7 @@ class TestFileLoader
      *
      * @return string[]
      */
-    public function loadPath($path, $pattern = null)
+    public function loadPath(string $path, string $pattern = null): array
     {
         $this->files = [];
         $path = $path ?: $this->options->path;
@@ -117,7 +113,7 @@ class TestFileLoader
      * @param string $path
      * @param string $pattern
      */
-    private function loadDir($path, $pattern = self::TEST_PATTERN)
+    private function loadDir(string $path, string $pattern = self::TEST_PATTERN)
     {
         $files = scandir($path);
         foreach ($files as $file) {
@@ -130,7 +126,7 @@ class TestFileLoader
      *
      * @param $path
      */
-    private function loadFile($path)
+    private function loadFile(string $path)
     {
         $this->tryLoadTests($path, self::FILE_PATTERN);
     }
@@ -141,7 +137,7 @@ class TestFileLoader
      * @param string $path
      * @param string $pattern regular expression for matching file names
      */
-    private function tryLoadTests($path, $pattern = self::TEST_PATTERN)
+    private function tryLoadTests(string $path, string $pattern = self::TEST_PATTERN)
     {
         if (preg_match($pattern, $path)) {
             if ($this->excludingFiles) {

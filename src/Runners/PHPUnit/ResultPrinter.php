@@ -116,7 +116,7 @@ class ResultPrinter
      *
      * @return $this
      */
-    public function addTest(ExecutableTest $suite)
+    public function addTest(ExecutableTest $suite): self
     {
         $this->suites[] = $suite;
         $increment = $suite->getTestCount();
@@ -155,7 +155,7 @@ class ResultPrinter
     /**
      * @param string $string
      */
-    public function println($string = '')
+    public function println(string $string = '')
     {
         $this->column = 0;
         echo "$string\n";
@@ -213,7 +213,7 @@ class ResultPrinter
      *
      * @return string
      */
-    public function getHeader()
+    public function getHeader(): string
     {
         return "\n\n" . $this->timer->resourceUsage() . "\n\n";
     }
@@ -230,7 +230,7 @@ class ResultPrinter
     /**
      * Returns warning messages as a string.
      */
-    public function getWarnings()
+    public function getWarnings(): string
     {
         return $this->getDefects($this->warnings, 'warning');
     }
@@ -240,7 +240,7 @@ class ResultPrinter
      *
      * @return bool
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return $this->results->isSuccessful() && count($this->warnings) === 0;
     }
@@ -251,7 +251,7 @@ class ResultPrinter
      *
      * @return string
      */
-    public function getFooter()
+    public function getFooter(): string
     {
         return $this->isSuccessful()
                     ? $this->getSuccessFooter()
@@ -263,7 +263,7 @@ class ResultPrinter
      *
      * @return string
      */
-    public function getFailures()
+    public function getFailures(): string
     {
         $failures = $this->results->getFailures();
 
@@ -275,7 +275,7 @@ class ResultPrinter
      *
      * @return string
      */
-    public function getErrors()
+    public function getErrors(): string
     {
         $errors = $this->results->getErrors();
 
@@ -287,7 +287,7 @@ class ResultPrinter
      *
      * @return int
      */
-    public function getTotalCases()
+    public function getTotalCases(): int
     {
         return $this->totalCases;
     }
@@ -298,7 +298,7 @@ class ResultPrinter
      * @param Reader $reader
      * @param int    $expectedTestCount
      */
-    protected function processReaderFeedback($reader, $expectedTestCount)
+    protected function processReaderFeedback(Reader $reader, int $expectedTestCount)
     {
         $feedbackItems = $reader->getFeedback();
 
@@ -323,7 +323,7 @@ class ResultPrinter
      *
      * @param ExecutableTest $test
      */
-    protected function printTestWarnings($test)
+    protected function printTestWarnings(ExecutableTest $test)
     {
         $warnings = $test->getWarnings();
         if ($warnings) {
@@ -344,7 +344,7 @@ class ResultPrinter
      *
      * @return bool
      */
-    protected function isSkippedIncompleTestCanBeTracked($options)
+    protected function isSkippedIncompleTestCanBeTracked(Options $options): bool
     {
         return $options->functional
             || (empty($options->groups) && empty($options->excludeGroups));
@@ -361,7 +361,7 @@ class ResultPrinter
      * @param int $actualTestCount
      * @param int $expectedTestCount
      */
-    protected function processTestOverhead($actualTestCount, $expectedTestCount)
+    protected function processTestOverhead(int $actualTestCount, int $expectedTestCount)
     {
         $overhead = $actualTestCount - $expectedTestCount;
         if ($this->processSkipped) {
@@ -384,7 +384,7 @@ class ResultPrinter
      * @param int $actualTestCount
      * @param int $expectedTestCount
      */
-    protected function printSkippedAndIncomplete($actualTestCount, $expectedTestCount)
+    protected function printSkippedAndIncomplete(int $actualTestCount, int $expectedTestCount)
     {
         $overhead = $expectedTestCount - $actualTestCount;
         if ($overhead > 0) {
@@ -401,7 +401,7 @@ class ResultPrinter
      *
      * @param $item
      */
-    protected function printFeedbackItem($item)
+    protected function printFeedbackItem(string $item)
     {
         echo $item;
         ++$this->column;
@@ -421,7 +421,7 @@ class ResultPrinter
      *
      * @return string
      */
-    protected function getDefects(array $defects, $type)
+    protected function getDefects(array $defects, string $type): string
     {
         $count = count($defects);
         if ($count === 0) {
@@ -445,7 +445,7 @@ class ResultPrinter
     /**
      * Prints progress for large test collections.
      */
-    protected function getProgress()
+    protected function getProgress(): string
     {
         return sprintf(
             ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
@@ -461,7 +461,7 @@ class ResultPrinter
      *
      * @return string
      */
-    private function getFailedFooter()
+    private function getFailedFooter(): string
     {
         $formatString = "FAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
 
@@ -482,7 +482,7 @@ class ResultPrinter
      *
      * @return string
      */
-    private function getSuccessFooter()
+    private function getSuccessFooter(): string
     {
         $tests = $this->totalCases;
         $asserts = $this->results->getTotalAssertions();
@@ -498,18 +498,19 @@ class ResultPrinter
                 $this->totalSkippedOrIncomplete
             );
         }
-            // phpunit 4.5 produce plural version for test(s) and assertion(s) in that case
-            // also it shows result as black text on green background
-            return $this->green(sprintf(
-                "OK (%d test%s, %d assertion%s)\n",
-                $tests,
-                ($tests === 1) ? '' : 's',
-                $asserts,
-                ($asserts === 1) ? '' : 's'
-            ));
+
+        // phpunit 4.5 produce plural version for test(s) and assertion(s) in that case
+        // also it shows result as black text on green background
+        return $this->green(sprintf(
+            "OK (%d test%s, %d assertion%s)\n",
+            $tests,
+            ($tests === 1) ? '' : 's',
+            $asserts,
+            ($asserts === 1) ? '' : 's'
+        ));
     }
 
-    private function green($text)
+    private function green(string $text): string
     {
         if ($this->colors) {
             return "\x1b[30;42m\x1b[2K"
@@ -520,7 +521,7 @@ class ResultPrinter
         return $text;
     }
 
-    private function red($text)
+    private function red(string $text): string
     {
         if ($this->colors) {
             return "\x1b[37;41m\x1b[2K"

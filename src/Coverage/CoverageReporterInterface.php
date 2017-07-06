@@ -11,19 +11,19 @@ interface CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function clover($target);
+    public function clover(string $target);
 
     /**
      * Generate html coverage report.
      *
      * @param string $target Report filename
      */
-    public function html($target);
+    public function html(string $target);
 
     /**
      * Generate php coverage report.
      *
      * @param string $target Report filename
      */
-    public function php($target);
+    public function php(string $target);
 }

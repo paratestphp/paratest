@@ -96,7 +96,7 @@ class ExecutableTestChild extends ExecutableTest
      *
      * @return int
      */
-    public function getTestCount()
+    public function getTestCount(): int
     {
         return 1;
     }

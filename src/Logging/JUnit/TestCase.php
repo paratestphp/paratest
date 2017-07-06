@@ -69,12 +69,12 @@ class TestCase
      * @param string $time
      */
     public function __construct(
-        $name,
-        $class,
-        $file,
-        $line,
-        $assertions,
-        $time
+        string $name,
+        string $class,
+        string $file,
+        int $line,
+        int $assertions,
+        string $time
     ) {
         $this->name = $name;
         $this->class = $class;
@@ -88,7 +88,7 @@ class TestCase
      * @param string $type
      * @param string $text
      */
-    public function addFailure($type, $text)
+    public function addFailure(string $type, string $text)
     {
         $this->addDefect('failures', $type, $text);
     }
@@ -97,7 +97,7 @@ class TestCase
      * @param string $type
      * @param string $text
      */
-    public function addError($type, $text)
+    public function addError(string $type, string $text)
     {
         $this->addDefect('errors', $type, $text);
     }
@@ -106,7 +106,7 @@ class TestCase
      * @param string $type
      * @param string $text
      */
-    public function addSkipped($type, $text)
+    public function addSkipped(string $type, string $text)
     {
         $this->addDefect('skipped', $type, $text);
     }
@@ -118,7 +118,7 @@ class TestCase
      * @param $type
      * @param $text
      */
-    protected function addDefect($collName, $type, $text)
+    protected function addDefect(string $collName, string $type, string $text)
     {
         $this->{$collName}[] = [
             'type' => $type,
@@ -133,7 +133,7 @@ class TestCase
      *
      * @return mixed
      */
-    public static function addSystemOut($node)
+    public static function addSystemOut(\SimpleXMLElement $node): \SimpleXMLElement
     {
         $sys = 'system-out';
 
@@ -156,7 +156,7 @@ class TestCase
      *
      * @return TestCase
      */
-    public static function caseFromNode(\SimpleXMLElement $node)
+    public static function caseFromNode(\SimpleXMLElement $node): self
     {
         $case = new self(
             (string) $node['name'],

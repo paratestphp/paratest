@@ -20,7 +20,7 @@ class Suite extends ExecutableTest
      */
     private $functions;
 
-    public function __construct($path, $functions, $fullyQualifiedClassName = null)
+    public function __construct(string $path, array $functions, string $fullyQualifiedClassName = null)
     {
         parent::__construct($path, $fullyQualifiedClassName);
         $this->functions = $functions;
@@ -31,7 +31,7 @@ class Suite extends ExecutableTest
      *
      * @return array
      */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return $this->functions;
     }
@@ -41,7 +41,7 @@ class Suite extends ExecutableTest
      *
      * @return int
      */
-    public function getTestCount()
+    public function getTestCount(): int
     {
         return count($this->functions);
     }

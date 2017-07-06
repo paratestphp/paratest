@@ -47,15 +47,15 @@ class Writer
      * @var array
      */
     protected static $defaultSuite = [
-                                        'tests' => 0,
-                                        'assertions' => 0,
-                                        'failures' => 0,
-                                        'skipped' => 0,
-                                        'errors' => 0,
-                                        'time' => 0,
-                                    ];
+        'tests' => 0,
+        'assertions' => 0,
+        'failures' => 0,
+        'skipped' => 0,
+        'errors' => 0,
+        'time' => 0,
+    ];
 
-    public function __construct(LogInterpreter $interpreter, $name = '')
+    public function __construct(LogInterpreter $interpreter, string $name = '')
     {
         $this->name = $name;
         $this->interpreter = $interpreter;
@@ -68,7 +68,7 @@ class Writer
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -79,7 +79,7 @@ class Writer
      *
      * @return string
      */
-    public function getXml()
+    public function getXml(): string
     {
         $suites = $this->interpreter->flattenCases();
         $root = $this->getSuiteRoot($suites);
@@ -98,7 +98,7 @@ class Writer
      *
      * @param $path
      */
-    public function write($path)
+    public function write(string $path)
     {
         file_put_contents($path, $this->getXml());
     }
@@ -112,7 +112,7 @@ class Writer
      *
      * @return \DOMElement
      */
-    protected function appendSuite($root, TestSuite $suite)
+    protected function appendSuite(\DOMElement $root, TestSuite $suite): \DOMElement
     {
         $suiteNode = $this->document->createElement('testsuite');
         $vars = get_object_vars($suite);
@@ -135,7 +135,7 @@ class Writer
      *
      * @return \DOMElement
      */
-    protected function appendCase($suiteNode, TestCase $case)
+    protected function appendCase(\DOMElement $suiteNode, TestCase $case): \DOMElement
     {
         $caseNode = $this->document->createElement('testcase');
         $vars = get_object_vars($case);
@@ -161,7 +161,7 @@ class Writer
      * @param $defects
      * @param $type
      */
-    protected function appendDefects($caseNode, $defects, $type)
+    protected function appendDefects(\DOMElement $caseNode, array $defects, string $type)
     {
         foreach ($defects as $defect) {
             $defectNode = $this->document->createElement($type, htmlentities($defect['text']) . "\n");
@@ -177,7 +177,7 @@ class Writer
      *
      * @return \DOMElement
      */
-    protected function getSuiteRoot($suites)
+    protected function getSuiteRoot(array $suites): \DOMElement
     {
         $testsuites = $this->document->createElement('testsuites');
         $this->document->appendChild($testsuites);
@@ -202,9 +202,9 @@ class Writer
      *
      * @return mixed
      */
-    protected function getSuiteRootAttributes($suites)
+    protected function getSuiteRootAttributes(array $suites)
     {
-        return array_reduce($suites, function ($result, $suite) {
+        return array_reduce($suites, function (array $result, TestSuite $suite): array {
             $result['tests'] += $suite->tests;
             $result['assertions'] += $suite->assertions;
             $result['failures'] += $suite->failures;
@@ -224,7 +224,7 @@ class Writer
      *
      * @return bool
      */
-    private function isEmptyLineAttribute($name, $value)
+    private function isEmptyLineAttribute(string $name, $value): bool
     {
         return $name === 'line' && empty($value);
     }

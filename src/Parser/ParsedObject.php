@@ -16,7 +16,7 @@ abstract class ParsedObject
      */
     protected $name;
 
-    public function __construct($doc, $name)
+    public function __construct(string $doc, string $name)
     {
         $this->docBlock = $doc;
         $this->name = $name;
@@ -27,7 +27,7 @@ abstract class ParsedObject
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -52,14 +52,14 @@ abstract class ParsedObject
      *
      * @return bool
      */
-    public function hasAnnotation($anno, $value = null)
+    public function hasAnnotation(string $annotation, string $value = null): bool
     {
         $pattern = sprintf(
             '/@%s%s/',
-            $anno,
+            $annotation,
             null !== $value ? "[\s]+$value" : '\b'
         );
 
-        return false !== $this->docBlock && 1 === preg_match($pattern, $this->docBlock);
+        return 1 === preg_match($pattern, $this->docBlock);
     }
 }

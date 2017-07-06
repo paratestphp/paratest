@@ -20,14 +20,6 @@ class SuiteLoaderTest extends \TestBase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testOptionsMustBeInstanceOfOptionsIfNotNull()
-    {
-        $loader = new SuiteLoader(['one' => 'two', 'three' => 'four']);
-    }
-
-    /**
      * @expectedException   \InvalidArgumentException
      */
     public function testLoadThrowsExceptionWithInvalidPath()

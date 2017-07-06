@@ -26,7 +26,7 @@ class SuitePath
      */
     protected $excludedPaths;
 
-    public function __construct($path, $excludedPaths, $suffix)
+    public function __construct(string $path, array $excludedPaths, string $suffix)
     {
         if (empty($suffix)) {
             $suffix = self::DEFAULT_SUFFIX;
@@ -39,7 +39,7 @@ class SuitePath
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -47,7 +47,7 @@ class SuitePath
     /**
      * @return string[]
      */
-    public function getExcludedPaths()
+    public function getExcludedPaths(): array
     {
         return $this->excludedPaths;
     }
@@ -55,7 +55,7 @@ class SuitePath
     /**
      * @return string
      */
-    public function getSuffix()
+    public function getSuffix(): string
     {
         return $this->suffix;
     }
@@ -63,7 +63,7 @@ class SuitePath
     /**
      * @return string
      */
-    public function getPattern()
+    public function getPattern(): string
     {
         return '|' . preg_quote($this->getSuffix()) . '$|';
     }

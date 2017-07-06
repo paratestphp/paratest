@@ -29,7 +29,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function clover($target)
+    public function clover(string $target)
     {
         $clover = new Clover();
         $clover->process($this->coverage, $target);
@@ -40,7 +40,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function html($target)
+    public function html(string $target)
     {
         $html = new Html\Facade();
         $html->process($this->coverage, $target);
@@ -51,7 +51,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function php($target)
+    public function php(string $target)
     {
         $php = new PHP();
         $php->process($this->coverage, $target);

@@ -19,7 +19,7 @@ class ParsedClass extends ParsedObject
      */
     private $methods;
 
-    public function __construct($doc, $name, $namespace, $methods = [])
+    public function __construct(string $doc, string $name, string $namespace, array $methods = [])
     {
         parent::__construct($doc, $name);
         $this->namespace = $namespace;
@@ -35,12 +35,12 @@ class ParsedClass extends ParsedObject
      *
      * @return array
      */
-    public function getMethods($annotations = [])
+    public function getMethods(array $annotations = []): array
     {
-        $methods = array_filter($this->methods, function ($m) use ($annotations) {
+        $methods = array_filter($this->methods, function (ParsedFunction $method) use ($annotations): bool {
             foreach ($annotations as $a => $v) {
                 foreach (explode(',', $v) as $subValue) {
-                    if ($m->hasAnnotation($a, $subValue)) {
+                    if ($method->hasAnnotation($a, $subValue)) {
                         return true;
                     }
                 }
@@ -57,7 +57,7 @@ class ParsedClass extends ParsedObject
      *
      * @return string
      */
-    public function getNamespace()
+    public function getNamespace(): string
     {
         return $this->namespace;
     }
