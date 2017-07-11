@@ -42,7 +42,7 @@ abstract class Tester
      *
      * @return array
      */
-    protected function getOptions(InputInterface $input)
+    protected function getOptions(InputInterface $input): array
     {
         $options = $input->getOptions();
         foreach ($options as $key => $value) {

@@ -58,7 +58,7 @@ abstract class BaseRunner
      */
     protected $coverage = null;
 
-    public function __construct($opts = [])
+    public function __construct(array $opts = [])
     {
         $this->options = new Options($opts);
         $this->interpreter = new LogInterpreter();
@@ -109,7 +109,7 @@ abstract class BaseRunner
      *
      * @return int
      */
-    public function getExitCode()
+    public function getExitCode(): int
     {
         return $this->exitcode;
     }
@@ -163,13 +163,13 @@ abstract class BaseRunner
     /**
      * @return bool
      */
-    protected function hasCoverage()
+    protected function hasCoverage(): bool
     {
         return $this->getCoverage() !== null;
     }
 
     /**
-     * @return CoverageMerger
+     * @return CoverageMerger|null
      */
     protected function getCoverage()
     {

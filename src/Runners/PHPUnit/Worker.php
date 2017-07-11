@@ -26,7 +26,7 @@ class Worker
      */
     private $currentlyExecuting;
 
-    public function start($wrapperBinary, $token = 1, $uniqueToken = null)
+    public function start(string $wrapperBinary, $token = 1, $uniqueToken = null)
     {
         $bin = 'PARATEST=1 ';
         if (is_numeric($token)) {
@@ -47,7 +47,7 @@ class Worker
         return $this->pipes[1];
     }
 
-    public function execute($testCmd)
+    public function execute(string $testCmd)
     {
         $this->checkStarted();
         $this->commands[] = $testCmd;
@@ -55,7 +55,7 @@ class Worker
         ++$this->inExecution;
     }
 
-    public function assign(ExecutableTest $test, $phpunit, $phpunitOptions)
+    public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions)
     {
         if ($this->currentlyExecuting !== null) {
             throw new Exception('Worker already has a test assigned - did you forget to call reset()?');
@@ -64,7 +64,7 @@ class Worker
         $this->execute($test->command($phpunit, $phpunitOptions));
     }
 
-    public function printFeedback($printer)
+    public function printFeedback(ResultPrinter $printer)
     {
         if ($this->currentlyExecuting !== null) {
             $printer->printFeedback($this->currentlyExecuting);
@@ -76,7 +76,7 @@ class Worker
         $this->currentlyExecuting = null;
     }
 
-    public function isStarted()
+    public function isStarted(): bool
     {
         return $this->proc !== null && $this->pipes !== null;
     }
@@ -117,7 +117,7 @@ class Worker
         }
     }
 
-    public function isFree()
+    public function isFree(): bool
     {
         $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
@@ -147,7 +147,7 @@ class Worker
         }
     }
 
-    private function setExitCode($status)
+    private function setExitCode(array $status)
     {
         if (!$status['running']) {
             if ($this->exitCode === null) {
@@ -156,7 +156,7 @@ class Worker
         }
     }
 
-    public function isRunning()
+    public function isRunning(): bool
     {
         $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
@@ -164,7 +164,7 @@ class Worker
         return $this->isRunning;
     }
 
-    public function isCrashed()
+    public function isCrashed(): bool
     {
         if (!$this->isStarted()) {
             return false;

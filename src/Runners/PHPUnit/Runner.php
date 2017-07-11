@@ -16,7 +16,7 @@ class Runner extends BaseRunner
      */
     protected $tokens = [];
 
-    public function __construct($opts = [])
+    public function __construct(array $opts = [])
     {
         parent::__construct($opts);
         $this->initTokens();
@@ -90,7 +90,7 @@ class Runner extends BaseRunner
      *
      * @return bool
      */
-    private function testIsStillRunning($test)
+    private function testIsStillRunning(ExecutableTest $test): bool
     {
         if (!$test->isDoneRunning()) {
             return true;

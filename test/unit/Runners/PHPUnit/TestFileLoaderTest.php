@@ -25,14 +25,6 @@ class TestFileLoaderTest extends \TestBase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testOptionsMustBeInstanceOfOptionsIfNotNull()
-    {
-        $testFileLoader = new TestFileLoader(['one' => 'two', 'three' => 'four']);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testLoadThrowsExceptionWithInvalidPath()
     {
         $testFileLoader = new TestFileLoader();

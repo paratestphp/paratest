@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
+use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\ParsedObject;
 use ParaTest\Parser\Parser;
 
@@ -30,12 +31,8 @@ class SuiteLoader
      */
     public $options;
 
-    public function __construct($options = null)
+    public function __construct(Options $options = null)
     {
-        if ($options && !$options instanceof Options) {
-            throw new \InvalidArgumentException('SuiteLoader options must be null or of type Options');
-        }
-
         $this->options = $options;
     }
 
@@ -45,7 +42,7 @@ class SuiteLoader
      *
      * @return array
      */
-    public function getSuites()
+    public function getSuites(): array
     {
         return $this->loadedSuites;
     }
@@ -56,7 +53,7 @@ class SuiteLoader
      *
      * @return array
      */
-    public function getTestMethods()
+    public function getTestMethods(): array
     {
         $methods = [];
         foreach ($this->loadedSuites as $suite) {
@@ -74,7 +71,7 @@ class SuiteLoader
      *
      * @throws \RuntimeException
      */
-    public function load($path = '')
+    public function load(string $path = '')
     {
         if (is_object($this->options) && isset($this->options->filtered['configuration'])) {
             $configuration = $this->options->filtered['configuration'];
@@ -128,7 +125,7 @@ class SuiteLoader
         }
     }
 
-    private function executableTests($path, $class)
+    private function executableTests(string $path, ParsedClass $class)
     {
         $executableTests = [];
         $methodBatches = $this->getMethodBatches($class);
@@ -150,7 +147,7 @@ class SuiteLoader
      *
      * @return array of MethodBatches. Each MethodBatch has an array of method names
      */
-    private function getMethodBatches($class)
+    private function getMethodBatches(ParsedClass $class): array
     {
         $classMethods = $class->getMethods($this->options ? $this->options->annotations : []);
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
@@ -172,7 +169,7 @@ class SuiteLoader
         return $batches;
     }
 
-    private function addDependentTestsToBatchSet(&$batches, $dependsOn, $tests)
+    private function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests)
     {
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
@@ -184,7 +181,7 @@ class SuiteLoader
         }
     }
 
-    private function addTestsToBatchSet(&$batches, $tests, $maxBatchSize)
+    private function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize)
     {
         foreach ($tests as $test) {
             $lastIndex = count($batches) - 1;
@@ -210,7 +207,7 @@ class SuiteLoader
      *
      * @return string[] array of test names
      */
-    private function getMethodTests($class, $method, $useDataProvider = false)
+    private function getMethodTests(ParsedClass $class, ParsedFunction $method, bool $useDataProvider = false): array
     {
         $result = [];
 
@@ -239,7 +236,7 @@ class SuiteLoader
         return $result;
     }
 
-    private function testMatchGroupOptions($groups)
+    private function testMatchGroupOptions(array $groups): bool
     {
         if (empty($groups)) {
             return true;
@@ -260,7 +257,7 @@ class SuiteLoader
         return true;
     }
 
-    private function testMatchFilterOptions($className, $name, $group)
+    private function testMatchFilterOptions(string $className, string $name): bool
     {
         if (empty($this->options->filter)) {
             return true;
@@ -270,43 +267,42 @@ class SuiteLoader
             ? $this->options->filter
             : '/' . $this->options->filter . '/';
         $fullName = $className . '::' . $name;
-        $result = preg_match($re, $fullName);
 
-        return $result;
+        return 1 === preg_match($re, $fullName);
     }
 
-    private function testMatchOptions($className, $name, $group)
+    private function testMatchOptions(string $className, string $name, array $group): bool
     {
         $result = $this->testMatchGroupOptions($group)
-                && $this->testMatchFilterOptions($className, $name, $group);
+                && $this->testMatchFilterOptions($className, $name);
 
         return $result;
     }
 
-    private function methodDataProvider($method)
+    private function methodDataProvider(ParsedFunction $method)
     {
-        if (false !== ($docBlock = $method->getDocBlock()) && preg_match("/@\bdataProvider\b \b(.*)\b/", $docBlock, $matches)) {
+        if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
     }
 
-    private function methodDependency($method)
+    private function methodDependency(ParsedFunction $method)
     {
-        if (false !== ($docBlock = $method->getDocBlock()) && preg_match("/@\bdepends\b \b(.*)\b/", $docBlock, $matches)) {
+        if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
     }
 
-    private function methodGroups($method)
+    private function methodGroups(ParsedFunction $method)
     {
-        if (false !== ($docBlock = $method->getDocBlock()) && preg_match_all("/@\bgroup\b \b(.*)\b/", $docBlock, $matches)) {
+        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
 
         return [];
     }
 
-    private function createSuite($path, ParsedClass $class)
+    private function createSuite(string $path, ParsedClass $class): Suite
     {
         return new Suite(
             $path,

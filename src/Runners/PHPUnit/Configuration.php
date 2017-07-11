@@ -35,7 +35,7 @@ class Configuration
      */
     protected $suites = [];
 
-    public function __construct($path)
+    public function __construct(string $path)
     {
         $this->path = $path;
         if (file_exists($path)) {
@@ -49,7 +49,7 @@ class Configuration
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->path;
     }
@@ -59,7 +59,7 @@ class Configuration
      *
      * @return string The bootstrap attribute or empty string if not set
      */
-    public function getBootstrap()
+    public function getBootstrap(): string
     {
         if ($this->xml) {
             return (string) $this->xml->attributes()->bootstrap;
@@ -74,7 +74,7 @@ class Configuration
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -108,7 +108,7 @@ class Configuration
      *
      * @return SuitePath[]|null
      */
-    public function getSuiteByName($suiteName)
+    public function getSuiteByName(string $suiteName)
     {
         $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
 
@@ -140,7 +140,7 @@ class Configuration
                                 $suites[(string) $node['name']][] = new SuitePath(
                                     $path,
                                     $excludedPaths,
-                                    $nodeContent->attributes()->suffix
+                                    (string) $nodeContent->attributes()->suffix
                                 );
                             }
                             break;
@@ -158,7 +158,7 @@ class Configuration
      *
      * @return string
      */
-    public function getConfigDir()
+    public function getConfigDir(): string
     {
         return dirname($this->path) . DIRECTORY_SEPARATOR;
     }
@@ -170,7 +170,7 @@ class Configuration
      *
      * @return array|string[]
      */
-    public function getSuitePaths($path)
+    public function getSuitePaths(string $path)
     {
         $real = realpath($this->getConfigDir() . $path);
 
@@ -199,7 +199,7 @@ class Configuration
      *
      * @return bool
      */
-    public function isGlobRequired($path)
+    public function isGlobRequired(string $path): bool
     {
         return strpos($path, '*') !== false;
     }

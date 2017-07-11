@@ -34,7 +34,7 @@ abstract class MetaProvider
      * @param mixed $method
      * @param mixed $args
      */
-    public function __call($method, $args)
+    public function __call(string $method, array $args)
     {
         if (preg_match(self::$totalMethod, $method, $matches) && $property = strtolower($matches[1])) {
             return $this->getNumericValue($property);
@@ -51,7 +51,7 @@ abstract class MetaProvider
      *
      * @return float|int
      */
-    protected function getNumericValue($property)
+    protected function getNumericValue(string $property)
     {
         return ($property === 'time')
             ? (float) ($this->suites[0]->$property)
@@ -65,7 +65,7 @@ abstract class MetaProvider
      *
      * @return array
      */
-    protected function getMessages($type)
+    protected function getMessages(string $type): array
     {
         $messages = [];
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;

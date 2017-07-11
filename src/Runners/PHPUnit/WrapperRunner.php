@@ -103,7 +103,7 @@ class WrapperRunner extends BaseRunner
     }
 
     // put on WorkersPool
-    private function waitForStreamsToChange($modified)
+    private function waitForStreamsToChange(array $modified)
     {
         $write = [];
         $except = [];
@@ -121,7 +121,7 @@ class WrapperRunner extends BaseRunner
      *
      * @return Worker[]
      */
-    private function progressedWorkers()
+    private function progressedWorkers(): array
     {
         $result = [];
         foreach ($this->modified as $modifiedStream) {
@@ -143,11 +143,10 @@ class WrapperRunner extends BaseRunner
      * Returns the output streams of a subset of workers.
      *
      * @param array    keys are positions in $this->workers
-     * @param mixed                          $workers
      *
      * @return array
      */
-    private function streamsOf($workers)
+    private function streamsOf(array $workers): array
     {
         $streams = [];
         foreach (array_keys($workers) as $index) {
@@ -190,7 +189,7 @@ class WrapperRunner extends BaseRunner
         $worker->reset();
     }
 
-  /*
+    /*
     private function testIsStillRunning($test)
     {
         if(!$test->isDoneRunning()) return true;

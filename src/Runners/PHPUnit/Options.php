@@ -108,7 +108,7 @@ class Options
      */
     protected $annotations = [];
 
-    public function __construct($opts = [])
+    public function __construct(array $opts = [])
     {
         foreach (self::defaults() as $opt => $value) {
             $opts[$opt] = $opts[$opt] ?? $value;
@@ -123,7 +123,7 @@ class Options
         $this->noTestTokens = $opts['no-test-tokens'];
         $this->colors = $opts['colors'];
         $this->testsuite = $opts['testsuite'];
-        $this->maxBatchSize = $opts['max-batch-size'];
+        $this->maxBatchSize = (int) $opts['max-batch-size'];
         $this->filter = $opts['filter'];
 
         // we need to register that options if they are blank but do not get them as
@@ -153,9 +153,9 @@ class Options
      *
      * @return mixed
      */
-    public function __get($var)
+    public function __get(string $var)
     {
-        return $this->$var;
+        return $this->{$var};
     }
 
     /**
@@ -166,9 +166,9 @@ class Options
      *
      * @return mixed
      */
-    public function __isset($var)
+    public function __isset(string $var): bool
     {
-        return isset($this->$var);
+        return isset($this->{$var});
     }
 
     /**
@@ -177,7 +177,7 @@ class Options
      *
      * @return array
      */
-    protected static function defaults()
+    protected static function defaults(): array
     {
         return [
             'processes' => 5,
@@ -203,7 +203,7 @@ class Options
      *
      * @return string $phpunit the path to phpunit
      */
-    protected static function phpunit()
+    protected static function phpunit(): string
     {
         $vendor = static::vendorDir();
         $phpunit = $vendor . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
@@ -225,7 +225,7 @@ class Options
      * First assumes vendor directory is accessible from src (i.e development)
      * Second assumes vendor directory is accessible within src.
      */
-    protected static function vendorDir()
+    protected static function vendorDir(): string
     {
         $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
         if (!file_exists($vendor)) {
@@ -269,7 +269,7 @@ class Options
      *
      * @return string|null
      */
-    protected function getConfigurationPath($filtered)
+    protected function getConfigurationPath(array $filtered)
     {
         if (isset($filtered['configuration'])) {
             return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
@@ -287,7 +287,7 @@ class Options
      *
      * @return string|null
      */
-    private function getDefaultConfigurationForPath($path = '.', $default = null)
+    private function getDefaultConfigurationForPath(string $path = '.', string $default = null)
     {
         if ($this->isFile($path)) {
             return realpath($path);
@@ -324,7 +324,7 @@ class Options
      *
      * @return bool
      */
-    private function isFile($file)
+    private function isFile(string $file): bool
     {
         return file_exists($file) && !is_dir($file);
     }

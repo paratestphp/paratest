@@ -32,7 +32,7 @@ class CoverageMerger
      *
      * @return CodeCoverage
      */
-    private function getCoverageObject(\SplFileObject $coverageFile)
+    private function getCoverageObject(\SplFileObject $coverageFile): CodeCoverage
     {
         if ('<?php' === $coverageFile->fread(5)) {
             return include $coverageFile->getRealPath();
@@ -50,7 +50,7 @@ class CoverageMerger
      *
      * @throws \RuntimeException When coverage file is empty
      */
-    public function addCoverageFromFile($coverageFile)
+    public function addCoverageFromFile(string $coverageFile = null)
     {
         if ($coverageFile === null || !file_exists($coverageFile)) {
             return;
@@ -74,7 +74,7 @@ class CoverageMerger
      *
      * @return CoverageReporterInterface
      */
-    public function getReporter()
+    public function getReporter(): CoverageReporterInterface
     {
         return new CoverageReporter($this->coverage);
     }

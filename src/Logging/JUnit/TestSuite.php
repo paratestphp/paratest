@@ -72,20 +72,20 @@ class TestSuite
      * @param int         $tests
      * @param int         $assertions
      * @param int         $failures
+     * @param mixed       $errors
      * @param int         $skipped
      * @param float       $time
      * @param string|null $file
-     * @param mixed       $errors
      */
     public function __construct(
-        $name,
-        $tests,
-        $assertions,
-        $failures,
-        $errors,
-        $skipped,
-        $time,
-        $file = null
+        string $name,
+        int $tests,
+        int $assertions,
+        int $failures,
+        int $errors,
+        int $skipped,
+        float $time,
+        string $file = null
     ) {
         $this->name = $name;
         $this->tests = $tests;
@@ -105,7 +105,7 @@ class TestSuite
      *
      * @return TestSuite
      */
-    public static function suiteFromArray($arr)
+    public static function suiteFromArray(array $arr): self
     {
         return new self(
             $arr['name'],
@@ -126,7 +126,7 @@ class TestSuite
      *
      * @return TestSuite
      */
-    public static function suiteFromNode(\SimpleXMLElement $node)
+    public static function suiteFromNode(\SimpleXMLElement $node): self
     {
         return new self(
             (string) $node['name'],

@@ -109,7 +109,7 @@ class PHPUnit extends Tester
      *
      * @return bool
      */
-    protected function hasConfig(InputInterface $input)
+    protected function hasConfig(InputInterface $input): bool
     {
         return false !== $this->getConfig($input);
     }
@@ -143,7 +143,7 @@ class PHPUnit extends Tester
      *
      * @return array
      */
-    public function getRunnerOptions(InputInterface $input)
+    public function getRunnerOptions(InputInterface $input): array
     {
         $path = $input->getArgument('path');
         $options = $this->getOptions($input);
@@ -169,7 +169,7 @@ class PHPUnit extends Tester
      *
      * @throws \RuntimeException
      */
-    public function requireBootstrap($file)
+    public function requireBootstrap(string $file)
     {
         if (!$file) {
             return;
@@ -190,7 +190,7 @@ class PHPUnit extends Tester
      *
      * @param mixed $file
      */
-    protected function scopedRequire($file)
+    protected function scopedRequire(string $file)
     {
         $cwd = getcwd();
         require_once $file;
@@ -204,7 +204,7 @@ class PHPUnit extends Tester
      *
      * @return bool
      */
-    protected function hasCoverage($options)
+    protected function hasCoverage(array $options): bool
     {
         $isFileFormat = isset($options['coverage-html']) || isset($options['coverage-clover']);
         $isPHP = isset($options['coverage-php']);
@@ -220,7 +220,7 @@ class PHPUnit extends Tester
      *
      * @return string
      */
-    protected function getBootstrapFile(InputInterface $input, array $options)
+    protected function getBootstrapFile(InputInterface $input, array $options): string
     {
         if (isset($options['bootstrap'])) {
             return $options['bootstrap'];

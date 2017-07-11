@@ -40,7 +40,7 @@ class ParaTestApplication extends Application
      *
      * @return InputDefinition
      */
-    public function getDefinition()
+    public function getDefinition(): InputDefinition
     {
         return new InputDefinition([
             new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message.'),
@@ -52,7 +52,7 @@ class ParaTestApplication extends Application
      *
      * @return string
      */
-    public function getCommandName(InputInterface $input)
+    public function getCommandName(InputInterface $input): string
     {
         return 'paratest';
     }

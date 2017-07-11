@@ -34,7 +34,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return $this
      */
-    public function addReader(Reader $reader)
+    public function addReader(Reader $reader): self
     {
         $this->readers[] = $reader;
 
@@ -47,7 +47,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return Reader[]
      */
-    public function getReaders()
+    public function getReaders(): array
     {
         return $this->readers;
     }
@@ -59,7 +59,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return bool
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         $failures = $this->getTotalFailures();
         $errors = $this->getTotalErrors();
@@ -73,7 +73,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return array
      */
-    public function getCases()
+    public function getCases(): array
     {
         $cases = [];
         foreach ($this->readers as $reader) {
@@ -95,7 +95,7 @@ class LogInterpreter extends MetaProvider
      * @param array     $cases
      * @param TestSuite $suite
      */
-    protected function extendEmptyCasesFromSuites($cases, TestSuite $suite)
+    protected function extendEmptyCasesFromSuites(array $cases, TestSuite $suite)
     {
         $class = $suite->name;
         $file = $suite->file;
@@ -116,7 +116,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return array $suites a collection of suites and their cases
      */
-    public function flattenCases()
+    public function flattenCases(): array
     {
         $dict = [];
         foreach ($this->getCases() as $case) {
@@ -143,7 +143,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return float|int
      */
-    protected function getNumericValue($property)
+    protected function getNumericValue(string $property)
     {
         return ($property === 'time')
                ? (float) ($this->accumulate('getTotalTime'))
@@ -158,7 +158,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return array
      */
-    protected function getMessages($type)
+    protected function getMessages(string $type): array
     {
         return $this->mergeMessages('get' . ucfirst($type));
     }
@@ -171,11 +171,11 @@ class LogInterpreter extends MetaProvider
      *
      * @return array
      */
-    private function mergeMessages($method)
+    private function mergeMessages(string $method): array
     {
         $messages = [];
         foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->$method());
+            $messages = array_merge($messages, $reader->{$method}());
         }
 
         return $messages;
@@ -189,7 +189,7 @@ class LogInterpreter extends MetaProvider
      *
      * @return mixed
      */
-    private function accumulate($method)
+    private function accumulate(string $method)
     {
         return array_reduce($this->readers, function ($result, $reader) use ($method) {
             $result += $reader->$method();

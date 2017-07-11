@@ -117,7 +117,7 @@ class ResultPrinterTest extends ResultTester
 
     public function testAddTestMethodIncrementsCountByOne()
     {
-        $method = new TestMethod('/path', 'testThisMethod');
+        $method = new TestMethod('/path', ['testThisMethod']);
         $this->printer->addTest($method);
         $this->assertEquals(1, $this->printer->getTotalCases());
     }

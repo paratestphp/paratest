@@ -33,7 +33,7 @@ class Parser
      */
     private static $testAnnotation = '/@test\b/';
 
-    public function __construct($srcPath)
+    public function __construct(string $srcPath)
     {
         if (!file_exists($srcPath)) {
             throw new \InvalidArgumentException('file not found: ' . $srcPath);
@@ -64,7 +64,7 @@ class Parser
         return ($this->refl->isAbstract())
             ? null
             : new ParsedClass(
-                $this->refl->getDocComment(),
+                (string) $this->refl->getDocComment(),
                 $this->getCleanReflectionName(),
                 $this->refl->getNamespaceName(),
                 $this->getMethods()
@@ -76,7 +76,7 @@ class Parser
      *
      * @return string
      */
-    private function getCleanReflectionName()
+    private function getCleanReflectionName(): string
     {
         return str_replace("\x00", '', $this->refl->getName());
     }
@@ -86,7 +86,7 @@ class Parser
      *
      * @return array
      */
-    private function getMethods()
+    private function getMethods(): array
     {
         $tests = [];
         $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
@@ -96,7 +96,7 @@ class Parser
             $hasTestAnnotation = false !== $docComment && preg_match(self::$testAnnotation, $docComment);
             $isTestMethod = $hasTestName || $hasTestAnnotation;
             if ($isTestMethod) {
-                $tests[] = new ParsedFunction($method->getDocComment(), 'public', $method->getName());
+                $tests[] = new ParsedFunction((string) $method->getDocComment(), 'public', $method->getName());
             }
         }
 
@@ -112,7 +112,7 @@ class Parser
      *
      * @return string
      */
-    private function getClassName($filename, $previousDeclaredClasses)
+    private function getClassName(string $filename, array $previousDeclaredClasses)
     {
         $filename = realpath($filename);
         $classes = get_declared_classes();
@@ -137,7 +137,7 @@ class Parser
      *
      * @return string|null
      */
-    private function _searchForUnitTestClass(array $classes, $filename)
+    private function _searchForUnitTestClass(array $classes, string $filename)
     {
         // TODO: After merging this PR or other PR for phpunit 6 support, keep only the applicable subclass name
         $matchingClassName = null;
@@ -163,13 +163,13 @@ class Parser
      *
      * @return bool
      */
-    private function classNameMatchesFileName($filename, $className)
+    private function classNameMatchesFileName(string $filename, string $className): bool
     {
         return strpos($filename, $className) !== false
             || strpos($filename, $this->invertSlashes($className)) !== false;
     }
 
-    private function invertSlashes($className)
+    private function invertSlashes(string $className): string
     {
         return str_replace('\\', '/', $className);
     }

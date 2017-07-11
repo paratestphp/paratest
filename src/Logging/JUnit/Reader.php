@@ -42,7 +42,7 @@ class Reader extends MetaProvider
         'time' => 0,
     ];
 
-    public function __construct($logFile)
+    public function __construct(string $logFile)
     {
         if (!file_exists($logFile)) {
             throw new \InvalidArgumentException("Log file $logFile does not exist");
@@ -63,7 +63,7 @@ class Reader extends MetaProvider
      *
      * @return bool
      */
-    public function isSingleSuite()
+    public function isSingleSuite(): bool
     {
         return $this->isSingle;
     }
@@ -74,7 +74,7 @@ class Reader extends MetaProvider
      *
      * @return array
      */
-    public function getSuites()
+    public function getSuites(): array
     {
         return $this->suites;
     }
@@ -89,7 +89,7 @@ class Reader extends MetaProvider
      *
      * @return array
      */
-    public function getFeedback()
+    public function getFeedback(): array
     {
         $feedback = [];
         $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
@@ -136,7 +136,7 @@ class Reader extends MetaProvider
      *
      * @param array $nodeArray an array of SimpleXMLElement nodes representing testcase elements
      */
-    protected function initSuiteFromCases($nodeArray)
+    protected function initSuiteFromCases(array $nodeArray)
     {
         $testCases = [];
         $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
@@ -154,7 +154,7 @@ class Reader extends MetaProvider
      * @param $properties
      * @param $testCases
      */
-    protected function addSuite($properties, $testCases)
+    protected function addSuite($properties, array $testCases)
     {
         $suite = TestSuite::suiteFromArray($properties);
         $suite->cases = $testCases;
@@ -169,9 +169,9 @@ class Reader extends MetaProvider
      *
      * @return mixed
      */
-    protected function caseNodesToSuiteProperties($nodeArray, &$testCases = [])
+    protected function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = [])
     {
-        $cb = ['ParaTest\\Logging\\JUnit\\TestCase', 'caseFromNode'];
+        $cb = [TestCase::class, 'caseFromNode'];
 
         return array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
             $testCases[] = call_user_func_array($cb, [$c]);
@@ -194,7 +194,7 @@ class Reader extends MetaProvider
      *
      * @return array
      */
-    protected function getCaseNodes()
+    protected function getCaseNodes(): array
     {
         $caseNodes = $this->xml->xpath('//testcase');
         $cases = [];

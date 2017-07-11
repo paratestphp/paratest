@@ -35,15 +35,15 @@ class TestMethod extends ExecutableTest
      * Passed filters must be unescaped and must represent test name, optionally including
      * dataset name (numeric or named).
      *
-     * @param string          $testPath path to phpunit test case file
-     * @param string|string[] $filters  array of filters or single filter
+     * @param string   $testPath path to phpunit test case file
+     * @param string[] $filters  array of filters or single filter
      */
-    public function __construct($testPath, $filters)
+    public function __construct(string $testPath, array $filters)
     {
         $this->path = $testPath;
         // for compatibility with other code (tests), which can pass string (one filter)
         // instead of array of filters
-        $this->filters = (array) $filters;
+        $this->filters = $filters;
     }
 
     /**
@@ -51,7 +51,7 @@ class TestMethod extends ExecutableTest
      *
      * @return string[]
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return $this->filters;
     }
@@ -63,7 +63,7 @@ class TestMethod extends ExecutableTest
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return implode('|', $this->filters);
     }
@@ -78,7 +78,7 @@ class TestMethod extends ExecutableTest
      *
      * @return array
      */
-    protected function prepareOptions($options)
+    protected function prepareOptions(array $options): array
     {
         $re = array_reduce($this->filters, function ($r, $v) {
             $isDataSet = strpos($v, ' with data set ') !== false;
@@ -95,7 +95,7 @@ class TestMethod extends ExecutableTest
      *
      * @return int
      */
-    public function getTestCount()
+    public function getTestCount(): int
     {
         return count($this->filters);
     }

@@ -53,7 +53,7 @@ abstract class ExecutableTest
      */
     protected $lastCommand;
 
-    public function __construct($path, $fullyQualifiedClassName = null)
+    public function __construct(string $path, string $fullyQualifiedClassName = null)
     {
         $this->path = $path;
         $this->fullyQualifiedClassName = $fullyQualifiedClassName;
@@ -64,14 +64,14 @@ abstract class ExecutableTest
      *
      * @return int
      */
-    abstract public function getTestCount();
+    abstract public function getTestCount(): int;
 
     /**
      * Get the path to the test being executed.
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -83,7 +83,7 @@ abstract class ExecutableTest
      *
      * @return string
      */
-    public function getTempFile()
+    public function getTempFile(): string
     {
         if (null === $this->temp) {
             $this->temp = tempnam(sys_get_temp_dir(), 'PT_');
@@ -97,7 +97,7 @@ abstract class ExecutableTest
      *
      * @return string
      */
-    public function getStderr()
+    public function getStderr(): string
     {
         return $this->process->getErrorOutput();
     }
@@ -131,7 +131,7 @@ abstract class ExecutableTest
      *
      * @return int
      */
-    public function stop()
+    public function stop(): int
     {
         return $this->process->stop();
     }
@@ -150,7 +150,7 @@ abstract class ExecutableTest
      *
      * @return bool
      */
-    public function isDoneRunning()
+    public function isDoneRunning(): bool
     {
         return $this->process->isTerminated();
     }
@@ -160,7 +160,7 @@ abstract class ExecutableTest
      *
      * @return int
      */
-    public function getExitCode()
+    public function getExitCode(): int
     {
         return $this->process->getExitCode();
     }
@@ -170,7 +170,7 @@ abstract class ExecutableTest
      *
      * @return string
      */
-    public function getLastCommand()
+    public function getLastCommand(): string
     {
         return $this->lastCommand;
     }
@@ -184,7 +184,7 @@ abstract class ExecutableTest
      *
      * @return $this
      */
-    public function run($binary, $options = [], $environmentVariables = [])
+    public function run(string $binary, array $options = [], array $environmentVariables = [])
     {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
@@ -202,7 +202,7 @@ abstract class ExecutableTest
      *
      * @return int
      */
-    public function getToken()
+    public function getToken(): int
     {
         return $this->token;
     }
@@ -215,7 +215,7 @@ abstract class ExecutableTest
      *
      * @return string command line
      */
-    public function command($binary, $options = [])
+    public function command(string $binary, array $options = []): string
     {
         $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         $options = $this->redirectCoverageOption($options);
@@ -228,7 +228,7 @@ abstract class ExecutableTest
      *
      * @return string
      */
-    public function getCoverageFileName()
+    public function getCoverageFileName(): string
     {
         if ($this->coverageFileName === null) {
             $this->coverageFileName = tempnam(sys_get_temp_dir(), 'CV_');
@@ -242,7 +242,7 @@ abstract class ExecutableTest
      *
      * @return string
      */
-    public function getStdout()
+    public function getStdout(): string
     {
         return $this->process->getOutput();
     }
@@ -252,7 +252,7 @@ abstract class ExecutableTest
      *
      * @param string $temp
      */
-    public function setTempFile($temp)
+    public function setTempFile(string $temp)
     {
         $this->temp = $temp;
     }
@@ -268,7 +268,7 @@ abstract class ExecutableTest
      *
      * @throws \RuntimeException on too long command line
      */
-    protected function assertValidCommandLineLength($cmd)
+    protected function assertValidCommandLineLength(string $cmd)
     {
         if (DIRECTORY_SEPARATOR === '\\') { // windows
             // symfony's process wrapper
@@ -290,7 +290,7 @@ abstract class ExecutableTest
      *
      * @return array $options the prepared options
      */
-    protected function prepareOptions($options)
+    protected function prepareOptions(array $options): array
     {
         return $options;
     }
@@ -304,7 +304,7 @@ abstract class ExecutableTest
      *
      * @return mixed
      */
-    protected function getCommandString($binary, $options = [])
+    protected function getCommandString(string $binary, array $options = [])
     {
         $builder = new ProcessBuilder();
         $builder->setPrefix($binary);
@@ -329,7 +329,7 @@ abstract class ExecutableTest
      *
      * @param $environmentVariables
      */
-    protected function handleEnvironmentVariables($environmentVariables)
+    protected function handleEnvironmentVariables(array $environmentVariables)
     {
         if (isset($environmentVariables['TEST_TOKEN'])) {
             $this->token = $environmentVariables['TEST_TOKEN'];
@@ -344,7 +344,7 @@ abstract class ExecutableTest
      *
      * @return array $options
      */
-    protected function redirectCoverageOption($options)
+    protected function redirectCoverageOption(array $options): array
     {
         if (isset($options['coverage-php'])) {
             $options['coverage-php'] = $this->getCoverageFileName();

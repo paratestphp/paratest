@@ -11,7 +11,7 @@ class ParsedFunction extends ParsedObject
      */
     private $visibility;
 
-    public function __construct($doc, $visibility, $name)
+    public function __construct(string $doc, string $visibility, string $name)
     {
         parent::__construct($doc, $name);
         $this->visibility = $visibility;
@@ -23,7 +23,7 @@ class ParsedFunction extends ParsedObject
      *
      * @return string
      */
-    public function getVisibility()
+    public function getVisibility(): string
     {
         return $this->visibility;
     }
