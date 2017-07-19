@@ -22,13 +22,9 @@ Installation
 
 ### Composer ###
 
-To install with composer add the following to your `composer.json` file:
-```js
-"require": {
-    "brianium/paratest": "dev-master"
-}
-```
-Then run `php composer.phar install`
+To install with composer run the following command:
+
+   composer require --dev brianium/paratest
 
 Usage
 -----
