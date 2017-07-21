@@ -29,6 +29,9 @@ class ParaTestInvoker
         $cmd = $this->buildCommand($options);
         $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
         $proc = new Process($cmd, null, $env, null, $timeout = 600);
+        if (method_exists($proc, 'inheritEnvironmentVariables')) {
+            $proc->inheritEnvironmentVariables();  // no such method in 3.0, but emits warning if this isn't done in 3.3
+        }
 
         if (!is_callable($callback)) {
             $proc->run();
