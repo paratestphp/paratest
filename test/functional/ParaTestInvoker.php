@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use \Habitat\Habitat;
-use \Symfony\Component\Process\Process;
+use Habitat\Habitat;
+use Symfony\Component\Process\Process;
 
 class ParaTestInvoker
 {
