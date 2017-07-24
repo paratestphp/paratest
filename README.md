@@ -24,7 +24,7 @@ Installation
 
 To install with composer run the following command:
 
-   composer require --dev brianium/paratest
+    composer require --dev brianium/paratest
 
 Usage
 -----
