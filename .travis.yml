@@ -25,9 +25,9 @@ matrix:
     - php: 7.1
       env:
         - PHPUNIT_DEV=true
-    - php: nightly
+    - php: 7.2
   allow_failures:
-    - php: nightly
+    - php: 7.2
 
 install:
   - if [[ $CS_CHECK == 'true' ]]; then phpenv config-rm xdebug.ini || return 0; else composer remove --dev --no-update --no-scripts friendsofphp/php-cs-fixer; fi;
