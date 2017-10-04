@@ -61,7 +61,7 @@ class CoverageMerger
         if (0 === $file->getSize()) {
             $extra = 'This means a PHPUnit process has crashed.';
 
-            if (!function_exists("xdebug_get_code_coverage")) {
+            if (!function_exists('xdebug_get_code_coverage')) {
                 $extra = 'Xdebug is disabled! Enable for coverage.';
             }
 
