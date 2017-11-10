@@ -137,7 +137,7 @@ class Runner extends BaseRunner
     protected function initTokens()
     {
         $this->tokens = [];
-        for ($i = 0; $i < $this->options->processes; ++$i) {
+        for ($i = 1; $i <= $this->options->processes; ++$i) {
             $this->tokens[$i] = ['token' => $i, 'unique' => uniqid(sprintf('%s_', $i)), 'available' => true];
         }
     }
