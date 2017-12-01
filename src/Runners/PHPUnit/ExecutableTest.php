@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
@@ -188,7 +189,8 @@ abstract class ExecutableTest
     {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
-        $command = PHP_BINARY . ' ' . $this->command($binary, $options);
+        $finder = new PhpExecutableFinder();
+        $command = $finder->find() . ' ' . $this->command($binary, $options);
         $this->assertValidCommandLineLength($command);
         $this->lastCommand = $command;
         $this->process = new Process($command, null, $environmentVariables);
