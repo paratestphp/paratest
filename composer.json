@@ -9,8 +9,8 @@
         "composer/semver": "~1.2",
         "phpunit/php-timer": "^1.0.4",
         "phpunit/phpunit": "^6.0.13",
-        "symfony/console": "^3.2",
-        "symfony/process": "^3.2"
+        "symfony/console": "^3.2|^4.0",
+        "symfony/process": "^3.2|^4.0"
     },
     "type": "library",
     "description": "Parallel testing for PHP",
