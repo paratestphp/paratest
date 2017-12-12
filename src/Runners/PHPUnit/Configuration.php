@@ -134,7 +134,7 @@ class Configuration
                                     unset($excludedPaths[$dir]);
                                 }
                             }
-                            // not breaking on purpose
+                            // no break on purpose
                         default:
                             foreach ($this->getSuitePaths((string) $nodeContent) as $path) {
                                 $suites[(string) $node['name']][] = new SuitePath(

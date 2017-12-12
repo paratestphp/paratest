@@ -36,6 +36,7 @@ return PhpCsFixer\Config::create()
         'simplified_null_return' => true,
         'strict_comparison' => true,
         'strict_param' => true,
+        'yoda_style' => false,
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

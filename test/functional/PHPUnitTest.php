@@ -21,7 +21,8 @@ class PHPUnitTest extends FunctionalTestBase
         // The [RuntimeException] message appears only on lower 6.x versions of Phpunit
         $this->assertRegExp(
             '/(\[RuntimeException\]|Bootstrap specified but could not be found)/',
-            $errors, 'Expected exception name not found in output'
+            $errors,
+            'Expected exception name not found in output'
         );
     }
 

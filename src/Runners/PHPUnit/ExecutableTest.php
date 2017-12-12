@@ -279,10 +279,12 @@ abstract class ExecutableTest
                 throw new \RuntimeException('Command line is too long, try to decrease max batch size');
             }
         }
-            // TODO: Implement command line length validation for linux/osx/freebsd
-            //       Please note that on unix environment variables also became part of command line
-            // linux: echo | xargs --show-limits
-            // osx/linux: getconf ARG_MAX
+        /*
+         * @todo Implement command line length validation for linux/osx/freebsd.
+         *       Please note that on unix environment variables also became part of command line:
+         *         - linux: echo | xargs --show-limits
+         *         - osx/linux: getconf ARG_MAX
+         */
     }
 
     /**
@@ -319,7 +321,6 @@ abstract class ExecutableTest
 
         $arguments[] = $this->fullyQualifiedClassName ?? '';
         $arguments[] = $this->getPath();
-
 
         return (new Process($arguments))->getCommandLine();
     }
