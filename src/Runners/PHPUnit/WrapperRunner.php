@@ -38,7 +38,7 @@ class WrapperRunner extends BaseRunner
     protected function load(SuiteLoader $loader)
     {
         if ($this->options->functional) {
-            throw new \RuntimeException("The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due to the current PHPUnit commands causing classloading issues.");
+            throw new \RuntimeException('The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due to the current PHPUnit commands causing classloading issues.');
         }
         parent::load($loader);
     }
