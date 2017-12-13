@@ -92,10 +92,9 @@ abstract class BaseRunner
      * contain a collection of TestMethod objects instead of Suite
      * objects.
      * @param SuiteLoader $loader
-	 */
-	protected function load(SuiteLoader $loader)
+     */
+    protected function load(SuiteLoader $loader)
     {
-        $loader = new SuiteLoader($this->options);
         $loader->load($this->options->path);
         $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
