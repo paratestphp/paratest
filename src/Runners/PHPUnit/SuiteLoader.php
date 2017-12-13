@@ -111,7 +111,7 @@ class SuiteLoader
      * Called after all files are loaded. Parses loaded files into
      * ExecutableTest objects - either Suite or TestMethod.
      */
-    private function initSuites()
+    protected function initSuites()
     {
         foreach ($this->files as $path) {
             try {
@@ -125,7 +125,7 @@ class SuiteLoader
         }
     }
 
-    private function executableTests(string $path, ParsedClass $class)
+    protected function executableTests(string $path, ParsedClass $class)
     {
         $executableTests = [];
         $methodBatches = $this->getMethodBatches($class);
@@ -147,7 +147,7 @@ class SuiteLoader
      *
      * @return array of MethodBatches. Each MethodBatch has an array of method names
      */
-    private function getMethodBatches(ParsedClass $class): array
+    protected function getMethodBatches(ParsedClass $class): array
     {
         $classMethods = $class->getMethods($this->options ? $this->options->annotations : []);
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
@@ -169,7 +169,7 @@ class SuiteLoader
         return $batches;
     }
 
-    private function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests)
+    protected function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests)
     {
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
@@ -181,7 +181,7 @@ class SuiteLoader
         }
     }
 
-    private function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize)
+    protected function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize)
     {
         foreach ($tests as $test) {
             $lastIndex = count($batches) - 1;
@@ -207,7 +207,7 @@ class SuiteLoader
      *
      * @return string[] array of test names
      */
-    private function getMethodTests(ParsedClass $class, ParsedFunction $method, bool $useDataProvider = false): array
+    protected function getMethodTests(ParsedClass $class, ParsedFunction $method, bool $useDataProvider = false): array
     {
         $result = [];
 
@@ -236,7 +236,7 @@ class SuiteLoader
         return $result;
     }
 
-    private function testMatchGroupOptions(array $groups): bool
+    protected function testMatchGroupOptions(array $groups): bool
     {
         if (empty($groups)) {
             return true;
@@ -257,7 +257,7 @@ class SuiteLoader
         return true;
     }
 
-    private function testMatchFilterOptions(string $className, string $name): bool
+    protected function testMatchFilterOptions(string $className, string $name): bool
     {
         if (empty($this->options->filter)) {
             return true;
@@ -271,7 +271,7 @@ class SuiteLoader
         return 1 === preg_match($re, $fullName);
     }
 
-    private function testMatchOptions(string $className, string $name, array $group): bool
+    protected function testMatchOptions(string $className, string $name, array $group): bool
     {
         $result = $this->testMatchGroupOptions($group)
                 && $this->testMatchFilterOptions($className, $name);
@@ -279,21 +279,21 @@ class SuiteLoader
         return $result;
     }
 
-    private function methodDataProvider(ParsedFunction $method)
+    protected function methodDataProvider(ParsedFunction $method)
     {
         if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
     }
 
-    private function methodDependency(ParsedFunction $method)
+    protected function methodDependency(ParsedFunction $method)
     {
         if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
     }
 
-    private function methodGroups(ParsedFunction $method)
+    protected function methodGroups(ParsedFunction $method)
     {
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
@@ -302,7 +302,7 @@ class SuiteLoader
         return [];
     }
 
-    private function createSuite(string $path, ParsedClass $class): Suite
+    protected function createSuite(string $path, ParsedClass $class): Suite
     {
         return new Suite(
             $path,
