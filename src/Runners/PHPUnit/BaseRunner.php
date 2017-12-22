@@ -69,7 +69,7 @@ abstract class BaseRunner
     {
         $this->verifyConfiguration();
         $this->initCoverage();
-        $this->load();
+        $this->load(new SuiteLoader($this->options));
         $this->printer->start($this->options);
     }
 
@@ -91,10 +91,10 @@ abstract class BaseRunner
      * to run. If functional mode is enabled $this->pending will
      * contain a collection of TestMethod objects instead of Suite
      * objects.
+     * @param SuiteLoader $loader
      */
-    protected function load()
+    protected function load(SuiteLoader $loader)
     {
-        $loader = new SuiteLoader($this->options);
         $loader->load($this->options->path);
         $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
