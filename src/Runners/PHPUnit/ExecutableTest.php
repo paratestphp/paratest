@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
 
 abstract class ExecutableTest
 {
@@ -280,10 +279,12 @@ abstract class ExecutableTest
                 throw new \RuntimeException('Command line is too long, try to decrease max batch size');
             }
         }
-            // TODO: Implement command line length validation for linux/osx/freebsd
-            //       Please note that on unix environment variables also became part of command line
-            // linux: echo | xargs --show-limits
-            // osx/linux: getconf ARG_MAX
+        /*
+         * @todo Implement command line length validation for linux/osx/freebsd.
+         *       Please note that on unix environment variables also became part of command line:
+         *         - linux: echo | xargs --show-limits
+         *         - osx/linux: getconf ARG_MAX
+         */
     }
 
     /**
@@ -302,28 +303,26 @@ abstract class ExecutableTest
      * Returns the command string that will be executed
      * by proc_open.
      *
-     * @param $binary
-     * @param array $options
+     * @param string $binary
+     * @param array  $options
      *
      * @return mixed
      */
     protected function getCommandString(string $binary, array $options = [])
     {
-        $builder = new ProcessBuilder();
-        $builder->setPrefix($binary);
+        // The order we add stuff into $arguments is important
+        $arguments = [$binary];
         foreach ($options as $key => $value) {
-            $builder->add("--$key");
+            $arguments[] = "--$key";
             if ($value !== null) {
-                $builder->add($value);
+                $arguments[] = $value;
             }
         }
 
-        $builder->add($this->fullyQualifiedClassName);
-        $builder->add($this->getPath());
+        $arguments[] = $this->fullyQualifiedClassName ?? '';
+        $arguments[] = $this->getPath();
 
-        $process = $builder->getProcess();
-
-        return $process->getCommandLine();
+        return (new Process($arguments))->getCommandLine();
     }
 
     /**

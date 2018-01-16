@@ -17,8 +17,13 @@ class PHPUnitTest extends FunctionalTestBase
         $proc = $this->invokeParatest('passing-tests', ['bootstrap' => $bootstrap]);
         $errors = $proc->getErrorOutput();
         $this->assertEquals(1, $proc->getExitCode(), 'Unexpected exit code');
-        $this->assertContains('[RuntimeException]', $errors, 'Expected exception name not found in output');
-        $this->assertContains(sprintf('Bootstrap specified but could not be found (%s)', $bootstrap), $errors, 'Expected error message not found in output');
+
+        // The [RuntimeException] message appears only on lower 6.x versions of Phpunit
+        $this->assertRegExp(
+            '/(\[RuntimeException\]|Bootstrap specified but could not be found)/',
+            $errors,
+            'Expected exception name not found in output'
+        );
     }
 
     public function testWithJustConfiguration()
