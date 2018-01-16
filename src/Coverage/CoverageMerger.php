@@ -59,8 +59,14 @@ class CoverageMerger
         $file = new \SplFileObject($coverageFile);
 
         if (0 === $file->getSize()) {
+            $extra = 'This means a PHPUnit process has crashed.';
+
+            if (!function_exists('xdebug_get_code_coverage')) {
+                $extra = 'Xdebug is disabled! Enable for coverage.';
+            }
+
             throw new \RuntimeException(
-                "Coverage file {$file->getRealPath()} is empty. This means a PHPUnit process has crashed."
+                "Coverage file {$file->getRealPath()} is empty. " . $extra
             );
         }
 
