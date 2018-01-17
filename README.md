@@ -166,7 +166,7 @@ from every other currently running test. This is useful to e.g. use a different 
 for each test:
 
 ```php
-if (getenv('TEST_TOKEN') !== false) {  // Using partest
+if (getenv('TEST_TOKEN') !== false) {  // Using paratest
     $dbname = 'testdb_' . getenv('TEST_TOKEN');
 } else {
     $dbname = 'testdb';
