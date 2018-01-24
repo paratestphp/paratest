@@ -212,7 +212,7 @@ class Options
 
         if (DIRECTORY_SEPARATOR === '\\' && file_exists($batch)) {
             return $phpunit . '.bat';
-        } elseif(file_exists($phpunit)) {
+        } elseif (file_exists($phpunit)) {
             return $phpunit;
         }
 
