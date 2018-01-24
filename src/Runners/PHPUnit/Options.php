@@ -205,7 +205,7 @@ class Options
      */
     protected static function phpunit(): string
     {
-        $vendor  = static::vendorDir();
+        $vendor = static::vendorDir();
 
         $phpunit = $vendor . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
         $batch = $phpunit . '.bat';
