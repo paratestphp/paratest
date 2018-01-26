@@ -206,14 +206,13 @@ class Options
     protected static function phpunit(): string
     {
         $vendor = static::vendorDir();
+
         $phpunit = $vendor . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
         $batch = $phpunit . '.bat';
 
-        if (file_exists($batch)) {
-            return $batch;
-        }
-
-        if (file_exists($phpunit)) {
+        if (DIRECTORY_SEPARATOR === '\\' && file_exists($batch)) {
+            return $phpunit . '.bat';
+        } elseif (file_exists($phpunit)) {
             return $phpunit;
         }
 
