@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="UnitTestWithDataProviderSpecialCharsTest" tests="1" assertions="1" failures="1" errors="0" time="0.000898" file="/opt/projects/paratest/test/fixtures/failing-tests/UnitTestWithDataProviderSpecialCharsTest.php">
+    <testcase name="testIsItFalse with data set #0" class="UnitTestWithDataProviderSpecialCharsTest" file="/opt/projects/paratest/test/fixtures/failing-tests/UnitTestWithDataProviderSpecialCharsTest.php" line="13" assertions="1" time="0.000898">
+      <failure type="PHPUnit_Framework_ExpectationFailedException">UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #0 ('—')
+Failed asserting that '—' is false.
+
+/opt/projects/paratest/test/fixtures/failing-tests/UnitTestWithDataProviderSpecialCharsTest.php:13
+</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

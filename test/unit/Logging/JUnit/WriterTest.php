@@ -47,6 +47,16 @@ class WriterTest extends \TestBase
         $this->assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
     }
 
+    public function testDataProviderWithSpecialCharacters()
+    {
+        $mixed = FIXTURES . DS . 'results' . DS . 'data-provider-with-special-chars.xml';
+        $reader = new Reader($mixed);
+        $this->interpreter->addReader($reader);
+        $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
+        $xml = $writer->getXml();
+        $this->assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
+    }
+
     public function testWrite()
     {
         $output = FIXTURES . DS . 'logs' . DS . 'passing.xml';
