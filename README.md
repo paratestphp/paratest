@@ -6,12 +6,6 @@ ParaTest
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brianium/paratest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brianium/paratest/?branch=master)
 [![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
 
-# Call For Maintainers
-
-ParaTest is in need of someone to step up and keep the project going. Maybe move it into a separate organization, field pull requests, handle issues, etc... 
-
-An issue for discussion has been opened [here](https://github.com/brianium/paratest/issues/297)
-
 The objective of ParaTest is to support parallel testing in PHPUnit. Provided you have well-written PHPUnit tests, you can drop `paratest` in your project and
 start using it with no additional bootstrap or configurations!
 
