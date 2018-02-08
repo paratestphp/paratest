@@ -91,7 +91,6 @@ abstract class BaseRunner
      * to run. If functional mode is enabled $this->pending will
      * contain a collection of TestMethod objects instead of Suite
      * objects.
-     * @param SuiteLoader $loader
      */
     protected function load(SuiteLoader $loader)
     {
