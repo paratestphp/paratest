@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
+use SebastianBergmann\Timer\Timer;
 
 /**
  * Class ResultPrinter.
@@ -57,7 +58,7 @@ class ResultPrinter
     protected $column = 0;
 
     /**
-     * @var \PHP_Timer
+     * @var \PHP_Timer|Timer
      */
     protected $timer;
 
@@ -106,7 +107,7 @@ class ResultPrinter
     public function __construct(LogInterpreter $results)
     {
         $this->results = $results;
-        $this->timer = new \PHP_Timer();
+        $this->timer = class_exists('\PHP_Timer') ? new \PHP_Timer() : new Timer();
     }
 
     /**
