@@ -57,7 +57,7 @@ class ResultPrinter
     protected $column = 0;
 
     /**
-     * @var \PHP_Timer
+     * @var \SebastianBergmann\Timer\Timer
      */
     protected $timer;
 
@@ -106,7 +106,7 @@ class ResultPrinter
     public function __construct(LogInterpreter $results)
     {
         $this->results = $results;
-        $this->timer = new \PHP_Timer();
+        $this->timer = new \SebastianBergmann\Timer\Timer();
     }
 
     /**
