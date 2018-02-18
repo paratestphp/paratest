@@ -1,7 +1,7 @@
 ParaTest
 ========
 
-[![Build Status](https://travis-ci.org/brianium/paratest.svg?branch=master)](https://travis-ci.org/brianium/paratest)
+[![Build Status](https://travis-ci.org/paratestphp/paratest.svg?branch=master)](https://travis-ci.org/paratestphp/paratest)
 [![Code Coverage](https://scrutinizer-ci.com/g/brianium/paratest/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/brianium/paratest/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brianium/paratest/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brianium/paratest/?branch=master)
 [![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
