@@ -26,4 +26,9 @@ interface CoverageReporterInterface
      * @param string $target Report filename
      */
     public function php(string $target);
+
+    /**
+     * Generate text coverage report.
+     */
+    public function text();
 }
