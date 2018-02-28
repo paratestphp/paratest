@@ -147,6 +147,9 @@ abstract class BaseRunner
         if (isset($filteredOptions['coverage-html'])) {
             $reporter->html($filteredOptions['coverage-html']);
         }
+        if (isset($filteredOptions['coverage-text'])) {
+            $reporter->text();
+        }
 
         $reporter->php($filteredOptions['coverage-php']);
     }
@@ -156,7 +159,6 @@ abstract class BaseRunner
         if (!isset($this->options->filtered['coverage-php'])) {
             return;
         }
-
         $this->coverage = new CoverageMerger();
     }
 

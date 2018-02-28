@@ -207,9 +207,10 @@ class PHPUnit extends Tester
     protected function hasCoverage(array $options): bool
     {
         $isFileFormat = isset($options['coverage-html']) || isset($options['coverage-clover']);
+        $isTextFormat = isset($options['coverage-text']);
         $isPHP = isset($options['coverage-php']);
 
-        return $isFileFormat && !$isPHP;
+        return $isTextFormat || $isFileFormat && !$isPHP;
     }
 
     /**

@@ -8,6 +8,7 @@ use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Report\Clover;
 use SebastianBergmann\CodeCoverage\Report\Html;
 use SebastianBergmann\CodeCoverage\Report\PHP;
+use SebastianBergmann\CodeCoverage\Report\Text;
 
 class CoverageReporter implements CoverageReporterInterface
 {
@@ -55,5 +56,14 @@ class CoverageReporter implements CoverageReporterInterface
     {
         $php = new PHP();
         $php->process($this->coverage, $target);
+    }
+
+    /**
+     * Generate text coverage report.
+     */
+    public function text()
+    {
+        $text = new Text();
+        echo $text->process($this->coverage);
     }
 }

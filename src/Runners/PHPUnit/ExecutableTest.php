@@ -354,7 +354,7 @@ abstract class ExecutableTest
             $options['coverage-php'] = $this->getCoverageFileName();
         }
 
-        unset($options['coverage-html'], $options['coverage-clover']);
+        unset($options['coverage-html'], $options['coverage-clover'], $options['coverage-text']);
 
         return $options;
     }
