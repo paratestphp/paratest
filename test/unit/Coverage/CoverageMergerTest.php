@@ -26,8 +26,8 @@ class CoverageMergerTest extends \TestBase
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine = 38;
-        $secondFileFirstLine = 38;
+        $firstFileFirstLine = 39;
+        $secondFileFirstLine = 39;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -58,12 +58,10 @@ class CoverageMergerTest extends \TestBase
 
         $data = $coverage->getData();
 
+
         $this->assertCount(2, $data[$firstFile][$firstFileFirstLine]);
         $this->assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
         $this->assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);
-
-        $this->assertCount(1, $data[$firstFile][1 + $firstFileFirstLine]);
-        $this->assertEquals('Test2', $data[$firstFile][1 + $firstFileFirstLine][0]);
 
         $this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
         $this->assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);

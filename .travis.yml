@@ -9,15 +9,6 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - php: 7
-      env:
-        - DEPS=lowest
-    - php: 7
-      env:
-        - CODE_COVERAGE=true
-    - php: 7
-      env:
-        - CS_CHECK=true
     - php: 7.1
       env:
         - DEPS=lowest
@@ -26,8 +17,15 @@ matrix:
       env:
         - PHPUNIT_DEV=true
     - php: 7.2
-  allow_failures:
+      env:
+        - DEPS=lowest
     - php: 7.2
+      env:
+        - PHPUNIT_DEV=true
+    - php: 7.2
+    - php: nightly
+  allow_failures:
+    - php: nightly
 
 install:
   - if [[ $CS_CHECK == 'true' ]]; then phpenv config-rm xdebug.ini || return 0; else composer remove --dev --no-update --no-scripts friendsofphp/php-cs-fixer; fi;
