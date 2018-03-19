@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use SimpleXMLElement;
 
 class WorkerTest extends \TestBase
@@ -38,7 +39,7 @@ class WorkerTest extends \TestBase
     {
         $testLog = '/tmp/test.xml';
         $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
-        $worker = new Worker();
+        $worker = new WrapperWorker();
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
 
@@ -52,7 +53,7 @@ class WorkerTest extends \TestBase
     {
         $testLog = '/tmp/test.xml';
         $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
-        $worker = new Worker();
+        $worker = new WrapperWorker();
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
         $worker->waitForFinishedJob();
@@ -64,7 +65,7 @@ class WorkerTest extends \TestBase
     {
         $testLog = '/tmp/test.xml';
         $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
-        $worker = new Worker();
+        $worker = new WrapperWorker();
         $worker->start($this->phpunitWrapper);
         $this->assertTrue($worker->isFree());
 
@@ -77,7 +78,7 @@ class WorkerTest extends \TestBase
 
     public function testTellsWhenItsStopped()
     {
-        $worker = new Worker();
+        $worker = new WrapperWorker();
         $this->assertFalse($worker->isRunning());
 
         $worker->start($this->phpunitWrapper);
@@ -88,14 +89,13 @@ class WorkerTest extends \TestBase
         $this->assertFalse($worker->isRunning());
     }
 
-    public function testProcessIsNotMarkedAsCrashedWhenItFinishesCorrectly()
+    public function testProcessIsMarkedAsCrashedWhenItFinishesWithNonZeroExitCode()
     {
-        // fake state: process has already exited (clean) but worker did not yet notice
-        $worker = new Worker();
-        $this->setPerReflection($worker, 'isRunning', false);
+        // fake state: process has already exited (with non-zero exit code) but worker did not yet notice
+        $worker = new WrapperWorker();
         $this->setPerReflection($worker, 'proc', $this->createSomeClosedProcess());
         $this->setPerReflection($worker, 'pipes', [0 => true]);
-        $this->assertFalse($worker->isCrashed());
+        $this->assertTrue($worker->isCrashed());
     }
 
     private function createSomeClosedProcess()
@@ -127,7 +127,7 @@ class WorkerTest extends \TestBase
     {
         $bin = 'bin/phpunit-wrapper';
 
-        $worker = new Worker();
+        $worker = new WrapperWorker();
         $worker->start($this->phpunitWrapper);
 
         $testLog = '/tmp/test.xml';

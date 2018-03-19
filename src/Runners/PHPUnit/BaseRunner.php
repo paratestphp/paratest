@@ -31,7 +31,7 @@ abstract class BaseRunner
      * A collection of pending ExecutableTest objects that have
      * yet to run.
      *
-     * @var array
+     * @var ExecutableTest[]
      */
     protected $pending = [];
 
@@ -67,10 +67,7 @@ abstract class BaseRunner
 
     public function run()
     {
-        $this->verifyConfiguration();
-        $this->initCoverage();
-        $this->load(new SuiteLoader($this->options));
-        $this->printer->start($this->options);
+        $this->initialize();
     }
 
     /**
@@ -175,5 +172,13 @@ abstract class BaseRunner
     protected function getCoverage()
     {
         return $this->coverage;
+    }
+
+    protected function initialize(): void
+    {
+        $this->verifyConfiguration();
+        $this->initCoverage();
+        $this->load(new SuiteLoader($this->options));
+        $this->printer->start($this->options);
     }
 }

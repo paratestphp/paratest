@@ -50,7 +50,7 @@ Options:
  --max-batch-size (-m) Max batch size (only for functional mode). (default: 0)
  --filter              Filter (only for functional mode).
  --phpunit             The PHPUnit binary to execute. (default: vendor/bin/phpunit)
- --runner              Runner or WrapperRunner. (default: Runner)
+ --runner              Runner, WrapperRunner or SqliteRunner. (default: Runner)
  --bootstrap           The bootstrap file to be used by PHPUnit.
  --configuration (-c)  The PHPUnit configuration file to use.
  --group (-g)          Only runs tests from the specified group(s).
@@ -75,9 +75,9 @@ To get the most out of paratest, you have to adjust the parameters carefully.
 
     Given you have few testcases (classes) with many long running methods, you should use the `-f` option to enable the `functional mode` and allow different methods of the same class to be executed in parallel. Keep in mind that the default is per-testcase-parallelization to address inter-testmethod dependencies. Note that in most projects, using `-f` is **slower** since each test **method** will need to be bootstrapped separately.
 
- 3. **Use the WrapperRunner if possible**
+ 3. **Use the WrapperRunner or SqliteRunner if possible**
 
-    The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process. Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the WrapperRunner with `--runner WrapperRunner`. It spawns one "worker"-process for each parallel process (`-p`), executes the bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and bootstrapping is reduced to the minimum.
+    The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process. Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the WrapperRunner with `--runner WrapperRunner` or the SqliteRunner with `--runner SqliteRunner`. It spawns one "worker"-process for each parallel process (`-p`), executes the bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and bootstrapping is reduced to the minimum.
 
  4. **Tune batch max size `--max-batch-size`**
 

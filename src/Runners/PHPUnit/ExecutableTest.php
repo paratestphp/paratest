@@ -51,7 +51,7 @@ abstract class ExecutableTest
      *
      * @var string
      */
-    protected $lastCommand;
+    protected $lastCommand = '';
 
     public function __construct(string $path, string $fullyQualifiedClassName = null)
     {
