@@ -35,7 +35,8 @@ abstract class BaseWorker
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
         $pipes = [];
-        $this->proc = proc_open($bin, self::$descriptorspec, $pipes);
+        $process = proc_open($bin, self::$descriptorspec, $pipes);
+        $this->proc = is_resource($process) ? $process : null;
         $this->pipes = $pipes;
     }
 
@@ -55,7 +56,7 @@ abstract class BaseWorker
 
         $status = proc_get_status($this->proc);
 
-        return $status['running'];
+        return $status ? $status['running'] : false;
     }
 
     public function isStarted(): bool
