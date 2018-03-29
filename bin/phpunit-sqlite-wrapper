@@ -1,0 +1,41 @@
+<?php
+if (!isset($argv[1])) {
+    fwrite(STDERR, 'First parameter for sqlite database file required.');
+    exit(1);
+}
+
+$db = new PDO('sqlite:' . $argv[1]);
+
+// git working copy
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+}
+// Composer installation
+if (file_exists(__DIR__ . '/../../../autoload.php')) {
+    require_once __DIR__ . '/../../../autoload.php';
+}
+
+while ($test = $db->query('SELECT id, command FROM tests WHERE reserved_by_process_id IS NULL ORDER BY file_name LIMIT 1')->fetch()) {
+    $statement = $db->prepare('UPDATE tests SET reserved_by_process_id = :procId WHERE id = :id AND reserved_by_process_id IS NULL');
+    $statement->execute([
+        ':procId' => getmypid(),
+        ':id' => $test['id'],
+    ]);
+
+    if ($statement->rowCount() !== 1) {
+        // Seems like this test has already been reserved. Continue to the next one.
+        continue;
+    }
+
+    try {
+        if (!preg_match_all('/\'([^\']*)\'[ ]?/', $test['command'], $arguments)) {
+            throw new \Exception("Failed to parse arguments from command line: \"" . $test['command'] . "\"");
+        }
+        $_SERVER['argv'] = $arguments[1];
+
+        PHPUnit\TextUI\Command::main(false);
+    } finally {
+        $db->prepare('UPDATE tests SET completed = 1 WHERE id = :id')
+            ->execute([':id' => $test['id']]);
+    }
+}

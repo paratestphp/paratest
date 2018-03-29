@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
+
 class WrapperRunner extends BaseRunner
 {
     const PHPUNIT_FAILURES = 1;
@@ -15,7 +17,7 @@ class WrapperRunner extends BaseRunner
     protected $streams;
 
     /**
-     * @var Worker[]
+     * @var WrapperWorker[]
      */
     protected $workers;
 
@@ -43,11 +45,11 @@ class WrapperRunner extends BaseRunner
         parent::load($loader);
     }
 
-    private function startWorkers()
+    protected function startWorkers()
     {
         $wrapper = realpath(__DIR__ . '/../../../bin/phpunit-wrapper');
         for ($i = 1; $i <= $this->options->processes; ++$i) {
-            $worker = new Worker();
+            $worker = new WrapperWorker();
             if ($this->options->noTestTokens) {
                 $token = null;
                 $uniqueToken = null;
@@ -119,7 +121,7 @@ class WrapperRunner extends BaseRunner
     /**
      * put on WorkersPool.
      *
-     * @return Worker[]
+     * @return WrapperWorker[]
      */
     private function progressedWorkers(): array
     {
@@ -156,7 +158,7 @@ class WrapperRunner extends BaseRunner
         return $streams;
     }
 
-    private function complete()
+    protected function complete()
     {
         $this->setExitCode();
         $this->printer->printResults();
@@ -180,7 +182,7 @@ class WrapperRunner extends BaseRunner
         }
     }
 
-    private function flushWorker(Worker $worker)
+    private function flushWorker(WrapperWorker $worker)
     {
         if ($this->hasCoverage()) {
             $this->getCoverage()->addCoverageFromFile($worker->getCoverageFileName());

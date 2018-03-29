@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Console\Testers;
 
+use InvalidArgumentException;
+use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Runner;
-use ParaTest\Runners\PHPUnit\WrapperRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +36,7 @@ class PHPUnit extends Tester
     {
         $command
             ->addOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>')
-            ->addOption('runner', null, InputOption::VALUE_REQUIRED, 'Runner or WrapperRunner. <comment>(default: Runner)</comment>')
+            ->addOption('runner', null, InputOption::VALUE_REQUIRED, 'Runner, WrapperRunner or SqliteRunner. <comment>(default: Runner)</comment>')
             ->addOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.')
             ->addOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The PHPUnit configuration file to use.')
             ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).')
@@ -64,22 +65,7 @@ class PHPUnit extends Tester
             $this->displayHelp($input, $output);
         }
 
-        if ($input->getOption('runner') === 'WrapperRunner') {
-            $runner = new WrapperRunner($this->getRunnerOptions($input));
-        } else {
-            if ($input->getOption('runner') !== '') {
-                // because we want to have to bootstrap script inherited before check/initialization
-                $runnerOption = $this->getRunnerOptions($input);
-                $runnerClass = $input->getOption('runner');
-                if (null !== $runnerClass && class_exists($runnerClass)) {
-                    $runner = new $runnerClass($runnerOption);
-                }
-            }
-        }
-
-        if (!isset($runner)) {
-            $runner = new Runner($this->getRunnerOptions($input));
-        }
+        $runner = $this->initializeRunner($input);
 
         $runner->run();
 
@@ -235,5 +221,21 @@ class PHPUnit extends Tester
         $bootstrap = $config->getBootstrap();
 
         return ($bootstrap) ? $config->getConfigDir() . $bootstrap : '';
+    }
+
+    private function initializeRunner(InputInterface $input): BaseRunner
+    {
+        if ($input->getOption('runner')) {
+            $runnerClass = $input->getOption('runner') ?: '';
+            $runnerClass = class_exists($runnerClass) ? $runnerClass : ('\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass);
+        } else {
+            $runnerClass = Runner::class;
+        }
+
+        if (!class_exists($runnerClass)) {
+            throw new InvalidArgumentException('Selected runner does not exist.');
+        }
+
+        return new $runnerClass($this->getRunnerOptions($input));
     }
 }
