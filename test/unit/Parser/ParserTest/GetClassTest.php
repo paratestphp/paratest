@@ -45,13 +45,13 @@ class GetClassTest extends \TestBase
     public function testParsedClassHasCorrectNumberOfTestMethods()
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
-        $this->assertEquals(4, count($class->getMethods()));
+        $this->assertCount(4, $class->getMethods());
     }
 
     public function testParsedClassWithParentHasCorrectNumberOfTestMethods()
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithErrorTest.php'));
-        $this->assertEquals(4, count($class->getMethods()));
+        $this->assertCount(4, $class->getMethods());
     }
 
     /**

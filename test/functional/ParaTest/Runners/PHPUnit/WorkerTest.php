@@ -161,6 +161,6 @@ class WorkerTest extends \TestBase
         $this->assertFileExists($logFile, "Failed asserting that $logFile exists.");
         $log = new SimpleXMLElement(file_get_contents($logFile));
         $count = count($log->testsuite->testcase);
-        $this->assertTrue($count > 1, 'Not even a test has been executed');
+        $this->assertGreaterThan(1, $count, 'Not even a test has been executed');
     }
 }

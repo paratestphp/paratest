@@ -120,7 +120,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
     protected function assertContainsNSkippedTests($n, $output)
     {
         preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
-        $this->assertEquals(2, count($matches));
+        $this->assertCount(2, $matches);
         $numberOfS = substr_count($matches[1], 'S');
         $this->assertEquals($n, $numberOfS, "The test should have skipped $n tests, instead it skipped $numberOfS, $matches[1]");
     }

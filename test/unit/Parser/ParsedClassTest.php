@@ -62,7 +62,7 @@ class ParsedClassTest extends \TestBase
     public function testGetMethodsExceptsAdditionalAnnotationFilter()
     {
         $group1 = $this->class->getMethods(['group' => 'group1']);
-        $this->assertEquals(1, count($group1));
+        $this->assertCount(1, $group1);
         $this->assertEquals($this->methods[0], $group1[0]);
     }
 }

@@ -44,7 +44,7 @@ class ReaderTest extends \TestBase
     public function testMixedSuiteShouldConstructRootSuite()
     {
         $suites = $this->mixed->getSuites();
-        $this->assertEquals(1, count($suites));
+        $this->assertCount(1, $suites);
         $this->assertEquals('test/fixtures/tests/', $suites[0]->name);
         $this->assertEquals('7', $suites[0]->tests);
         $this->assertEquals('6', $suites[0]->assertions);
@@ -62,7 +62,7 @@ class ReaderTest extends \TestBase
      */
     public function testMixedSuiteConstructsChildSuites($suite)
     {
-        $this->assertEquals(3, count($suite->suites));
+        $this->assertCount(3, $suite->suites);
         $first = $suite->suites[0];
         $this->assertEquals('UnitTestWithClassAnnotationTest', $first->name);
         $this->assertEquals('/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php', $first->file);
@@ -82,7 +82,7 @@ class ReaderTest extends \TestBase
      */
     public function testMixedSuiteConstructsTestCases($suite)
     {
-        $this->assertEquals(3, count($suite->cases));
+        $this->assertCount(3, $suite->cases);
         $first = $suite->cases[0];
         $this->assertEquals('testTruth', $first->name);
         $this->assertEquals('UnitTestWithClassAnnotationTest', $first->class);
@@ -96,7 +96,7 @@ class ReaderTest extends \TestBase
     {
         $suites = $this->mixed->getSuites();
         $case = $suites[0]->suites[0]->cases[1];
-        $this->assertEquals(1, count($case->failures));
+        $this->assertCount(1, $case->failures);
         $failure = $case->failures[0];
         $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals("UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20", $failure['text']);
@@ -106,7 +106,7 @@ class ReaderTest extends \TestBase
     {
         $suites = $this->mixed->getSuites();
         $case = $suites[0]->suites[1]->cases[0];
-        $this->assertEquals(1, count($case->errors));
+        $this->assertCount(1, $case->errors);
         $error = $case->errors[0];
         $this->assertEquals('Exception', $error['type']);
         $this->assertEquals("UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12", $error['text']);
@@ -115,7 +115,7 @@ class ReaderTest extends \TestBase
     public function testSingleSuiteShouldConstructRootSuite()
     {
         $suites = $this->single->getSuites();
-        $this->assertEquals(1, count($suites));
+        $this->assertCount(1, $suites);
         $this->assertEquals('UnitTestWithMethodAnnotationsTest', $suites[0]->name);
         $this->assertEquals('/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php', $suites[0]->file);
         $this->assertEquals('3', $suites[0]->tests);
@@ -134,7 +134,7 @@ class ReaderTest extends \TestBase
      */
     public function testSingleSuiteShouldHaveNoChildSuites($suite)
     {
-        $this->assertEquals(0, count($suite->suites));
+        $this->assertCount(0, $suite->suites);
     }
 
     /**
@@ -144,7 +144,7 @@ class ReaderTest extends \TestBase
      */
     public function testSingleSuiteConstructsTestCases($suite)
     {
-        $this->assertEquals(3, count($suite->cases));
+        $this->assertCount(3, $suite->cases);
         $first = $suite->cases[0];
         $this->assertEquals('testTruth', $first->name);
         $this->assertEquals('UnitTestWithMethodAnnotationsTest', $first->class);
@@ -158,7 +158,7 @@ class ReaderTest extends \TestBase
     {
         $suites = $this->single->getSuites();
         $case = $suites[0]->cases[1];
-        $this->assertEquals(1, count($case->failures));
+        $this->assertCount(1, $case->failures);
         $failure = $case->failures[0];
         $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18", $failure['text']);
@@ -167,7 +167,7 @@ class ReaderTest extends \TestBase
     public function testEmptySuiteConstructsTestCase()
     {
         $suites = $this->empty->getSuites();
-        $this->assertEquals(1, count($suites));
+        $this->assertCount(1, $suites);
 
         $suite = $suites[0];
         $this->assertEquals('', $suite->name);
@@ -200,7 +200,7 @@ class ReaderTest extends \TestBase
     public function testMixedGetFailureMessages()
     {
         $failures = $this->mixed->getFailures();
-        $this->assertEquals(2, count($failures));
+        $this->assertCount(2, $failures);
         $this->assertEquals("UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20", $failures[0]);
         $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18", $failures[1]);
     }
@@ -208,14 +208,14 @@ class ReaderTest extends \TestBase
     public function testMixedGetErrorMessages()
     {
         $errors = $this->mixed->getErrors();
-        $this->assertEquals(1, count($errors));
+        $this->assertCount(1, $errors);
         $this->assertEquals("UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12", $errors[0]);
     }
 
     public function testSingleGetMessages()
     {
         $failures = $this->single->getFailures();
-        $this->assertEquals(1, count($failures));
+        $this->assertCount(1, $failures);
         $this->assertEquals("UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18", $failures[0]);
     }
 
