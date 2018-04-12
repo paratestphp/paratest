@@ -23,7 +23,7 @@ class ConfigurationTest extends \TestBase
     public function test_getSuitesShouldReturnCorrectNumberOfSuites()
     {
         $suites = $this->config->getSuites();
-        $this->assertEquals(2, count($suites));
+        $this->assertCount(2, $suites);
 
         return $suites;
     }

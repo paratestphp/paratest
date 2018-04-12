@@ -48,7 +48,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 1;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag()
@@ -61,7 +61,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 1;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag()
@@ -74,7 +74,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 2;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory()
@@ -87,7 +87,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 1;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteFilesFromConfig()
@@ -100,7 +100,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = 2;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithDirectory()
@@ -111,7 +111,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithDirectories()
@@ -123,7 +123,7 @@ class SuiteLoaderTest extends \TestBase
 
         $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
             count($this->findTests(FIXTURES . DS . 'failing-tests'));
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithFilesDirsMixed()
@@ -136,7 +136,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = count($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithNestedSuite()
@@ -150,7 +150,7 @@ class SuiteLoaderTest extends \TestBase
 
         $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
             count($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithDuplicateFilesDirMixed()
@@ -161,7 +161,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) + 1;
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadSuiteFromConfig()
@@ -172,7 +172,7 @@ class SuiteLoaderTest extends \TestBase
         $files = $this->getObjectValue($loader, 'files');
 
         $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     public function testLoadSuiteFromConfigWithMultipleDirs()
@@ -184,7 +184,7 @@ class SuiteLoaderTest extends \TestBase
 
         $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
             count($this->findTests(FIXTURES . DS . 'failing-tests'));
-        $this->assertEquals($expected, count($files));
+        $this->assertCount($expected, $files);
     }
 
     /**
@@ -246,7 +246,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $first = $this->suiteByPath('GroupsTest.php', $paraSuites);
         $functions = $first->getFunctions();
-        $this->assertEquals(5, count($functions));
+        $this->assertCount(5, $functions);
         $this->assertEquals('testTruth', $functions[0]->getName());
         $this->assertEquals('testFalsehood', $functions[1]->getName());
         $this->assertEquals('testArrayLength', $functions[2]->getName());
@@ -273,7 +273,7 @@ class SuiteLoaderTest extends \TestBase
     {
         $second = $this->suiteByPath('LegacyNamespaceTest.php', $paraSuites);
         $functions = $second->getFunctions();
-        $this->assertEquals(1, count($functions));
+        $this->assertCount(1, $functions);
     }
 
     public function testGetTestMethodsOnlyReturnsMethodsOfGroupIfOptionIsSpecified()
@@ -283,7 +283,7 @@ class SuiteLoaderTest extends \TestBase
         $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
         $loader->load($groupsTest);
         $methods = $loader->getTestMethods();
-        $this->assertEquals(2, count($methods));
+        $this->assertCount(2, $methods);
         $this->assertEquals('testTruth', $methods[0]->getName());
         $this->assertEquals('testFalsehood', $methods[1]->getName());
     }
@@ -293,7 +293,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader();
         $fileWithoutClass = $this->fixture('special-classes/FileWithoutClass.php');
         $loader->load($fileWithoutClass);
-        $this->assertSame(0, count($loader->getTestMethods()));
+        $this->assertCount(0, $loader->getTestMethods());
     }
 
     public function testExecutableTestsForFunctionalModeUse()
@@ -302,7 +302,7 @@ class SuiteLoaderTest extends \TestBase
         $loader = new SuiteLoader();
         $loader->load($path);
         $tests = $loader->getTestMethods();
-        $this->assertEquals(2, count($tests));
+        $this->assertCount(2, $tests);
         $testMethod = $tests[0];
         $this->assertEquals($testMethod->getName(), 'testOneA|testOneBDependsOnA|testOneCDependsOnB');
         $testMethod = $tests[1];

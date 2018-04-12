@@ -46,7 +46,7 @@ class RunnerTest extends \TestBase
         $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);
         $tokens = $this->getObjectValue($runner, 'tokens');
-        $this->assertEquals(4, count($tokens));
+        $this->assertCount(4, $tokens);
     }
 
     public function testGetsNextAvailableTokenReturnsTokenIdentifier()
@@ -78,7 +78,7 @@ class RunnerTest extends \TestBase
         $this->setObjectValue($runner, 'tokens', $tokens);
 
         $tokenData = $this->call($runner, 'getNextAvailableToken');
-        $this->assertTrue($tokenData === false);
+        $this->assertFalse($tokenData);
     }
 
     public function testReleaseTokenMakesTokenAvailable()

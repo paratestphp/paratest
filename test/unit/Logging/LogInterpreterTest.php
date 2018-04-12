@@ -30,7 +30,7 @@ class LogInterpreterTest extends ResultTester
     {
         $reader = $this->getMockReader();
         $this->interpreter->addReader($reader);
-        $this->assertEquals(3, count($this->getObjectValue($this->interpreter, 'readers')));
+        $this->assertCount(3, $this->getObjectValue($this->interpreter, 'readers'));
     }
 
     public function testAddReaderReturnsSelf()
@@ -45,7 +45,7 @@ class LogInterpreterTest extends ResultTester
         $reader = $this->getMockReader();
         $this->interpreter->addReader($reader);
         $readers = $this->interpreter->getReaders();
-        $this->assertEquals(3, count($readers));
+        $this->assertCount(3, $readers);
         $last = array_pop($readers);
         $this->assertSame($reader, $last);
     }
@@ -115,7 +115,7 @@ class LogInterpreterTest extends ResultTester
     public function testGetCasesReturnsAllCases()
     {
         $cases = $this->interpreter->getCases();
-        $this->assertEquals(10, count($cases));
+        $this->assertCount(10, $cases);
     }
 
     public function testGetCasesExtendEmptyCasesFromSuites()
@@ -124,7 +124,7 @@ class LogInterpreterTest extends ResultTester
         $dataProviderReader = $this->getReader('dataProviderSuite');
         $interpreter->addReader($dataProviderReader);
         $cases = $interpreter->getCases();
-        $this->assertEquals(10, count($cases));
+        $this->assertCount(10, $cases);
         foreach ($cases as $name => $case) {
             $this->assertAttributeNotEmpty('class', $case);
             $this->assertAttributeNotEmpty('file', $case);
@@ -148,7 +148,7 @@ class LogInterpreterTest extends ResultTester
     public function testFlattenCasesReturnsCorrectNumberOfSuites()
     {
         $suites = $this->interpreter->flattenCases();
-        $this->assertEquals(4, count($suites));
+        $this->assertCount(4, $suites);
 
         return $suites;
     }

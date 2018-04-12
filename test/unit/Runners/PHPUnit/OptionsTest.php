@@ -31,7 +31,7 @@ class OptionsTest extends \TestBase
 
     public function testAnnotationsReturnsAnnotations()
     {
-        $this->assertEquals(1, count($this->options->annotations));
+        $this->assertCount(1, $this->options->annotations);
         $this->assertEquals('group1', $this->options->annotations['group']);
     }
 

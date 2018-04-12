@@ -239,7 +239,7 @@ class PHPUnitTest extends FunctionalTestBase
         $proc = $this->invokeParatest('fatal-tests/UnitTestWithFatalParseErrorTest.php', [
             'bootstrap' => BOOTSTRAP,
         ]);
-        $this->assertTrue(in_array($proc->getExitCode(), [1, 255], true));
+        $this->assertContains($proc->getExitCode(), [1, 255]);
     }
 
     public function testStopOnFailurePreventsStartingFurtherTestsAfterFailure()

@@ -86,6 +86,6 @@ class WriterTest extends \TestBase
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml = $writer->getXml();
 
-        $this->assertFalse(strpos($xml, 'line=""'), 'Expected no empty line attributes (line=""), but found one.');
+        $this->assertNotContains('line=""', $xml, 'Expected no empty line attributes (line=""), but found one.');
     }
 }
