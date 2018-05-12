@@ -30,6 +30,7 @@ To install with composer run the following command:
 Versions
 ------------
 For PHPUnit >= 7: Please use Paratest v2+
+
 For PHPUnit <= 6: Please use Paratest v1.
 
 Usage
