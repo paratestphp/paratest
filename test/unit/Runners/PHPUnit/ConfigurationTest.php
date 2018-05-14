@@ -75,6 +75,16 @@ class ConfigurationTest extends \TestBase
         $this->assertEquals($basePath . 'test' . DS . 'functional', $functionalSuitePath->getPath());
     }
 
+    public function testGetEnvironmentVariables()
+    {
+        $this->assertCount(2, $this->config->getEnvironmentVariables());
+        $this->assertArrayHasKey('APP_ENV', $this->config->getEnvironmentVariables());
+        $this->assertArrayHasKey('CACHE_DRIVER', $this->config->getEnvironmentVariables());
+
+        $config = new Configuration(realpath(__DIR__.'/phpunit.xml.dist'));
+        $this->assertCount(0, $config->getEnvironmentVariables());
+    }
+
     public function testLoadConfigEvenIfLibXmlEntityLoaderIsDisabled()
     {
         $before = libxml_disable_entity_loader();

@@ -174,9 +174,30 @@ abstract class BaseRunner
         return $this->coverage;
     }
 
+    /**
+     * Overrides envirenment variables if needed.
+     *
+     * @return null
+     */
+    protected function overrideEnvironmentVariables()
+    {
+        if (! isset($this->options->filtered['configuration'])) {
+            return;
+        }
+
+        $variables = $this->options->filtered['configuration']->getEnvironmentVariables();
+
+        foreach ($variables as $key => $value) {
+            \putenv(sprintf('%s=%s', $key, $value));
+
+            $_ENV[$key] = $value;
+        }
+    }
+
     protected function initialize(): void
     {
         $this->verifyConfiguration();
+        $this->overrideEnvironmentVariables();
         $this->initCoverage();
         $this->load(new SuiteLoader($this->options));
         $this->printer->start($this->options);
