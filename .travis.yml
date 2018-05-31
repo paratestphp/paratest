@@ -13,6 +13,8 @@ matrix:
       env:
         - DEPS=lowest
     - php: 7.1
+      env:
+        - BUILD_PHAR=true
     - php: 7.1
       env:
         - PHPUNIT_DEV=true
@@ -38,6 +40,7 @@ script:
 
 after_script:
   - if [[ $CODE_COVERAGE == 'true' ]]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi;
+  - if [[ $BUILD_PHAR == 'true' ]]; then curl -LSs https://box-project.github.io/box2/installer.php | php; php -d phar.readonly=0 box.phar build -c box.json.dist; fi;
 
 notifications:
   email: false
