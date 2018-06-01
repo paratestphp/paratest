@@ -43,6 +43,6 @@ class VersionProviderTest extends TestCase
         $provider = new VersionProvider();
         $actual = $provider->getGitVersion();
         $this->assertInternalType('string', $actual, 'Git is enabled and works');
-        $this->assertRegExp("~^\d.\d.\d+(?:-\d+-g[\da-f]+)?$~", $actual, 'Git gives a version');
+        $this->assertRegExp("~^\d.\d(?:.\d+)?(?:-\d+-g[\da-f]+)?$~", $actual, 'Git gives a version');
     }
 }
