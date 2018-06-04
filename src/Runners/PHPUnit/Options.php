@@ -207,12 +207,8 @@ class Options
     {
         $vendor = static::vendorDir();
 
-        $phpunit = $vendor . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit';
-        $batch = $phpunit . '.bat';
-
-        if (DIRECTORY_SEPARATOR === '\\' && file_exists($batch)) {
-            return $phpunit . '.bat';
-        } elseif (file_exists($phpunit)) {
+        $phpunit = $vendor . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'phpunit';
+          if (file_exists($phpunit)) {
             return $phpunit;
         }
 
