@@ -312,7 +312,7 @@ class Options
     {
         $annotatedOptions = ['group'];
         foreach ($this->filtered as $key => $value) {
-            if (array_search($key, $annotatedOptions, true) !== false) {
+            if (in_array($key, $annotatedOptions, true)) {
                 $this->annotations[$key] = $value;
             }
         }

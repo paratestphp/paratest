@@ -220,7 +220,7 @@ class PHPUnit extends Tester
         $config = $this->getConfig($input);
         $bootstrap = $config->getBootstrap();
 
-        return ($bootstrap) ? $config->getConfigDir() . $bootstrap : '';
+        return $bootstrap ? $config->getConfigDir() . $bootstrap : '';
     }
 
     private function initializeRunner(InputInterface $input): BaseRunner

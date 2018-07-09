@@ -121,7 +121,7 @@ class ResultPrinter
     {
         $this->suites[] = $suite;
         $increment = $suite->getTestCount();
-        $this->totalCases = $this->totalCases + $increment;
+        $this->totalCases += $increment;
 
         return $this;
     }

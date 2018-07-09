@@ -61,7 +61,7 @@ class Parser
      */
     public function getClass()
     {
-        return ($this->refl->isAbstract())
+        return $this->refl->isAbstract()
             ? null
             : new ParsedClass(
                 (string) $this->refl->getDocComment(),

@@ -54,8 +54,8 @@ abstract class MetaProvider
     protected function getNumericValue(string $property)
     {
         return ($property === 'time')
-            ? (float) ($this->suites[0]->$property)
-            : (int) ($this->suites[0]->$property);
+            ? (float) $this->suites[0]->$property
+            : (int) $this->suites[0]->$property;
     }
 
     /**
