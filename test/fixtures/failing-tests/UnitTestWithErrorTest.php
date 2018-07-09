@@ -12,7 +12,7 @@ class UnitTestWithErrorTest extends UnitTestWithMethodAnnotationsTest
      */
     public function testTruth()
     {
-        throw new Exception("Error!!!");
+        throw new Exception('Error!!!');
         $this->assertTrue(true);
     }
 

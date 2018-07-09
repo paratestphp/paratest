@@ -177,12 +177,12 @@ class Reader extends MetaProvider
             $testCases[] = call_user_func_array($cb, [$c]);
             $result['name'] = (string) $c['class'];
             $result['file'] = (string) $c['file'];
-            $result['tests'] = $result['tests'] + 1;
+            $result['tests'] += 1;
             $result['assertions'] += (int) $c['assertions'];
             $result['failures'] += count($c->xpath('failure'));
             $result['errors'] += count($c->xpath('error'));
             $result['skipped'] += count($c->xpath('skipped'));
-            $result['time'] += (float) ($c['time']);
+            $result['time'] += (float) $c['time'];
 
             return $result;
         }, static::$defaultSuite);
