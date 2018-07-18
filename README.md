@@ -43,7 +43,7 @@ Usage:
  paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."] [-m|--max-batch-size="..."] [--filter="..."] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--exclude-group="..."] [--stop-on-failure] [--log-junit="..."] [--colors] [--testsuite[="..."]] [--path="..."] [path]
 
 Arguments:
-  path                                   The path to a directory or file containing tests. (default: current directory)
+ path                  The path to a directory or file containing tests. (default: current directory)
 
 Options:
  --processes (-p)      The number of test processes to run. (default: 5)
