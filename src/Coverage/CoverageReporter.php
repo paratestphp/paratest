@@ -9,6 +9,8 @@ use SebastianBergmann\CodeCoverage\Report\Clover;
 use SebastianBergmann\CodeCoverage\Report\Html;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use SebastianBergmann\CodeCoverage\Report\Text;
+use SebastianBergmann\CodeCoverage\Report\Xml\Facade as XmlReport;
+use SebastianBergmann\CodeCoverage\Version;
 
 class CoverageReporter implements CoverageReporterInterface
 {
@@ -65,5 +67,16 @@ class CoverageReporter implements CoverageReporterInterface
     {
         $text = new Text();
         echo $text->process($this->coverage);
+    }
+
+    /**
+     * Generate PHPUnit XML coverage report.
+     *
+     * @param string $target Report filename
+     */
+    public function xml(string $target)
+    {
+        $xml = new XmlReport(Version::id());
+        $xml->process($this->coverage, $target);
     }
 }

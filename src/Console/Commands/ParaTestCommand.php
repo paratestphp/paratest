@@ -47,6 +47,7 @@ class ParaTestCommand extends Command
             ->addOption('coverage-html', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in HTML format.')
             ->addOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.')
             ->addOption('coverage-text', null, InputOption::VALUE_NONE, 'Generate code coverage report in text format.')
+            ->addOption('coverage-xml', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in PHPUnit XML format.')
             ->addOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0)
             ->addOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).');
 

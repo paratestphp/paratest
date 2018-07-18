@@ -43,7 +43,7 @@ Usage:
  paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."] [-m|--max-batch-size="..."] [--filter="..."] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--exclude-group="..."] [--stop-on-failure] [--log-junit="..."] [--colors] [--testsuite[="..."]] [--path="..."] [path]
 
 Arguments:
- path                  The path to a directory or file containing tests. (default: current directory)
+  path                                   The path to a directory or file containing tests. (default: current directory)
 
 Options:
  --processes (-p)      The number of test processes to run. (default: 5)
@@ -53,6 +53,8 @@ Options:
  --coverage-clover     Generate code coverage report in Clover XML format.
  --coverage-html       Generate code coverage report in HTML format.
  --coverage-php        Serialize PHP_CodeCoverage object to file.
+ --coverage-text       Generate code coverage report in text format.
+ --coverage-xml        Generate code coverage report in PHPUnit XML format.
  --max-batch-size (-m) Max batch size (only for functional mode). (default: 0)
  --filter              Filter (only for functional mode).
  --phpunit             The PHPUnit binary to execute. (default: vendor/bin/phpunit)

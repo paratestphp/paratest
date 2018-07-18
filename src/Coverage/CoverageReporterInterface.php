@@ -31,4 +31,11 @@ interface CoverageReporterInterface
      * Generate text coverage report.
      */
     public function text();
+
+    /**
+     * Generate PHPUnit XML coverage report.
+     *
+     * @param string $target Report filename
+     */
+    public function xml(string $target);
 }
