@@ -228,7 +228,7 @@ abstract class ExecutableTest
     }
 
     /**
-     * Get covertage filename.
+     * Get coverage filename.
      *
      * @return string
      */
@@ -252,7 +252,7 @@ abstract class ExecutableTest
     }
 
     /**
-     * Set process termporary filename.
+     * Set process temporary filename.
      *
      * @param string $temp
      */
@@ -262,7 +262,7 @@ abstract class ExecutableTest
     }
 
     /**
-     * Assert that command line lenght is valid.
+     * Assert that command line length is valid.
      *
      * In some situations process command line can became too long when combining different test
      * cases in single --filter arguments so it's better to show error regarding that to user
