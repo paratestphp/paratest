@@ -147,6 +147,10 @@ abstract class BaseRunner
             $reporter->text();
         }
 
+        if (isset($filteredOptions['coverage-xml'])) {
+            $reporter->xml($filteredOptions['coverage-xml']);
+        }
+
         $reporter->php($filteredOptions['coverage-php']);
     }
 

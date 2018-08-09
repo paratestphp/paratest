@@ -53,6 +53,8 @@ Options:
  --coverage-clover     Generate code coverage report in Clover XML format.
  --coverage-html       Generate code coverage report in HTML format.
  --coverage-php        Serialize PHP_CodeCoverage object to file.
+ --coverage-text       Generate code coverage report in text format.
+ --coverage-xml        Generate code coverage report in PHPUnit XML format.
  --max-batch-size (-m) Max batch size (only for functional mode). (default: 0)
  --filter              Filter (only for functional mode).
  --phpunit             The PHPUnit binary to execute. (default: vendor/bin/phpunit)
