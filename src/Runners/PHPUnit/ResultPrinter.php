@@ -11,7 +11,7 @@ use SebastianBergmann\Timer\Timer;
 /**
  * Class ResultPrinter.
  *
- * Used for outputing ParaTest results
+ * Used for outputting ParaTest results
  */
 class ResultPrinter
 {

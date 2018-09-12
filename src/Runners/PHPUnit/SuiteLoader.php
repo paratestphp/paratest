@@ -198,7 +198,7 @@ class SuiteLoader
     /**
      * Get method all available tests.
      *
-     * With empty filter this method returns single test if doesnt' have data provider or
+     * With empty filter this method returns single test if doesn't have data provider or
      * data provider is not used and return all test if has data provider and data provider is used.
      *
      * @param ParsedClass  $class           parsed class
