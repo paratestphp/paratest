@@ -17,7 +17,6 @@ if (defined('PHP_WINDOWS_VERSION_BUILD')) {
 define('PARA_BINARY', $pb);
 define('PARATEST_ROOT', dirname(__DIR__));
 
-//check for .bat first if on windows.
 $phpunit_path = PARATEST_ROOT . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'phpunit';
 define('PHPUNIT', $phpunit_path);
 
