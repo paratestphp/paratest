@@ -193,6 +193,26 @@ class Configuration
     }
 
     /**
+     * Get override environment variables from phpunit config file.
+     *
+     * @return array
+     */
+    public function getEnvironmentVariables(): array
+    {
+        if (! isset($this->xml->php->env)) {
+            return [];
+        }
+
+        $variables = [];
+
+        foreach ($this->xml->php->env as $env) {
+            $variables[(string) $env['name']] = (string) $env['value'];
+        }
+
+        return $variables;
+    }
+
+    /**
      * Returns true if path needs globbing (like a /path/*-to/string).
      *
      * @param string $path
