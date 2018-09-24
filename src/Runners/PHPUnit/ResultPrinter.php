@@ -11,7 +11,7 @@ use SebastianBergmann\Timer\Timer;
 /**
  * Class ResultPrinter.
  *
- * Used for outputing ParaTest results
+ * Used for outputting ParaTest results
  */
 class ResultPrinter
 {
@@ -121,7 +121,7 @@ class ResultPrinter
     {
         $this->suites[] = $suite;
         $increment = $suite->getTestCount();
-        $this->totalCases = $this->totalCases + $increment;
+        $this->totalCases += $increment;
 
         return $this;
     }

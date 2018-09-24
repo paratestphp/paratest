@@ -49,7 +49,7 @@ class ParsedClass extends ParsedObject
             return false;
         });
 
-        return $methods ? $methods : $this->methods;
+        return $methods ?: $this->methods;
     }
 
     /**

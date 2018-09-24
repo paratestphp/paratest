@@ -134,7 +134,7 @@ class SqliteRunner extends WrapperRunner
      */
     private function checkIfWorkersCrashed(): void
     {
-        if ($this->db->query('SELECT COUNT(id) FROM tests')->fetchColumn(0) === "0") {
+        if ($this->db->query('SELECT COUNT(id) FROM tests')->fetchColumn(0) === '0') {
             return;
         }
 

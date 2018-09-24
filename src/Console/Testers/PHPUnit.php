@@ -192,7 +192,9 @@ class PHPUnit extends Tester
      */
     protected function hasCoverage(array $options): bool
     {
-        $isFileFormat = isset($options['coverage-html']) || isset($options['coverage-clover']);
+        $isFileFormat = isset($options['coverage-html'])
+            || isset($options['coverage-clover'])
+            || isset($options['coverage-xml']);
         $isTextFormat = isset($options['coverage-text']);
         $isPHP = isset($options['coverage-php']);
 
@@ -220,7 +222,7 @@ class PHPUnit extends Tester
         $config = $this->getConfig($input);
         $bootstrap = $config->getBootstrap();
 
-        return ($bootstrap) ? $config->getConfigDir() . $bootstrap : '';
+        return $bootstrap ? $config->getConfigDir() . $bootstrap : '';
     }
 
     private function initializeRunner(InputInterface $input): BaseRunner

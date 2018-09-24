@@ -32,7 +32,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
     {
         $result = [];
         for ($i = 0; $i < 50; $i++) {
-            $name = "name_of_test_" . $i;
+            $name = 'name_of_test_' . $i;
             $result[$name] = [$i, $i];
         }
 

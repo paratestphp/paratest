@@ -146,8 +146,8 @@ class LogInterpreter extends MetaProvider
     protected function getNumericValue(string $property)
     {
         return ($property === 'time')
-               ? (float) ($this->accumulate('getTotalTime'))
-               : (int) ($this->accumulate('getTotal' . ucfirst($property)));
+               ? (float) $this->accumulate('getTotalTime')
+               : (int) $this->accumulate('getTotal' . ucfirst($property));
     }
 
     /**
