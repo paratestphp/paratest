@@ -42,5 +42,16 @@ after_script:
   - if [[ $CODE_COVERAGE == 'true' ]]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi;
   - if [[ $BUILD_PHAR == 'true' ]]; then curl -LSs https://box-project.github.io/box2/installer.php | php; php -d phar.readonly=0 box.phar build -c box.json.dist; fi;
 
+deploy:
+  provider: releases
+  api_key:
+    secure: FZNwCEPe21J0UoY+YM7j8ePe1EsHAJLmoJfBBvFEwydISNkdmCRK1MG+Xf9CC4GlXE8IkaqVJ+Rjs44gygkZjprtJ7gBqESdAg+nZuuTQJ6dLg/2E1tRrjIqWjNGEDh/PmBKFWo0P6NBG7S8tjG57i2HwivGRNylzipyksBqx+I=
+  file: build/paratest-${TRAVIS_TAG}.phar
+  skip_cleanup: true
+  on:
+    condition: $BUILD_PHAR == 'true'
+    repo: paratestphp/paratest
+    tags: true
+
 notifications:
   email: false
