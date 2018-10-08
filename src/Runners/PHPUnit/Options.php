@@ -115,9 +115,9 @@ class Options
         }
 
         if ($opts['processes'] === 'auto') {
-            $opts['processes'] = $this->getNumberOfCPUCores();
+            $opts['processes'] = self::getNumberOfCPUCores();
         } elseif ($opts['processes'] === 'half') {
-            $opts['processes'] = intdiv($this->getNumberOfCPUCores(), 2);
+            $opts['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
         }
 
         $this->processes = $opts['processes'];
@@ -334,8 +334,10 @@ class Options
      * Return number of (logical) CPU cores, use 2 as fallback.
      *
      * Used to set number of processes if argument is set to "auto", allows for portable defaults for doc and scripting.
+     *
+     * @internal
      */
-    private function getNumberOfCPUCores(): int
+    public static function getNumberOfCPUCores(): int
     {
         $cores = 2;
         if (is_file('/proc/cpuinfo')) {
