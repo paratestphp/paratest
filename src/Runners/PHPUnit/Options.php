@@ -116,6 +116,8 @@ class Options
 
         if ($opts['processes'] === 'auto') {
             $opts['processes'] = $this->getNumberOfCPUCores();
+        } elseif ($opts['processes'] === 'half') {
+            $opts['processes'] = intdiv($this->getNumberOfCPUCores(), 2);
         }
 
         $this->processes = $opts['processes'];
