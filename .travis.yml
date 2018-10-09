@@ -45,7 +45,7 @@ after_script:
 deploy:
   provider: releases
   api_key:
-    secure: FZNwCEPe21J0UoY+YM7j8ePe1EsHAJLmoJfBBvFEwydISNkdmCRK1MG+Xf9CC4GlXE8IkaqVJ+Rjs44gygkZjprtJ7gBqESdAg+nZuuTQJ6dLg/2E1tRrjIqWjNGEDh/PmBKFWo0P6NBG7S8tjG57i2HwivGRNylzipyksBqx+I=
+    secure: OER6C7dNaVOIhl2wEA2i2Qe4T6BcXuM/cP0vOoz4578X0LRipYudWMXnLXYmMmjzraMBJ2W3cQx830mQK0TBVU/m0hp5bpTcfGsOBX7+sLi6MY/ncDa4kXV2x8qZOmQLRtk3smAgMyh5hUp7qlmpDRJJ9F1xCYFNqpotK8N3Rfk=
   file: build/paratest-${TRAVIS_TAG}.phar
   skip_cleanup: true
   on:
