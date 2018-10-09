@@ -46,7 +46,7 @@ Arguments:
  path                  The path to a directory or file containing tests. (default: current directory)
 
 Options:
- --processes (-p)      The number of test processes to run. (Default: *auto*)
+ --processes (-p)      The number of test processes to run. (Default: auto)
                        Possible values:
                        - Integer (>= 1): Number of processes to run.
                        - auto (default): Number of processes is automatically set to the number of logical CPU cores.
@@ -80,7 +80,7 @@ To get the most out of paratest, you have to adjust the parameters carefully.
 
  1. **Adjust the number of processes with `-p`**
 
-    To allow full usage of your cpu cores, you should have at least one process per core. More processes allow better resource usage but keep in mind that each process has it's own costs for spawning.
+    To allow full usage of your cpu cores, you should have at least one process per core. More processes allow better resource usage but keep in mind that each process has its own costs for spawning. The default is auto, which means the number of logical CPU cores is set as number of processes. You might try something like logical `CPU cores * 2` (e.g. if you have 8 logical cores, you might try `16`), but keep in mind that each process generates a little bit of overhead as well.
 
  2. **Choose between per-testcase- and per-testmethod-parallelization with `-f`**
 
