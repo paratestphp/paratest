@@ -59,7 +59,9 @@ class ResultPrinterTest extends ResultTester
     {
         $options = new Options();
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\n", $options->phpunit);
+        $expected = sprintf("\nRunning phpunit in %s processes with %s\n\n",
+                            Options::getNumberOfCPUCores(),
+                            $options->phpunit);
         $this->assertStringStartsWith($expected, $contents);
     }
 
@@ -83,7 +85,8 @@ class ResultPrinterTest extends ResultTester
         file_put_contents('myconfig.xml', '<root />');
         $options = new Options(['configuration' => 'myconfig.xml']);
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 5 processes with %s\n\nConfiguration read from %s\n\n",
+        $expected = sprintf("\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
+                            Options::getNumberOfCPUCores(),
                             $options->phpunit,
                             __DIR__ . DS . 'myconfig.xml');
         $this->assertStringStartsWith($expected, $contents);
@@ -93,7 +96,9 @@ class ResultPrinterTest extends ResultTester
     {
         $options = new Options(['functional' => true]);
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 5 processes with %s. Functional mode is ON.\n\n", $options->phpunit);
+        $expected = sprintf("\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
+                            Options::getNumberOfCPUCores(),
+                            $options->phpunit);
         $this->assertStringStartsWith($expected, $contents);
     }
 

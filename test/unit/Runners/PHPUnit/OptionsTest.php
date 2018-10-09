@@ -29,6 +29,15 @@ class OptionsTest extends \TestBase
         $this->assertEquals('/path/to/bootstrap', $this->options->filtered['bootstrap']);
     }
 
+    public function testFilteredOptionsIsSet()
+    {
+        $this->assertEquals($this->unfiltered['processes'], $this->options->processes);
+        $this->assertEquals($this->unfiltered['path'], $this->options->path);
+        $this->assertEquals($this->unfiltered['phpunit'], $this->options->phpunit);
+        $this->assertEquals($this->unfiltered['functional'], $this->options->functional);
+        $this->assertEquals([$this->unfiltered['group']], $this->options->groups);
+    }
+
     public function testAnnotationsReturnsAnnotations()
     {
         $this->assertCount(1, $this->options->annotations);
@@ -44,10 +53,16 @@ class OptionsTest extends \TestBase
     public function testDefaults()
     {
         $options = new Options();
-        $this->assertEquals(5, $options->processes);
+        $this->assertEquals(Options::getNumberOfCPUCores(), $options->processes);
         $this->assertEmpty($options->path);
         $this->assertEquals(PHPUNIT, $options->phpunit);
         $this->assertFalse($options->functional);
+    }
+
+    public function testHalfProcessesMode()
+    {
+        $options = new Options(['processes' => 'half']);
+        $this->assertEquals(intdiv(Options::getNumberOfCPUCores(), 2), $options->processes);
     }
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd()

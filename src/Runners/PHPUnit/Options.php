@@ -114,6 +114,12 @@ class Options
             $opts[$opt] = $opts[$opt] ?? $value;
         }
 
+        if ($opts['processes'] === 'auto') {
+            $opts['processes'] = self::getNumberOfCPUCores();
+        } elseif ($opts['processes'] === 'half') {
+            $opts['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
+        }
+
         $this->processes = $opts['processes'];
         $this->path = $opts['path'];
         $this->phpunit = $opts['phpunit'];
@@ -180,7 +186,7 @@ class Options
     protected static function defaults(): array
     {
         return [
-            'processes' => 5,
+            'processes' => 'auto',
             'path' => '',
             'phpunit' => static::phpunit(),
             'functional' => false,
@@ -322,5 +328,36 @@ class Options
     private function isFile(string $file): bool
     {
         return file_exists($file) && !is_dir($file);
+    }
+
+    /**
+     * Return number of (logical) CPU cores, use 2 as fallback.
+     *
+     * Used to set number of processes if argument is set to "auto", allows for portable defaults for doc and scripting.
+     *
+     * @internal
+     */
+    public static function getNumberOfCPUCores(): int
+    {
+        $cores = 2;
+        if (is_file('/proc/cpuinfo')) {
+            // Linux (and potentially Windows with linux sub systems)
+            $cpuinfo = file_get_contents('/proc/cpuinfo');
+            preg_match_all('/^processor/m', $cpuinfo, $matches);
+            $cores = count($matches[0]);
+        } elseif (DIRECTORY_SEPARATOR === '\\') {
+            // Windows
+            if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
+                fgets($process);
+                $cores = (int) fgets($process);
+                pclose($process);
+            }
+        } elseif (($process = @popen('sysctl -n hw.ncpu', 'rb')) !== false) {
+            // *nix (Linux, BSD and Mac)
+            $cores = (int) fgets($process);
+            pclose($process);
+        }
+
+        return $cores;
     }
 }
