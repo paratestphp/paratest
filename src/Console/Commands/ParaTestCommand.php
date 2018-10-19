@@ -39,7 +39,7 @@ class ParaTestCommand extends Command
     protected function configure()
     {
         $this
-            ->addOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 5)
+            ->addOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 'auto')
             ->addOption('functional', 'f', InputOption::VALUE_NONE, 'Run methods instead of suites in separate processes.')
             ->addOption('no-test-tokens', null, InputOption::VALUE_NONE, 'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>')
             ->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.')
