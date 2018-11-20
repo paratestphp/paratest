@@ -107,7 +107,7 @@ class Configuration
         }
         $nodes = $this->xml->xpath('//testsuites/testsuite');
         $names = [];
-        while (list(, $node) = each($nodes)) {
+        foreach ($nodes as $node) {
            $names[] = (string)$node['name'];
         }
         return $names;
