@@ -27,11 +27,6 @@ class Configuration
     protected $availableNodes = ['exclude', 'file', 'directory', 'testsuite'];
 
     /**
-     * @var int
-     */
-    public $count = 0;
-
-    /**
      * A collection of datastructures
      * build from the <testsuite> nodes inside of a
      * PHPUnit configuration.
@@ -190,8 +185,6 @@ class Configuration
      */
     public function getSuitePaths(string $path)
     {
-        $this->count++;
-
         $real = realpath($this->getConfigDir() . $path);
 
         if ($real !== false) {
