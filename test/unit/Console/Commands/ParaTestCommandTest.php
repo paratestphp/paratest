@@ -36,7 +36,7 @@ class ParaTestCommandTest extends \TestBase
     public function testConfiguredDefinitionWithPHPUnitTester()
     {
         $options = [
-            new InputOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 5),
+            new InputOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 'auto'),
             new InputOption('functional', 'f', InputOption::VALUE_NONE, 'Run methods instead of suites in separate processes.'),
             new InputOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.'),
             new InputOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'),
