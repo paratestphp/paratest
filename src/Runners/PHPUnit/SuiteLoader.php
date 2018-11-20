@@ -47,11 +47,9 @@ class SuiteLoader
     {
         $this->options = $options;
 
-        if (is_object($this->options) && isset($this->options->filtered['configuration'])) {
-            $this->configuration = $this->options->filtered['configuration'];
-        } else {
-            $this->configuration = new Configuration('');
-        }
+        $this->configuration = isset($this->options->filtered['configuration'])
+            ? $this->options->filtered['configuration']
+            : new Configuration('');
     }
 
     /**
@@ -92,33 +90,37 @@ class SuiteLoader
     public function load(string $path = '')
     {
         if ($path) {
-            $this->loadPath($path);
+            $testFileLoader = new TestFileLoader($this->options);
+            $this->files = array_merge(
+                $this->files,
+                $testFileLoader->loadPath($path)
+            );
         } elseif (
-            is_object($this->options) &&
-            $this->options->parallelSuite &&
-            isset($this->options->filtered['configuration']) ) {
-
-            $this->suitesName = array();
-            foreach ($this->configuration->getSuitesName() as $suiteName) {
-                $this->suitesName[] = $suiteName;
-            }
-
+            isset($this->options->parallelSuite)
+            && $this->options->parallelSuite
+        ) {
+            $this->suitesName = $this->configuration->getSuitesName();
         } elseif (
-            is_object($this->options) &&
-            isset($this->options->testsuite) &&
-            $this->options->testsuite) {
-
+            isset($this->options->testsuite)
+            && $this->options->testsuite
+        ) {
             foreach ($this->configuration->getSuiteByName($this->options->testsuite) as $suite) {
                 foreach ($suite as $suitePath) {
                     $testFileLoader = new TestFileLoader($this->options);
-                    $this->files = array_merge($this->files, $testFileLoader->loadSuitePath($suitePath));
+                    $this->files = array_merge(
+                        $this->files,
+                        $testFileLoader->loadSuitePath($suitePath)
+                    );
                 }
             }
         } elseif ($suites = $this->configuration->getSuites()) {
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {
                     $testFileLoader = new TestFileLoader($this->options);
-                    $this->files = array_merge($this->files, $testFileLoader->loadSuitePath($suitePath));
+                    $this->files = array_merge(
+                        $this->files,
+                        $testFileLoader->loadSuitePath($suitePath)
+                    );
                 }
             }
         }
@@ -130,73 +132,6 @@ class SuiteLoader
         $this->files = array_unique($this->files); // remove duplicates
 
         $this->initSuites();
-    }
-
-    /**
-     * Loads suites based on a specific path.
-     * A valid path can be a directory or file
-     *
-     * @param $path
-     * @throws \InvalidArgumentException
-     */
-    private function loadPath($path)
-    {
-        $path = $path ? : $this->options->path;
-        if ($path instanceof SuitePath) {
-            $pattern = $path->getPattern();
-            $path = $path->getPath();
-        } else {
-            $pattern = self::TEST_PATTERN;
-        }
-        if (!file_exists($path)) {
-            throw new \InvalidArgumentException("$path is not a valid directory or file");
-        }
-        if (is_dir($path)) {
-            $this->loadDir($path, $pattern);
-        } elseif (file_exists($path)) {
-            $this->loadFile($path);
-        }
-    }
-
-    /**
-     * Loads suites from a directory
-     *
-     * @param string $path
-     * @param string $pattern
-     */
-    private function loadDir($path, $pattern = self::TEST_PATTERN)
-    {
-        $files = scandir($path);
-        foreach ($files as $file) {
-            $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file, $pattern);
-        }
-    }
-
-    /**
-     * Load a single suite file
-     *
-     * @param $path
-     */
-    private function loadFile($path)
-    {
-        $this->tryLoadTests($path, self::FILE_PATTERN);
-    }
-
-    /**
-     * Attempts to load suites from a path.
-     *
-     * @param string $path
-     * @param string $pattern regular expression for matching file names
-     */
-    private function tryLoadTests($path, $pattern = self::TEST_PATTERN)
-    {
-        if (preg_match($pattern, $path)) {
-            $this->files[] = $path;
-        }
-
-        if (!preg_match(self::$dotPattern, $path) && is_dir($path)) {
-            $this->loadDir($path, $pattern);
-        }
     }
 
     /**
