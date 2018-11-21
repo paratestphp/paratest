@@ -15,7 +15,7 @@ class OutputTest extends FunctionalTestBase
 
     public function testDefaultMessagesDisplayed()
     {
-        $output = $this->paratest->execute()->getOutput();
+        $output = $this->paratest->execute(['p' => 5])->getOutput();
         $this->assertContains('Running phpunit in 5 processes with ' . PHPUNIT, $output);
         $this->assertContains('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
@@ -34,7 +34,7 @@ class OutputTest extends FunctionalTestBase
         $output = $this->paratest
             ->execute(['functional'])
             ->getOutput();
-        $this->assertContains('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        $this->assertContains('processes with ' . PHPUNIT, $output);
         $this->assertContains('Functional mode is ON.', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
