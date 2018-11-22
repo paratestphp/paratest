@@ -92,8 +92,14 @@ class TestFileLoader
     public function loadPath(string $path, string $pattern = null): array
     {
         $this->files = [];
-        $path = $path ?: $this->options->path;
+
         $pattern = $pattern ?? self::TEST_PATTERN;
+
+        $path = $path ?: $this->options->path;
+        if ($path instanceof SuitePath) {
+            $pattern = $path->getPattern();
+            $path = $path->getPath();
+        }
 
         if (!file_exists($path)) {
             throw new \InvalidArgumentException("$path is not a valid directory or file");

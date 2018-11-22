@@ -100,6 +100,19 @@ class Configuration
         return $suites;
     }
 
+    public function getSuitesName()
+    {
+        if (!$this->xml) {
+            return null;
+        }
+        $nodes = $this->xml->xpath('//testsuites/testsuite');
+        $names = [];
+        foreach ($nodes as $node) {
+           $names[] = (string)$node['name'];
+        }
+        return $names;
+    }
+
     /**
      * Return the contents of the <testsuite> nodes
      * contained in a PHPUnit configuration.

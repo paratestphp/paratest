@@ -108,6 +108,13 @@ class Options
      */
     protected $annotations = [];
 
+    /**
+     * Running the suite defined in the config in parallel
+     *
+     * @var bool
+     */
+    protected $parallelSuite;
+
     public function __construct(array $opts = [])
     {
         foreach (self::defaults() as $opt => $value) {
@@ -131,6 +138,7 @@ class Options
         $this->testsuite = $opts['testsuite'];
         $this->maxBatchSize = (int) $opts['max-batch-size'];
         $this->filter = $opts['filter'];
+        $this->parallelSuite = $opts['parallel-suite'];
 
         // we need to register that options if they are blank but do not get them as
         // key with null value in $this->filtered as it will create problems for
@@ -197,6 +205,7 @@ class Options
             'testsuite' => '',
             'max-batch-size' => 0,
             'filter' => null,
+            'parallel-suite' => false
         ];
     }
 
@@ -254,6 +263,7 @@ class Options
             'testsuite' => $this->testsuite,
             'max-batch-size' => $this->maxBatchSize,
             'filter' => $this->filter,
+            'parallel-suite' => $this->parallelSuite
         ]);
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
