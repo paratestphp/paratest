@@ -70,8 +70,9 @@ Options:
  --stop-on-failure     Don't start any more processes after a failure.
  --log-junit           Log test execution in JUnit XML format to file.
  --colors              Displays a colored bar as a test result.
- --testsuite           Filter which testsuite to run
+ --testsuite           Filter which testsuite to run.
  --path                An alias for the path argument.
+ --parallel-suite      Run testsuites in parallel as opposed to running test classes / test functions in parallel.
 ```
 
 ### Optimizing Speed ###

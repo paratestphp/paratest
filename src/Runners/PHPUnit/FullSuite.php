@@ -21,7 +21,7 @@ class FullSuite extends ExecutableTest
      */
     public function __construct($suiteName, $configPath)
     {
-        parent::__construct($suiteName);
+        parent::__construct('');
 
         $this->suiteName = $suiteName;
         $this->configPath = $configPath;
