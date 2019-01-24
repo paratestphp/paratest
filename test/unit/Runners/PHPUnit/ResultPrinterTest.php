@@ -84,7 +84,7 @@ class ResultPrinterTest extends ResultTester
     {
         $pathToConfig = __DIR__ . DS . 'myconfig.xml';
         file_put_contents($pathToConfig, '<root />');
-        $options = new Options(['configuration' => 'myconfig.xml']);
+        $options = new Options(['configuration' => $pathToConfig]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
                             Options::getNumberOfCPUCores(),

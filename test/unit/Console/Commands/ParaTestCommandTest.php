@@ -60,6 +60,11 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0),
             new InputOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).'),
             new InputOption('parallel-suite', null, InputOption::VALUE_NONE, 'Run the suites of the config in parallel.'),
+            new InputOption('passthru', null, InputOption::VALUE_REQUIRED,
+                'Pass the given arguments verbatim to the underlying test framework. Example: --passthru="\'--prepend\' \'xdebug-filter.php\'"'),
+            new InputOption('passthru-php', null, InputOption::VALUE_REQUIRED,
+                'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' \'zend_extension=xdebug.so\'"'),
+            new InputOption('verbose', 'v', InputOption::VALUE_REQUIRED, 'If given, debug output is printed. Example: --verbose=1'),
         ];
         if (ParaTestCommand::isWhitelistSupported()) {
             $options[] = new InputOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
@@ -80,7 +85,8 @@ class ParaTestCommandTest extends \TestBase
             ->with(
                 $this->equalTo($input),
                 $this->equalTo($output)
-            );
+            )
+        ;
         $command = new ParaTestCommand($tester);
         $command->execute($input, $output);
     }

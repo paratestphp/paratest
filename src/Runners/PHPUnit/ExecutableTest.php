@@ -176,22 +176,35 @@ abstract class ExecutableTest
     }
 
     /**
+     * Set the last process command.
+     *
+     * @param string $command
+     */
+    public function setLastCommand(string $command)
+    {
+        $this->lastCommand = $command;
+    }
+
+    /**
      * Executes the test by creating a separate process.
      *
-     * @param $binary
-     * @param array $options
-     * @param array $environmentVariables
+     * @param string      $binary
+     * @param array       $options
+     * @param array       $environmentVariables
+     * @param string|null $passthru
+     * @param string|null $passthruPhp
      *
      * @return $this
      */
-    public function run(string $binary, array $options = [], array $environmentVariables = [])
+    public function run(string $binary, array $options = [], array $environmentVariables = [], string $passthru = null, string $passthruPhp = null)
     {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
-        $finder = new PhpExecutableFinder();
-        $command = $finder->find() . ' ' . $this->command($binary, $options);
+
+        $command = $this->getFullCommandlineString($binary, $options, $passthru, $passthruPhp);
+
         $this->assertValidCommandLineLength($command);
-        $this->lastCommand = $command;
+        $this->setLastCommand($command);
         $this->process = new Process($command, null, $environmentVariables);
         if (method_exists($this->process, 'inheritEnvironmentVariables')) {
             $this->process->inheritEnvironmentVariables();  // no such method in 3.0, but emits warning if this isn't done in 3.3
@@ -199,6 +212,33 @@ abstract class ExecutableTest
         $this->process->start();
 
         return $this;
+    }
+
+    /**
+     * Build the full executable as we would do on the command line, e.g.
+     * php -Dzend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
+     *
+     * @param $binary
+     * @param $options
+     * @param string|null $passthru
+     * @param string|null $passthruPhp
+     *
+     * @return string
+     */
+    protected function getFullCommandlineString($binary, $options, string $passthru = null, string $passthruPhp = null)
+    {
+        $finder = new PhpExecutableFinder();
+        $args = [];
+
+        $args['php'] = $finder->find();
+        if (!empty($passthruPhp)) {
+            $args['phpOptions'] = $passthruPhp;
+        }
+        $args['phpunit'] = $this->command($binary, $options, $passthru);
+
+        $command = implode(' ', $args);
+
+        return $command;
     }
 
     /**
@@ -214,17 +254,20 @@ abstract class ExecutableTest
     /**
      * Generate command line with passed options suitable to handle through paratest.
      *
-     * @param string $binary  executable binary name
-     * @param array  $options command line options
+     * @param string $binary   executable binary name
+     * @param array  $options  command line options
+     * @param null   $passthru
      *
      * @return string command line
      */
-    public function command(string $binary, array $options = []): string
+    public function command(string $binary, array $options = [], $passthru = null): string
     {
         $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         $options = $this->redirectCoverageOption($options);
 
-        return $this->getCommandString($binary, $options);
+        $cmd = $this->getCommandString($binary, $options, $passthru);
+
+        return $cmd;
     }
 
     /**
@@ -305,15 +348,29 @@ abstract class ExecutableTest
      * Returns the command string that will be executed
      * by proc_open.
      *
-     * @param string $binary
-     * @param array  $options
+     * @param string      $binary
+     * @param array       $options
+     * @param string|null $passthru
      *
      * @return mixed
      */
-    protected function getCommandString(string $binary, array $options = [])
+    protected function getCommandString(string $binary, array $options = [], string $passthru = null)
     {
         // The order we add stuff into $arguments is important
         $arguments = [$binary];
+        // Note:
+        // the arguments MUST come last and we need to "somehow"
+        // mere the passthru string in there.
+        // Thus, we "split" the command creation here.
+        // For a clean solution, we would need to manually parse and verify
+        // the passthru. I'll leave that as a
+        // TODO
+        $cmd = (new Process($arguments))->getCommandLine();
+        if (!empty($passthru)) {
+            $cmd .= ' ' . $passthru;
+        }
+
+        $arguments = [];
         foreach ($options as $key => $value) {
             $arguments[] = "--$key";
             if ($value !== null) {
@@ -324,7 +381,9 @@ abstract class ExecutableTest
         $arguments[] = $this->fullyQualifiedClassName ?? '';
         $arguments[] = $this->getPath();
 
-        return (new Process($arguments))->getCommandLine();
+        $args = (new Process($arguments))->getCommandLine();
+
+        return $cmd . ' ' . $args;
     }
 
     /**

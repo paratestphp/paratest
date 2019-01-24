@@ -57,7 +57,7 @@ class WrapperRunner extends BaseRunner
                 $token = $i;
                 $uniqueToken = uniqid();
             }
-            $worker->start($wrapper, $token, $uniqueToken);
+            $worker->start($wrapper, $token, $uniqueToken, [], $this->options);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
@@ -75,7 +75,7 @@ class WrapperRunner extends BaseRunner
                     $this->flushWorker($worker);
                     $pending = array_shift($this->pending);
                     if ($pending) {
-                        $worker->assign($pending, $phpunit, $phpunitOptions);
+                        $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
                     }
                 }
             }

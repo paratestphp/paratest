@@ -40,39 +40,43 @@ After installation, the binary can be found at `vendor/bin/paratest`. Usage is a
 
 ```
 Usage:
- paratest [-p|--processes="..."] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover="..."] [--coverage-html="..."] [--coverage-php="..."] [-m|--max-batch-size="..."] [--filter="..."] [--phpunit="..."] [--runner="..."] [--bootstrap="..."] [-c|--configuration="..."] [-g|--group="..."] [--exclude-group="..."] [--stop-on-failure] [--log-junit="..."] [--colors] [--testsuite[="..."]] [--path="..."] [path]
+ paratest [-p|--processes PROCESSES] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover COVERAGE-CLOVER] [--coverage-html COVERAGE-HTML] [--coverage-php COVERAGE-PHP] [--coverage-text] [--coverage-xml COVERAGE-XML] [-m|--max-batch-size MAX-BATCH-SIZE] [--filter FILTER] [--parallel-suite] [--passthru PASSTHRU] [--passthru-php PASSTHRU-PHP] [-v|--verbose VERBOSE] [--whitelist WHITELIST] [--phpunit PHPUNIT] [--runner RUNNER] [--bootstrap BOOTSTRAP] [-c|--configuration CONFIGURATION] [-g|--group GROUP] [--exclude-group EXCLUDE-GROUP] [--stop-on-failure] [--log-junit LOG-JUNIT] [--colors] [--testsuite [TESTSUITE]] [--path PATH] [--] [<path>]
 
 Arguments:
- path                  The path to a directory or file containing tests. (default: current directory)
-
-Options:
- --processes (-p)      The number of test processes to run. (Default: auto)
-                       Possible values:
-                       - Integer (>= 1): Number of processes to run.
-                       - auto (default): Number of processes is automatically set to the number of logical CPU cores.
-                       - half: Number of processes is automatically set to half the number of logical CPU cores.
- --functional (-f)     Run methods instead of suites in separate processes.
- --no-test-tokens      Disable TEST_TOKEN environment variables. (Default: Variable is set)
- --help (-h)           Display this help message.
- --coverage-clover     Generate code coverage report in Clover XML format.
- --coverage-html       Generate code coverage report in HTML format.
- --coverage-php        Serialize PHP_CodeCoverage object to file.
- --coverage-text       Generate code coverage report in text format.
- --coverage-xml        Generate code coverage report in PHPUnit XML format.
- --max-batch-size (-m) Max batch size (only for functional mode). (Default: 0)
- --filter              Filter (only for functional mode).
- --phpunit             The PHPUnit binary to execute. (Default: vendor/bin/phpunit)
- --runner              Runner, WrapperRunner or SqliteRunner. (Default: Runner)
- --bootstrap           The bootstrap file to be used by PHPUnit.
- --configuration (-c)  The PHPUnit configuration file to use.
- --group (-g)          Only runs tests from the specified group(s).
- --exclude-group       Don't run tests from the specified group(s).
- --stop-on-failure     Don't start any more processes after a failure.
- --log-junit           Log test execution in JUnit XML format to file.
- --colors              Displays a colored bar as a test result.
- --testsuite           Filter which testsuite to run. Run multiple suits by separating them with ",". Example:  --testsuite suite1,suite2
- --path                An alias for the path argument.
- --parallel-suite      Run testsuites in parallel as opposed to running test classes / test functions in parallel.
+ path                        The path to a directory or file containing tests. (default: current directory)
+      
+Options:      
+ --processes (-p)            The number of test processes to run. (Default: auto)
+                             Possible values:
+                             - Integer (>= 1): Number of processes to run.
+                             - auto (default): Number of processes is automatically set to the number of logical CPU cores.
+                             - half: Number of processes is automatically set to half the number of logical CPU cores.
+ --functional (-f)           Run methods instead of suites in separate processes.
+ --no-test-tokens            Disable TEST_TOKEN environment variables. (Default: Variable is set)
+ --help (-h)                 Display this help message.
+ --coverage-clover           Generate code coverage report in Clover XML format.
+ --coverage-html             Generate code coverage report in HTML format.
+ --coverage-php              Serialize PHP_CodeCoverage object to file.
+ --coverage-text             Generate code coverage report in text format.
+ --coverage-xml              Generate code coverage report in PHPUnit XML format.
+ --max-batch-size (-m)       Max batch size (only for functional mode). (Default: 0)
+ --filter                    Filter (only for functional mode).
+ --phpunit                   The PHPUnit binary to execute. (Default: vendor/bin/phpunit)
+ --runner                    Runner, WrapperRunner or SqliteRunner. (Default: Runner)
+ --bootstrap                 The bootstrap file to be used by PHPUnit.
+ --configuration (-c)        The PHPUnit configuration file to use.
+ --group (-g)                Only runs tests from the specified group(s).
+ --exclude-group             Don't run tests from the specified group(s).
+ --stop-on-failure           Don't start any more processes after a failure.
+ --log-junit                 Log test execution in JUnit XML format to file.
+ --colors                    Displays a colored bar as a test result.
+ --testsuite                 Filter which testsuite to run. Run multiple suits by separating them with ",". Example:  --testsuite suite1,suite2
+ --path                      An alias for the path argument.
+ --parallel-suite            Run testsuites in parallel as opposed to running test classes / test functions in parallel.
+ --passthru=PASSTHRU         Pass the given arguments verbatim to the underlying test framework. Example: --passthru="'--prepend' 'xdebug-filter.php'"
+ --passthru-php=PASSTHRU-PHP Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="'-d' 'zend_extension=xdebug.so'"
+  -v, --verbose=VERBOSE      If given, debug output is printed. Example: --verbose=1
+ 
 ```
 
 ### Optimizing Speed ###

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit\Worker;
 
+use ParaTest\Runners\PHPUnit\Options;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 abstract class BaseWorker
@@ -20,21 +21,30 @@ abstract class BaseWorker
     private $chunks = '';
     private $alreadyReadOutput = '';
 
-    public function start(string $wrapperBinary, $token = 1, $uniqueToken = null, array $parameters = [])
+    public function start(string $wrapperBinary, $token = 1, $uniqueToken = null, array $parameters = [], Options $options = null)
     {
         $bin = 'PARATEST=1 ';
         if (is_numeric($token)) {
+            $bin .= 'XDEBUG_CONFIG="true" ';
             $bin .= "TEST_TOKEN=$token ";
         }
         if ($uniqueToken) {
             $bin .= "UNIQUE_TEST_TOKEN=$uniqueToken ";
         }
         $finder = new PhpExecutableFinder();
-        $bin .= $finder->find() . " \"$wrapperBinary\"";
+        $phpExecutable = $finder->find();
+        $bin .= "$phpExecutable ";
+        if ($options && $options->passthruPhp) {
+            $bin .= $options->passthruPhp . ' ';
+        }
+        $bin .= " \"$wrapperBinary\"";
         if ($parameters) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
         $pipes = [];
+        if ($options && $options->verbose) {
+            echo "Starting WrapperWorker via: $bin\n";
+        }
         $process = proc_open($bin, self::$descriptorspec, $pipes);
         $this->proc = \is_resource($process) ? $process : null;
         $this->pipes = $pipes;

@@ -50,7 +50,10 @@ class ParaTestCommand extends Command
             ->addOption('coverage-xml', null, InputOption::VALUE_REQUIRED, 'Generate code coverage report in PHPUnit XML format.')
             ->addOption('max-batch-size', 'm', InputOption::VALUE_REQUIRED, 'Max batch size (only for functional mode).', 0)
             ->addOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).')
-            ->addOption('parallel-suite', null, InputOption::VALUE_NONE, 'Run the suites of the config in parallel.');
+            ->addOption('parallel-suite', null, InputOption::VALUE_NONE, 'Run the suites of the config in parallel.')
+            ->addOption('passthru', null, InputOption::VALUE_REQUIRED, 'Pass the given arguments verbatim to the underlying test framework. Example: --passthru="\'--prepend\' \'xdebug-filter.php\'"')
+            ->addOption('passthru-php', null, InputOption::VALUE_REQUIRED, 'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' \'zend_extension=xdebug.so\'"')
+            ->addOption('verbose', 'v', InputOption::VALUE_REQUIRED, 'If given, debug output is printed. Example: --verbose=1');
 
         if (self::isWhitelistSupported()) {
             $this->addOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');

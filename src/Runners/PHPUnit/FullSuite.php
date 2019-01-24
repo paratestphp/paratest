@@ -31,7 +31,7 @@ class FullSuite extends ExecutableTest
     /**
      * {@inheritdoc}
      */
-    protected function getCommandString(string $binary, array $options = [])
+    protected function getCommandString(string $binary, array $options = [], string $passthru = null)
     {
         return parent::getCommandString(
             $binary,
@@ -41,7 +41,8 @@ class FullSuite extends ExecutableTest
                     'configuration' => $this->configPath,
                     'testsuite' => $this->suiteName,
                 ]
-            )
+            ),
+            $passthru
         );
     }
 
