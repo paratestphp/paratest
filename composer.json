@@ -58,11 +58,17 @@
         ],
         "test-functional": [
             "phpunit test/functional"
+        ],
+        "test-paratest": [
+            "bin/paratest"
         ]
     },
     "scripts-descriptions": {
+        "style": "Run style checks (only dry run - no fixing!)",
+        "style-fix": "Run style checks and fix violations",
         "test": "Run all tests",
         "test-unit": "Run only unit tests",
-        "test-functional": "Run only functional tests"
+        "test-functional": "Run only functional tests",
+        "test-paratest": "Run all tests with paratest itself"
     }
 }

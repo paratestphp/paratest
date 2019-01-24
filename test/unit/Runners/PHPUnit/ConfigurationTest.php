@@ -17,7 +17,7 @@ class ConfigurationTest extends \TestBase
 
     public function setUp()
     {
-        $this->path = realpath('phpunit.xml.dist');
+        $this->path = realpath(PARATEST_ROOT . '/phpunit.xml.dist');
         $this->config = new Configuration($this->path);
     }
 

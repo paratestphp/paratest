@@ -70,7 +70,7 @@ Options:
  --stop-on-failure     Don't start any more processes after a failure.
  --log-junit           Log test execution in JUnit XML format to file.
  --colors              Displays a colored bar as a test result.
- --testsuite           Filter which testsuite to run.
+ --testsuite           Filter which testsuite to run. Run multiple suits by separating them with ",". Example:  --testsuite suite1,suite2
  --path                An alias for the path argument.
  --parallel-suite      Run testsuites in parallel as opposed to running test classes / test functions in parallel.
 ```
@@ -190,22 +190,37 @@ For Contributors: Testing paratest itself
 
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
 
-**Note that The `display_errors` php.ini directive must be set to `stderr` to run
-the test suite.**
+**Note that The `display_errors` php.ini directive must be set to `stderr` to run the test suite.**
+
+You can use composer scripts for convenient access to style checks and tests. Run `compose run-script -l` to list the
+available commands:
+
+````
+composer run-script -l
+scripts:
+  style            Run style checks (only dry run - no fixing!)
+  style-fix        Run style checks and fix violations
+  test             Run all tests
+  test-unit        Run only unit tests
+  test-functional  Run only functional tests
+  test-paratest    Run all tests with paratest itself
+````
 
 To run unit tests:
-`vendor/bin/phpunit test/unit`
+`composer test-unit` OR `vendor/bin/phpunit test/unit`
 
 To run functional tests:
-`vendor/bin/phpunit test/functional`
+`composer test-functional` OR `vendor/bin/phpunit test/functional`
 
-You can run all tests at once by running phpunit from the project directory.
-`vendor/bin/phpunit`
+You can run all tests at once by running phpunit from the project directory:
+`composer test` OR `vendor/bin/phpunit`
 
-ParaTest can run its own test suite by running it from the `bin` directory.
-`bin/paratest`
+ParaTest can run its own test suite by running it from the `bin` directory:
+`composer test` OR `bin/paratest`
 
-Before creating a Pull Request be sure to run `vendor/bin/php-cs-fixer fix` and
-commit the eventual changes.
+Before creating a Pull Request be sure to run the style checks and commit the eventual changes:
+`composer style-fix` OR `vendor/bin/php-cs-fixer fix`
+
+Use `composer style` to only show violations without fixing.
 
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).

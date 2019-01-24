@@ -9,7 +9,7 @@ class SqliteRunnerTest extends FunctionalTestBase
 
     protected function setUp()
     {
-        $this->guardExtensionLoaded();
+        $this->guardSqliteExtensionLoaded();
         parent::setUp();
     }
 

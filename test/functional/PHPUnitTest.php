@@ -47,7 +47,7 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testWithSqliteRunner()
     {
-        $this->guardExtensionLoaded();
+        $this->guardSqliteExtensionLoaded();
 
         $this->assertTestsPassed($this->invokeParatest('passing-tests', [
             'configuration' => PHPUNIT_CONFIGURATION,
@@ -104,7 +104,7 @@ class PHPUnitTest extends FunctionalTestBase
         ));
     }
 
-    public function testParatestEnvironmentVariableWithWrapperRunnerandWithoutTestTokens()
+    public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens()
     {
         $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0]);
@@ -113,8 +113,7 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testParatestEnvironmentVariableWithSqliteRunner()
     {
-        $this->guardExtensionLoaded();
-
+        $this->guardSqliteExtensionLoaded();
         $this->assertTestsPassed($this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'runner' => 'SqliteRunner']
         ));
@@ -129,7 +128,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithConfigurationThatDoesNotExist()
     {
         $proc = $this->invokeParatest('passing-tests',
-            ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']);
+            ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']); // dist"o" does not exist
         $this->assertRegExp('/Could not read ".*phpunit.xml.disto"./', $proc->getOutput());
     }
 

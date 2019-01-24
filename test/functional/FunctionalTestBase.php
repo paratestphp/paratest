@@ -35,11 +35,11 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
     /**
      * Checks if the sqlite extension is loaded and skips the test if not.
      */
-    protected function guardExtensionLoaded()
+    protected function guardSqliteExtensionLoaded()
     {
         $sqliteExtension = 'pdo_sqlite';
         if (!extension_loaded($sqliteExtension)) {
-            $this->markTestSkipped("Extension '$sqliteExtension' not found.");
+            $this->markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
         }
     }
 }
