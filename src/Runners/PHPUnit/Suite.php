@@ -43,6 +43,6 @@ class Suite extends ExecutableTest
      */
     public function getTestCount(): int
     {
-        return count($this->functions);
+        return \count($this->functions);
     }
 }

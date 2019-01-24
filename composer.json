@@ -42,5 +42,27 @@
         "psr-4": {
             "ParaTest\\": "test/unit/"
         }
+    },
+    "scripts": {
+        "style": [
+            "php-cs-fixer fix --dry-run --verbose"
+        ],
+        "style-fix": [
+            "php-cs-fixer fix"
+        ],
+        "test": [
+            "phpunit"
+        ],
+        "test-unit": [
+            "phpunit test/unit"
+        ],
+        "test-functional": [
+            "phpunit test/functional"
+        ]
+    },
+    "scripts-descriptions": {
+        "test": "Run all tests",
+        "test-unit": "Run only unit tests",
+        "test-functional": "Run only functional tests"
     }
 }

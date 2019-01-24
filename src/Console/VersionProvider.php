@@ -64,12 +64,12 @@ final class VersionProvider
         }
 
         $struct = json_decode($result, true, 16);
-        if (!is_array($struct)) {
+        if (!\is_array($struct)) {
             return;
         }
 
         foreach ($struct as $entry) {
-            if (!is_array($entry)) {
+            if (!\is_array($entry)) {
                 continue;
             }
             $name = $entry['name'] ?? null;

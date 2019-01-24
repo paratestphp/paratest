@@ -32,7 +32,7 @@ class SuiteLoader
     protected $loadedSuites = [];
 
     /**
-     * The configuration
+     * The configuration.
      *
      * @var Configuration|null
      */
@@ -100,20 +100,16 @@ class SuiteLoader
             && $this->options->parallelSuite
         ) {
             $this->suitesName = $this->configuration->getSuitesName();
-        } elseif (
-            isset($this->options->testsuite)
-            && $this->options->testsuite
-        ) {
-            foreach ($this->configuration->getSuiteByName($this->options->testsuite) as $suite) {
-                foreach ($suite as $suitePath) {
-                    $testFileLoader = new TestFileLoader($this->options);
-                    $this->files = array_merge(
-                        $this->files,
-                        $testFileLoader->loadSuitePath($suitePath)
-                    );
+        } elseif ($this->configuration->hasSuites()) {
+            if (!empty($this->options->testsuite)) {
+                $suites = [];
+                foreach ($this->options->testsuite as $testsuite) {
+                    $suites = array_merge($suites, $this->configuration->getSuiteByName($testsuite));
                 }
+            } else {
+                $suites = $this->configuration->getSuites();
             }
-        } elseif ($suites = $this->configuration->getSuites()) {
+
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {
                     $testFileLoader = new TestFileLoader($this->options);
@@ -125,7 +121,7 @@ class SuiteLoader
             }
         }
 
-        if (!$this->files && !is_array($this->suitesName)) {
+        if (!$this->files && !\is_array($this->suitesName)) {
             throw new \RuntimeException('No path or configuration provided (tests must end with Test.php)');
         }
 
@@ -140,7 +136,7 @@ class SuiteLoader
      */
     protected function initSuites()
     {
-        if (is_array($this->suitesName)) {
+        if (\is_array($this->suitesName)) {
             foreach ($this->suitesName as $suiteName) {
                 $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->getPath());
             }
@@ -217,9 +213,9 @@ class SuiteLoader
     protected function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize)
     {
         foreach ($tests as $test) {
-            $lastIndex = count($batches) - 1;
+            $lastIndex = \count($batches) - 1;
             if ($lastIndex !== -1
-                && count($batches[$lastIndex]) < $maxBatchSize
+                && \count($batches[$lastIndex]) < $maxBatchSize
             ) {
                 $batches[$lastIndex][] = $test;
             } else {
@@ -256,7 +252,7 @@ class SuiteLoader
                 $test = sprintf(
                     '%s with data set %s',
                     $method->getName(),
-                    is_int($key) ? '#' . $key : '"' . $key . '"'
+                    \is_int($key) ? '#' . $key : '"' . $key . '"'
                 );
                 if ($this->testMatchOptions($class->getName(), $test, $groups)) {
                     $result[] = $test;

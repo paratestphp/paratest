@@ -58,7 +58,6 @@ class CoverageMergerTest extends \TestBase
 
         $data = $coverage->getData();
 
-
         $this->assertCount(2, $data[$firstFile][$firstFileFirstLine]);
         $this->assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
         $this->assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);

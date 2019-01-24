@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Util\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,7 +47,8 @@ class PHPUnit extends Tester
             ->addOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.')
             ->addOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
             ->addArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.');
+            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.')
+        ;
         $this->command = $command;
     }
 
@@ -107,7 +109,7 @@ class PHPUnit extends Tester
      */
     protected function getConfig(InputInterface $input)
     {
-        $cwd = getcwd() . DIRECTORY_SEPARATOR;
+        $cwd = getcwd() . \DIRECTORY_SEPARATOR;
 
         if ($input->getOption('configuration')) {
             $configFilename = $input->getOption('configuration');
@@ -142,6 +144,10 @@ class PHPUnit extends Tester
 
         if ($path) {
             $options = array_merge(['path' => $path], $options);
+        }
+
+        if (array_key_exists('testsuite', $options)) {
+            $options['testsuite'] = Str::explodeWithCleanup(Configuration::TEST_SUITE_FILTER_SEPARATOR, $options['testsuite']);
         }
 
         return $options;

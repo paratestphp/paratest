@@ -21,8 +21,16 @@ class SqliteRunner extends WrapperRunner
     {
         parent::__construct($opts);
 
-        $this->dbFileName = (string)($opts['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
+        $this->dbFileName = (string) ($opts['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
         $this->db = new PDO('sqlite:' . $this->dbFileName);
+    }
+
+    public function __destruct()
+    {
+        if ($this->db !== null) {
+            unset($this->db);
+            unlink($this->dbFileName);
+        }
     }
 
     public function run()
@@ -71,7 +79,7 @@ class SqliteRunner extends WrapperRunner
             }
             usleep(10000);
             $this->printOutput();
-        } while (count($this->workers) > 0);
+        } while (\count($this->workers) > 0);
     }
 
     /**
@@ -103,7 +111,7 @@ class SqliteRunner extends WrapperRunner
             $this->db->prepare('INSERT INTO tests (command, file_name) VALUES (:command, :fileName)')
                 ->execute([
                     ':command' => $test->command($this->options->phpunit, $this->options->filtered),
-                    ':fileName' => $fileName
+                    ':fileName' => $fileName,
                 ]);
         }
     }
@@ -116,16 +124,8 @@ class SqliteRunner extends WrapperRunner
         foreach ($this->db->query('SELECT id, file_name FROM tests WHERE completed = 1')->fetchAll() as $test) {
             $this->printer->printFeedback($this->pending[$test['file_name']]);
             $this->db->prepare('DELETE FROM tests WHERE id = :id')->execute([
-                'id' => $test['id']
+                'id' => $test['id'],
             ]);
-        }
-    }
-
-    public function __destruct()
-    {
-        if ($this->db !== null) {
-            unset($this->db);
-            unlink($this->dbFileName);
         }
     }
 

@@ -118,7 +118,7 @@ class WorkerTest extends \TestBase
 
     private function setPerReflection($instance, $property, $value)
     {
-        $reflectionProperty = new \ReflectionProperty(get_class($instance), $property);
+        $reflectionProperty = new \ReflectionProperty(\get_class($instance), $property);
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($instance, $value);
     }
@@ -160,7 +160,7 @@ class WorkerTest extends \TestBase
     {
         $this->assertFileExists($logFile, "Failed asserting that $logFile exists.");
         $log = new SimpleXMLElement(file_get_contents($logFile));
-        $count = count($log->testsuite->testcase);
+        $count = \count($log->testsuite->testcase);
         $this->assertGreaterThan(1, $count, 'Not even a test has been executed');
     }
 }

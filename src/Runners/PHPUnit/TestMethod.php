@@ -97,6 +97,6 @@ class TestMethod extends ExecutableTest
      */
     public function getTestCount(): int
     {
-        return count($this->filters);
+        return \count($this->filters);
     }
 }

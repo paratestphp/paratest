@@ -76,7 +76,7 @@ class Options
     /**
      * Filters which tests to run.
      *
-     * @var string|null
+     * @var string[]
      */
     protected $testsuite;
 
@@ -109,7 +109,7 @@ class Options
     protected $annotations = [];
 
     /**
-     * Running the suite defined in the config in parallel
+     * Running the suite defined in the config in parallel.
      *
      * @var bool
      */
@@ -152,7 +152,7 @@ class Options
                              ? explode(',', $opts['exclude-group'])
                              : [];
 
-        if (isset($opts['filter']) && strlen($opts['filter']) > 0 && !$this->functional) {
+        if (isset($opts['filter']) && \strlen($opts['filter']) > 0 && !$this->functional) {
             throw new \RuntimeException('Option --filter is not implemented for non functional mode');
         }
 
@@ -205,7 +205,7 @@ class Options
             'testsuite' => '',
             'max-batch-size' => 0,
             'filter' => null,
-            'parallel-suite' => false
+            'parallel-suite' => false,
         ];
     }
 
@@ -222,8 +222,8 @@ class Options
     {
         $vendor = static::vendorDir();
 
-        $phpunit = $vendor . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'phpunit';
-          if (file_exists($phpunit)) {
+        $phpunit = $vendor . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit';
+        if (file_exists($phpunit)) {
             return $phpunit;
         }
 
@@ -237,9 +237,9 @@ class Options
      */
     protected static function vendorDir(): string
     {
-        $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
+        $vendor = \dirname(\dirname(\dirname(__DIR__))) . \DIRECTORY_SEPARATOR . 'vendor';
         if (!file_exists($vendor)) {
-            $vendor = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
+            $vendor = \dirname(\dirname(\dirname(\dirname(\dirname(__DIR__)))));
         }
 
         return $vendor;
@@ -263,7 +263,7 @@ class Options
             'testsuite' => $this->testsuite,
             'max-batch-size' => $this->maxBatchSize,
             'filter' => $this->filter,
-            'parallel-suite' => $this->parallelSuite
+            'parallel-suite' => $this->parallelSuite,
         ]);
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
@@ -304,7 +304,7 @@ class Options
             return realpath($path);
         }
 
-        $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $path = rtrim($path, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR;
         $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
@@ -324,7 +324,7 @@ class Options
     {
         $annotatedOptions = ['group'];
         foreach ($this->filtered as $key => $value) {
-            if (in_array($key, $annotatedOptions, true)) {
+            if (\in_array($key, $annotatedOptions, true)) {
                 $this->annotations[$key] = $value;
             }
         }
@@ -354,8 +354,8 @@ class Options
             // Linux (and potentially Windows with linux sub systems)
             $cpuinfo = file_get_contents('/proc/cpuinfo');
             preg_match_all('/^processor/m', $cpuinfo, $matches);
-            $cores = count($matches[0]);
-        } elseif (DIRECTORY_SEPARATOR === '\\') {
+            $cores = \count($matches[0]);
+        } elseif (\DIRECTORY_SEPARATOR === '\\') {
             // Windows
             if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
                 fgets($process);

@@ -134,10 +134,10 @@ class ResultPrinter
      */
     public function start(Options $options)
     {
-        $this->numTestsWidth = strlen((string) $this->totalCases);
+        $this->numTestsWidth = \strlen((string) $this->totalCases);
         $this->maxColumn = $this->numberOfColumns
-                         + (DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
-                         - strlen($this->getProgress());
+                         + (\DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
+                         - \strlen($this->getProgress());
         printf(
             "\nRunning phpunit in %d process%s with %s%s\n\n",
             $options->processes,
@@ -243,7 +243,7 @@ class ResultPrinter
      */
     public function isSuccessful(): bool
     {
-        return $this->results->isSuccessful() && count($this->warnings) === 0;
+        return $this->results->isSuccessful() && \count($this->warnings) === 0;
     }
 
     /**
@@ -303,7 +303,7 @@ class ResultPrinter
     {
         $feedbackItems = $reader->getFeedback();
 
-        $actualTestCount = count($feedbackItems);
+        $actualTestCount = \count($feedbackItems);
 
         $this->processTestOverhead($actualTestCount, $expectedTestCount);
 
@@ -424,7 +424,7 @@ class ResultPrinter
      */
     protected function getDefects(array $defects, string $type): string
     {
-        $count = count($defects);
+        $count = \count($defects);
         if ($count === 0) {
             return '';
         }
@@ -436,7 +436,7 @@ class ResultPrinter
             ($count === 1) ? '' : 's'
         );
 
-        for ($i = 1; $i <= count($defects); ++$i) {
+        for ($i = 1; $i <= \count($defects); ++$i) {
             $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
         }
 

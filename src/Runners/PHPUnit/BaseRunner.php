@@ -180,19 +180,17 @@ abstract class BaseRunner
 
     /**
      * Overrides envirenment variables if needed.
-     *
-     * @return null
      */
     protected function overrideEnvironmentVariables()
     {
-        if (! isset($this->options->filtered['configuration'])) {
+        if (!isset($this->options->filtered['configuration'])) {
             return;
         }
 
         $variables = $this->options->filtered['configuration']->getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            \putenv(sprintf('%s=%s', $key, $value));
+            putenv(sprintf('%s=%s', $key, $value));
 
             $_ENV[$key] = $value;
         }
