@@ -31,9 +31,19 @@ class Runner extends BaseRunner
 
         while (\count($this->running) || \count($this->pending)) {
             foreach ($this->running as $key => $test) {
-                if (!$this->testIsStillRunning($test)) {
-                    unset($this->running[$key]);
-                    $this->releaseToken($key);
+                try {
+                    if (!$this->testIsStillRunning($test)) {
+                        unset($this->running[$key]);
+                        $this->releaseToken($key);
+                    }
+                } catch (\Exception $e) {
+                    if ($this->options->verbose) {
+                        echo "An error for $key: {$e->getMessage()}" . PHP_EOL;
+                        echo "Command: {$test->getLastCommand()}" . PHP_EOL;
+                        echo 'StdErr: ' . $test->getStderr() . PHP_EOL;
+                        echo 'StdOut: ' . $test->getStdout() . PHP_EOL;
+                    }
+                    throw $e;
                 }
             }
             $this->fillRunQueue();

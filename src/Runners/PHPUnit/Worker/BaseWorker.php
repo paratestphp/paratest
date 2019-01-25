@@ -94,16 +94,20 @@ abstract class BaseWorker
     public function checkNotCrashed()
     {
         if ($this->isCrashed()) {
-            $lastCommand = isset($this->commands) ? ' Last executed command: ' . end($this->commands) : '';
-            throw new \RuntimeException(
-                'This worker has crashed.' . $lastCommand . PHP_EOL
-                . 'Output:' . PHP_EOL
-                . '----------------------' . PHP_EOL
-                . $this->alreadyReadOutput . PHP_EOL
-                . '----------------------' . PHP_EOL
-                . $this->readAllStderr()
-            );
+            throw new \RuntimeException($this->getCrashReport());
         }
+    }
+
+    public function getCrashReport()
+    {
+        $lastCommand = isset($this->commands) ? ' Last executed command: ' . end($this->commands) : '';
+
+        return 'This worker has crashed.' . $lastCommand . PHP_EOL
+            . 'Output:' . PHP_EOL
+            . '----------------------' . PHP_EOL
+            . $this->alreadyReadOutput . PHP_EOL
+            . '----------------------' . PHP_EOL
+            . $this->readAllStderr();
     }
 
     public function stop()

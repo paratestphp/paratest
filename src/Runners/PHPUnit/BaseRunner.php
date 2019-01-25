@@ -39,7 +39,7 @@ abstract class BaseRunner
      * A collection of ExecutableTest objects that have processes
      * currently running.
      *
-     * @var array
+     * @var array|ExecutableTest[]
      */
     protected $running = [];
 
