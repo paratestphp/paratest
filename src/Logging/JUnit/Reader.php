@@ -174,14 +174,14 @@ class Reader extends MetaProvider
         $cb = [TestCase::class, 'caseFromNode'];
 
         return array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
-            $testCases[] = call_user_func_array($cb, [$c]);
+            $testCases[] = \call_user_func_array($cb, [$c]);
             $result['name'] = (string) $c['class'];
             $result['file'] = (string) $c['file'];
-            $result['tests'] += 1;
+            ++$result['tests'];
             $result['assertions'] += (int) $c['assertions'];
-            $result['failures'] += count($c->xpath('failure'));
-            $result['errors'] += count($c->xpath('error'));
-            $result['skipped'] += count($c->xpath('skipped'));
+            $result['failures'] += \count($c->xpath('failure'));
+            $result['errors'] += \count($c->xpath('error'));
+            $result['skipped'] += \count($c->xpath('skipped'));
             $result['time'] += (float) $c['time'];
 
             return $result;
@@ -217,7 +217,7 @@ class Reader extends MetaProvider
     protected function initSuite()
     {
         $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
-        $this->isSingle = count($suiteNodes) === 0;
+        $this->isSingle = \count($suiteNodes) === 0;
         $node = current($this->xml->xpath('/testsuites/testsuite'));
 
         if ($node !== false) {

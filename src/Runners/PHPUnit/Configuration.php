@@ -13,6 +13,12 @@ namespace ParaTest\Runners\PHPUnit;
 class Configuration
 {
     /**
+     * @see \PHPUnit\Util\Configuration
+     * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
+     */
+    const TEST_SUITE_FILTER_SEPARATOR = ',';
+
+    /**
      * Path to the configuration file.
      *
      * @var string
@@ -100,16 +106,22 @@ class Configuration
         return $suites;
     }
 
+    public function hasSuites()
+    {
+        return !empty($this->getSuitesName());
+    }
+
     public function getSuitesName()
     {
         if (!$this->xml) {
-            return null;
+            return;
         }
         $nodes = $this->xml->xpath('//testsuites/testsuite');
         $names = [];
         foreach ($nodes as $node) {
-           $names[] = (string)$node['name'];
+            $names[] = (string) $node['name'];
         }
+
         return $names;
     }
 
@@ -173,7 +185,7 @@ class Configuration
      */
     public function getConfigDir(): string
     {
-        return dirname($this->path) . DIRECTORY_SEPARATOR;
+        return \dirname($this->path) . \DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -212,7 +224,7 @@ class Configuration
      */
     public function getEnvironmentVariables(): array
     {
-        if (! isset($this->xml->php->env)) {
+        if (!isset($this->xml->php->env)) {
             return [];
         }
 

@@ -6,12 +6,18 @@ namespace ParaTest\Runners\PHPUnit;
 
 class ConfigurationTest extends \TestBase
 {
+    /**
+     * @var string
+     */
     protected $path;
+    /**
+     * @var Configuration
+     */
     protected $config;
 
     public function setUp()
     {
-        $this->path = realpath('phpunit.xml.dist');
+        $this->path = realpath(PARATEST_ROOT . '/phpunit.xml.dist');
         $this->config = new Configuration($this->path);
     }
 
@@ -26,6 +32,12 @@ class ConfigurationTest extends \TestBase
         $this->assertCount(2, $suites);
 
         return $suites;
+    }
+
+    public function test_hasSuites()
+    {
+        $actual = $this->config->hasSuites();
+        $this->assertTrue($actual);
     }
 
     public function testGlobbingSupport()
@@ -81,7 +93,7 @@ class ConfigurationTest extends \TestBase
         $this->assertArrayHasKey('APP_ENV', $this->config->getEnvironmentVariables());
         $this->assertArrayHasKey('CACHE_DRIVER', $this->config->getEnvironmentVariables());
 
-        $config = new Configuration(realpath(__DIR__.'/phpunit.xml.dist'));
+        $config = new Configuration(realpath(__DIR__ . '/phpunit.xml.dist'));
         $this->assertCount(0, $config->getEnvironmentVariables());
     }
 

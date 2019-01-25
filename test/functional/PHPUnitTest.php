@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use ParaTest\Console\Commands\ParaTestCommand;
+use ParaTest\Console\Testers\PHPUnit;
+use Symfony\Component\Console\Input\ArrayInput;
+
 class PHPUnitTest extends FunctionalTestBase
 {
     public function testWithJustBootstrap()
@@ -43,6 +47,8 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testWithSqliteRunner()
     {
+        $this->guardSqliteExtensionLoaded();
+
         $this->assertTestsPassed($this->invokeParatest('passing-tests', [
             'configuration' => PHPUNIT_CONFIGURATION,
             'runner' => 'SqliteRunner',
@@ -98,7 +104,7 @@ class PHPUnitTest extends FunctionalTestBase
         ));
     }
 
-    public function testParatestEnvironmentVariableWithWrapperRunnerandWithoutTestTokens()
+    public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens()
     {
         $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0]);
@@ -107,6 +113,7 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testParatestEnvironmentVariableWithSqliteRunner()
     {
+        $this->guardSqliteExtensionLoaded();
         $this->assertTestsPassed($this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'runner' => 'SqliteRunner']
         ));
@@ -121,7 +128,7 @@ class PHPUnitTest extends FunctionalTestBase
     public function testWithConfigurationThatDoesNotExist()
     {
         $proc = $this->invokeParatest('passing-tests',
-            ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']);
+            ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']); // dist"o" does not exist
         $this->assertRegExp('/Could not read ".*phpunit.xml.disto"./', $proc->getOutput());
     }
 
@@ -352,5 +359,90 @@ class PHPUnitTest extends FunctionalTestBase
             $dir = tempnam(sys_get_temp_dir(), 'paratest_');
             $this->assertStringStartsWith(dirname($dir), $options['coverage-php']);
         }
+    }
+
+    /**
+     * @dataProvider getRunnerOptionsDataProvider
+     *
+     * @param array $options
+     * @param array $expected
+     */
+    public function testGetRunnerOptions(array $options, array $expected)
+    {
+        $phpUnit = new PHPUnit();
+        $c = new ParaTestCommand($phpUnit);
+        $input = new ArrayInput($options, $c->getDefinition());
+
+        $options = $phpUnit->getRunnerOptions($input);
+
+        // Note:
+        // 'coverage-php' contains a random, temporary string.
+        // has to be refactored to be testable but I'll leave that as a
+        // TODO
+        if (array_key_exists('coverage-php', $options)) {
+            unset($options['coverage-php']);
+        }
+
+        $this->assertEquals($expected, $options);
+    }
+
+    public function getRunnerOptionsDataProvider()
+    {
+        return [
+            'default' => [
+                'input' => [
+                    'path' => 'bar',
+                    '--processes' => '10',
+                ],
+                'expected' => [
+                    'path' => 'bar',
+                    'processes' => '10',
+                ],
+            ],
+            'accepts all defined options' => [
+                'input' => [
+                    'path' => 'bar',
+                    '--processes' => '10',
+                    '--functional' => 1,
+                    '--no-test-tokens' => 1,
+//                    '--help' => "",
+                    '--coverage-clover' => 'clover',
+                    '--coverage-html' => 'html',
+                    '--coverage-text' => 'text',
+                    '--coverage-xml' => 'xml',
+                    '--max-batch-size' => '5',
+                    '--filter' => 'filter',
+                    '--parallel-suite' => 'parallel-suite',
+                ],
+                'expected' => [
+                    'path' => 'bar',
+                    'processes' => '10',
+                    'functional' => 1,
+                    'no-test-tokens' => 1,
+                    'coverage-clover' => 'clover',
+                    'coverage-html' => 'html',
+                    'coverage-text' => 'text',
+                    'coverage-xml' => 'xml',
+                    'max-batch-size' => '5',
+                    'filter' => 'filter',
+                    'parallel-suite' => 'parallel-suite',
+                ],
+            ],
+            "splits testsuite on ','" => [
+                'input' => [
+                    'path' => 'bar',
+                    '--processes' => '10',
+                    '--testsuite' => 't1,t2',
+                ],
+                'expected' => [
+                    'path' => 'bar',
+                    'processes' => '10',
+                    'testsuite' => [
+                        't1',
+                        't2',
+                    ],
+                ],
+            ],
+        ];
     }
 }

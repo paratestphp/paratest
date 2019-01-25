@@ -123,7 +123,7 @@ class TestFileLoader
     {
         $files = scandir($path);
         foreach ($files as $file) {
-            $this->tryLoadTests($path . DIRECTORY_SEPARATOR . $file, $pattern);
+            $this->tryLoadTests($path . \DIRECTORY_SEPARATOR . $file, $pattern);
         }
     }
 

@@ -36,7 +36,7 @@ abstract class BaseWorker
         }
         $pipes = [];
         $process = proc_open($bin, self::$descriptorspec, $pipes);
-        $this->proc = is_resource($process) ? $process : null;
+        $this->proc = \is_resource($process) ? $process : null;
         $this->pipes = $pipes;
     }
 
@@ -131,8 +131,8 @@ abstract class BaseWorker
             $lines = explode("\n", $this->chunks);
             // last element is not a complete line,
             // becomes part of a line completed later
-            $this->chunks = $lines[count($lines) - 1];
-            unset($lines[count($lines) - 1]);
+            $this->chunks = $lines[\count($lines) - 1];
+            unset($lines[\count($lines) - 1]);
             // delivering complete lines to this Worker
             foreach ($lines as $line) {
                 $line .= "\n";

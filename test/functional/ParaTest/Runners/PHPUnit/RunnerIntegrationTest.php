@@ -46,15 +46,15 @@ class RunnerIntegrationTest extends \TestBase
 
     public function testRunningTestsShouldLeaveNoTempFiles()
     {
-        $countBefore = count($this->globTempDir('PT_*'));
-        $countCoverageBefore = count($this->globTempDir('CV_*'));
+        $countBefore = \count($this->globTempDir('PT_*'));
+        $countCoverageBefore = \count($this->globTempDir('CV_*'));
 
         ob_start();
         $this->runner->run();
         ob_end_clean();
 
-        $countAfter = count($this->globTempDir('PT_*'));
-        $countCoverageAfter = count($this->globTempDir('CV_*'));
+        $countAfter = \count($this->globTempDir('PT_*'));
+        $countCoverageAfter = \count($this->globTempDir('CV_*'));
 
         $this->assertEquals($countAfter, $countBefore,
             "Test Runner failed to clean up the 'PT_*' file in " . sys_get_temp_dir());

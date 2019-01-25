@@ -7,6 +7,12 @@ class SqliteRunnerTest extends FunctionalTestBase
     const TEST_METHODS_PER_CLASS = 5;
     const TEST_CLASSES = 6;
 
+    protected function setUp()
+    {
+        $this->guardSqliteExtensionLoaded();
+        parent::setUp();
+    }
+
     public function testResultsAreCorrect()
     {
         $generator = new TestGenerator();

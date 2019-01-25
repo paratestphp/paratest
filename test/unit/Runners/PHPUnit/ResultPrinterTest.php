@@ -82,13 +82,14 @@ class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
     {
-        file_put_contents('myconfig.xml', '<root />');
+        $pathToConfig = __DIR__ . DS . 'myconfig.xml';
+        file_put_contents($pathToConfig, '<root />');
         $options = new Options(['configuration' => 'myconfig.xml']);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
                             Options::getNumberOfCPUCores(),
                             $options->phpunit,
-                            __DIR__ . DS . 'myconfig.xml');
+                            $pathToConfig);
         $this->assertStringStartsWith($expected, $contents);
     }
 

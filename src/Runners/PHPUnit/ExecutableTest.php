@@ -274,10 +274,10 @@ abstract class ExecutableTest
      */
     protected function assertValidCommandLineLength(string $cmd)
     {
-        if (DIRECTORY_SEPARATOR === '\\') { // windows
+        if (\DIRECTORY_SEPARATOR === '\\') { // windows
             // symfony's process wrapper
             $cmd = 'cmd /V:ON /E:ON /C "(' . $cmd . ')';
-            if (strlen($cmd) > 32767) {
+            if (\strlen($cmd) > 32767) {
                 throw new \RuntimeException('Command line is too long, try to decrease max batch size');
             }
         }

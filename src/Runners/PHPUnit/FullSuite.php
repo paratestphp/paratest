@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
 class FullSuite extends ExecutableTest
 {
     /**
-     * @var  string
+     * @var string
      */
     protected $suiteName;
 

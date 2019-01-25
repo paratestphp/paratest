@@ -29,7 +29,7 @@ class Runner extends BaseRunner
     {
         parent::run();
 
-        while (count($this->running) || count($this->pending)) {
+        while (\count($this->running) || \count($this->pending)) {
             foreach ($this->running as $key => $test) {
                 if (!$this->testIsStillRunning($test)) {
                     unset($this->running[$key]);
@@ -68,7 +68,7 @@ class Runner extends BaseRunner
     private function fillRunQueue()
     {
         $opts = $this->options;
-        while (count($this->pending) && count($this->running) < $opts->processes) {
+        while (\count($this->pending) && \count($this->running) < $opts->processes) {
             $tokenData = $this->getNextAvailableToken();
             if ($tokenData !== false) {
                 $this->acquireToken($tokenData['token']);

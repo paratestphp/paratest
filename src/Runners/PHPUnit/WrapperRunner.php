@@ -68,7 +68,7 @@ class WrapperRunner extends BaseRunner
         $phpunit = $this->options->phpunit;
         $phpunitOptions = $this->options->filtered;
         // $phpunitOptions['no-globals-backup'] = null;  // removed in phpunit 6.0
-        while (count($this->pending)) {
+        while (\count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $worker) {
                 if ($worker->isFree()) {
@@ -92,7 +92,7 @@ class WrapperRunner extends BaseRunner
     private function waitForAllToFinish()
     {
         $toStop = $this->workers;
-        while (count($toStop) > 0) {
+        while (\count($toStop) > 0) {
             $toCheck = $this->streamsOf($toStop);
             $new = $this->waitForStreamsToChange($toCheck);
             foreach ($this->progressedWorkers() as $index => $worker) {

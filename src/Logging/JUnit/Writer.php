@@ -181,7 +181,7 @@ class Writer
     {
         $testsuites = $this->document->createElement('testsuites');
         $this->document->appendChild($testsuites);
-        if (count($suites) === 1) {
+        if (\count($suites) === 1) {
             return $testsuites;
         }
         $rootSuite = $this->document->createElement('testsuite');

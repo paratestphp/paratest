@@ -57,7 +57,7 @@ class Parser
      * Returns the fully constructed class
      * with methods or null if the class is abstract.
      *
-     * @return null|ParsedClass
+     * @return ParsedClass|null
      */
     public function getClass()
     {

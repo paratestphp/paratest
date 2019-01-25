@@ -41,7 +41,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFileFromConfig()
     {
         $options = new Options(
-            ['configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => 'ParaTest Fixtures']
+            ['configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => ['ParaTest Fixtures']]
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -54,7 +54,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag()
     {
         $options = new Options(
-            ['configuration' => $this->fixture('phpunit-excluded-including-file.xml'), 'testsuite' => 'ParaTest Fixtures']
+            ['configuration' => $this->fixture('phpunit-excluded-including-file.xml'), 'testsuite' => ['ParaTest Fixtures']]
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -67,7 +67,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag()
     {
         $options = new Options(
-            ['configuration' => $this->fixture('phpunit-excluded-including-dir.xml'), 'testsuite' => 'ParaTest Fixtures']
+            ['configuration' => $this->fixture('phpunit-excluded-including-dir.xml'), 'testsuite' => ['ParaTest Fixtures']]
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -80,7 +80,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory()
     {
         $options = new Options(
-            ['configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'), 'testsuite' => 'ParaTest Fixtures']
+            ['configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'), 'testsuite' => ['ParaTest Fixtures']]
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -93,7 +93,7 @@ class SuiteLoaderTest extends \TestBase
     public function testLoadTestsuiteFilesFromConfig()
     {
         $options = new Options(
-            ['configuration' => $this->fixture('phpunit-multifile.xml'), 'testsuite' => 'ParaTest Fixtures']
+            ['configuration' => $this->fixture('phpunit-multifile.xml'), 'testsuite' => ['ParaTest Fixtures']]
         );
         $loader = new SuiteLoader($options);
         $loader->load();
@@ -105,62 +105,62 @@ class SuiteLoaderTest extends \TestBase
 
     public function testLoadTestsuiteWithDirectory()
     {
-        $options = new Options(['configuration' => $this->fixture('phpunit-passing.xml'), 'testsuite' => 'ParaTest Fixtures']);
+        $options = new Options(['configuration' => $this->fixture('phpunit-passing.xml'), 'testsuite' => ['ParaTest Fixtures']]);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $expected = \count($this->findTests(FIXTURES . DS . 'passing-tests'));
         $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithDirectories()
     {
-        $options = new Options(['configuration' => $this->fixture('phpunit-multidir.xml'), 'testsuite' => 'ParaTest Fixtures']);
+        $options = new Options(['configuration' => $this->fixture('phpunit-multidir.xml'), 'testsuite' => ['ParaTest Fixtures']]);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            count($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $expected = \count($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            \count($this->findTests(FIXTURES . DS . 'failing-tests'));
         $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithFilesDirsMixed()
     {
         $options = new Options(
-            ['configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => 'ParaTest Fixtures']
+            ['configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => ['ParaTest Fixtures']]
         );
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
+        $expected = \count($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
         $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithNestedSuite()
     {
         $options = new Options(
-            ['configuration' => $this->fixture('phpunit-files-dirs-mix-nested.xml'), 'testsuite' => 'ParaTest Fixtures']
+            ['configuration' => $this->fixture('phpunit-files-dirs-mix-nested.xml'), 'testsuite' => ['ParaTest Fixtures']]
         );
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            count($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
+        $expected = \count($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            \count($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
         $this->assertCount($expected, $files);
     }
 
     public function testLoadTestsuiteWithDuplicateFilesDirMixed()
     {
-        $options = new Options(['configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'), 'testsuite' => 'ParaTest Fixtures']);
+        $options = new Options(['configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'), 'testsuite' => ['ParaTest Fixtures']]);
         $loader = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) + 1;
+        $expected = \count($this->findTests(FIXTURES . DS . 'passing-tests')) + 1;
         $this->assertCount($expected, $files);
     }
 
@@ -171,7 +171,7 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $expected = \count($this->findTests(FIXTURES . DS . 'passing-tests'));
         $this->assertCount($expected, $files);
     }
 
@@ -182,8 +182,8 @@ class SuiteLoaderTest extends \TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            count($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $expected = \count($this->findTests(FIXTURES . DS . 'passing-tests')) +
+            \count($this->findTests(FIXTURES . DS . 'failing-tests'));
         $this->assertCount($expected, $files);
     }
 
