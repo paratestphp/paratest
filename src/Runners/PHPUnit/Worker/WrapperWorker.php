@@ -11,7 +11,11 @@ use ParaTest\Runners\PHPUnit\ResultPrinter;
 
 class WrapperWorker extends BaseWorker
 {
+    /**
+     * @var string[]
+     */
     private $commands = [];
+
     /**
      * @var ExecutableTest
      */

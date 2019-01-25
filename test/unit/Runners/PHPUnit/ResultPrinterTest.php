@@ -10,22 +10,40 @@ use ParaTest\ResultTester;
 
 class ResultPrinterTest extends ResultTester
 {
+    /**
+     * @var ResultPrinter
+     */
     protected $printer;
+
+    /**
+     * @var LogInterpreter
+     */
     protected $interpreter;
 
-    protected $passingSuiteWithWrongTestCountEsimation;
+    /**
+     * @var Suite
+     */
+    protected $passingSuiteWithWrongTestCountEstimation;
 
     public function setUp()
     {
         parent::setUp();
         $this->interpreter = new LogInterpreter();
         $this->printer = new ResultPrinter($this->interpreter);
-        chdir(__DIR__);
-        if (file_exists('myconfig.xml')) {
-            unlink('myconfig.xml');
+        $pathToConfig = $this->getPathToConfig();
+        if (file_exists($pathToConfig)) {
+            unlink($pathToConfig);
         }
 
-        $this->passingSuiteWithWrongTestCountEsimation = $this->getSuiteWithResult('single-passing.xml', 1);
+        $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPathToConfig()
+    {
+        return __DIR__ . DS . 'myconfig.xml';
     }
 
     public function testConstructor()
@@ -37,7 +55,7 @@ class ResultPrinterTest extends ResultTester
         );
     }
 
-    public function testAddTestShouldaddTest()
+    public function testAddTestShouldAddTest()
     {
         $suite = new Suite('/path/to/ResultSuite.php', []);
 
@@ -82,7 +100,7 @@ class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
     {
-        $pathToConfig = __DIR__ . DS . 'myconfig.xml';
+        $pathToConfig = $this->getPathToConfig();
         file_put_contents($pathToConfig, '<root />');
         $options = new Options(['configuration' => $pathToConfig]);
         $contents = $this->getStartOutput($options);
@@ -273,7 +291,7 @@ class ResultPrinterTest extends ResultTester
     {
         //add tests
         for ($i = 0; $i < 22; ++$i) {
-            $this->printer->addTest($this->passingSuiteWithWrongTestCountEsimation);
+            $this->printer->addTest($this->passingSuiteWithWrongTestCountEstimation);
         }
 
         //start the printer so boundaries are established
@@ -284,7 +302,7 @@ class ResultPrinterTest extends ResultTester
         //get the feedback string
         ob_start();
         for ($i = 0; $i < 22; ++$i) {
-            $this->printer->printFeedback($this->passingSuiteWithWrongTestCountEsimation);
+            $this->printer->printFeedback($this->passingSuiteWithWrongTestCountEstimation);
         }
         $feedback = ob_get_clean();
 

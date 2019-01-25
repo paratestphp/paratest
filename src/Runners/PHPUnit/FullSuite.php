@@ -31,7 +31,7 @@ class FullSuite extends ExecutableTest
     /**
      * {@inheritdoc}
      */
-    protected function getCommandString(string $binary, array $options = [], string $passthru = null)
+    protected function getCommandString(string $binary, array $options = [], ?string $passthru = null)
     {
         return parent::getCommandString(
             $binary,

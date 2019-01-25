@@ -53,7 +53,7 @@ abstract class ExecutableTest
      */
     protected $lastCommand = '';
 
-    public function __construct(string $path, string $fullyQualifiedClassName = null)
+    public function __construct(string $path, ?string $fullyQualifiedClassName = null)
     {
         $this->path = $path;
         $this->fullyQualifiedClassName = $fullyQualifiedClassName;
@@ -196,7 +196,7 @@ abstract class ExecutableTest
      *
      * @return $this
      */
-    public function run(string $binary, array $options = [], array $environmentVariables = [], string $passthru = null, string $passthruPhp = null)
+    public function run(string $binary, array $options = [], array $environmentVariables = [], ?string $passthru = null, ?string $passthruPhp = null)
     {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
@@ -216,7 +216,7 @@ abstract class ExecutableTest
 
     /**
      * Build the full executable as we would do on the command line, e.g.
-     * php -Dzend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
+     * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
      * @param $binary
      * @param $options
@@ -225,7 +225,7 @@ abstract class ExecutableTest
      *
      * @return string
      */
-    protected function getFullCommandlineString($binary, $options, string $passthru = null, string $passthruPhp = null)
+    protected function getFullCommandlineString($binary, $options, ?string $passthru = null, ?string $passthruPhp = null)
     {
         $finder = new PhpExecutableFinder();
         $args = [];
@@ -254,13 +254,13 @@ abstract class ExecutableTest
     /**
      * Generate command line with passed options suitable to handle through paratest.
      *
-     * @param string $binary   executable binary name
-     * @param array  $options  command line options
-     * @param null   $passthru
+     * @param string      $binary   executable binary name
+     * @param array       $options  command line options
+     * @param string|null $passthru
      *
      * @return string command line
      */
-    public function command(string $binary, array $options = [], $passthru = null): string
+    public function command(string $binary, array $options = [], ?string $passthru = null): string
     {
         $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         $options = $this->redirectCoverageOption($options);
@@ -354,17 +354,19 @@ abstract class ExecutableTest
      *
      * @return mixed
      */
-    protected function getCommandString(string $binary, array $options = [], string $passthru = null)
+    protected function getCommandString(string $binary, array $options = [], ?string $passthru = null)
     {
         // The order we add stuff into $arguments is important
         $arguments = [$binary];
         // Note:
         // the arguments MUST come last and we need to "somehow"
-        // mere the passthru string in there.
+        // merge the passthru string in there.
         // Thus, we "split" the command creation here.
         // For a clean solution, we would need to manually parse and verify
         // the passthru. I'll leave that as a
         // TODO
+        // @see https://stackoverflow.com/a/34871367/413531
+        // @see https://github.com/symfony/console/blob/68001d4b65139ef4f22da581a8da7be714218aec/Input/StringInput.php
         $cmd = (new Process($arguments))->getCommandLine();
         if (!empty($passthru)) {
             $cmd .= ' ' . $passthru;

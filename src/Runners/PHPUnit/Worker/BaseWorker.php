@@ -21,7 +21,7 @@ abstract class BaseWorker
     private $chunks = '';
     private $alreadyReadOutput = '';
 
-    public function start(string $wrapperBinary, $token = 1, $uniqueToken = null, array $parameters = [], Options $options = null)
+    public function start(string $wrapperBinary, $token = 1, $uniqueToken = null, array $parameters = [], ?Options $options = null)
     {
         $bin = 'PARATEST=1 ';
         if (is_numeric($token)) {
