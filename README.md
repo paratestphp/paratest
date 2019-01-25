@@ -9,8 +9,7 @@ ParaTest
 The objective of ParaTest is to support parallel testing in PHPUnit. Provided you have well-written PHPUnit tests, you can drop `paratest` in your project and
 start using it with no additional bootstrap or configurations!
 
-Benefits
-------------
+# Benefits
 
 Why use `paratest` over the alternative parallel test runners out there?
 
@@ -18,23 +17,18 @@ Why use `paratest` over the alternative parallel test runners out there?
 * Zero configuration. *After composer install, run with `vendor/bin/paratest -p4 path/to/tests`. That's it!*
 * Flexible. *Isolate test files in separate processes or take advantage of WrapperRunner for even faster runs.*
 
-Installation
-------------
-
-### Composer ###
+# Installation
 
 To install with composer run the following command:
 
     composer require --dev brianium/paratest
     
-Versions
-------------
+# Versions
 For PHPUnit >= 7: Please use Paratest v2+
 
 For PHPUnit <= 6: Please use Paratest v1.
 
-Usage
------
+# Usage
 
 After installation, the binary can be found at `vendor/bin/paratest`. Usage is as follows:
 
@@ -79,7 +73,7 @@ Options:
  
 ```
 
-### Optimizing Speed ###
+### Optimizing Speed
 
 To get the most out of paratest, you have to adjust the parameters carefully.
 
@@ -114,7 +108,7 @@ To get the most out of paratest, you have to adjust the parameters carefully.
     Decrease max batch size to reduce command line length.
     Windows has limit around 32k, Linux - 2048k, Mac OS X - 256k.
 
-### Examples ###
+### Examples
 Examples assume your tests are located under `./test/unit`.
 
 ```
@@ -125,9 +119,16 @@ vendor/bin/paratest -p8 test/unit
 ```
 # Run all unit tests in 4 parallel processes with WrapperRunner and output html code coverage report to /tmp/coverage
 # (Code coverage requires Xdebug to be installed)
-vendor/bin/paratest -p8 --runner=WrapperRunner --coverage-html=/tmp/coverage test/unit
+vendor/bin/paratest -p4 --runner=WrapperRunner --coverage-html=/tmp/coverage test/unit
 ```
 
+### Troubleshooting
+If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via `--verbose=1`.
+
+In case you are using the `WrapperRunner` for execution, consider enabling logging for troubleshooting via `export PT_LOGGING_ENABLE="true"`.
+The corresponding logfiles are placed in your `sys_get_temp_dir()`.
+
+See [Logging docs](docs/logging.md) for further information.
 
 ### Generating code coverage
 Examples assume your tests are located under `./test/unit`.
@@ -159,7 +160,7 @@ Code Coverage Report:
 **Caution**: Generating coverage is an art in itself. Please refer to our extensive guide on setting up everything correctly for 
 [code coverage generation with `paratest`](docs/code-coverage.md).
 
-### Windows ###
+### Windows
 
 Windows users be sure to use the appropriate batch files.
 
@@ -172,8 +173,7 @@ ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/ac
 For convenience paratest windows version use 79 columns mode to prevent blank lines in standard
 80x25 windows console.
 
-PHPUnit Xml Config Support
---------------------------
+# PHPUnit Xml Config Support
 
 When running PHPUnit tests, ParaTest will automatically pass the phpunit.xml or phpunit.xml.dist to the phpunit runner
 via the --configuration switch. ParaTest also allows the configuration path to be specified manually.
@@ -203,8 +203,7 @@ The following phpunit config file is used for ParaTest's test cases.
 </phpunit>
 ```
 
-Test token
-----------
+# Test token
 
 The `TEST_TOKEN` environment variable is guaranteed to have a value that is different
 from every other currently running test. This is useful to e.g. use a different database
@@ -218,8 +217,7 @@ if (getenv('TEST_TOKEN') !== false) {  // Using paratest
 }
 ```
 
-For Contributors: Testing paratest itself
--------------
+# For Contributors: Testing paratest itself
 
 ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
 
