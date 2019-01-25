@@ -1,4 +1,4 @@
-# Code coverage
+# Code coverage generation with `paratest`
 `paratest` is able to generate code coverage in multiple output formats:
 ````
  --coverage-clover Generate code coverage report in Clover XML format.
@@ -8,19 +8,21 @@
  --coverage-xml    Generate code coverage report in PHPUnit XML format.
 ````
 
-It uses the corresponding options on the underlying `phpunit` library. `phpunit` itself relies on "external" help
-to get the coverage information (usually either `xdebug` or `phpdbg`). Further, it requires
+It uses the corresponding 
+[code coverage options on the underlying `phpunit` library](https://phpunit.readthedocs.io/en/7.4/code-coverage-analysis.html). 
+`phpunit` itself relies on "external" help
+to get the coverage information (usually either via `xdebug` or `phpdbg`). Further, it requires
 a correctly set-up `phpunit.xml` configuration file (including a `whitelist` filter).
 
 ## Preparing the `phpunit.xml` configuration file
-The configuration file *must* include a `<filter>` element that specifies a `<whitelist>`, see
+The configuration file **must** include a `<filter>` element that specifies a `<whitelist>`, see
 - [Whitelisting Files](https://phpunit.readthedocs.io/en/7.4/code-coverage-analysis.html#whitelisting-files)
 - [Whitelisting Files for Code Coverage](https://phpunit.readthedocs.io/en/7.4/configuration.html#whitelisting-files-for-code-coverage)
 
-*CAUTION: Making a mistake here is very often the reason for failing code coverage reports!*
+**CAUTION: Making a mistake here is very often the reason for failing code coverage reports!**
 
 Example:
-````
+````xml
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.5/phpunit.xsd"
@@ -58,16 +60,16 @@ Zend Engine v3.2.0, Copyright (c) 1998-2018 Zend Technologies
     with Xdebug v2.6.1, Copyright (c) 2002-2018, by Derick Rethans
 ````
 
-If the output is empty, you are either missing the extension completely or have not activated it. See the sections below 
-for troubleshooting and installation help.
+If the output is empty, you are either missing the extension completely or have not [activated](#xdebug-activation) it. See the sections below 
+for troubleshooting and [installation](#xdebug-installation) help.
 
 If `xdebug` is up and running, you can simply use `vendor/bin/paratest --coverage-text` to check if the code coverage generation is 
 working in general. Example for `paratest`s unit test suite:
 
 ````
-bin/paratest -p 1 --coverage-text test/unit
+bin/paratest -p 4 --coverage-text test/unit
 
-Running phpunit in 1 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
+Running phpunit in 4 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
 
 Configuration read from /codebase/paratest/phpunit.xml.dist
 
@@ -75,7 +77,7 @@ Configuration read from /codebase/paratest/phpunit.xml.dist
 ............................................................... 126 / 157 ( 80%)
 .....................................
 
-Time: 27.2 seconds, Memory: 8.00MB
+Time: 12.2 seconds, Memory: 8.00MB
 
 OK (163 tests, 328 assertions)
 
@@ -143,7 +145,7 @@ Code Coverage Report:
 
 ````
 
-If you want to enable [xdebug on premise](#on-premise-activation), it gets a little bit more complicated due to subprocess structure that `paratest` uses.
+If you want to enable [xdebug on premise](#on-premise-activation), it gets a little bit more complicated due to the subprocess structure that `paratest` uses.
 We need to not only invoke `paratest` itself with `xdebug` enabled but need to also tell it to invoke the subprocesses in that way.
 This can can be done with the [`--passthru-php` option](https://github.com/paratestphp/paratest/issues/360).
 
@@ -160,9 +162,9 @@ This will
 
 Example for `paratest`s unit test suite:
 ````
-php '-d' 'zend_extension=/usr/lib/php/20170718/xdebug.so' bin/paratest -p 1 --coverage-text test/unit --passthru-php="'-d' 'zend_extension=/usr/lib/php/20170718/xdebug.so' "
+php '-d' 'zend_extension=/usr/lib/php/20170718/xdebug.so' bin/paratest -p 4 --coverage-text test/unit --passthru-php="'-d' 'zend_extension=/usr/lib/php/20170718/xdebug.so' "
 
-Running phpunit in 1 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
+Running phpunit in 4 processes with /codebase/paratest/vendor/phpunit/phpunit/phpunit
 
 Configuration read from /codebase/paratest/phpunit.xml.dist
 
@@ -170,7 +172,7 @@ Configuration read from /codebase/paratest/phpunit.xml.dist
 ............................................................... 126 / 157 ( 80%)
 .....................................
 
-Time: 22.93 seconds, Memory: 8.00MB
+Time: 8.93 seconds, Memory: 8.00MB
 
 OK (163 tests, 328 assertions)
 
@@ -265,9 +267,12 @@ Note that we restrict xdebugs code coverage now to the `src/Util` directory.
 Then, I run `bin/paratest -p 1 --coverage-text --passthru="'--prepend' 'xdebug-filter.php'" test/unit` to run only the unit tests. 
 Result:
 ````
-bin/paratest -p 1 --coverage-text --passthru="'--prepend' 'xdebug-filter.php'" test/unit
+php -m | grep xdebug
+xdebug
 
-Running phpunit in 1 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
+bin/paratest -p 4 --coverage-text --passthru="'--prepend' 'xdebug-filter.php'" test/unit
+
+Running phpunit in 4 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
 
 Configuration read from /codebase/paratest/phpunit.xml.dist
 
@@ -275,7 +280,7 @@ Configuration read from /codebase/paratest/phpunit.xml.dist
 ............................................................... 126 / 157 ( 80%)
 .....................................
 
-Time: 11.45 seconds, Memory: 4.00MB
+Time: 6.45 seconds, Memory: 4.00MB
 
 OK (163 tests, 328 assertions)
 
@@ -293,6 +298,11 @@ Code Coverage Report:
 ````
 Note that this is *much* faster as before, *but* also only contains coverage for `src/Util`. Usually, we would set the filter to `src`,
 but for the sake of demonstrating the functionality I'm using `src/Util`.
+
+The above example assumes that xdebug is activated. You can also combine this approach with on-premise activation:
+````
+`php '-d' 'zend_extension=/usr/lib/php/20170718/xdebug.so' vendor/bin/paratest --coverage-text --passthru-php="'-d' 'zend_extension=/usr/lib/php/20170718/xdebug.so'" --passthru="'--prepend' 'xdebug-filter.php'"`
+````
 
 ### xdebug installation
 - [Official installation guide](https://xdebug.org/docs/install)
@@ -323,7 +333,7 @@ but for the sake of demonstrating the functionality I'm using `src/Util`.
   ````
   sudo phpenmod xdebug
   ````
-- For Docker:
+- [For Docker](https://www.pascallandau.com/blog/php-php-fpm-and-nginx-on-docker-in-windows-10/#xdebug-php):
   ````
   docker-php-ext-enable xdebug
   ````
@@ -356,15 +366,15 @@ First, check if `phpdbg` is available on your system:
 which phpdbg
 /usr/bin/phpdbg
 ````
-If the result is empty, `phpdbg` is probably missing from your system.
+If the result is empty, `phpdbg` is probably missing from your system. See [phpdbg installation](#phpdbg-installation) for further instructions.
 
 If `phpdbg` is available, you need to invoke paratest e.g. via  `phpdbg -qrr vendor/bin/paratest --coverage-text`.
 Example for `paratest`s unit test suite:
 
 ````
-phpdbg -qrr bin/paratest -p 1 --coverage-text test/unit
+phpdbg -qrr bin/paratest -p 4 --coverage-text test/unit
 
-Running phpunit in 1 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
+Running phpunit in 4 processes with /codebase/paratest/vendor/phpunit/phpunit/phpunit
 
 Configuration read from /codebase/paratest/phpunit.xml.dist
 
@@ -372,7 +382,7 @@ Configuration read from /codebase/paratest/phpunit.xml.dist
 ............................................................... 126 / 157 ( 80%)
 .....................................
 
-Time: 12.67 seconds, Memory: 16.00MB
+Time: 6.67 seconds, Memory: 16.00MB
 
 OK (163 tests, 328 assertions)
 
@@ -466,11 +476,11 @@ Time: 604 ms, Memory: 4.00MB
 OK (5 tests, 5 assertions)
 ````
 
-### Coverage file /tmp/CV_B8u8f3 is empty. Xdebug is disabled! Enable for coverage.
-`paratest` can't find xdebug. Please see [xdebug installation](#xdebug-installation) and [xdebug activation](xdebug-activation)
+### Error: Coverage file /tmp/CV_B8u8f3 is empty. Xdebug is disabled! Enable for coverage.
+`paratest` can't find xdebug. Please see [xdebug installation](#xdebug-installation) and [xdebug activation](#xdebug-activation)
 
-### Coverage file /tmp/CV_ZV3Wdd is empty. This means a PHPUnit process has crashed.
+### Error: Coverage file /tmp/CV_ZV3Wdd is empty. This means a PHPUnit process has crashed.
 Unfortunately, this error is very generic. It just means that _something_ has gone wrong but we basically don't know what.
 Things to check:
 - is your `/tmp` folder writable?
-- check [## Preparing the `phpunit.xml` configuration file](#preparing-the-phpunit-xml-configuration-file)
+- check if your phpunit configuration file is correct (see [Preparing the `phpunit.xml` configuration file](#preparing-the-phpunit-xml-configuration-file))

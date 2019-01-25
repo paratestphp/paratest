@@ -115,7 +115,6 @@ To get the most out of paratest, you have to adjust the parameters carefully.
     Windows has limit around 32k, Linux - 2048k, Mac OS X - 256k.
 
 ### Examples ###
-
 Examples assume your tests are located under `./test/unit`.
 
 ```
@@ -129,6 +128,36 @@ vendor/bin/paratest -p8 test/unit
 vendor/bin/paratest -p8 --runner=WrapperRunner --coverage-html=/tmp/coverage test/unit
 ```
 
+
+### Generating code coverage
+Examples assume your tests are located under `./test/unit`.
+````
+vendor/bin/paratest -p 1 --coverage-text test/unit
+
+Running phpunit in 1 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
+
+Configuration read from /codebase/paratest/phpunit.xml.dist
+
+...............................................................  63 / 155 ( 40%)
+............................................................... 126 / 157 ( 80%)
+.....................................
+
+Time: 27.2 seconds, Memory: 8.00MB
+
+OK (163 tests, 328 assertions)
+
+
+Code Coverage Report:
+  2019-01-25 09:41:26
+
+ Summary:
+  Classes: 22.86% (8/35)
+  Methods: 49.47% (139/281)
+  Lines:   59.38% (896/1509)
+````
+
+**Caution**: Generating coverage is an art in itself. Please refer to our extensive guide on setting up everything correctly for 
+[code coverage generation with `paratest`](docs/code-coverage.md).
 
 ### Windows ###
 
