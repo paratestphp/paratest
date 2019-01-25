@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 /**
- * Class Options.
- *
  * An object containing all configurable information used
- * to run PHPUnit via ParaTest
+ * to run PHPUnit via ParaTest.
  */
 class Options
 {
@@ -115,6 +113,27 @@ class Options
      */
     protected $parallelSuite;
 
+    /**
+     * Strings that gets passed verbatim to the underlying phpunit command.
+     *
+     * @var string|null
+     */
+    protected $passthru;
+
+    /**
+     * Strings that gets passed verbatim to the underlying php process.
+     *
+     * @var string|null
+     */
+    protected $passthruPhp;
+
+    /**
+     * Verbosity. If true, debug output will be printed.
+     *
+     * @var int
+     */
+    protected $verbose;
+
     public function __construct(array $opts = [])
     {
         foreach (self::defaults() as $opt => $value) {
@@ -139,6 +158,9 @@ class Options
         $this->maxBatchSize = (int) $opts['max-batch-size'];
         $this->filter = $opts['filter'];
         $this->parallelSuite = $opts['parallel-suite'];
+        $this->passthru = $opts['passthru'] ?? null;
+        $this->passthruPhp = $opts['passthru-php'] ?? null;
+        $this->verbose = $opts['verbose'] ?? 0;
 
         // we need to register that options if they are blank but do not get them as
         // key with null value in $this->filtered as it will create problems for
@@ -146,11 +168,11 @@ class Options
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
         $this->groups = isset($opts['group']) && $opts['group'] !== ''
-                      ? explode(',', $opts['group'])
-                      : [];
+            ? explode(',', $opts['group'])
+            : [];
         $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ''
-                             ? explode(',', $opts['exclude-group'])
-                             : [];
+            ? explode(',', $opts['exclude-group'])
+            : [];
 
         if (isset($opts['filter']) && \strlen($opts['filter']) > 0 && !$this->functional) {
             throw new \RuntimeException('Option --filter is not implemented for non functional mode');
@@ -206,6 +228,9 @@ class Options
             'max-batch-size' => 0,
             'filter' => null,
             'parallel-suite' => false,
+            'passthru' => null,
+            'passthru-php' => null,
+            'verbose' => 0,
         ];
     }
 
@@ -264,6 +289,9 @@ class Options
             'max-batch-size' => $this->maxBatchSize,
             'filter' => $this->filter,
             'parallel-suite' => $this->parallelSuite,
+            'passthru' => $this->passthru,
+            'passthru-php' => $this->passthruPhp,
+            'verbose' => $this->verbose,
         ]);
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);

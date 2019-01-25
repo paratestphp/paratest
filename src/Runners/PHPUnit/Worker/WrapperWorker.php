@@ -6,11 +6,16 @@ namespace ParaTest\Runners\PHPUnit\Worker;
 
 use Exception;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 
 class WrapperWorker extends BaseWorker
 {
+    /**
+     * @var string[]
+     */
     private $commands = [];
+
     /**
      * @var ExecutableTest
      */
@@ -29,13 +34,17 @@ class WrapperWorker extends BaseWorker
         ++$this->inExecution;
     }
 
-    public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions)
+    public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options)
     {
         if ($this->currentlyExecuting !== null) {
             throw new Exception('Worker already has a test assigned - did you forget to call reset()?');
         }
         $this->currentlyExecuting = $test;
-        $this->execute($test->command($phpunit, $phpunitOptions));
+        $command = $test->command($phpunit, $phpunitOptions, $options->passthru);
+        if ($options->verbose) {
+            echo "\nExecuting test via: $command\n";
+        }
+        $this->execute($command);
     }
 
     public function printFeedback(ResultPrinter $printer)

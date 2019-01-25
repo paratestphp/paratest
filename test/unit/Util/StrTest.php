@@ -9,14 +9,12 @@ use PHPUnit\Framework\TestCase;
 class StrTest extends TestCase
 {
     /**
-     * @test
-     *
      * @param string $delimiter
      * @param string $valueString
      * @param array  $expected
      * @dataProvider explodeWithCleanup_dataProvider
      */
-    public function explodeWithCleanup(string $delimiter, string $valueString, array $expected)
+    public function testExplodeWithCleanup(string $delimiter, string $valueString, array $expected)
     {
         $actual = Str::explodeWithCleanup($delimiter, $valueString);
         $actual = array_values($actual);

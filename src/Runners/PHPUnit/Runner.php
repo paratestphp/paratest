@@ -73,7 +73,7 @@ class Runner extends BaseRunner
             if ($tokenData !== false) {
                 $this->acquireToken($tokenData['token']);
                 $env = ['TEST_TOKEN' => $tokenData['token'], 'UNIQUE_TEST_TOKEN' => $tokenData['unique']] + Habitat::getAll();
-                $this->running[$tokenData['token']] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env);
+                $this->running[$tokenData['token']] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
             }
         }
     }
