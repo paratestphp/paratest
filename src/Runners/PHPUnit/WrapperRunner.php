@@ -70,12 +70,21 @@ class WrapperRunner extends BaseRunner
         // $phpunitOptions['no-globals-backup'] = null;  // removed in phpunit 6.0
         while (\count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
-            foreach ($this->progressedWorkers() as $worker) {
+            foreach ($this->progressedWorkers() as $key => $worker) {
                 if ($worker->isFree()) {
-                    $this->flushWorker($worker);
-                    $pending = array_shift($this->pending);
-                    if ($pending) {
-                        $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
+                    try {
+                        $this->flushWorker($worker);
+                        $pending = array_shift($this->pending);
+                        if ($pending) {
+                            $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
+                        }
+                    } catch (\Exception $e) {
+                        if ($this->options->verbose) {
+                            $worker->stop();
+                            echo "Error while assigning pending tests for worker $key: {$e->getMessage()}" . PHP_EOL;
+                            echo $worker->getCrashReport();
+                        }
+                        throw $e;
                     }
                 }
             }
@@ -96,9 +105,19 @@ class WrapperRunner extends BaseRunner
             $toCheck = $this->streamsOf($toStop);
             $new = $this->waitForStreamsToChange($toCheck);
             foreach ($this->progressedWorkers() as $index => $worker) {
-                if (!$worker->isRunning()) {
-                    $this->flushWorker($worker);
-                    unset($toStop[$index]);
+                try {
+                    if (!$worker->isRunning()) {
+                        $this->flushWorker($worker);
+                        unset($toStop[$index]);
+                    }
+                } catch (\Exception $e) {
+                    if ($this->options->verbose) {
+                        $worker->stop();
+                        unset($toStop[$index]);
+                        echo "Error while waiting to finish for worker $index: {$e->getMessage()}" . PHP_EOL;
+                        echo $worker->getCrashReport();
+                    }
+                    throw $e;
                 }
             }
         }

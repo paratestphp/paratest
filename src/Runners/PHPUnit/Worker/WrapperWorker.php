@@ -44,6 +44,7 @@ class WrapperWorker extends BaseWorker
         if ($options->verbose) {
             echo "\nExecuting test via: $command\n";
         }
+        $test->setLastCommand($command);
         $this->execute($command);
     }
 
