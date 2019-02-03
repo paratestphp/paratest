@@ -11,7 +11,7 @@ class LogInterpreterTest extends ResultTester
 {
     protected $interpreter;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->interpreter = new LogInterpreter();
@@ -126,8 +126,8 @@ class LogInterpreterTest extends ResultTester
         $cases = $interpreter->getCases();
         $this->assertCount(10, $cases);
         foreach ($cases as $name => $case) {
-            $this->assertAttributeNotEmpty('class', $case);
-            $this->assertAttributeNotEmpty('file', $case);
+            $this->assertNotNull($case->class);
+            $this->assertNotNull($case->file);
             if ($case->name === 'testNumericDataProvider5 with data set #3') {
                 $this->assertEquals($case->class, 'DataProviderTest1');
             } elseif ($case->name === 'testNamedDataProvider5 with data set #3') {

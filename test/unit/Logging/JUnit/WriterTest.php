@@ -14,7 +14,7 @@ class WriterTest extends \TestBase
     protected $interpreter;
     protected $passing;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->interpreter = new LogInterpreter();
         $this->writer = new Writer($this->interpreter, 'test/fixtures/tests/');
@@ -86,6 +86,6 @@ class WriterTest extends \TestBase
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml = $writer->getXml();
 
-        $this->assertNotContains('line=""', $xml, 'Expected no empty line attributes (line=""), but found one.');
+        $this->assertStringNotContainsString('line=""', $xml, 'Expected no empty line attributes (line=""), but found one.');
     }
 }

@@ -19,21 +19,19 @@ class SuiteLoaderTest extends \TestBase
         $this->assertNull($this->getObjectValue($loader, 'options'));
     }
 
-    /**
-     * @expectedException   \InvalidArgumentException
-     */
     public function testLoadThrowsExceptionWithInvalidPath()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $loader = new SuiteLoader();
         $loader->load('/path/to/nowhere');
     }
 
-    /**
-     * @expectedException   \RuntimeException
-     * @expectedExceptionMessage No path or configuration provided (tests must end with Test.php)
-     */
     public function testLoadBarePathWithNoPathAndNoConfiguration()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('No path or configuration provided (tests must end with Test.php)');
+
         $loader = new SuiteLoader();
         $loader->load();
     }
@@ -187,12 +185,11 @@ class SuiteLoaderTest extends \TestBase
         $this->assertCount($expected, $files);
     }
 
-    /**
-     * @expectedException   \RuntimeException
-     * @expectedExceptionMessage Suite path ./nope/ could not be found
-     */
     public function testLoadSuiteFromConfigWithBadSuitePath()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Suite path ./nope/ could not be found');
+
         $options = new Options(['configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml')]);
         $loader = new SuiteLoader($options);
         $loader->load();

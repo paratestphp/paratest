@@ -29,7 +29,7 @@ class VersionProviderTest extends TestCase
     {
         $provider = new VersionProvider();
         $actual = $provider->getComposerInstalledVersion('phpunit/phpunit');
-        $this->assertInternalType('string', $actual, 'Version of phpunit package was found installed');
+        $this->assertIsString($actual, 'Version of phpunit package was found installed');
 
         // dev-master is included here as the phpunit package is checked and there is a dev-master used on travis
         $this->assertRegExp("~^dev-master|\d.\d.(.)+$~", $actual, 'Actual version number');
@@ -42,7 +42,7 @@ class VersionProviderTest extends TestCase
     {
         $provider = new VersionProvider();
         $actual = $provider->getGitVersion();
-        $this->assertInternalType('string', $actual, 'Git is enabled and works');
+        $this->assertIsString($actual, 'Git is enabled and works');
         $this->assertRegExp("~^\d.\d(?:.\d+)?(?:-\d+-g[\da-f]+)?$~", $actual, 'Git gives a version');
     }
 }

@@ -9,7 +9,7 @@ class ParsedClassTest extends \TestBase
     protected $class;
     protected $methods;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->methods = [
             new ParsedFunction(

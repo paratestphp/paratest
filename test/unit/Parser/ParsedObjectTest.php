@@ -8,7 +8,7 @@ class ParsedObjectTest extends \TestBase
 {
     protected $parsedClass;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->parsedClass = new ParsedClass("/**\n * @test\n @group group1\n*\/", 'MyClass', 'My\\Name\\Space');
     }

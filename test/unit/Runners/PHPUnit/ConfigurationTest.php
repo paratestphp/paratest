@@ -15,7 +15,7 @@ class ConfigurationTest extends \TestBase
      */
     protected $config;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->path = realpath(PARATEST_ROOT . '/phpunit.xml.dist');
         $this->config = new Configuration($this->path);
@@ -74,13 +74,13 @@ class ConfigurationTest extends \TestBase
     {
         $basePath = getcwd() . DS;
         $unitSuite = $suites['ParaTest Unit Tests'];
-        $this->assertInternalType('array', $unitSuite);
+        $this->assertIsArray($unitSuite);
         $this->assertCount(1, $unitSuite);
         $unitSuitePath = $unitSuite[0];
         $this->assertInstanceOf(SuitePath::class, $unitSuitePath);
         $this->assertEquals($basePath . 'test' . DS . 'unit', $unitSuitePath->getPath());
         $functionalSuite = $suites['ParaTest Functional Tests'];
-        $this->assertInternalType('array', $functionalSuite);
+        $this->assertIsArray($functionalSuite);
         $this->assertCount(1, $functionalSuite);
         $functionalSuitePath = $functionalSuite[0];
         $this->assertInstanceOf(SuitePath::class, $functionalSuitePath);

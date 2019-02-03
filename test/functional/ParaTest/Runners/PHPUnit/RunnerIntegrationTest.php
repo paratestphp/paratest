@@ -13,7 +13,7 @@ class RunnerIntegrationTest extends \TestBase
     /** @var array */
     protected $options;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->skipIfCodeCoverageNotEnabled();
 
@@ -29,7 +29,7 @@ class RunnerIntegrationTest extends \TestBase
         $this->runner = new Runner($this->options);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $testcoverageFile = sys_get_temp_dir() . DS . 'testcoverage.php';
         if (file_exists($testcoverageFile)) {

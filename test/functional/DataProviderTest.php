@@ -7,7 +7,7 @@ class DataProviderTest extends FunctionalTestBase
     /** @var ParatestInvoker */
     private $invoker;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->invoker = new ParaTestInvoker(

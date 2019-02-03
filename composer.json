@@ -8,10 +8,10 @@
         "brianium/habitat": "1.0.0",
         "composer/semver": "~1.2",
         "phpunit/php-timer": "^2.0",
-        "phpunit/phpunit": "^7.0",
+        "phpunit/phpunit": "^8.0",
         "symfony/console": "^3.4|^4.0",
         "symfony/process": "^3.4|^4.0",
-        "phpunit/php-code-coverage": "^6.0"
+        "phpunit/php-code-coverage": "^7.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.3.2"

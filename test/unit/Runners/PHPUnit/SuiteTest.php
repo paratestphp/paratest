@@ -8,7 +8,7 @@ class SuiteTest extends \TestBase
 {
     protected $suite;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->suite = new Suite('/path/to/UnitTest.php', []);
     }

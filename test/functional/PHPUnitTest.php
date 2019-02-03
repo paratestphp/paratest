@@ -74,7 +74,7 @@ class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'colors']);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '[30;42m[2KOK',
             $proc->getOutput()
         );
@@ -84,7 +84,7 @@ class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest('failing-tests/UnitTestWithErrorTest.php',
             ['bootstrap' => BOOTSTRAP, 'colors']);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '[37;41m[2KFAILURES',
             $proc->getOutput()
         );
@@ -258,8 +258,8 @@ class PHPUnitTest extends FunctionalTestBase
             'p' => '1',
         ]);
         $results = $proc->getOutput();
-        $this->assertContains('Tests: 2,', $results);     // The suite actually has 4 tests
-        $this->assertContains('Failures: 1,', $results);  // The suite actually has 2 failing tests
+        $this->assertStringContainsString('Tests: 2,', $results);     // The suite actually has 4 tests
+        $this->assertStringContainsString('Failures: 1,', $results);  // The suite actually has 2 failing tests
     }
 
     public function testFullyConfiguredRun()

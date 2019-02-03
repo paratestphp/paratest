@@ -25,7 +25,7 @@ class ResultPrinterTest extends ResultTester
      */
     protected $passingSuiteWithWrongTestCountEstimation;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->interpreter = new LogInterpreter();

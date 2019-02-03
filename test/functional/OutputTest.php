@@ -9,7 +9,7 @@ class OutputTest extends FunctionalTestBase
      */
     protected $paratest;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->paratest = new ParaTestInvoker(
@@ -21,8 +21,8 @@ class OutputTest extends FunctionalTestBase
     public function testDefaultMessagesDisplayed()
     {
         $output = $this->paratest->execute(['p' => 5])->getOutput();
-        $this->assertContains('Running phpunit in 5 processes with ' . PHPUNIT, $output);
-        $this->assertContains('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
+        $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        $this->assertStringContainsString('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 
@@ -32,7 +32,7 @@ class OutputTest extends FunctionalTestBase
             ->execute(['configuration' => 'nope.xml'])
             ->getOutput()
         ;
-        $this->assertContains('Could not read "nope.xml"', $output);
+        $this->assertStringContainsString('Could not read "nope.xml"', $output);
     }
 
     public function testMessagePrintedWhenFunctionalModeIsOn()
@@ -41,8 +41,8 @@ class OutputTest extends FunctionalTestBase
             ->execute(['functional', 'p' => 5])
             ->getOutput()
         ;
-        $this->assertContains('Running phpunit in 5 processes with ' . PHPUNIT, $output);
-        $this->assertContains('Functional mode is ON.', $output);
+        $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        $this->assertStringContainsString('Functional mode is ON.', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 
@@ -51,7 +51,7 @@ class OutputTest extends FunctionalTestBase
         $output = $this->paratest->execute(['p' => 1])
             ->getOutput()
         ;
-        $this->assertContains('Running phpunit in 1 process with ' . PHPUNIT, $output);
+        $this->assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }
 }

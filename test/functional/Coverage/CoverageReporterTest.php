@@ -17,7 +17,7 @@ class CoverageReporterTest extends TestBase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class CoverageReporterTest extends TestBase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->removeDirectory($this->targetDir);
 

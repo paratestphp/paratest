@@ -15,14 +15,14 @@ class WorkerTest extends \TestBase
        2 => ['pipe', 'w'],
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->bootstrap = PARATEST_ROOT . '/test/bootstrap.php';
         $this->phpunitWrapper = PARATEST_ROOT . '/bin/phpunit-wrapper';
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->deleteIfExists('/tmp/test.xml');
         $this->deleteIfExists('/tmp/test2.xml');
