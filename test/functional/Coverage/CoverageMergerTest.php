@@ -130,7 +130,7 @@ class CoverageMergerTest extends TestBase
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile(null);
 
-        static::assertAttributeSame(null, 'coverage', $coverageMerger, 'No code coverage object was created');
+        $this->assertNull($coverageMerger->getCodeCoverageObject());
     }
 
     public function testCoverageFileDoesNotExist()
@@ -138,7 +138,7 @@ class CoverageMergerTest extends TestBase
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile('no-such-file.cov');
 
-        static::assertAttributeSame(null, 'coverage', $coverageMerger, 'No code coverage object was created');
+        $this->assertNull($coverageMerger->getCodeCoverageObject());
     }
 
     /**

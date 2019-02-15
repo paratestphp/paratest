@@ -146,7 +146,7 @@ class PHPUnit extends Tester
             $options = array_merge(['path' => $path], $options);
         }
 
-        if (array_key_exists('testsuite', $options)) {
+        if (\array_key_exists('testsuite', $options)) {
             $options['testsuite'] = Str::explodeWithCleanup(Configuration::TEST_SUITE_FILTER_SEPARATOR, $options['testsuite']);
         }
 

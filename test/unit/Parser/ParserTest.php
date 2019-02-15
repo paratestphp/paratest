@@ -6,7 +6,6 @@ namespace ParaTest\Parser;
 
 class ParserTest extends \TestBase
 {
-
     public function testConstructorThrowsExceptionIfFileNotFound()
     {
         $this->expectException(\InvalidArgumentException::class);
