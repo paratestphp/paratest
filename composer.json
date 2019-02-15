@@ -11,7 +11,7 @@
         "phpunit/phpunit": "^8.0",
         "symfony/console": "^3.4|^4.0",
         "symfony/process": "^3.4|^4.0",
-        "phpunit/php-code-coverage": "^7.0"
+        "phpunit/php-code-coverage": "^7.0.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.3.2"
