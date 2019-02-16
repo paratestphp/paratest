@@ -16,6 +16,13 @@ matrix:
       env:
         - PHPUNIT_DEV=true
     - php: 7.2
+    - php: 7.3
+      env:
+        - DEPS=lowest
+    - php: 7.3
+      env:
+        - PHPUNIT_DEV=true
+    - php: 7.3
     - php: nightly
   allow_failures:
     - php: nightly
