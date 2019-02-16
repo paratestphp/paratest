@@ -13,7 +13,7 @@ class ReaderTest extends \TestBase
     protected $single;
     protected $empty;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->mixedPath = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
         $single = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
@@ -23,11 +23,10 @@ class ReaderTest extends \TestBase
         $this->empty = new Reader($empty);
     }
 
-    /**
-     * @expectedException   \InvalidArgumentException
-     */
     public function testInvalidPathThrowsException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $reader = new Reader('/path/to/nowhere');
     }
 

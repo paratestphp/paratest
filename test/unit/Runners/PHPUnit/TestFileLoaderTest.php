@@ -22,11 +22,10 @@ class TestFileLoaderTest extends \TestBase
         $this->assertNull($this->getObjectValue($testFileLoader, 'options'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testLoadThrowsExceptionWithInvalidPath()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $testFileLoader = new TestFileLoader();
         $testFileLoader->loadPath('path/to/nowhere');
     }

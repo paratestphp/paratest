@@ -84,4 +84,14 @@ class CoverageMerger
     {
         return new CoverageReporter($this->coverage);
     }
+
+    /**
+     * Get CodeCoverage object.
+     *
+     * @return CodeCoverage
+     */
+    public function getCodeCoverageObject(): ?CodeCoverage
+    {
+        return $this->coverage;
+    }
 }

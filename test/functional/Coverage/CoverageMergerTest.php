@@ -17,7 +17,7 @@ class CoverageMergerTest extends TestBase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class CoverageMergerTest extends TestBase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->removeDirectory($this->targetDir);
 
@@ -115,12 +115,10 @@ class CoverageMergerTest extends TestBase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessageRegExp /Coverage file .*? is empty. This means a PHPUnit process has crashed./
-     */
     public function testCoverageFileIsEmpty()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageRegExp('/Coverage file .*? is empty. This means a PHPUnit process has crashed./');
         $filename = $this->copyCoverageFile('coverage-tests/empty_test.cov', $this->targetDir);
 
         $coverageMerger = new CoverageMerger();
@@ -132,7 +130,7 @@ class CoverageMergerTest extends TestBase
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile(null);
 
-        static::assertAttributeSame(null, 'coverage', $coverageMerger, 'No code coverage object was created');
+        $this->assertNull($coverageMerger->getCodeCoverageObject());
     }
 
     public function testCoverageFileDoesNotExist()
@@ -140,7 +138,7 @@ class CoverageMergerTest extends TestBase
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile('no-such-file.cov');
 
-        static::assertAttributeSame(null, 'coverage', $coverageMerger, 'No code coverage object was created');
+        $this->assertNull($coverageMerger->getCodeCoverageObject());
     }
 
     /**

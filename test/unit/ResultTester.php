@@ -16,7 +16,7 @@ abstract class ResultTester extends \TestBase
     protected $passingSuite;
     protected $dataProviderSuite;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->errorSuite = $this->getSuiteWithResult('single-werror.xml', 1);
         $this->otherErrorSuite = $this->getSuiteWithResult('single-werror2.xml', 1);

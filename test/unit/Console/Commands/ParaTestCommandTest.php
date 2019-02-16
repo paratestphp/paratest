@@ -17,7 +17,7 @@ class ParaTestCommandTest extends \TestBase
     protected $tester;
     protected $command;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->tester = new PHPUnit();
         $this->command = new ParaTestCommand($this->tester);

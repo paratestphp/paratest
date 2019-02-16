@@ -6,19 +6,17 @@ namespace ParaTest\Parser;
 
 class ParserTest extends \TestBase
 {
-    /**
-     * @expectedException   \InvalidArgumentException
-     */
     public function testConstructorThrowsExceptionIfFileNotFound()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $parser = new Parser('/path/to/nowhere');
     }
 
-    /**
-     * @expectedException  \ParaTest\Parser\NoClassInFileException
-     */
     public function testConstructorThrowsExceptionIfClassNotFoundInFile()
     {
+        $this->expectException(\ParaTest\Parser\NoClassInFileException::class);
+
         $fileWithoutAClass = FIXTURES . DS . 'chdirBootstrap.php';
         $parser = new Parser($fileWithoutAClass);
     }

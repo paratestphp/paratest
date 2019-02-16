@@ -24,7 +24,7 @@ class GetClassTest extends \TestBase
     public function testParsedAnonymousClassNameHasNoNullByte()
     {
         $class = $this->parseFile($this->fixture('failing-tests/AnonymousClass.inc'));
-        $this->assertNotContains("\x00", $class->getName());
+        $this->assertStringNotContainsString("\x00", $class->getName());
     }
 
     public function testParsedClassHasDocBlock()

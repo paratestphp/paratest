@@ -12,7 +12,7 @@ class RunnerTest extends \TestBase
     protected $files;
     protected $testDir;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->runner = new Runner();
     }

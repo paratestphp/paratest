@@ -9,7 +9,7 @@ class OptionsTest extends \TestBase
     protected $options;
     protected $unfiltered;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->unfiltered = [
             'processes' => 5,

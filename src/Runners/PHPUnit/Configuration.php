@@ -155,7 +155,7 @@ class Configuration
                             // Replicate behaviour of PHPUnit
                             // if a directory is included and excluded at the same time, then it is considered included
                             foreach ($this->getSuitePaths((string) $nodeContent) as $dir) {
-                                if (array_key_exists($dir, $excludedPaths)) {
+                                if (\array_key_exists($dir, $excludedPaths)) {
                                     unset($excludedPaths[$dir]);
                                 }
                             }

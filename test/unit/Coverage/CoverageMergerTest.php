@@ -9,7 +9,7 @@ use SebastianBergmann\CodeCoverage\Filter;
 
 class CoverageMergerTest extends \TestBase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->skipIfCodeCoverageNotEnabled();
     }

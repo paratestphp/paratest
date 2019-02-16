@@ -148,7 +148,7 @@ class TestFileLoader
         if (preg_match($pattern, $path)) {
             if ($this->excludingFiles) {
                 $this->excludedFiles[$path] = $path;
-            } elseif (!array_key_exists($path, $this->excludedFiles)) {
+            } elseif (!\array_key_exists($path, $this->excludedFiles)) {
                 $this->files[] = $path;
             }
         }
