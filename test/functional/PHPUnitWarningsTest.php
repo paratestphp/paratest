@@ -11,16 +11,15 @@ class PHPUnitWarningsTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'warning-tests/HasWarningsTest.php',
-            ['bootstrap' => BOOTSTRAP]
+            [
+                'bootstrap' => BOOTSTRAP,
+                'configuration' => FIXTURES . DS . 'warning-tests' . DS . 'phpunit.xml.dist',
+            ]
         );
 
         $output = $proc->getOutput();
 
-        $this->assertTrue(version_compare(PHPUnit\Runner\Version::id(), '6.0.0', '>='), 'Expected phpunit 6.0.0+');
-        // PHPUnit 5.1+ Changed how it handles test warnings (not E_WARNINGS)
-        // PHPUnit 6.0 changed it back to non-zero exit code : https://github.com/sebastianbergmann/phpunit/issues/2446
-        // TODO: Does this have any consequences for paratest?
         $this->assertStringContainsString('Warnings', $output, 'Test should output warnings');
-        $this->assertEquals(1, $proc->getExitCode(), 'Test suite should succeed with 0');
+        $this->assertEquals(1, $proc->getExitCode(), 'Test suite should fail with 1');
     }
 }
