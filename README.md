@@ -24,9 +24,12 @@ To install with composer run the following command:
     composer require --dev brianium/paratest
     
 # Versions
-For PHPUnit >= 7: Please use Paratest v2+
 
-For PHPUnit <= 6: Please use Paratest v1.
+| PHPUnit Version  | Corresponding Paratest Version |
+| ------------- | ------------- |
+| <= 6 | 1 |
+| 7 | 2 |
+| 8 | 3 |
 
 # Usage
 
