@@ -27,9 +27,9 @@ To install with composer run the following command:
 
 | PHPUnit Version  | Corresponding Paratest Version |
 | ------------- | ------------- |
-| <= 6 | 1 |
-| 7 | 2 |
-| 8 | 3 |
+| <= 6.* | 1.* |
+| 7.* | 2.* |
+| 8.* | 3.* |
 
 # Usage
 
