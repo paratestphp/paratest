@@ -48,7 +48,7 @@ Options:
                              - Integer (>= 1): Number of processes to run.
                              - auto (default): Number of processes is automatically set to the number of logical CPU cores.
                              - half: Number of processes is automatically set to half the number of logical CPU cores.
- --functional (-f)           Run methods instead of suites in separate processes.
+ --functional (-f)           Run test methods instead of classes in separate processes.
  --no-test-tokens            Disable TEST_TOKEN environment variables. (Default: Variable is set)
  --help (-h)                 Display this help message.
  --coverage-clover           Generate code coverage report in Clover XML format.

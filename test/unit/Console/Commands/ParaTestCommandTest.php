@@ -37,7 +37,7 @@ class ParaTestCommandTest extends \TestBase
     {
         $options = [
             new InputOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 'auto'),
-            new InputOption('functional', 'f', InputOption::VALUE_NONE, 'Run methods instead of suites in separate processes.'),
+            new InputOption('functional', 'f', InputOption::VALUE_NONE, 'Run test methods instead of classes in separate processes.'),
             new InputOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.'),
             new InputOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'),
             new InputOption('runner', null, InputOption::VALUE_REQUIRED, 'Runner, WrapperRunner or SqliteRunner. <comment>(default: Runner)</comment>'),
