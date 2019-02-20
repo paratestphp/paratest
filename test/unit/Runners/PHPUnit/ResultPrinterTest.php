@@ -158,7 +158,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertRegExp(
             "/\n\nTime: [0-9]+([.][0-9]{1,2})? " .
             '(minute|minutes|second|seconds|ms)?,' .
-            " Memory:[\s][0-9]+([.][0-9]{1,2})?M[Bb]\n\n/",
+            " Memory:[\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
             $header
         );
     }
