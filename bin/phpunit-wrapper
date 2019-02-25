@@ -1,13 +1,19 @@
 <?php
 echo "Worker starting\n";
 
-// git working copy
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-}
-// Composer installation
-if (file_exists(__DIR__ . '/../../../autoload.php')) {
-    require_once __DIR__ . '/../../../autoload.php';
+$composerAutoloadFiles = [
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../vendor/autoload.php'
+];
+
+foreach ($composerAutoloadFiles as $file) {
+    if (file_exists($file)) {
+        require_once $file;
+        define('PHPUNIT_COMPOSER_INSTALL', $file);
+
+        break;
+    }
 }
 
 $commands = fopen('php://stdin', 'r');
