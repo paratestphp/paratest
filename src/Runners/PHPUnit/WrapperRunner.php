@@ -59,6 +59,7 @@ class WrapperRunner extends BaseRunner
             }
             $worker->start($wrapper, $token, $uniqueToken, [], $this->options);
             $this->streams[] = $worker->stdout();
+            $this->modified[] = $worker->stdout();
             $this->workers[] = $worker;
         }
     }
@@ -69,7 +70,6 @@ class WrapperRunner extends BaseRunner
         $phpunitOptions = $this->options->filtered;
         // $phpunitOptions['no-globals-backup'] = null;  // removed in phpunit 6.0
         while (\count($this->pending)) {
-            $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $key => $worker) {
                 if ($worker->isFree()) {
                     try {
@@ -88,6 +88,7 @@ class WrapperRunner extends BaseRunner
                     }
                 }
             }
+            $this->waitForStreamsToChange($this->streams);
         }
     }
 

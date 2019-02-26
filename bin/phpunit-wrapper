@@ -1,5 +1,4 @@
 <?php
-echo "Worker starting\n";
 
 // git working copy
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
@@ -40,7 +39,6 @@ while (true) {
         echo "EXITED\n";
         exit($lastExitCode);
     }
-    echo "Executing: $command\n";
 
     $info = [];
     $info[] = "Time: ".(new \DateTime())->format(DateTime::RFC3339);
