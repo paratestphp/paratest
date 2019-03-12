@@ -144,7 +144,7 @@ class Parser
         foreach ($classes as $className) {
             $class = new \ReflectionClass($className);
             if ($class->getFileName() === $filename) {
-                if ($class->isSubclassOf('PHPUnit\Framework\TestCase')) {
+                if ($class->isSubclassOf('PHPUnit\Framework\TestCase') || $class->isSubclassOf('PHPUnit\Framework\TestSuite')) {
                     if ($this->classNameMatchesFileName($filename, $className)) {
                         return $className;
                     } elseif ($matchingClassName === null) {
