@@ -25,6 +25,12 @@ if (!$found) {
     );
 }
 
+if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
+    echo PHP_EOL . 'ParaTest may only be invoked from a command line, got "' . PHP_SAPI . '"' . PHP_EOL;
+
+    exit(1);
+}
+
 #use ParaTest\UI\Text\PHPUnitTextUI;
 
 #PHPUnitTextUI::main();

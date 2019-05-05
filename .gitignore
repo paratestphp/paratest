@@ -1,6 +1,5 @@
 parallelunit.sublime-workspace
 parallelunit.sublime-project
-:
 chromedriver.log
 vendor
 composer.lock
@@ -11,3 +10,4 @@ nbproject
 .php_cs
 .php_cs.cache
 .phpunit.result.cache
+bin/paratest.phar

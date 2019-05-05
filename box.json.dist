@@ -1,9 +1,7 @@
 {
-    "alias": "paratest.phar",
-    "chmod": "0755",
     "compactors": [
-        "Herrera\\Box\\Compactor\\Json",
-        "Herrera\\Box\\Compactor\\Php"
+        "KevinGH\\Box\\Compactor\\Json",
+        "KevinGH\\Box\\Compactor\\Php"
     ],
     "directories": [
         "src"
@@ -20,8 +18,5 @@
     "files": [
         "LICENSE"
     ],
-    "git-version": "git-version",
-    "main": "bin/paratest",
-    "output": "paratest-@git-version@.phar",
-    "stub": true
+    "git-version": "git-version"
 }
