@@ -31,7 +31,7 @@ install:
   - if [[ $CS_CHECK == 'true' ]]; then phpenv config-rm xdebug.ini || return 0; else composer remove --dev --no-update --no-scripts friendsofphp/php-cs-fixer; fi;
   - if [[ $PHPUNIT_DEV == 'true' ]]; then composer require --no-update phpunit/phpunit=*@dev; fi;
   - if [[ $DEPS == 'lowest' ]]; then COMPOSER_ARGS='--prefer-lowest --prefer-stable'; fi; composer update --no-interaction --prefer-dist $COMPOSER_ARGS
-  - if [[ $BUILD_PHAR == 'true' ]]; then wget https://github.com/humbug/box/releases/download/3.7.0/box.phar fi;
+  - if [[ $BUILD_PHAR == 'true' ]]; then wget https://github.com/humbug/box/releases/download/3.7.0/box.phar; fi;
 
 script:
   - if [[ $CS_CHECK == 'true' ]]; then vendor/bin/php-cs-fixer fix --diff --dry-run --verbose; fi;
