@@ -295,6 +295,16 @@ abstract class ExecutableTest
     }
 
     /**
+     * Get process stdout incremental content.
+     *
+     * @return string
+     */
+    public function getIncrementalOutput(): string
+    {
+        return $this->process->getIncrementalOutput();
+    }
+
+    /**
      * Set process temporary filename.
      *
      * @param string $temp
