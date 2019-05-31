@@ -119,7 +119,7 @@ class Runner extends BaseRunner
             if (!$errorOutput) {
                 $errorOutput = $test->getStdout();
             }
-            throw new \Exception($errorOutput);
+            throw new \Exception(sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
         }
         $this->printer->printFeedback($test);
         if ($this->hasCoverage()) {
