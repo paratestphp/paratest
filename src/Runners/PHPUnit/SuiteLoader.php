@@ -145,7 +145,10 @@ class SuiteLoader
                 try {
                     $parser = new Parser($path);
                     if ($class = $parser->getClass()) {
-                        $this->loadedSuites[$path] = $this->createSuite($path, $class);
+                        $suite = $this->createSuite($path, $class);
+                        if (\count($suite->getFunctions()) > 0) {
+                            $this->loadedSuites[$path] = $suite;
+                        }
                     }
                 } catch (NoClassInFileException $e) {
                     continue;
@@ -240,7 +243,7 @@ class SuiteLoader
     {
         $result = [];
 
-        $groups = $this->methodGroups($method);
+        $groups = $this->testGroups($class, $method);
 
         $dataProvider = $this->methodDataProvider($method);
         if ($useDataProvider && isset($dataProvider)) {
@@ -308,6 +311,14 @@ class SuiteLoader
         return $result;
     }
 
+    protected function testGroups(ParsedClass $class, ParsedFunction $method)
+    {
+        return array_merge(
+            $this->classGroups($class),
+            $this->methodGroups($method)
+        );
+    }
+
     protected function methodDataProvider(ParsedFunction $method)
     {
         if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
@@ -325,6 +336,15 @@ class SuiteLoader
     protected function methodGroups(ParsedFunction $method)
     {
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+            return $matches[1];
+        }
+
+        return [];
+    }
+
+    protected function classGroups(ParsedClass $class)
+    {
+        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $class->getDocBlock(), $matches)) {
             return $matches[1];
         }
 

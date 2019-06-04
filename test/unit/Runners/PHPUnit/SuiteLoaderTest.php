@@ -285,6 +285,27 @@ class SuiteLoaderTest extends \TestBase
         $this->assertEquals('testFalsehood', $methods[1]->getName());
     }
 
+    public function testGetTestMethodsOnlyReturnsMethodsOfClassGroup()
+    {
+        $options = new Options(['group' => 'group4']);
+        $loader = new SuiteLoader($options);
+        $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
+        $loader->load($groupsTest);
+        $methods = $loader->getTestMethods();
+        $this->assertCount(1, $loader->getSuites());
+        $this->assertCount(5, $methods);
+    }
+
+    public function testGetSuitesForNonMatchingGroups()
+    {
+        $options = new Options(['group' => 'non-existent']);
+        $loader = new SuiteLoader($options);
+        $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
+        $loader->load($groupsTest);
+        $this->assertCount(0, $loader->getSuites());
+        $this->assertCount(0, $loader->getTestMethods());
+    }
+
     public function testLoadIgnoresFilesWithoutClasses()
     {
         $loader = new SuiteLoader();

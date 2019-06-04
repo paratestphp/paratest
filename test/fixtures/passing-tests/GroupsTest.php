@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @group group4
+ */
 class GroupsTest extends PHPUnit\FrameWork\TestCase
 {
     /**
