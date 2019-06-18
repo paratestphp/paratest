@@ -134,6 +134,14 @@ class Options
      */
     protected $verbose;
 
+    /**
+     * Limit the number of tests recorded in coverage reports
+     * to avoid them growing too big.
+     *
+     * @var int
+     */
+    protected $coverageTestLimit;
+
     public function __construct(array $opts = [])
     {
         foreach (self::defaults() as $opt => $value) {
@@ -161,6 +169,7 @@ class Options
         $this->passthru = $opts['passthru'] ?? null;
         $this->passthruPhp = $opts['passthru-php'] ?? null;
         $this->verbose = $opts['verbose'] ?? 0;
+        $this->coverageTestLimit = $opts['coverage-test-limit'] ?? 0;
 
         // we need to register that options if they are blank but do not get them as
         // key with null value in $this->filtered as it will create problems for
@@ -231,6 +240,7 @@ class Options
             'passthru' => null,
             'passthru-php' => null,
             'verbose' => 0,
+            'coverage-test-limit' => 0
         ];
     }
 
@@ -292,6 +302,7 @@ class Options
             'passthru' => $this->passthru,
             'passthru-php' => $this->passthruPhp,
             'verbose' => $this->verbose,
+            'coverage-test-limit' => $this->coverageTestLimit
         ]);
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
