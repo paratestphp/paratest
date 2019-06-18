@@ -159,7 +159,7 @@ abstract class BaseRunner
         if (!isset($this->options->filtered['coverage-php'])) {
             return;
         }
-        $this->coverage = new CoverageMerger();
+        $this->coverage = new CoverageMerger((int)$this->options->coverageTestLimit);
     }
 
     /**
