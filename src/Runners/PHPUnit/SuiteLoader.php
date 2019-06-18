@@ -87,7 +87,7 @@ class SuiteLoader
      *
      * @throws \RuntimeException
      */
-    public function load(string $path = '')
+    public function load(string $path = ''): void
     {
         if ($path) {
             $testFileLoader = new TestFileLoader($this->options);
@@ -134,7 +134,7 @@ class SuiteLoader
      * Called after all files are loaded. Parses loaded files into
      * ExecutableTest objects - either Suite or TestMethod or FullSuite.
      */
-    protected function initSuites()
+    protected function initSuites(): void
     {
         if (\is_array($this->suitesName)) {
             foreach ($this->suitesName as $suiteName) {
@@ -157,7 +157,7 @@ class SuiteLoader
         }
     }
 
-    protected function executableTests(string $path, ParsedClass $class)
+    protected function executableTests(string $path, ParsedClass $class): array
     {
         $executableTests = [];
         $methodBatches = $this->getMethodBatches($class);
@@ -185,7 +185,7 @@ class SuiteLoader
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
         $batches = [];
         foreach ($classMethods as $method) {
-            $tests = $this->getMethodTests($class, $method, $maxBatchSize !== 0);
+            $tests = $this->getMethodTests($class, $method);
             // if filter passed to paratest then method tests can be blank if not match to filter
             if (!$tests) {
                 continue;
@@ -201,7 +201,7 @@ class SuiteLoader
         return $batches;
     }
 
-    protected function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests)
+    protected function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests): void
     {
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
@@ -213,7 +213,7 @@ class SuiteLoader
         }
     }
 
-    protected function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize)
+    protected function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize): void
     {
         foreach ($tests as $test) {
             $lastIndex = \count($batches) - 1;
@@ -233,20 +233,19 @@ class SuiteLoader
      * With empty filter this method returns single test if doesn't have data provider or
      * data provider is not used and return all test if has data provider and data provider is used.
      *
-     * @param ParsedClass  $class           parsed class
-     * @param ParsedObject $method          parsed method
-     * @param bool         $useDataProvider try to use data provider or not
+     * @param ParsedClass  $class  parsed class
+     * @param ParsedObject $method parsed method
      *
      * @return string[] array of test names
      */
-    protected function getMethodTests(ParsedClass $class, ParsedFunction $method, bool $useDataProvider = false): array
+    protected function getMethodTests(ParsedClass $class, ParsedFunction $method): array
     {
         $result = [];
 
         $groups = $this->testGroups($class, $method);
 
         $dataProvider = $this->methodDataProvider($method);
-        if ($useDataProvider && isset($dataProvider)) {
+        if (isset($dataProvider)) {
             $testFullClassName = '\\' . $class->getName();
             $testClass = new $testFullClassName();
             $result = [];
@@ -311,7 +310,7 @@ class SuiteLoader
         return $result;
     }
 
-    protected function testGroups(ParsedClass $class, ParsedFunction $method)
+    protected function testGroups(ParsedClass $class, ParsedFunction $method): array
     {
         return array_merge(
             $this->classGroups($class),
@@ -319,21 +318,25 @@ class SuiteLoader
         );
     }
 
-    protected function methodDataProvider(ParsedFunction $method)
+    protected function methodDataProvider(ParsedFunction $method): ?string
     {
         if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
+
+        return null;
     }
 
-    protected function methodDependency(ParsedFunction $method)
+    protected function methodDependency(ParsedFunction $method): ?string
     {
         if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
+
+        return null;
     }
 
-    protected function methodGroups(ParsedFunction $method)
+    protected function methodGroups(ParsedFunction $method): array
     {
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
@@ -342,7 +345,7 @@ class SuiteLoader
         return [];
     }
 
-    protected function classGroups(ParsedClass $class)
+    protected function classGroups(ParsedClass $class): array
     {
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $class->getDocBlock(), $matches)) {
             return $matches[1];
@@ -363,7 +366,7 @@ class SuiteLoader
         );
     }
 
-    private function createFullSuite($suiteName, $configPath)
+    private function createFullSuite($suiteName, $configPath): FullSuite
     {
         return new FullSuite($suiteName, $configPath);
     }
