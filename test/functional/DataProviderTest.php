@@ -22,7 +22,7 @@ class DataProviderTest extends FunctionalTestBase
             'functional' => null,
             'max-batch-size' => 50,
         ]);
-        $this->assertRegExp('/OK \(1100 tests, 1100 assertions\)/', $proc->getOutput());
+        $this->assertRegExp('/OK \(1150 tests, 1150 assertions\)/', $proc->getOutput());
     }
 
     public function testNumericDataSetInFunctionalModeWithMethodFilter()

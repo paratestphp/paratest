@@ -249,8 +249,7 @@ class SuiteLoader
             $testFullClassName = '\\' . $class->getName();
             $testClass = new $testFullClassName();
             $result = [];
-            $datasetKeys = array_keys($testClass->$dataProvider());
-            foreach ($datasetKeys as $key) {
+            foreach ($testClass->$dataProvider() as $key => $value) {
                 $test = sprintf(
                     '%s with data set %s',
                     $method->getName(),
