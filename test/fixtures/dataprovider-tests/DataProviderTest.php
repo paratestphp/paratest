@@ -56,4 +56,17 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
 
         return $result;
     }
+
+    /**
+     * @dataProvider dataProviderIterable
+     */
+    public function testIterableDataProvider($expected, $actual)
+    {
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function dataProviderIterable() : iterable
+    {
+        yield from $this->dataProviderNumeric50();
+    }
 }
