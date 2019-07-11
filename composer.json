@@ -1,17 +1,17 @@
 {
     "name": "brianium/paratest",
     "require": {
-        "php": "^7.2",
+        "php": "^7.1",
         "ext-pcre": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "brianium/habitat": "1.0.0",
         "composer/semver": "~1.2",
         "phpunit/php-timer": "^2.0",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "^7.5.8|^8.0",
         "symfony/console": "^3.4|^4.0",
         "symfony/process": "^3.4|^4.0",
-        "phpunit/php-code-coverage": "^7.0.2"
+        "phpunit/php-code-coverage": "^6.1.4|^7.0.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.3.2"
