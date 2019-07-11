@@ -13,6 +13,13 @@ class CoverageMerger
      */
     private $coverage = null;
 
+    private $test_limit = null;
+
+    public function __construct(int $test_limit = 0)
+    {
+        $this->test_limit = $test_limit;
+    }
+
     /**
      * @param CodeCoverage $coverage
      */
@@ -23,6 +30,7 @@ class CoverageMerger
         } else {
             $this->coverage->merge($coverage);
         }
+        $this->limitCoverageTests($this->coverage);
     }
 
     /**
@@ -61,8 +69,12 @@ class CoverageMerger
         if (0 === $file->getSize()) {
             $extra = 'This means a PHPUnit process has crashed.';
 
-            if (!\function_exists('xdebug_get_code_coverage')) {
-                $extra = 'Xdebug is disabled! Enable for coverage.';
+            $xdebug = \function_exists('xdebug_get_code_coverage');
+            $phpdbg = \PHP_SAPI === 'phpdbg';
+            $pcov = \extension_loaded('pcov') && ini_get('pcov.enabled');
+
+            if (!$xdebug && !$phpdbg && !$pcov) {
+                $extra = 'No coverage driver found! Enable one of Xdebug, PHPDBG or PCOV for coverage.';
             }
 
             throw new \RuntimeException(
@@ -93,5 +105,23 @@ class CoverageMerger
     public function getCodeCoverageObject(): ?CodeCoverage
     {
         return $this->coverage;
+    }
+
+    private function limitCoverageTests(CodeCoverage $coverage): void
+    {
+        if ($this->test_limit) {
+            $coverage->setData(array_map(
+                function (array $lines) {
+                    return array_map(function ($value) {
+                        if (!\is_array($value)) {
+                            return $value;
+                        }
+
+                        return \array_slice($value, 0, $this->test_limit);
+                    }, $lines);
+                },
+                $coverage->getData($raw = true)
+            ));
+        }
     }
 }
