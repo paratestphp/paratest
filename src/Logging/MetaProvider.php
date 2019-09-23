@@ -26,7 +26,7 @@ abstract class MetaProvider
      *
      * @var string
      */
-    protected static $messageMethod = '/^get((Failure|Error)s)$/';
+    protected static $messageMethod = '/^get((Failure|Error|Warning)s)$/';
 
     /**
      * Simplify aggregation of totals or messages.

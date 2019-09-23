@@ -19,7 +19,7 @@ class Reader extends MetaProvider
     protected $isSingle = false;
 
     /**
-     * @var array
+     * @var TestSuite[]
      */
     protected $suites = [];
 
@@ -101,6 +101,8 @@ class Reader extends MetaProvider
                     $feedback[] = 'E';
                 } elseif ($case->skipped) {
                     $feedback[] = 'S';
+                } elseif ($case->warnings) {
+                    $feedback[] = 'W';
                 } else {
                     $feedback[] = '.';
                 }
@@ -143,7 +145,8 @@ class Reader extends MetaProvider
         if (!$this->isSingle) {
             $this->addSuite($properties, $testCases);
         } else {
-            $this->suites[0]->cases = $testCases;
+            $suite = $this->suites[0];
+            $suite->cases = array_merge($suite->cases, $testCases);
         }
     }
 
@@ -199,11 +202,11 @@ class Reader extends MetaProvider
         $caseNodes = $this->xml->xpath('//testcase');
         $cases = [];
         foreach ($caseNodes as $node) {
-            $case = $node;
-            if (!isset($cases[(string) $node['file']])) {
-                $cases[(string) $node['file']] = [];
+            $caseFilename = (string) $node['file'];
+            if (!isset($cases[$caseFilename])) {
+                $cases[$caseFilename] = [];
             }
-            $cases[(string) $node['file']][] = $node;
+            $cases[$caseFilename][] = $node;
         }
 
         return $cases;

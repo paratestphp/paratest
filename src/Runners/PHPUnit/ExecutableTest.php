@@ -103,29 +103,6 @@ abstract class ExecutableTest
     }
 
     /**
-     * Return any warnings that are in the test output, or false if there are none.
-     *
-     * @return mixed
-     */
-    public function getWarnings()
-    {
-        if (!$this->process) {
-            return false;
-        }
-
-        // PHPUnit has a bug where by it doesn't include warnings in the junit
-        // output, but still fails. This is a hacky, imperfect method for extracting them
-        // see https://github.com/sebastianbergmann/phpunit/issues/1317
-        preg_match_all(
-            '/^\d+\) Warning\n(.+?)$/ms',
-            $this->process->getOutput(),
-            $matches
-        );
-
-        return $matches[1] ?? false;
-    }
-
-    /**
      * Stop the process and return it's
      * exit code.
      *

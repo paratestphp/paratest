@@ -206,7 +206,6 @@ class ResultPrinter
         }
         $this->results->addReader($reader);
         $this->processReaderFeedback($reader, $test->getTestCount());
-        $this->printTestWarnings($test);
     }
 
     /**
@@ -220,20 +219,13 @@ class ResultPrinter
     }
 
     /**
-     * Add an array of warning strings. These cause the test run to be shown
-     * as failed.
-     */
-    public function addWarnings(array $warnings)
-    {
-        $this->warnings = array_merge($this->warnings, $warnings);
-    }
-
-    /**
      * Returns warning messages as a string.
      */
     public function getWarnings(): string
     {
-        return $this->getDefects($this->warnings, 'warning');
+        $warnings = $this->results->getWarnings();
+
+        return $this->getDefects($warnings, 'warning');
     }
 
     /**
@@ -316,22 +308,6 @@ class ResultPrinter
 
         if ($this->processSkipped) {
             $this->printSkippedAndIncomplete($actualTestCount, $expectedTestCount);
-        }
-    }
-
-    /**
-     * Prints test warnings.
-     *
-     * @param ExecutableTest $test
-     */
-    protected function printTestWarnings(ExecutableTest $test)
-    {
-        $warnings = $test->getWarnings();
-        if ($warnings) {
-            $this->addWarnings($warnings);
-            foreach ($warnings as $warning) {
-                $this->printFeedbackItem('W');
-            }
         }
     }
 
