@@ -41,15 +41,16 @@ final class VersionProvider
 
     public function getGitVersion()
     {
-        $version = null;
+        $cmd = 'git describe --tags --always --first-parent';
+        $process = method_exists(Process::class, 'fromShellCommandline') ?
+            Process::fromShellCommandline($cmd, __DIR__) :
+            new Process($cmd, __DIR__);
 
-        $process = new Process('git describe --tags --always --first-parent', __DIR__);
         if ($process->run() !== 0) {
-            return;
+            return null;
         }
-        $version = trim($process->getOutput());
 
-        return $version;
+        return trim($process->getOutput());
     }
 
     public function getComposerInstalledVersion($package)

@@ -205,7 +205,11 @@ abstract class ExecutableTest
 
         $this->assertValidCommandLineLength($command);
         $this->setLastCommand($command);
-        $this->process = new Process($command, null, $environmentVariables);
+
+        $this->process = method_exists(Process::class, 'fromShellCommandline') ?
+            Process::fromShellCommandline($command, null, $environmentVariables) :
+            new Process($command, null, $environmentVariables);
+
         if (method_exists($this->process, 'inheritEnvironmentVariables')) {
             $this->process->inheritEnvironmentVariables();  // no such method in 3.0, but emits warning if this isn't done in 3.3
         }
