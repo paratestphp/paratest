@@ -106,7 +106,7 @@ class ReaderTest extends \TestBase
         $failure = $case->failures[0];
         $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals(
-            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n".
+            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
             "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
             $failure['text']
         );
@@ -120,7 +120,7 @@ class ReaderTest extends \TestBase
         $error = $case->errors[0];
         $this->assertEquals('Exception', $error['type']);
         $this->assertEquals(
-            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n".
+            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
                 "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12",
             $error['text']
         );
@@ -182,7 +182,7 @@ class ReaderTest extends \TestBase
         $failure = $case->failures[0];
         $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals(
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n".
+            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
             $failure['text']
         );
@@ -226,12 +226,12 @@ class ReaderTest extends \TestBase
         $failures = $this->mixed->getFailures();
         $this->assertCount(2, $failures);
         $this->assertEquals(
-            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n".
+            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
             $failures[0]
         );
         $this->assertEquals(
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.".
+            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false." .
                 "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.".
                 "php:18",
             $failures[1]
@@ -243,7 +243,7 @@ class ReaderTest extends \TestBase
         $errors = $this->mixed->getErrors();
         $this->assertCount(1, $errors);
         $this->assertEquals(
-            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n".
+            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
                 "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12",
             $errors[0]
         );
@@ -254,7 +254,7 @@ class ReaderTest extends \TestBase
         $failures = $this->single->getFailures();
         $this->assertCount(1, $failures);
         $this->assertEquals(
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n".
+            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
             $failures[0]
         );

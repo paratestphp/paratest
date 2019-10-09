@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use ParaTest\Runners\PHPUnit\ExecutableTest;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 class ExecutableTestTest extends \TestBase
@@ -62,7 +61,7 @@ class ExecutableTestTest extends \TestBase
         $finder = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
         $this->assertEquals(
-            "$phpExecutable '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' ".
+            "$phpExecutable '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' " .
                 "'--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'",
             $command
         );
@@ -113,18 +112,5 @@ class ExecutableTestTest extends \TestBase
         $fileAgain = $this->executableTestChild->getTempFile();
         $this->assertEquals($file, $fileAgain);
         unlink($file);
-    }
-}
-
-class ExecutableTestChild extends ExecutableTest
-{
-    /**
-     * Get the expected count of tests to be executed.
-     *
-     * @return int
-     */
-    public function getTestCount(): int
-    {
-        return 1;
     }
 }

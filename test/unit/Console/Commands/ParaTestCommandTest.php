@@ -141,7 +141,7 @@ class ParaTestCommandTest extends \TestBase
                 'coverage-test-limit',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Limit the number of tests to record for each line of code. '.
+                'Limit the number of tests to record for each line of code. ' .
                     'Helps to reduce memory and size of coverage reports.'
             ),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
@@ -163,14 +163,14 @@ class ParaTestCommandTest extends \TestBase
                 'passthru',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Pass the given arguments verbatim to the underlying test framework. '.
+                'Pass the given arguments verbatim to the underlying test framework. ' .
                     'Example: --passthru="\'--prepend\' \'xdebug-filter.php\'"'
             ),
             new InputOption(
                 'passthru-php',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Pass the given arguments verbatim to the underlying php process. '.
+                'Pass the given arguments verbatim to the underlying php process. ' .
                     'Example: --passthru-php="\'-d\' \'zend_extension=xdebug.so\'"'
             ),
             new InputOption(

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Console\Testers;
 
 use ParaTest\Console\Testers\PHPUnit;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
@@ -81,13 +80,5 @@ class PHPUnitTest extends \TestBase
 
         $tester->requireBootstrap($file);
         $this->assertEquals($cwd, getcwd());
-    }
-}
-
-class TestCommand extends Command
-{
-    public function __construct()
-    {
-        parent::__construct('testcommand');
     }
 }

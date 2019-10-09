@@ -29,7 +29,7 @@ class ConfigurationTest extends \TestBase
         $this->assertEquals($this->path, (string) $this->config);
     }
 
-    public function test_getSuitesShouldReturnCorrectNumberOfSuites()
+    public function testGetSuitesShouldReturnCorrectNumberOfSuites()
     {
         $suites = $this->config->getSuites();
         $this->assertCount(2, $suites);
@@ -37,7 +37,7 @@ class ConfigurationTest extends \TestBase
         return $suites;
     }
 
-    public function test_hasSuites()
+    public function testHasSuites()
     {
         $actual = $this->config->hasSuites();
         $this->assertTrue($actual);

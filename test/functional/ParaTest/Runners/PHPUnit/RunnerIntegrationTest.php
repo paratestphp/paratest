@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use ParaTest\Console\Commands\ParaTestCommand;
-
 class RunnerIntegrationTest extends \TestBase
 {
     /** @var Runner $runner */
