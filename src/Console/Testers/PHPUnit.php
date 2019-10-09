@@ -23,6 +23,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PHPUnit extends Tester
 {
     /**
+     * @see \PHPUnit\Util\Configuration
+     * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
+     */
+    private const TEST_SUITE_FILTER_SEPARATOR = ',';
+
+    /**
      * @var \ParaTest\Console\Commands\ParaTestCommand
      */
     protected $command;
@@ -177,7 +183,7 @@ class PHPUnit extends Tester
 
         if (\array_key_exists('testsuite', $options)) {
             $options['testsuite'] = Str::explodeWithCleanup(
-                Configuration::TEST_SUITE_FILTER_SEPARATOR,
+                self::TEST_SUITE_FILTER_SEPARATOR,
                 $options['testsuite']
             );
         }

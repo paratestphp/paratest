@@ -14,7 +14,8 @@ use Symfony\Component\Process\Process;
  */
 final class VersionProvider
 {
-    const PACKAGE = 'brianium/paratest';
+    private const PACKAGE = 'brianium/paratest';
+
     /**
      * @var null
      */

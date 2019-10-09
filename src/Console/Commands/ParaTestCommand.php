@@ -68,7 +68,7 @@ class ParaTestCommand extends Command
                 'coverage-test-limit',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of '.
+                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of ' .
                     'coverage reports.'
             )
             ->addOption(
@@ -84,14 +84,14 @@ class ParaTestCommand extends Command
                 'passthru',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Pass the given arguments verbatim to the underlying test framework. Example: '.
+                'Pass the given arguments verbatim to the underlying test framework. Example: ' .
                     '--passthru="\'--prepend\' \'xdebug-filter.php\'"'
             )
             ->addOption(
                 'passthru-php',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' '.
+                'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' ' .
                     '\'zend_extension=xdebug.so\'"'
             )
             ->addOption(

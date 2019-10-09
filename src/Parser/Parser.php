@@ -120,12 +120,12 @@ class Parser
         $classes = get_declared_classes();
         $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
-        $className = $this->_searchForUnitTestClass($newClasses, $filename);
+        $className = $this->searchForUnitTestClass($newClasses, $filename);
         if (isset($className)) {
             return $className;
         }
 
-        $className = $this->_searchForUnitTestClass($classes, $filename);
+        $className = $this->searchForUnitTestClass($classes, $filename);
         if (isset($className)) {
             return $className;
         }
@@ -139,7 +139,7 @@ class Parser
      *
      * @return string|null
      */
-    private function _searchForUnitTestClass(array $classes, string $filename)
+    private function searchForUnitTestClass(array $classes, string $filename)
     {
         // TODO: After merging this PR or other PR for phpunit 6 support, keep only the applicable subclass name
         $matchingClassName = null;

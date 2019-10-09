@@ -9,7 +9,7 @@ namespace ParaTest\Runners\PHPUnit;
  */
 class SuitePath
 {
-    const DEFAULT_SUFFIX = 'Test.php';
+    private const DEFAULT_SUFFIX = 'Test.php';
 
     /**
      * @var string

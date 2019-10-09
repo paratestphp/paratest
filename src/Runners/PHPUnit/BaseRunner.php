@@ -10,8 +10,6 @@ use ParaTest\Logging\LogInterpreter;
 
 abstract class BaseRunner
 {
-    const PHPUNIT_FATAL_ERROR = 255;
-
     /**
      * @var Options
      */

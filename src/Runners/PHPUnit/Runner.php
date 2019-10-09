@@ -8,6 +8,8 @@ use Habitat\Habitat;
 
 class Runner extends BaseRunner
 {
+    private const PHPUNIT_FATAL_ERROR = 255;
+
     /**
      * A collection of available tokens based on the number
      * of processes specified in $options.
