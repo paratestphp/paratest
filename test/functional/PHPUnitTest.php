@@ -1,6 +1,8 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
+namespace ParaTest\Tests\Functional;
 
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;

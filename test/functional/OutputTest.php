@@ -1,6 +1,8 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
+namespace ParaTest\Tests\Functional;
 
 class OutputTest extends FunctionalTestBase
 {
@@ -30,8 +32,7 @@ class OutputTest extends FunctionalTestBase
     {
         $output = $this->paratest
             ->execute(['configuration' => 'nope.xml'])
-            ->getOutput()
-        ;
+            ->getOutput();
         $this->assertStringContainsString('Could not read "nope.xml"', $output);
     }
 
@@ -39,8 +40,7 @@ class OutputTest extends FunctionalTestBase
     {
         $output = $this->paratest
             ->execute(['functional', 'p' => 5])
-            ->getOutput()
-        ;
+            ->getOutput();
         $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
         $this->assertStringContainsString('Functional mode is ON.', $output);
         $this->assertRegExp('/[.F]{4}/', $output);
@@ -49,8 +49,7 @@ class OutputTest extends FunctionalTestBase
     public function testProcCountIsReportedWithProcOption()
     {
         $output = $this->paratest->execute(['p' => 1])
-            ->getOutput()
-        ;
+            ->getOutput();
         $this->assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
         $this->assertRegExp('/[.F]{4}/', $output);
     }

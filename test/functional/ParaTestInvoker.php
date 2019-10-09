@@ -1,6 +1,8 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
+namespace ParaTest\Tests\Functional;
 
 use Habitat\Habitat;
 use Symfony\Component\Process\Process;
@@ -19,7 +21,7 @@ class ParaTestInvoker
     /**
      * Runs the command, returns the proc after it's done.
      *
-     * @param array    $options
+     * @param array $options
      * @param callable $callback
      *
      * @return Process

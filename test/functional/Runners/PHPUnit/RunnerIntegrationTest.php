@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Functional\Runners\PHPUnit;
+
+use ParaTest\Runners\PHPUnit\Runner;
 
 class RunnerIntegrationTest extends \TestBase
 {

@@ -13,7 +13,7 @@ class StrTest extends TestCase
      * @param string $delimiter
      * @param string $valueString
      * @param array  $expected
-     * @dataProvider explodeWithCleanup_dataProvider
+     * @dataProvider explodeWithCleanupDataProvider
      */
     public function testExplodeWithCleanup(string $delimiter, string $valueString, array $expected)
     {
@@ -23,7 +23,7 @@ class StrTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function explodeWithCleanup_dataProvider()
+    public function explodeWithCleanupDataProvider()
     {
         return [
             'default' => [

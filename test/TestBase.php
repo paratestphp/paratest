@@ -75,7 +75,7 @@ class TestBase extends PHPUnit\Framework\TestCase
      */
     public function call($object, $methodName, ...$args)
     {
-        return self::_callMethod($object, $methodName, $args);
+        return self::callMethod($object, $methodName, $args);
     }
 
     /**
@@ -89,10 +89,10 @@ class TestBase extends PHPUnit\Framework\TestCase
      */
     public function callStatic($class, $methodName, ...$args)
     {
-        return self::_callMethod($class, $methodName, $args);
+        return self::callMethod($class, $methodName, $args);
     }
 
-    protected static function _callMethod($objectOrClassName, $methodName, $args = null)
+    protected static function callMethod($objectOrClassName, $methodName, $args = null)
     {
         $isStatic = is_string($objectOrClassName);
 

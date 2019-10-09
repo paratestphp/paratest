@@ -232,7 +232,7 @@ class ReaderTest extends \TestBase
         );
         $this->assertEquals(
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false." .
-                "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.".
+                "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest." .
                 "php:18",
             $failures[1]
         );

@@ -1,11 +1,14 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
+namespace ParaTest\Tests\Functional;
 
 class WrapperRunnerTest extends FunctionalTestBase
 {
-    const TEST_METHODS_PER_CLASS = 5;
-    const TEST_CLASSES = 6;
+    private const TEST_METHODS_PER_CLASS = 5;
+
+    private const TEST_CLASSES = 6;
 
     public function testResultsAreCorrect()
     {

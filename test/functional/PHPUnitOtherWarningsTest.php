@@ -1,6 +1,8 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
+namespace ParaTest\Tests\Functional;
 
 /**
  * Test special PHPUnit Warnings processing.

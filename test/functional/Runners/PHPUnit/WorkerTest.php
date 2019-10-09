@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Functional\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use SimpleXMLElement;

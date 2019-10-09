@@ -89,7 +89,9 @@ class WriterTest extends \TestBase
         $xml = $writer->getXml();
 
         $this->assertStringNotContainsString(
-            'line=""', $xml, 'Expected no empty line attributes (line=""), but found one.'
+            'line=""',
+            $xml,
+            'Expected no empty line attributes (line=""), but found one.'
         );
     }
 }

@@ -1,9 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
+namespace ParaTest\Tests\Functional\Coverage;
 
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Coverage\CoverageReporter;
+use TestBase;
 
 class CoverageReporterTest extends TestBase
 {
@@ -42,7 +45,7 @@ class CoverageReporterTest extends TestBase
      * @dataProvider getReporterProvider
      *
      * @param string[] $coverageFiles
-     * @param string   $expectedReportClass
+     * @param string $expectedReportClass
      */
     public function testGetReporter(array $coverageFiles, $expectedReportClass)
     {

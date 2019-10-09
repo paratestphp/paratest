@@ -1,7 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
+namespace ParaTest\Tests\Functional;
+
+use Exception;
+use PHPUnit;
 use Symfony\Component\Process\Process;
 
 class FunctionalTestBase extends PHPUnit\Framework\TestCase

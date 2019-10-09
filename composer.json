@@ -37,9 +37,6 @@
         }
     },
     "autoload-dev": {
-        "psr-0": {
-            "": "test/functional"
-        },
         "psr-4": {
             "ParaTest\\Tests\\Unit\\": "test/unit/",
             "ParaTest\\Tests\\Functional\\": "test/functional/"

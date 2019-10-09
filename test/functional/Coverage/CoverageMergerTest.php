@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+namespace ParaTest\Tests\Functional\Coverage;
+
 use ParaTest\Coverage\CoverageMerger;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use TestBase;
 
 class CoverageMergerTest extends TestBase
 {

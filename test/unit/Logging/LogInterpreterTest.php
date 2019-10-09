@@ -100,7 +100,7 @@ class LogInterpreterTest extends ResultTester
     public function testGetErrorsReturnsArrayOfErrorMessages()
     {
         $errors = [
-            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/".
+            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/" .
             "test/fixtures/tests/UnitTestWithErrorTest.php:12"
         ];
         $this->assertEquals($errors, $this->interpreter->getErrors());
@@ -109,9 +109,9 @@ class LogInterpreterTest extends ResultTester
     public function testGetFailuresReturnsArrayOfFailureMessages()
     {
         $failures = [
-            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/".
+            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/" .
                 "home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n".
+            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
         ];
 
