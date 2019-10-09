@@ -56,7 +56,7 @@ deploy:
   provider: releases
   api_key:
     secure: OER6C7dNaVOIhl2wEA2i2Qe4T6BcXuM/cP0vOoz4578X0LRipYudWMXnLXYmMmjzraMBJ2W3cQx830mQK0TBVU/m0hp5bpTcfGsOBX7+sLi6MY/ncDa4kXV2x8qZOmQLRtk3smAgMyh5hUp7qlmpDRJJ9F1xCYFNqpotK8N3Rfk=
-  file: build/paratest-${TRAVIS_TAG}.phar
+  file: bin/paratest.phar
   skip_cleanup: true
   on:
     condition: $BUILD_PHAR == 'true'
