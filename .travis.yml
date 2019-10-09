@@ -9,30 +9,42 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - php: 7.1
+    - name: "Tests PHP 7.1 Lowest Dependencies"
+      php: 7.1
       env:
         - DEPS=lowest
-    - php: 7.1
+    - name: "Build Phar"
+      php: 7.1
       env:
         - BUILD_PHAR=true
-    - php: 7.1
+    - name: "Tests PHP 7.1 PHPUnit Dev Version"
+      php: 7.1
       env:
         - PHPUNIT_DEV=true
-    - php: 7.2
+    - name: "Tests PHP 7.1"
+      php: 7.1
+    - name: "Tests PHP 7.2 Lowest Dependencies"
+      php: 7.2
       env:
         - DEPS=lowest
-    - php: 7.2
+    - name: "Tests PHP 7.2 PHPUnit Dev Version"
+      php: 7.2
       env:
         - PHPUNIT_DEV=true
-    - php: 7.2
+    - name: "Tests PHP 7.2"
+      php: 7.2
     - php: 7.3
+      name: "Tests PHP 7.3 Lowest Dependencies"
       env:
         - DEPS=lowest
-    - php: 7.3
+    - name: "Tests PHP 7.3 PHPUnit Dev Version"
+      php: 7.3
       env:
         - PHPUNIT_DEV=true
-    - php: 7.3
-    - php: nightly
+    - name: "Tests PHP 7.3"
+      php: 7.3
+    - name: "Tests PHP Nightly"
+      php: nightly
   allow_failures:
     - php: nightly
 
