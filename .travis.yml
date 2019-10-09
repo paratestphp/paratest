@@ -43,6 +43,10 @@ matrix:
         - PHPUNIT_DEV=true
     - name: "Tests PHP 7.3"
       php: 7.3
+    - name: "PHPCS"
+      php: 7.3
+      env:
+        - CS_CHECK=true
     - name: "Tests PHP Nightly"
       php: nightly
   allow_failures:
