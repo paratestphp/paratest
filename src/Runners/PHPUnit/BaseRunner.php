@@ -10,8 +10,6 @@ use ParaTest\Logging\LogInterpreter;
 
 abstract class BaseRunner
 {
-    const PHPUNIT_FATAL_ERROR = 255;
-
     /**
      * @var Options
      */
@@ -77,7 +75,10 @@ abstract class BaseRunner
      */
     protected function verifyConfiguration()
     {
-        if (isset($this->options->filtered['configuration']) && !file_exists($this->options->filtered['configuration']->getPath())) {
+        if (
+            isset($this->options->filtered['configuration']) &&
+            !file_exists($this->options->filtered['configuration']->getPath())
+        ) {
             $this->printer->println(sprintf('Could not read "%s".', $this->options->filtered['configuration']));
             exit(1);
         }

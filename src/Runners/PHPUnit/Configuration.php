@@ -13,12 +13,6 @@ namespace ParaTest\Runners\PHPUnit;
 class Configuration
 {
     /**
-     * @see \PHPUnit\Util\Configuration
-     * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
-     */
-    const TEST_SUITE_FILTER_SEPARATOR = ',';
-
-    /**
      * Path to the configuration file.
      *
      * @var string

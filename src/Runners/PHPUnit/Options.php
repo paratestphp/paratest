@@ -257,7 +257,8 @@ class Options
     {
         $vendor = static::vendorDir();
 
-        $phpunit = $vendor . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit';
+        $phpunit = $vendor . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit' .
+            \DIRECTORY_SEPARATOR . 'phpunit';
         if (file_exists($phpunit)) {
             return $phpunit;
         }

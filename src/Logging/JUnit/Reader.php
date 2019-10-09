@@ -50,7 +50,9 @@ class Reader extends MetaProvider
 
         $this->logFile = $logFile;
         if (filesize($logFile) === 0) {
-            throw new \InvalidArgumentException("Log file $logFile is empty. This means a PHPUnit process has crashed.");
+            throw new \InvalidArgumentException(
+                "Log file $logFile is empty. This means a PHPUnit process has crashed."
+            );
         }
         $logFileContents = file_get_contents($this->logFile);
         $this->xml = new \SimpleXMLElement($logFileContents);

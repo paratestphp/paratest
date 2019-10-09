@@ -14,8 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ParaTestApplication extends Application
 {
-    const NAME = 'ParaTest';
-    const VERSION = '1.0.1';
+    private const NAME = 'ParaTest';
+
+    private const VERSION = '1.0.1';
 
     public function __construct()
     {

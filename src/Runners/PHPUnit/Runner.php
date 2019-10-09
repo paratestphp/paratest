@@ -8,6 +8,8 @@ use Habitat\Habitat;
 
 class Runner extends BaseRunner
 {
+    private const PHPUNIT_FATAL_ERROR = 255;
+
     /**
      * A collection of available tokens based on the number
      * of processes specified in $options.
@@ -82,8 +84,12 @@ class Runner extends BaseRunner
             $tokenData = $this->getNextAvailableToken();
             if ($tokenData !== false) {
                 $this->acquireToken($tokenData['token']);
-                $env = ['TEST_TOKEN' => $tokenData['token'], 'UNIQUE_TEST_TOKEN' => $tokenData['unique']] + Habitat::getAll();
-                $this->running[$tokenData['token']] = array_shift($this->pending)->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
+                $env = [
+                    'TEST_TOKEN' => $tokenData['token'],
+                    'UNIQUE_TEST_TOKEN' => $tokenData['unique']
+                ] + Habitat::getAll();
+                $this->running[$tokenData['token']] = array_shift($this->pending)
+                    ->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
                 if ($opts->verbose) {
                     $cmd = $this->running[$tokenData['token']];
                     echo "\nExecuting test via: {$cmd->getLastCommand()}\n";

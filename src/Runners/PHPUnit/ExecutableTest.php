@@ -173,8 +173,13 @@ abstract class ExecutableTest
      *
      * @return $this
      */
-    public function run(string $binary, array $options = [], array $environmentVariables = [], ?string $passthru = null, ?string $passthruPhp = null)
-    {
+    public function run(
+        string $binary,
+        array $options = [],
+        array $environmentVariables = [],
+        ?string $passthru = null,
+        ?string $passthruPhp = null
+    ) {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
 
@@ -188,7 +193,8 @@ abstract class ExecutableTest
             new Process($command, null, $environmentVariables);
 
         if (method_exists($this->process, 'inheritEnvironmentVariables')) {
-            $this->process->inheritEnvironmentVariables();  // no such method in 3.0, but emits warning if this isn't done in 3.3
+            // no such method in 3.0, but emits warning if this isn't done in 3.3
+            $this->process->inheritEnvironmentVariables();
         }
         $this->process->start();
 
@@ -206,8 +212,12 @@ abstract class ExecutableTest
      *
      * @return string
      */
-    protected function getFullCommandlineString($binary, $options, ?string $passthru = null, ?string $passthruPhp = null)
-    {
+    protected function getFullCommandlineString(
+        $binary,
+        $options,
+        ?string $passthru = null,
+        ?string $passthruPhp = null
+    ) {
         $finder = new PhpExecutableFinder();
         $args = [];
 
