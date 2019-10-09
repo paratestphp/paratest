@@ -62,7 +62,7 @@ class ConfigurationTest extends \TestBase
     }
 
     /**
-     * @depends test_getSuitesShouldReturnCorrectNumberOfSuites
+     * @depends testGetSuitesShouldReturnCorrectNumberOfSuites
      *
      * @param mixed $suites
      */
