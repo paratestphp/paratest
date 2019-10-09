@@ -57,6 +57,7 @@ install:
   - if [[ $PHPUNIT_DEV == 'true' ]]; then composer require phpunit/phpunit=*@dev; fi;
   - if [[ $DEPS == 'lowest' ]]; then COMPOSER_ARGS='--prefer-lowest --prefer-stable'; composer update --no-interaction --prefer-dist $COMPOSER_ARGS; fi;
   - if [[ $BUILD_PHAR == 'true' ]]; then wget https://github.com/humbug/box/releases/download/3.7.0/box.phar; fi;
+  - composer install
 
 script:
   - if [[ $CS_CHECK == 'true' ]]; then vendor/bin/phpcs --ignore=*/test/fixtures/*,bootstrap.php --standard=PSR12 ./src/ ./test/; fi;
