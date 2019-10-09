@@ -59,7 +59,7 @@ install:
   - if [[ $BUILD_PHAR == 'true' ]]; then wget https://github.com/humbug/box/releases/download/3.7.0/box.phar; fi;
 
 script:
-  - if [[ $CS_CHECK == 'true' ]]; then vendor/bin/phpcs --standard=PSR12 ./src/ ./test/; fi;
+  - if [[ $CS_CHECK == 'true' ]]; then vendor/bin/phpcs --ignore=*/test/fixtures/*,bootstrap.php --standard=PSR12 ./src/ ./test/; fi;
   - if [[ $CS_CHECK != 'true' ]]; then vendor/bin/phpunit $COVERAGE_ARGS; fi;
 
 before_deploy:
