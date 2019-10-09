@@ -1,12 +1,12 @@
 <?php
 
-new class() extends PHPUnit\Framework\TestCase {
+new class () extends PHPUnit\Framework\TestCase {
     /**
      * @return class
      */
     public function testAnonymousClass()
     {
-        return new class()
+        return new class ()
         {
         };
     }

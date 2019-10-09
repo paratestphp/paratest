@@ -66,50 +66,50 @@ class CoverageMergerTest extends \TestBase
         $this->assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);
     }
 
-	/**
-	 * Test merge with limits
-	 *
-	 * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
-	 */
-	public function testSimpleMergeLimited()
-	{
-		$firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
-		$secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
+    /**
+     * Test merge with limits
+     *
+     * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
+     */
+    public function testSimpleMergeLimited()
+    {
+        $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
 
-		// Every time the two above files are changed, the line numbers
-		// may change, and so these two numbers may need adjustments
-		$firstFileFirstLine = 39;
-		$secondFileFirstLine = 39;
+        // Every time the two above files are changed, the line numbers
+        // may change, and so these two numbers may need adjustments
+        $firstFileFirstLine = 39;
+        $secondFileFirstLine = 39;
 
-		$filter = new Filter();
-		$filter->addFilesToWhitelist([$firstFile, $secondFile]);
-		$coverage1 = new CodeCoverage(null, $filter);
-		$coverage1->append(
-			[
-				$firstFile => [$firstFileFirstLine => 1],
-				$secondFile => [$secondFileFirstLine => 1],
-			],
-			'Test1'
-		);
-		$coverage2 = new CodeCoverage(null, $filter);
-		$coverage2->append(
-			[
-				$firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
-			],
-			'Test2'
-		);
+        $filter = new Filter();
+        $filter->addFilesToWhitelist([$firstFile, $secondFile]);
+        $coverage1 = new CodeCoverage(null, $filter);
+        $coverage1->append(
+            [
+                $firstFile => [$firstFileFirstLine => 1],
+                $secondFile => [$secondFileFirstLine => 1],
+            ],
+            'Test1'
+        );
+        $coverage2 = new CodeCoverage(null, $filter);
+        $coverage2->append(
+            [
+                $firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
+            ],
+            'Test2'
+        );
 
-		$merger = new CoverageMerger($test_limit = 1);
-		$this->call($merger, 'addCoverage', $coverage1);
-		$this->call($merger, 'addCoverage', $coverage2);
+        $merger = new CoverageMerger($test_limit = 1);
+        $this->call($merger, 'addCoverage', $coverage1);
+        $this->call($merger, 'addCoverage', $coverage2);
 
-		/** @var CodeCoverage $coverage */
-		$coverage = $this->getObjectValue($merger, 'coverage');
+        /** @var CodeCoverage $coverage */
+        $coverage = $this->getObjectValue($merger, 'coverage');
 
-		$this->assertInstanceOf(CodeCoverage::class, $coverage);
-		$data = $coverage->getData();
+        $this->assertInstanceOf(CodeCoverage::class, $coverage);
+        $data = $coverage->getData();
 
-		$this->assertCount(1, $data[$firstFile][$firstFileFirstLine]);
-		$this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
-	}
+        $this->assertCount(1, $data[$firstFile][$firstFileFirstLine]);
+        $this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
+    }
 }

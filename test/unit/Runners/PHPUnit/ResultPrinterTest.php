@@ -77,9 +77,11 @@ class ResultPrinterTest extends ResultTester
     {
         $options = new Options();
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in %s processes with %s\n\n",
-                            Options::getNumberOfCPUCores(),
-                            $options->phpunit);
+        $expected = sprintf(
+            "\nRunning phpunit in %s processes with %s\n\n",
+            Options::getNumberOfCPUCores(),
+            $options->phpunit
+        );
         $this->assertStringStartsWith($expected, $contents);
     }
 
@@ -104,10 +106,12 @@ class ResultPrinterTest extends ResultTester
         file_put_contents($pathToConfig, '<root />');
         $options = new Options(['configuration' => $pathToConfig]);
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
-                            Options::getNumberOfCPUCores(),
-                            $options->phpunit,
-                            $pathToConfig);
+        $expected = sprintf(
+            "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
+            Options::getNumberOfCPUCores(),
+            $options->phpunit,
+            $pathToConfig
+        );
         $this->assertStringStartsWith($expected, $contents);
     }
 
@@ -115,9 +119,11 @@ class ResultPrinterTest extends ResultTester
     {
         $options = new Options(['functional' => true]);
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
-                            Options::getNumberOfCPUCores(),
-                            $options->phpunit);
+        $expected = sprintf(
+            "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
+            Options::getNumberOfCPUCores(),
+            $options->phpunit
+        );
         $this->assertStringStartsWith($expected, $contents);
     }
 

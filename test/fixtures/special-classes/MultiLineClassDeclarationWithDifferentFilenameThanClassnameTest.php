@@ -1,9 +1,9 @@
 <?php
 
-class MultiLineClassDeclarationTest
-    extends PHPUnit\Framework\TestCase
+class MultiLineClassDeclarationTest extends PHPUnit\Framework\TestCase
 {
-    public function testRuns() {
+    public function testRuns()
+    {
         $this->assertTrue(true);
     }
 }

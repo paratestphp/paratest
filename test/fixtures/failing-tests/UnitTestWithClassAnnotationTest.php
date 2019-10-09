@@ -1,4 +1,6 @@
-<?php namespace Fixtures\Tests;
+<?php
+
+namespace Fixtures\Tests;
 
 /**
  * @runParallel

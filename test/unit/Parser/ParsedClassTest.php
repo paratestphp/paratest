@@ -16,13 +16,15 @@ class ParsedClassTest extends \TestBase
                 '/**
               * @group group1
               */',
-                'public', 'testFunction'
+                'public',
+                'testFunction'
             ),
             new ParsedFunction(
                 '/**
               * @group group2
               */',
-                'public', 'testFunction2'
+                'public',
+                'testFunction2'
             ),
             new ParsedFunction('', 'public', 'testFunction3'),
         ];
@@ -40,19 +42,22 @@ class ParsedClassTest extends \TestBase
             '/**
               * @group group1
               */',
-            'public', 'testFunction'
+            'public',
+            'testFunction'
         );
         $goodMethod2 = new ParsedFunction(
             '/**
               * @group group2
               */',
-            'public', 'testFunction2'
+            'public',
+            'testFunction2'
         );
         $badMethod = new ParsedFunction(
             '/**
               * @group group3
               */',
-            'public', 'testFunction2'
+            'public',
+            'testFunction2'
         );
         $annotatedClass = new ParsedClass('', 'MyTestClass', '', [$goodMethod, $goodMethod2, $badMethod]);
         $methods = $annotatedClass->getMethods(['group' => 'group1,group2']);

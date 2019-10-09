@@ -54,10 +54,16 @@ class RunnerIntegrationTest extends \TestBase
         $countAfter = \count($this->globTempDir('PT_*'));
         $countCoverageAfter = \count($this->globTempDir('CV_*'));
 
-        $this->assertEquals($countAfter, $countBefore,
-            "Test Runner failed to clean up the 'PT_*' file in " . sys_get_temp_dir());
-        $this->assertEquals($countCoverageAfter, $countCoverageBefore,
-            "Test Runner failed to clean up the 'CV_*' file in " . sys_get_temp_dir());
+        $this->assertEquals(
+            $countAfter,
+            $countBefore,
+            "Test Runner failed to clean up the 'PT_*' file in " . sys_get_temp_dir()
+        );
+        $this->assertEquals(
+            $countCoverageAfter,
+            $countCoverageBefore,
+            "Test Runner failed to clean up the 'CV_*' file in " . sys_get_temp_dir()
+        );
     }
 
     public function testLogJUnitCreatesXmlFile()

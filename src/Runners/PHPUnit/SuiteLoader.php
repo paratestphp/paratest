@@ -217,7 +217,8 @@ class SuiteLoader
     {
         foreach ($tests as $test) {
             $lastIndex = \count($batches) - 1;
-            if ($lastIndex !== -1
+            if (
+                $lastIndex !== -1
                 && \count($batches[$lastIndex]) < $maxBatchSize
             ) {
                 $batches[$lastIndex][] = $test;
@@ -272,13 +273,15 @@ class SuiteLoader
             return true;
         }
 
-        if (!empty($this->options->groups)
+        if (
+            !empty($this->options->groups)
             && !array_intersect($groups, $this->options->groups)
         ) {
             return false;
         }
 
-        if (!empty($this->options->excludeGroups)
+        if (
+            !empty($this->options->excludeGroups)
             && array_intersect($groups, $this->options->excludeGroups)
         ) {
             return false;

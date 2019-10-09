@@ -72,8 +72,10 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testWithColorsGreenBar()
     {
-        $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
-            ['bootstrap' => BOOTSTRAP, 'colors']);
+        $proc = $this->invokeParatest(
+            'paratest-only-tests/EnvironmentTest.php',
+            ['bootstrap' => BOOTSTRAP, 'colors']
+        );
         $this->assertStringContainsString(
             '[30;42m[2KOK',
             $proc->getOutput()
@@ -82,8 +84,10 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testWithColorsRedBar()
     {
-        $proc = $this->invokeParatest('failing-tests/UnitTestWithErrorTest.php',
-            ['bootstrap' => BOOTSTRAP, 'colors']);
+        $proc = $this->invokeParatest(
+            'failing-tests/UnitTestWithErrorTest.php',
+            ['bootstrap' => BOOTSTRAP, 'colors']
+        );
         $this->assertStringContainsString(
             '[37;41m[2KFAILURES',
             $proc->getOutput()
@@ -92,29 +96,34 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testParatestEnvironmentVariable()
     {
-        $this->assertTestsPassed($this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
+        $this->assertTestsPassed($this->invokeParatest(
+            'paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP]
         ));
     }
 
     public function testParatestEnvironmentVariableWithWrapperRunner()
     {
-        $this->assertTestsPassed($this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
+        $this->assertTestsPassed($this->invokeParatest(
+            'paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner']
         ));
     }
 
     public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens()
     {
-        $proc = $this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
-            ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0]);
+        $proc = $this->invokeParatest(
+            'paratest-only-tests/EnvironmentTest.php',
+            ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0]
+        );
         $this->assertRegexp('/Failures: 1/', $proc->getOutput());
     }
 
     public function testParatestEnvironmentVariableWithSqliteRunner()
     {
         $this->guardSqliteExtensionLoaded();
-        $this->assertTestsPassed($this->invokeParatest('paratest-only-tests/EnvironmentTest.php',
+        $this->assertTestsPassed($this->invokeParatest(
+            'paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'runner' => 'SqliteRunner']
         ));
     }
@@ -127,36 +136,43 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testWithConfigurationThatDoesNotExist()
     {
-        $proc = $this->invokeParatest('passing-tests',
-            ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']); // dist"o" does not exist
+        $proc = $this->invokeParatest(
+            'passing-tests',
+            ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']
+        ); // dist"o" does not exist
         $this->assertRegExp('/Could not read ".*phpunit.xml.disto"./', $proc->getOutput());
     }
 
     public function testFunctionalWithBootstrap()
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests',
+        $this->assertTestsPassed($this->invokeParatest(
+            'passing-tests',
             ['bootstrap' => BOOTSTRAP, 'functional']
         ));
     }
 
     public function testFunctionalWithConfiguration()
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests',
+        $this->assertTestsPassed($this->invokeParatest(
+            'passing-tests',
             ['configuration' => PHPUNIT_CONFIGURATION, 'functional']
         ));
     }
 
     public function testWithBootstrapAndProcessesSwitch()
     {
-        $proc = $this->invokeParatest('passing-tests',
-            ['bootstrap' => BOOTSTRAP, 'processes' => 6]);
+        $proc = $this->invokeParatest(
+            'passing-tests',
+            ['bootstrap' => BOOTSTRAP, 'processes' => 6]
+        );
         $this->assertRegExp('/Running phpunit in 6 processes/', $proc->getOutput());
         $this->assertTestsPassed($proc);
     }
 
     public function testWithBootstrapAndManuallySpecifiedPHPUnit()
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests',
+        $this->assertTestsPassed($this->invokeParatest(
+            'passing-tests',
             ['bootstrap' => BOOTSTRAP, 'phpunit' => PHPUNIT]
         ));
     }
@@ -170,7 +186,8 @@ class PHPUnitTest extends FunctionalTestBase
     public function testDefaultSettingsWithSpecifiedPath()
     {
         chdir(PARATEST_ROOT);
-        $this->assertTestsPassed($this->invokeParatest('passing-tests',
+        $this->assertTestsPassed($this->invokeParatest(
+            'passing-tests',
             ['path' => 'test/fixtures/passing-tests']
         ));
     }
@@ -192,8 +209,10 @@ class PHPUnitTest extends FunctionalTestBase
     public function testTestTokenEnvVarIsPassed()
     {
         chdir(PARATEST_ROOT);
-        $proc = $this->invokeParatest('passing-tests',
-            ['path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php']);
+        $proc = $this->invokeParatest(
+            'passing-tests',
+            ['path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php']
+        );
         $this->assertTestsPassed($proc, 1, 1);
     }
 
@@ -284,14 +303,16 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testUsingDefaultLoadedConfiguration()
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests',
+        $this->assertTestsPassed($this->invokeParatest(
+            'passing-tests',
             ['functional']
         ));
     }
 
     public function testEachTestRunsExactlyOnceOnChainDependencyOnFunctionalMode()
     {
-        $proc = $this->invokeParatest('passing-tests/DependsOnChain.php',
+        $proc = $this->invokeParatest(
+            'passing-tests/DependsOnChain.php',
             ['bootstrap' => BOOTSTRAP, 'functional']
         );
         $this->assertTestsPassed($proc, 5, 5);
@@ -299,7 +320,8 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testEachTestRunsExactlyOnceOnSameDependencyOnFunctionalMode()
     {
-        $proc = $this->invokeParatest('passing-tests/DependsOnSame.php',
+        $proc = $this->invokeParatest(
+            'passing-tests/DependsOnSame.php',
             ['bootstrap' => BOOTSTRAP, 'functional']
         );
         $this->assertTestsPassed($proc, 3, 3);
@@ -307,7 +329,8 @@ class PHPUnitTest extends FunctionalTestBase
 
     public function testFunctionalModeEachTestCalledOnce()
     {
-        $proc = $this->invokeParatest('passing-tests/FunctionalModeEachTestCalledOnce.php',
+        $proc = $this->invokeParatest(
+            'passing-tests/FunctionalModeEachTestCalledOnce.php',
             ['bootstrap' => BOOTSTRAP, 'functional']
         );
         $this->assertTestsPassed($proc, 2, 2);
