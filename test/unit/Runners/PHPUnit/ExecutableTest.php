@@ -6,7 +6,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use Symfony\Component\Process\PhpExecutableFinder;
 
-class ExecutableTestTest extends \TestBase
+class ExecutableTest extends \TestBase
 {
     /**
      * @var ExecutableTestChild
