@@ -173,8 +173,13 @@ abstract class ExecutableTest
      *
      * @return $this
      */
-    public function run(string $binary, array $options = [], array $environmentVariables = [], ?string $passthru = null, ?string $passthruPhp = null)
-    {
+    public function run(
+        string $binary,
+        array $options = [],
+        array $environmentVariables = [],
+        ?string $passthru = null,
+        ?string $passthruPhp = null
+    ) {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
 

@@ -36,17 +36,46 @@ class PHPUnit extends Tester
     public function configure(Command $command)
     {
         $command
-            ->addOption('phpunit', null, InputOption::VALUE_REQUIRED, 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>')
-            ->addOption('runner', null, InputOption::VALUE_REQUIRED, 'Runner, WrapperRunner or SqliteRunner. <comment>(default: Runner)</comment>')
+            ->addOption(
+                'phpunit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'
+            )
+            ->addOption(
+                'runner',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Runner, WrapperRunner or SqliteRunner. <comment>(default: Runner)</comment>'
+            )
             ->addOption('bootstrap', null, InputOption::VALUE_REQUIRED, 'The bootstrap file to be used by PHPUnit.')
             ->addOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The PHPUnit configuration file to use.')
             ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Only runs tests from the specified group(s).')
-            ->addOption('exclude-group', null, InputOption::VALUE_REQUIRED, 'Don\'t run tests from the specified group(s).')
-            ->addOption('stop-on-failure', null, InputOption::VALUE_NONE, 'Don\'t start any more processes after a failure.')
-            ->addOption('log-junit', null, InputOption::VALUE_REQUIRED, 'Log test execution in JUnit XML format to file.')
+            ->addOption(
+                'exclude-group',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Don\'t run tests from the specified group(s).'
+            )
+            ->addOption(
+                'stop-on-failure',
+                null,
+                InputOption::VALUE_NONE,
+                'Don\'t start any more processes after a failure.'
+            )
+            ->addOption(
+                'log-junit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Log test execution in JUnit XML format to file.'
+            )
             ->addOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.')
             ->addOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run')
-            ->addArgument('path', InputArgument::OPTIONAL, 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>')
+            ->addArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
+            )
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.')
         ;
         $this->command = $command;
@@ -147,7 +176,10 @@ class PHPUnit extends Tester
         }
 
         if (\array_key_exists('testsuite', $options)) {
-            $options['testsuite'] = Str::explodeWithCleanup(Configuration::TEST_SUITE_FILTER_SEPARATOR, $options['testsuite']);
+            $options['testsuite'] = Str::explodeWithCleanup(
+                Configuration::TEST_SUITE_FILTER_SEPARATOR,
+                $options['testsuite']
+            );
         }
 
         return $options;
@@ -235,7 +267,8 @@ class PHPUnit extends Tester
     {
         if ($input->getOption('runner')) {
             $runnerClass = $input->getOption('runner') ?: '';
-            $runnerClass = class_exists($runnerClass) ? $runnerClass : ('\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass);
+            $runnerClass = class_exists($runnerClass) ?
+                $runnerClass : ('\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass);
         } else {
             $runnerClass = Runner::class;
         }

@@ -30,7 +30,10 @@ class ExecutableTestTest extends \TestBase
         $binary = '/usr/bin/phpunit';
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals("'/usr/bin/phpunit' '--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'", $command);
+        $this->assertEquals(
+            "'/usr/bin/phpunit' '--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'",
+            $command
+        );
     }
 
     public function testGetCommandStringIncludesPassthruOptions()
@@ -40,7 +43,14 @@ class ExecutableTestTest extends \TestBase
         $passthru = "'--prepend' 'xdebug-filter.php'";
         $passthruPhp = "'-d' 'zend_extension=xdebug.so'";
 
-        $command = $this->call($this->executableTestChild, 'getFullCommandlineString', $binary, $options, $passthru, $passthruPhp);
+        $command = $this->call(
+            $this->executableTestChild,
+            'getFullCommandlineString',
+            $binary,
+            $options,
+            $passthru,
+            $passthruPhp
+        );
         // Note:
         // '--log-junit' '/tmp/PT_LKnfzA'
         // is appended by default where PT_LKnfzA is randomly generated - so we remove it from the resulting command
@@ -50,7 +60,11 @@ class ExecutableTestTest extends \TestBase
         // so we need to keep it flexible in the test
         $finder = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
-        $this->assertEquals("$phpExecutable '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' '--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'", $command);
+        $this->assertEquals(
+            "$phpExecutable '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' ".
+                "'--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'",
+            $command
+        );
     }
 
     public function testCommandRedirectsCoverage()

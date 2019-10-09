@@ -46,8 +46,14 @@ class ConfigurationTest extends \TestBase
         $configuration = new Configuration($this->fixture('phpunit-globbing.xml'));
         /** @var SuitePath[][] $suites */
         $suites = $configuration->getSuites();
-        $this->assertEquals($basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir', $suites['ParaTest Fixtures'][0]->getPath());
-        $this->assertEquals($basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir2', $suites['ParaTest Fixtures'][1]->getPath());
+        $this->assertEquals(
+            $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir',
+            $suites['ParaTest Fixtures'][0]->getPath()
+        );
+        $this->assertEquals(
+            $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir2',
+            $suites['ParaTest Fixtures'][1]->getPath()
+        );
 
         return $suites;
     }
@@ -110,6 +116,9 @@ class ConfigurationTest extends \TestBase
 
         libxml_disable_entity_loader($before);
 
-        $this->assertNull($e, 'Could not instantiate Configuration: ' . ($e instanceof \Exception ? $e->getMessage() : 'no error given'));
+        $this->assertNull(
+            $e,
+            'Could not instantiate Configuration: ' . ($e instanceof \Exception ? $e->getMessage() : 'no error given')
+        );
     }
 }

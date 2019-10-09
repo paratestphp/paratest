@@ -98,15 +98,20 @@ class LogInterpreterTest extends ResultTester
 
     public function testGetErrorsReturnsArrayOfErrorMessages()
     {
-        $errors = ["UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12"];
+        $errors = [
+            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/".
+            "test/fixtures/tests/UnitTestWithErrorTest.php:12"
+        ];
         $this->assertEquals($errors, $this->interpreter->getErrors());
     }
 
     public function testGetFailuresReturnsArrayOfFailureMessages()
     {
         $failures = [
-            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
+            "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/".
+                "home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
+            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n".
+                "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
         ];
 
         $this->assertEquals($failures, $this->interpreter->getFailures());
@@ -136,11 +141,20 @@ class LogInterpreterTest extends ResultTester
                 $this->assertEquals($case->class, 'DataProviderTest');
             }
             if ($case->name === 'testNumericDataProvider5 with data set #4') {
-                $this->assertEquals($case->file, '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest1.php');
+                $this->assertEquals(
+                    $case->file,
+                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest1.php'
+                );
             } elseif ($case->name === 'testNamedDataProvider5 with data set #4') {
-                $this->assertEquals($case->file, '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest2.php');
+                $this->assertEquals(
+                    $case->file,
+                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest2.php'
+                );
             } else {
-                $this->assertEquals($case->file, '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php');
+                $this->assertEquals(
+                    $case->file,
+                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php'
+                );
             }
         }
     }
@@ -162,7 +176,10 @@ class LogInterpreterTest extends ResultTester
     {
         $first = $suites[0];
         $this->assertEquals('UnitTestWithClassAnnotationTest', $first->name);
-        $this->assertEquals('/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php', $first->file);
+        $this->assertEquals(
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php',
+            $first->file
+        );
         $this->assertEquals('3', $first->tests);
         $this->assertEquals('3', $first->assertions);
         $this->assertEquals('1', $first->failures);

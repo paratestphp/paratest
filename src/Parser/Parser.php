@@ -49,7 +49,9 @@ class Parser
         try {
             $this->refl = new \ReflectionClass($class);
         } catch (\ReflectionException $e) {
-            throw new \InvalidArgumentException('Unable to instantiate ReflectionClass. ' . $class . ' not found in: ' . $srcPath);
+            throw new \InvalidArgumentException(
+                'Unable to instantiate ReflectionClass. ' . $class . ' not found in: ' . $srcPath
+            );
         }
     }
 
