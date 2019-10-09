@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Console\Testers;
 
+use ParaTest\Console\Testers\PHPUnit;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -67,7 +68,7 @@ class PHPUnitTest extends \TestBase
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
         ]);
-        $tester = new PHPUnit();
+        $tester = new PHPUnitTest();
         $tester->configure($testCommand);
         $this->assertEquals($definition, $testCommand->getDefinition());
     }

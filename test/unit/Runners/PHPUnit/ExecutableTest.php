@@ -15,7 +15,7 @@ class ExecutableTest extends \TestBase
 
     public function setUp(): void
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile', 'ClassNameTest');
+        $this->executableTestChild = new ExecutableTestChild('pathToFile', ['ClassNameTest']);
         parent::setUp();
     }
 
