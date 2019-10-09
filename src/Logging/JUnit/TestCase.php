@@ -57,6 +57,13 @@ class TestCase
      */
     public $errors = [];
 
+    /**
+     * List of warnings in this test case.
+     *
+     * @var array
+     */
+    public $warnings = [];
+
     /** @var array */
     public $skipped = [];
 
@@ -100,6 +107,15 @@ class TestCase
     public function addError(string $type, string $text)
     {
         $this->addDefect('errors', $type, $text);
+    }
+
+    /**
+     * @param string $type
+     * @param string $text
+     */
+    public function addWarning(string $type, string $text)
+    {
+        $this->addDefect('warnings', $type, $text);
     }
 
     /**
@@ -169,8 +185,9 @@ class TestCase
 
         $node = self::addSystemOut($node);
         $failures = $node->xpath('failure');
-        $skipped = $node->xpath('skipped');
         $errors = $node->xpath('error');
+        $warnings = $node->xpath('warning');
+        $skipped = $node->xpath('skipped');
 
         foreach ($failures as $fail) {
             $case->addFailure((string) $fail['type'], (string) $fail);
@@ -178,6 +195,10 @@ class TestCase
 
         foreach ($errors as $err) {
             $case->addError((string) $err['type'], (string) $err);
+        }
+
+        foreach ($warnings as $warning) {
+            $case->addWarning((string) $warning['type'], (string) $warning);
         }
 
         foreach ($skipped as $skip) {
