@@ -1,8 +1,15 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
+namespace ParaTest\Tests;
+
+use Exception;
+use PHPUnit;
 use PHPUnit\Runner\Version;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ReflectionClass;
 use SebastianBergmann\Environment\Runtime;
 
 class TestBase extends PHPUnit\Framework\TestCase
@@ -67,9 +74,9 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * Calls an object method even if it is protected or private.
      *
-     * @param object $object     the object to call a method on
+     * @param object $object the object to call a method on
      * @param string $methodName the method name to be called
-     * @param mixed  $args       0 or more arguments passed in the function
+     * @param mixed $args 0 or more arguments passed in the function
      *
      * @return mixed returns what the object's method call will return
      */
@@ -81,9 +88,9 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * Calls a class method even if it is protected or private.
      *
-     * @param string $class      the class to call a method on
+     * @param string $class the class to call a method on
      * @param string $methodName the method name to be called
-     * @param mixed  $args       0 or more arguments passed in the function
+     * @param mixed $args 0 or more arguments passed in the function
      *
      * @return mixed returns what the object's method call will return
      */
@@ -160,7 +167,7 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * Copy fixture file to tmp folder, cause coverage file will be deleted by merger.
      *
-     * @param string $fixture   Fixture coverage file name
+     * @param string $fixture Fixture coverage file name
      * @param string $directory
      *
      * @return string Copied coverage file
