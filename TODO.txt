@@ -1,2 +1,0 @@
-performance
-- extract Pool object, to manage all the Workers and their streams
