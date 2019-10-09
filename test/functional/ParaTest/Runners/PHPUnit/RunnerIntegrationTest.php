@@ -22,10 +22,8 @@ class RunnerIntegrationTest extends \TestBase
             'phpunit' => PHPUNIT,
             'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
             'bootstrap' => BOOTSTRAP,
+            'whitelist' => FIXTURES . DS . 'failing-tests',
         ];
-        if (ParaTestCommand::isWhitelistSupported()) {
-            $this->options['whitelist'] = FIXTURES . DS . 'failing-tests';
-        }
         $this->runner = new Runner($this->options);
     }
 

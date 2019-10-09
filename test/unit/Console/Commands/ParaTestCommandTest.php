@@ -66,10 +66,8 @@ class ParaTestCommandTest extends \TestBase
             new InputOption('passthru-php', null, InputOption::VALUE_REQUIRED,
                 'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' \'zend_extension=xdebug.so\'"'),
             new InputOption('verbose', 'v', InputOption::VALUE_REQUIRED, 'If given, debug output is printed. Example: --verbose=1'),
+            new InputOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.'),
         ];
-        if (ParaTestCommand::isWhitelistSupported()) {
-            $options[] = new InputOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
-        }
         $expected = new InputDefinition($options);
         $definition = $this->command->getDefinition();
         $this->assertEquals($expected, $definition);
