@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\ExecutableTest;
 use Symfony\Component\Process\PhpExecutableFinder;
 
-class ExecutableTest extends \TestBase
+class ExecutableTestTest extends \TestBase
 {
     /**
      * @var ExecutableTestChild
@@ -15,7 +16,7 @@ class ExecutableTest extends \TestBase
 
     public function setUp(): void
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile', ['ClassNameTest']);
+        $this->executableTestChild = new ExecutableTestChild('pathToFile', 'ClassNameTest');
         parent::setUp();
     }
 

@@ -68,7 +68,7 @@ class PHPUnitTest extends \TestBase
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
         ]);
-        $tester = new PHPUnitTest();
+        $tester = new PHPUnit();
         $tester->configure($testCommand);
         $this->assertEquals($definition, $testCommand->getDefinition());
     }
