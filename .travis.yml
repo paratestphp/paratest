@@ -50,7 +50,7 @@ after_script:
   - if [[ $CODE_COVERAGE == 'true' ]]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi;
 
 before_deploy:
-  - if [[ $BUILD_PHAR == 'true' ]]; then php box.phar compile fi;
+  - if [[ $BUILD_PHAR == 'true' ]]; then php box.phar compile; fi;
 
 deploy:
   provider: releases
