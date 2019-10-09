@@ -4,7 +4,9 @@ declare(strict_types = 1);
 
 namespace ParaTest\Tests\Functional;
 
-class EmptyRunnerStub extends \ParaTest\Runners\PHPUnit\BaseRunner
+use ParaTest\Runners\PHPUnit\BaseRunner;
+
+class EmptyRunnerStub extends BaseRunner
 {
     public function run()
     {
