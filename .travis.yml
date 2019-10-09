@@ -54,8 +54,8 @@ matrix:
 
 install:
   - if [[ $CS_CHECK == 'true' ]]; then phpenv config-rm xdebug.ini || return 0; fi;
-  - if [[ $PHPUNIT_DEV == 'true' ]]; then composer require phpunit/phpunit=*@dev; fi;
-  - if [[ $DEPS == 'lowest' ]]; then COMPOSER_ARGS='--prefer-lowest --prefer-stable'; composer update --no-interaction --prefer-dist $COMPOSER_ARGS; fi;
+  - if [[ $PHPUNIT_DEV == 'true' ]]; then composer require --no-update phpunit/phpunit=*@dev; fi;
+  - if [[ $DEPS == 'lowest' ]]; then COMPOSER_ARGS='--prefer-lowest --prefer-stable'; fi; composer update --no-interaction --prefer-dist $COMPOSER_ARGS;
   - if [[ $BUILD_PHAR == 'true' ]]; then wget https://github.com/humbug/box/releases/download/3.7.0/box.phar; fi;
   - composer install
 
