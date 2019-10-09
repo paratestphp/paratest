@@ -2,9 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace ParaTest\Tests\Functional;
-
-use ParaTest\Runners\PHPUnit\BaseRunner;
+namespace ParaTest\Runners\PHPUnit;
 
 class EmptyRunnerStub extends BaseRunner
 {
