@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Console\Testers;
+namespace ParaTest\Tests\Unit\Console\Testers;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

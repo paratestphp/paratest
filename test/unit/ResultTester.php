@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest;
+namespace ParaTest\Tests\Unit;
 
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Runners\PHPUnit\Suite;

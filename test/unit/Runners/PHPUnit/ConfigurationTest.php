@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit;
+
+use ParaTest\Runners\PHPUnit\Configuration;
+use ParaTest\Runners\PHPUnit\SuitePath;
 
 class ConfigurationTest extends \TestBase
 {

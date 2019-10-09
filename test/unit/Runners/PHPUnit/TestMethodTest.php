@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit;
+
+use ParaTest\Runners\PHPUnit\TestMethod;
 
 class TestMethodTest extends \TestBase
 {

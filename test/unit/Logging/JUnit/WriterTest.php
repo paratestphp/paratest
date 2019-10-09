@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Logging\JUnit;
+namespace ParaTest\Tests\Unit\Logging\JUnit;
 
+use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
 
 class WriterTest extends \TestBase

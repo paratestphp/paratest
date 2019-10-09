@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Coverage;
+namespace ParaTest\Tests\Unit\Coverage;
 
+use ParaTest\Coverage\CoverageMerger;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Filter;
 

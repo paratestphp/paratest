@@ -10,12 +10,12 @@ class TestFileLoader
      * The pattern used for grabbing test files. Uses the *Test.php convention
      * that PHPUnit defaults to.
      */
-    const TEST_PATTERN = '/.+Test\.php$/';
+    private const TEST_PATTERN = '/.+Test\.php$/';
 
     /**
      * Matches php files.
      */
-    const FILE_PATTERN = '/.+\.php$/';
+    private const FILE_PATTERN = '/.+\.php$/';
 
     /**
      * Used to ignore directory paths '.' and '..'.

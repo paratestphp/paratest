@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit;
+
+use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\SuiteLoader;
 
 class SuiteLoaderTest extends \TestBase
 {

@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Console\Commands;
+namespace ParaTest\Tests\Unit\Console\Commands;
 
+use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Console\Testers\Tester;
 use Symfony\Component\Console\Input\InputArgument;

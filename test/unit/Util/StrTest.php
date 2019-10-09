@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Util;
+namespace ParaTest\Tests\Unit\Util;
 
+use ParaTest\Util\Str;
 use PHPUnit\Framework\TestCase;
 
 class StrTest extends TestCase

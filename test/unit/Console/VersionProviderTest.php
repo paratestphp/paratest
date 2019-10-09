@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Console;
+namespace ParaTest\Tests\Unit\Console;
 
+use ParaTest\Console\VersionProvider;
 use PHPUnit\Framework\TestCase;
 
 /**

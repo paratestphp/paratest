@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use Symfony\Component\Process\PhpExecutableFinder;
 

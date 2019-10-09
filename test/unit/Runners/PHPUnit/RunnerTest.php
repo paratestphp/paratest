@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
+use ParaTest\Runners\PHPUnit\Configuration;
+use ParaTest\Runners\PHPUnit\ResultPrinter;
+use ParaTest\Runners\PHPUnit\Runner;
 
 class RunnerTest extends \TestBase
 {

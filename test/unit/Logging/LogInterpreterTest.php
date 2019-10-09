@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Logging;
+namespace ParaTest\Tests\Unit\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
-use ParaTest\ResultTester;
+use ParaTest\Logging\LogInterpreter;
+use ParaTest\Tests\Unit\ResultTester;
 
 class LogInterpreterTest extends ResultTester
 {

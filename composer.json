@@ -41,7 +41,8 @@
             "": "test/functional"
         },
         "psr-4": {
-            "ParaTest\\": "test/unit/"
+            "ParaTest\\Tests\\Unit": "test/unit/",
+            "ParaTest\\Tests\\Functional": "test/functional/"
         }
     },
     "scripts": {

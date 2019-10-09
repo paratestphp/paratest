@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Parser\ParsedFunction;
-use ParaTest\ResultTester;
+use ParaTest\Tests\Unit\ResultTester;
+use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\ResultPrinter;
+use ParaTest\Runners\PHPUnit\Suite;
+use ParaTest\Runners\PHPUnit\TestMethod;
 
 class ResultPrinterTest extends ResultTester
 {

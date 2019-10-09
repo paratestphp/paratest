@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Parser;
+namespace ParaTest\Tests\Unit\Parser;
+
+use ParaTest\Parser\ParsedClass;
 
 class ParsedObjectTest extends \TestBase
 {
