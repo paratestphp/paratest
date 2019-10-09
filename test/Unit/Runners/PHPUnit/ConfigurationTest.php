@@ -87,13 +87,13 @@ class ConfigurationTest extends \ParaTest\Tests\TestBase
         $this->assertCount(1, $unitSuite);
         $unitSuitePath = $unitSuite[0];
         $this->assertInstanceOf(SuitePath::class, $unitSuitePath);
-        $this->assertEquals($basePath . 'test' . DS . 'unit', $unitSuitePath->getPath());
+        $this->assertEquals($basePath . 'test' . DS . 'Unit', $unitSuitePath->getPath());
         $functionalSuite = $suites['ParaTest Functional Tests'];
         $this->assertIsArray($functionalSuite);
         $this->assertCount(1, $functionalSuite);
         $functionalSuitePath = $functionalSuite[0];
         $this->assertInstanceOf(SuitePath::class, $functionalSuitePath);
-        $this->assertEquals($basePath . 'test' . DS . 'functional', $functionalSuitePath->getPath());
+        $this->assertEquals($basePath . 'test' . DS . 'Functional', $functionalSuitePath->getPath());
     }
 
     public function testGetEnvironmentVariables()
