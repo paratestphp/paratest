@@ -65,7 +65,7 @@ class PHPUnitTest extends FunctionalTestBase
             'passing-tests',
             [
                 'configuration' => PHPUNIT_CONFIGURATION,
-                'runner' => '\ParaTest\Tests\Functional\EmptyRunnerStub',
+                'runner' => '\\ParaTest\\Tests\\Functional\\EmptyRunnerStub',
             ],
             [$cb, 'callback']
         );
