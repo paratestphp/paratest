@@ -92,42 +92,6 @@ class TestCase
     }
 
     /**
-     * @param string $type
-     * @param string $text
-     */
-    public function addFailure(string $type, string $text)
-    {
-        $this->addDefect('failures', $type, $text);
-    }
-
-    /**
-     * @param string $type
-     * @param string $text
-     */
-    public function addError(string $type, string $text)
-    {
-        $this->addDefect('errors', $type, $text);
-    }
-
-    /**
-     * @param string $type
-     * @param string $text
-     */
-    public function addWarning(string $type, string $text)
-    {
-        $this->addDefect('warnings', $type, $text);
-    }
-
-    /**
-     * @param string $type
-     * @param string $text
-     */
-    public function addSkipped(string $type, string $text)
-    {
-        $this->addDefect('skipped', $type, $text);
-    }
-
-    /**
      * Add a defect type (error or failure).
      *
      * @param string $collName the name of the collection to add to
@@ -140,28 +104,6 @@ class TestCase
             'type' => $type,
             'text' => trim($text),
         ];
-    }
-
-    /**
-     * Add systemOut result on test (if has failed or have error).
-     *
-     * @param mixed $node
-     *
-     * @return mixed
-     */
-    public static function addSystemOut(\SimpleXMLElement $node): \SimpleXMLElement
-    {
-        $sys = 'system-out';
-
-        if (!empty($node->failure)) {
-            $node->failure = (string) $node->failure . (string) $node->{$sys};
-        }
-
-        if (!empty($node->error)) {
-            $node->error = (string) $node->error . (string) $node->{$sys};
-        }
-
-        return $node;
     }
 
     /**
@@ -183,26 +125,20 @@ class TestCase
             (string) $node['time']
         );
 
-        $node = self::addSystemOut($node);
-        $failures = $node->xpath('failure');
-        $errors = $node->xpath('error');
-        $warnings = $node->xpath('warning');
-        $skipped = $node->xpath('skipped');
+        $system_output = $node->{'system-out'};
+        $defect_groups = [
+            'failures' => (array) $node->xpath('failure'),
+            'errors' => (array) $node->xpath('error'),
+            'warnings' => (array) $node->xpath('warning'),
+            'skipped' => (array) $node->xpath('skipped'),
+        ];
 
-        foreach ($failures as $fail) {
-            $case->addFailure((string) $fail['type'], (string) $fail);
-        }
-
-        foreach ($errors as $err) {
-            $case->addError((string) $err['type'], (string) $err);
-        }
-
-        foreach ($warnings as $warning) {
-            $case->addWarning((string) $warning['type'], (string) $warning);
-        }
-
-        foreach ($skipped as $skip) {
-            $case->addSkipped((string) $skip['type'], (string) $skip);
+        foreach ($defect_groups as $group => $defects) {
+            foreach ($defects as $defect) {
+                $message = (string) $defect;
+                $message .= (string) $system_output;
+                $case->addDefect($group, (string) $defect['type'], $message);
+            }
         }
 
         return $case;

@@ -17,11 +17,13 @@ class ReaderTest extends \ParaTest\Tests\TestBase
     public function setUp(): void
     {
         $this->mixedPath = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
-        $single = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
         $this->mixed = new Reader($this->mixedPath);
+        $single = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
         $this->single = new Reader($single);
         $empty = FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml';
         $this->empty = new Reader($empty);
+        $multi_errors = FIXTURES . DS . 'results' . DS . 'multiple-errors-with-system-out.xml';
+        $this->multi_errors = new Reader($multi_errors);
     }
 
     public function testInvalidPathThrowsException()
@@ -257,6 +259,29 @@ class ReaderTest extends \ParaTest\Tests\TestBase
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
             $failures[0]
+        );
+    }
+
+    /**
+     * https://github.com/paratestphp/paratest/issues/352
+     */
+    public function testGetMultiErrorsMessages()
+    {
+        $errors = $this->multi_errors->getErrors();
+        $this->assertCount(2, $errors);
+        $this->assertEquals(
+            "Risky Test\n" .
+            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
+            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
+            "Custom error log on result test with multiple errors!",
+            $errors[0]
+        );
+        $this->assertEquals(
+            "Risky Test\n" .
+            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
+            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
+            "Custom error log on result test with multiple errors!",
+            $errors[1]
         );
     }
 
