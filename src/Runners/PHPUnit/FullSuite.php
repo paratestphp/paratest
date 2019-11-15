@@ -35,7 +35,7 @@ class FullSuite extends ExecutableTest
     {
         return parent::getCommandString(
             $binary,
-            array_merge(
+            \array_merge(
                 $options,
                 [
                     'configuration' => $this->configPath,

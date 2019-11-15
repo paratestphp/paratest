@@ -29,7 +29,7 @@ abstract class BaseWorker
         ?Options $options = null
     ) {
         $bin = 'PARATEST=1 ';
-        if (is_numeric($token)) {
+        if (\is_numeric($token)) {
             $bin .= 'XDEBUG_CONFIG="true" ';
             $bin .= "TEST_TOKEN=$token ";
         }
@@ -44,13 +44,13 @@ abstract class BaseWorker
         }
         $bin .= " \"$wrapperBinary\"";
         if ($parameters) {
-            $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
+            $bin .= ' ' . \implode(' ', \array_map('escapeshellarg', $parameters));
         }
         $pipes = [];
         if ($options && $options->verbose) {
             echo "Starting WrapperWorker via: $bin\n";
         }
-        $process = proc_open($bin, self::$descriptorspec, $pipes);
+        $process = \proc_open($bin, self::$descriptorspec, $pipes);
         $this->proc = \is_resource($process) ? $process : null;
         $this->pipes = $pipes;
     }
@@ -69,7 +69,7 @@ abstract class BaseWorker
             return false;
         }
 
-        $status = proc_get_status($this->proc);
+        $status = \proc_get_status($this->proc);
 
         return $status ? $status['running'] : false;
     }
@@ -84,7 +84,7 @@ abstract class BaseWorker
         if (!$this->isStarted()) {
             return false;
         }
-        $status = proc_get_status($this->proc);
+        $status = \proc_get_status($this->proc);
 
         $this->updateStateFromAvailableOutput();
 
@@ -105,7 +105,7 @@ abstract class BaseWorker
 
     public function getCrashReport()
     {
-        $lastCommand = isset($this->commands) ? ' Last executed command: ' . end($this->commands) : '';
+        $lastCommand = isset($this->commands) ? ' Last executed command: ' . \end($this->commands) : '';
 
         return 'This worker has crashed.' . $lastCommand . PHP_EOL
             . 'Output:' . PHP_EOL
@@ -117,7 +117,7 @@ abstract class BaseWorker
 
     public function stop()
     {
-        fclose($this->pipes[0]);
+        \fclose($this->pipes[0]);
     }
 
     protected function setExitCode(array $status)
@@ -131,7 +131,7 @@ abstract class BaseWorker
 
     private function readAllStderr()
     {
-        return stream_get_contents($this->pipes[2]);
+        return \stream_get_contents($this->pipes[2]);
     }
 
     /**
@@ -142,12 +142,12 @@ abstract class BaseWorker
     private function updateStateFromAvailableOutput()
     {
         if (isset($this->pipes[1])) {
-            stream_set_blocking($this->pipes[1], false);
-            while ($chunk = fread($this->pipes[1], 4096)) {
+            \stream_set_blocking($this->pipes[1], false);
+            while ($chunk = \fread($this->pipes[1], 4096)) {
                 $this->chunks .= $chunk;
                 $this->alreadyReadOutput .= $chunk;
             }
-            $lines = explode("\n", $this->chunks);
+            $lines = \explode("\n", $this->chunks);
             // last element is not a complete line,
             // becomes part of a line completed later
             $this->chunks = $lines[\count($lines) - 1];
@@ -155,11 +155,11 @@ abstract class BaseWorker
             // delivering complete lines to this Worker
             foreach ($lines as $line) {
                 $line .= "\n";
-                if (strstr($line, "FINISHED\n")) {
+                if (\strstr($line, "FINISHED\n")) {
                     --$this->inExecution;
                 }
             }
-            stream_set_blocking($this->pipes[1], true);
+            \stream_set_blocking($this->pipes[1], true);
         }
     }
 }

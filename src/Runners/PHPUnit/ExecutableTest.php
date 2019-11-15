@@ -86,7 +86,7 @@ abstract class ExecutableTest
     public function getTempFile(): string
     {
         if (null === $this->temp) {
-            $this->temp = tempnam(sys_get_temp_dir(), 'PT_');
+            $this->temp = \tempnam(\sys_get_temp_dir(), 'PT_');
         }
 
         return $this->temp;
@@ -119,7 +119,7 @@ abstract class ExecutableTest
     public function deleteFile()
     {
         $outputFile = $this->getTempFile();
-        unlink($outputFile);
+        \unlink($outputFile);
     }
 
     /**
@@ -188,11 +188,11 @@ abstract class ExecutableTest
         $this->assertValidCommandLineLength($command);
         $this->setLastCommand($command);
 
-        $this->process = method_exists(Process::class, 'fromShellCommandline') ?
+        $this->process = \method_exists(Process::class, 'fromShellCommandline') ?
             Process::fromShellCommandline($command, null, $environmentVariables) :
             new Process($command, null, $environmentVariables);
 
-        if (method_exists($this->process, 'inheritEnvironmentVariables')) {
+        if (\method_exists($this->process, 'inheritEnvironmentVariables')) {
             // no such method in 3.0, but emits warning if this isn't done in 3.3
             $this->process->inheritEnvironmentVariables();
         }
@@ -227,7 +227,7 @@ abstract class ExecutableTest
         }
         $args['phpunit'] = $this->command($binary, $options, $passthru);
 
-        $command = implode(' ', $args);
+        $command = \implode(' ', $args);
 
         return $command;
     }
@@ -253,7 +253,7 @@ abstract class ExecutableTest
      */
     public function command(string $binary, array $options = [], ?string $passthru = null): string
     {
-        $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
+        $options = \array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         $options = $this->redirectCoverageOption($options);
 
         $cmd = $this->getCommandString($binary, $options, $passthru);
@@ -269,7 +269,7 @@ abstract class ExecutableTest
     public function getCoverageFileName(): string
     {
         if ($this->coverageFileName === null) {
-            $this->coverageFileName = tempnam(sys_get_temp_dir(), 'CV_');
+            $this->coverageFileName = \tempnam(\sys_get_temp_dir(), 'CV_');
         }
 
         return $this->coverageFileName;

@@ -144,13 +144,13 @@ class PHPUnit extends Tester
      */
     protected function getConfig(InputInterface $input)
     {
-        $cwd = getcwd() . \DIRECTORY_SEPARATOR;
+        $cwd = \getcwd() . \DIRECTORY_SEPARATOR;
 
         if ($input->getOption('configuration')) {
             $configFilename = $input->getOption('configuration');
-        } elseif (file_exists($cwd . 'phpunit.xml.dist')) {
+        } elseif (\file_exists($cwd . 'phpunit.xml.dist')) {
             $configFilename = $cwd . 'phpunit.xml.dist';
-        } elseif (file_exists($cwd . 'phpunit.xml')) {
+        } elseif (\file_exists($cwd . 'phpunit.xml')) {
             $configFilename = $cwd . 'phpunit.xml';
         } else {
             return false;
@@ -174,11 +174,11 @@ class PHPUnit extends Tester
         $this->requireBootstrap($bootstrap);
 
         if ($this->hasCoverage($options)) {
-            $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');
+            $options['coverage-php'] = \tempnam(\sys_get_temp_dir(), 'paratest_');
         }
 
         if ($path) {
-            $options = array_merge(['path' => $path], $options);
+            $options = \array_merge(['path' => $path], $options);
         }
 
         if (\array_key_exists('testsuite', $options)) {
@@ -205,8 +205,8 @@ class PHPUnit extends Tester
             return;
         }
 
-        if (!file_exists($file)) {
-            $message = sprintf('Bootstrap specified but could not be found (%s)', $file);
+        if (!\file_exists($file)) {
+            $message = \sprintf('Bootstrap specified but could not be found (%s)', $file);
             throw new \RuntimeException($message);
         }
 
@@ -222,9 +222,9 @@ class PHPUnit extends Tester
      */
     protected function scopedRequire(string $file)
     {
-        $cwd = getcwd();
+        $cwd = \getcwd();
         require_once $file;
-        chdir($cwd);
+        \chdir($cwd);
     }
 
     /**
@@ -273,13 +273,13 @@ class PHPUnit extends Tester
     {
         if ($input->getOption('runner')) {
             $runnerClass = $input->getOption('runner') ?: '';
-            $runnerClass = class_exists($runnerClass) ?
+            $runnerClass = \class_exists($runnerClass) ?
                 $runnerClass : ('\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass);
         } else {
             $runnerClass = Runner::class;
         }
 
-        if (!class_exists($runnerClass)) {
+        if (!\class_exists($runnerClass)) {
             throw new InvalidArgumentException('Selected runner does not exist.');
         }
 

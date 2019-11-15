@@ -38,8 +38,8 @@ class Configuration
     public function __construct(string $path)
     {
         $this->path = $path;
-        if (file_exists($path)) {
-            $this->xml = simplexml_load_string(file_get_contents($path));
+        if (\file_exists($path)) {
+            $this->xml = \simplexml_load_string(\file_get_contents($path));
         }
     }
 
@@ -94,7 +94,7 @@ class Configuration
         $nodes = $this->xml->xpath('//testsuites/testsuite');
 
         foreach ($nodes as $node) {
-            $suites = array_merge_recursive($suites, $this->getSuiteByName((string) $node['name']));
+            $suites = \array_merge_recursive($suites, $this->getSuiteByName((string) $node['name']));
         }
 
         return $suites;
@@ -129,7 +129,7 @@ class Configuration
      */
     public function getSuiteByName(string $suiteName)
     {
-        $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
+        $nodes = $this->xml->xpath(\sprintf('//testsuite[@name="%s"]', $suiteName));
 
         $suites = [];
         $excludedPaths = [];
@@ -143,7 +143,7 @@ class Configuration
                             }
                             break;
                         case 'testsuite':
-                            $suites = array_merge_recursive($suites, $this->getSuiteByName((string) $nodeContent));
+                            $suites = \array_merge_recursive($suites, $this->getSuiteByName((string) $nodeContent));
                             break;
                         case 'directory':
                             // Replicate behaviour of PHPUnit
@@ -191,7 +191,7 @@ class Configuration
      */
     public function getSuitePaths(string $path)
     {
-        $real = realpath($this->getConfigDir() . $path);
+        $real = \realpath($this->getConfigDir() . $path);
 
         if ($real !== false) {
             return [$real];
@@ -199,8 +199,8 @@ class Configuration
 
         if ($this->isGlobRequired($path)) {
             $paths = [];
-            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
-                if (($path = realpath($path)) !== false) {
+            foreach (\glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
+                if (($path = \realpath($path)) !== false) {
                     $paths[] = $path;
                 }
             }
@@ -240,6 +240,6 @@ class Configuration
      */
     public function isGlobRequired(string $path): bool
     {
-        return strpos($path, '*') !== false;
+        return \strpos($path, '*') !== false;
     }
 }

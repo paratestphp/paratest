@@ -65,6 +65,6 @@ class SuitePath
      */
     public function getPattern(): string
     {
-        return '|' . preg_quote($this->getSuffix()) . '$|';
+        return '|' . \preg_quote($this->getSuffix()) . '$|';
     }
 }

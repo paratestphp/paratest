@@ -44,17 +44,17 @@ class Reader extends MetaProvider
 
     public function __construct(string $logFile)
     {
-        if (!file_exists($logFile)) {
+        if (!\file_exists($logFile)) {
             throw new \InvalidArgumentException("Log file $logFile does not exist");
         }
 
         $this->logFile = $logFile;
-        if (filesize($logFile) === 0) {
+        if (\filesize($logFile) === 0) {
             throw new \InvalidArgumentException(
                 "Log file $logFile is empty. This means a PHPUnit process has crashed."
             );
         }
-        $logFileContents = file_get_contents($this->logFile);
+        $logFileContents = \file_get_contents($this->logFile);
         $this->xml = new \SimpleXMLElement($logFileContents);
         $this->init();
     }
@@ -119,7 +119,7 @@ class Reader extends MetaProvider
      */
     public function removeLog()
     {
-        unlink($this->logFile);
+        \unlink($this->logFile);
     }
 
     /**
@@ -148,7 +148,7 @@ class Reader extends MetaProvider
             $this->addSuite($properties, $testCases);
         } else {
             $suite = $this->suites[0];
-            $suite->cases = array_merge($suite->cases, $testCases);
+            $suite->cases = \array_merge($suite->cases, $testCases);
         }
     }
 
@@ -178,7 +178,7 @@ class Reader extends MetaProvider
     {
         $cb = [TestCase::class, 'caseFromNode'];
 
-        return array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
+        return \array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
             $testCases[] = \call_user_func_array($cb, [$c]);
             $result['name'] = (string) $c['class'];
             $result['file'] = (string) $c['file'];
@@ -223,7 +223,7 @@ class Reader extends MetaProvider
     {
         $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
         $this->isSingle = \count($suiteNodes) === 0;
-        $node = current($this->xml->xpath('/testsuites/testsuite'));
+        $node = \current($this->xml->xpath('/testsuites/testsuite'));
 
         if ($node !== false) {
             $this->suites[] = TestSuite::suiteFromNode($node);

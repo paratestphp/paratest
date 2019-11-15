@@ -77,9 +77,9 @@ abstract class BaseRunner
     {
         if (
             isset($this->options->filtered['configuration']) &&
-            !file_exists($this->options->filtered['configuration']->getPath())
+            !\file_exists($this->options->filtered['configuration']->getPath())
         ) {
-            $this->printer->println(sprintf('Could not read "%s".', $this->options->filtered['configuration']));
+            $this->printer->println(\sprintf('Could not read "%s".', $this->options->filtered['configuration']));
             exit(1);
         }
     }
@@ -94,7 +94,7 @@ abstract class BaseRunner
     {
         $loader->load($this->options->path);
         $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
-        $this->pending = array_merge($this->pending, $executables);
+        $this->pending = \array_merge($this->pending, $executables);
         foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);
         }
@@ -191,7 +191,7 @@ abstract class BaseRunner
         $variables = $this->options->filtered['configuration']->getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            putenv(sprintf('%s=%s', $key, $value));
+            \putenv(\sprintf('%s=%s', $key, $value));
 
             $_ENV[$key] = $value;
         }

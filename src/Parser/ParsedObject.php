@@ -54,12 +54,12 @@ abstract class ParsedObject
      */
     public function hasAnnotation(string $annotation, string $value = null): bool
     {
-        $pattern = sprintf(
+        $pattern = \sprintf(
             '/@%s%s/',
             $annotation,
             null !== $value ? "[\s]+$value" : '\b'
         );
 
-        return 1 === preg_match($pattern, $this->docBlock);
+        return 1 === \preg_match($pattern, $this->docBlock);
     }
 }

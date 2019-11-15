@@ -101,12 +101,12 @@ class TestFileLoader
             $path = $path->getPath();
         }
 
-        if (!file_exists($path)) {
+        if (!\file_exists($path)) {
             throw new \InvalidArgumentException("$path is not a valid directory or file");
         }
-        if (is_dir($path)) {
+        if (\is_dir($path)) {
             $this->loadDir($path, $pattern);
-        } elseif (file_exists($path)) {
+        } elseif (\file_exists($path)) {
             $this->loadFile($path);
         }
 
@@ -121,7 +121,7 @@ class TestFileLoader
      */
     private function loadDir(string $path, string $pattern = self::TEST_PATTERN)
     {
-        $files = scandir($path);
+        $files = \scandir($path);
         foreach ($files as $file) {
             $this->tryLoadTests($path . \DIRECTORY_SEPARATOR . $file, $pattern);
         }
@@ -145,7 +145,7 @@ class TestFileLoader
      */
     private function tryLoadTests(string $path, string $pattern = self::TEST_PATTERN)
     {
-        if (preg_match($pattern, $path)) {
+        if (\preg_match($pattern, $path)) {
             if ($this->excludingFiles) {
                 $this->excludedFiles[$path] = $path;
             } elseif (!\array_key_exists($path, $this->excludedFiles)) {
@@ -153,7 +153,7 @@ class TestFileLoader
             }
         }
 
-        if (!preg_match(self::$dotPattern, $path) && is_dir($path)) {
+        if (!\preg_match(self::$dotPattern, $path) && \is_dir($path)) {
             $this->loadDir($path, $pattern);
         }
     }

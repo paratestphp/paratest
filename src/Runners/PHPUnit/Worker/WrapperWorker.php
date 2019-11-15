@@ -30,7 +30,7 @@ class WrapperWorker extends BaseWorker
     {
         $this->checkStarted();
         $this->commands[] = $testCmd;
-        fwrite($this->pipes[0], $testCmd . "\n");
+        \fwrite($this->pipes[0], $testCmd . "\n");
         ++$this->inExecution;
     }
 
@@ -69,7 +69,7 @@ class WrapperWorker extends BaseWorker
 
     public function stop()
     {
-        fwrite($this->pipes[0], "EXIT\n");
+        \fwrite($this->pipes[0], "EXIT\n");
         parent::stop();
     }
 
@@ -83,9 +83,9 @@ class WrapperWorker extends BaseWorker
             return;
         }
         $tellsUsItHasFinished = false;
-        stream_set_blocking($this->pipes[1], true);
-        while ($line = fgets($this->pipes[1])) {
-            if (strstr($line, "FINISHED\n")) {
+        \stream_set_blocking($this->pipes[1], true);
+        while ($line = \fgets($this->pipes[1])) {
+            if (\strstr($line, "FINISHED\n")) {
                 $tellsUsItHasFinished = true;
                 --$this->inExecution;
                 break;
@@ -104,9 +104,9 @@ class WrapperWorker extends BaseWorker
      */
     public function waitForStop()
     {
-        $status = proc_get_status($this->proc);
+        $status = \proc_get_status($this->proc);
         while ($status['running']) {
-            $status = proc_get_status($this->proc);
+            $status = \proc_get_status($this->proc);
             $this->setExitCode($status);
         }
     }

@@ -100,7 +100,7 @@ class Writer
      */
     public function write(string $path)
     {
-        file_put_contents($path, $this->getXml());
+        \file_put_contents($path, $this->getXml());
     }
 
     /**
@@ -115,9 +115,9 @@ class Writer
     protected function appendSuite(\DOMElement $root, TestSuite $suite): \DOMElement
     {
         $suiteNode = $this->document->createElement('testsuite');
-        $vars = get_object_vars($suite);
+        $vars = \get_object_vars($suite);
         foreach ($vars as $name => $value) {
-            if (preg_match(static::$suiteAttrs, $name)) {
+            if (\preg_match(static::$suiteAttrs, $name)) {
                 $suiteNode->setAttribute($name, (string) $value);
             }
         }
@@ -138,9 +138,9 @@ class Writer
     protected function appendCase(\DOMElement $suiteNode, TestCase $case): \DOMElement
     {
         $caseNode = $this->document->createElement('testcase');
-        $vars = get_object_vars($case);
+        $vars = \get_object_vars($case);
         foreach ($vars as $name => $value) {
-            if (preg_match(static::$caseAttrs, $name)) {
+            if (\preg_match(static::$caseAttrs, $name)) {
                 if ($this->isEmptyLineAttribute($name, $value)) {
                     continue;
                 }
@@ -164,7 +164,7 @@ class Writer
     protected function appendDefects(\DOMElement $caseNode, array $defects, string $type)
     {
         foreach ($defects as $defect) {
-            $defectNode = $this->document->createElement($type, htmlspecialchars($defect['text'], ENT_XML1) . "\n");
+            $defectNode = $this->document->createElement($type, \htmlspecialchars($defect['text'], ENT_XML1) . "\n");
             $defectNode->setAttribute('type', $defect['type']);
             $caseNode->appendChild($defectNode);
         }
@@ -204,7 +204,7 @@ class Writer
      */
     protected function getSuiteRootAttributes(array $suites)
     {
-        return array_reduce($suites, function (array $result, TestSuite $suite): array {
+        return \array_reduce($suites, function (array $result, TestSuite $suite): array {
             $result['tests'] += $suite->tests;
             $result['assertions'] += $suite->assertions;
             $result['failures'] += $suite->failures;
@@ -213,7 +213,7 @@ class Writer
             $result['time'] += $suite->time;
 
             return $result;
-        }, array_merge(['name' => $this->name], self::$defaultSuite));
+        }, \array_merge(['name' => $this->name], self::$defaultSuite));
     }
 
     /**

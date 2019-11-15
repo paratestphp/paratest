@@ -35,12 +35,12 @@ class Parser
 
     public function __construct(string $srcPath)
     {
-        if (!file_exists($srcPath)) {
+        if (!\file_exists($srcPath)) {
             throw new \InvalidArgumentException('file not found: ' . $srcPath);
         }
 
         $this->path = $srcPath;
-        $declaredClasses = get_declared_classes();
+        $declaredClasses = \get_declared_classes();
         require_once $this->path;
         $class = $this->getClassName($this->path, $declaredClasses);
         if (!$class) {
@@ -80,7 +80,7 @@ class Parser
      */
     private function getCleanReflectionName(): string
     {
-        return str_replace("\x00", '', $this->refl->getName());
+        return \str_replace("\x00", '', $this->refl->getName());
     }
 
     /**
@@ -93,9 +93,9 @@ class Parser
         $tests = [];
         $methods = $this->refl->getMethods(\ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
-            $hasTestName = preg_match(self::$testName, $method->getName());
+            $hasTestName = \preg_match(self::$testName, $method->getName());
             $docComment = $method->getDocComment();
-            $hasTestAnnotation = false !== $docComment && preg_match(self::$testAnnotation, $docComment);
+            $hasTestAnnotation = false !== $docComment && \preg_match(self::$testAnnotation, $docComment);
             $isTestMethod = $hasTestName || $hasTestAnnotation;
             if ($isTestMethod) {
                 $tests[] = new ParsedFunction((string) $method->getDocComment(), 'public', $method->getName());
@@ -116,9 +116,9 @@ class Parser
      */
     private function getClassName(string $filename, array $previousDeclaredClasses)
     {
-        $filename = realpath($filename);
-        $classes = get_declared_classes();
-        $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
+        $filename = \realpath($filename);
+        $classes = \get_declared_classes();
+        $newClasses = \array_values(\array_diff($classes, $previousDeclaredClasses));
 
         $className = $this->searchForUnitTestClass($newClasses, $filename);
         if (isset($className)) {
@@ -167,12 +167,12 @@ class Parser
      */
     private function classNameMatchesFileName(string $filename, string $className): bool
     {
-        return strpos($filename, $className) !== false
-            || strpos($filename, $this->invertSlashes($className)) !== false;
+        return \strpos($filename, $className) !== false
+            || \strpos($filename, $this->invertSlashes($className)) !== false;
     }
 
     private function invertSlashes(string $className): string
     {
-        return str_replace('\\', '/', $className);
+        return \str_replace('\\', '/', $className);
     }
 }
