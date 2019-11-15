@@ -51,7 +51,7 @@ class WrapperRunner extends BaseRunner
 
     protected function startWorkers()
     {
-        $wrapper = realpath(__DIR__ . '/../../../bin/phpunit-wrapper');
+        $wrapper = \realpath(__DIR__ . '/../../../bin/phpunit-wrapper');
         for ($i = 1; $i <= $this->options->processes; ++$i) {
             $worker = new WrapperWorker();
             if ($this->options->noTestTokens) {
@@ -59,7 +59,7 @@ class WrapperRunner extends BaseRunner
                 $uniqueToken = null;
             } else {
                 $token = $i;
-                $uniqueToken = uniqid();
+                $uniqueToken = \uniqid();
             }
             $worker->start($wrapper, $token, $uniqueToken, [], $this->options);
             $this->streams[] = $worker->stdout();
@@ -78,7 +78,7 @@ class WrapperRunner extends BaseRunner
                 if ($worker->isFree()) {
                     try {
                         $this->flushWorker($worker);
-                        $pending = array_shift($this->pending);
+                        $pending = \array_shift($this->pending);
                         if ($pending) {
                             $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
                         }
@@ -132,7 +132,7 @@ class WrapperRunner extends BaseRunner
     {
         $write = [];
         $except = [];
-        $result = stream_select($modified, $write, $except, 1);
+        $result = \stream_select($modified, $write, $except, 1);
         if ($result === false) {
             throw new \RuntimeException('stream_select() returned an error while waiting for all workers to finish.');
         }
@@ -174,7 +174,7 @@ class WrapperRunner extends BaseRunner
     private function streamsOf(array $workers): array
     {
         $streams = [];
-        foreach (array_keys($workers) as $index) {
+        foreach (\array_keys($workers) as $index) {
             $streams[$index] = $this->streams[$index];
         }
 

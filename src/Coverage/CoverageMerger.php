@@ -48,7 +48,7 @@ class CoverageMerger
 
         $coverageFile->fseek(0);
         // the PHPUnit 3.x and below
-        return unserialize($coverageFile->fread($coverageFile->getSize()));
+        return \unserialize($coverageFile->fread($coverageFile->getSize()));
     }
 
     /**
@@ -60,7 +60,7 @@ class CoverageMerger
      */
     public function addCoverageFromFile(string $coverageFile = null)
     {
-        if ($coverageFile === null || !file_exists($coverageFile)) {
+        if ($coverageFile === null || !\file_exists($coverageFile)) {
             return;
         }
 
@@ -71,7 +71,7 @@ class CoverageMerger
 
             $xdebug = \function_exists('xdebug_get_code_coverage');
             $phpdbg = \PHP_SAPI === 'phpdbg';
-            $pcov = \extension_loaded('pcov') && ini_get('pcov.enabled');
+            $pcov = \extension_loaded('pcov') && \ini_get('pcov.enabled');
 
             if (!$xdebug && !$phpdbg && !$pcov) {
                 $extra = 'No coverage driver found! Enable one of Xdebug, PHPDBG or PCOV for coverage.';
@@ -84,7 +84,7 @@ class CoverageMerger
 
         $this->addCoverage($this->getCoverageObject($file));
 
-        unlink($file->getRealPath());
+        \unlink($file->getRealPath());
     }
 
     /**
@@ -110,9 +110,9 @@ class CoverageMerger
     private function limitCoverageTests(CodeCoverage $coverage): void
     {
         if ($this->test_limit) {
-            $coverage->setData(array_map(
+            $coverage->setData(\array_map(
                 function (array $lines) {
-                    return array_map(function ($value) {
+                    return \array_map(function ($value) {
                         if (!\is_array($value)) {
                             return $value;
                         }

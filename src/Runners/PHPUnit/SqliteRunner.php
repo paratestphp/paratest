@@ -21,7 +21,7 @@ class SqliteRunner extends WrapperRunner
     {
         parent::__construct($opts);
 
-        $this->dbFileName = (string) ($opts['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
+        $this->dbFileName = (string) ($opts['database'] ?? \tempnam(\sys_get_temp_dir(), 'paratest_db_'));
         $this->db = new PDO('sqlite:' . $this->dbFileName);
     }
 
@@ -29,7 +29,7 @@ class SqliteRunner extends WrapperRunner
     {
         if ($this->db !== null) {
             unset($this->db);
-            unlink($this->dbFileName);
+            \unlink($this->dbFileName);
         }
     }
 
@@ -50,7 +50,7 @@ class SqliteRunner extends WrapperRunner
      */
     protected function startWorkers(): void
     {
-        $wrapper = realpath(__DIR__ . '/../../../bin/phpunit-sqlite-wrapper');
+        $wrapper = \realpath(__DIR__ . '/../../../bin/phpunit-sqlite-wrapper');
 
         for ($i = 1; $i <= $this->options->processes; ++$i) {
             $worker = new SqliteWorker($this->dbFileName);
@@ -59,7 +59,7 @@ class SqliteRunner extends WrapperRunner
                 $uniqueToken = null;
             } else {
                 $token = $i;
-                $uniqueToken = uniqid();
+                $uniqueToken = \uniqid();
             }
             $worker->start($wrapper, $token, $uniqueToken);
             $this->workers[] = $worker;
@@ -77,7 +77,7 @@ class SqliteRunner extends WrapperRunner
                     unset($this->workers[$key]);
                 }
             }
-            usleep(10000);
+            \usleep(10000);
             $this->printOutput();
         } while (\count($this->workers) > 0);
     }
@@ -146,7 +146,7 @@ class SqliteRunner extends WrapperRunner
             . '----------------------' . PHP_EOL
             . 'Failed test command(s):' . PHP_EOL
             . '----------------------' . PHP_EOL
-            . implode(PHP_EOL, $this->db->query('SELECT command FROM tests')->fetchAll(PDO::FETCH_COLUMN))
+            . \implode(PHP_EOL, $this->db->query('SELECT command FROM tests')->fetchAll(PDO::FETCH_COLUMN))
         );
     }
 }

@@ -43,7 +43,7 @@ final class VersionProvider
     public function getGitVersion()
     {
         $cmd = 'git describe --tags --always --first-parent';
-        $process = method_exists(Process::class, 'fromShellCommandline') ?
+        $process = \method_exists(Process::class, 'fromShellCommandline') ?
             Process::fromShellCommandline($cmd, __DIR__) :
             new Process($cmd, __DIR__);
 
@@ -51,7 +51,7 @@ final class VersionProvider
             return null;
         }
 
-        return trim($process->getOutput());
+        return \trim($process->getOutput());
     }
 
     public function getComposerInstalledVersion($package)
@@ -60,12 +60,12 @@ final class VersionProvider
             return;
         }
 
-        $result = file_get_contents($path);
+        $result = \file_get_contents($path);
         if (false === $result) {
             return;
         }
 
-        $struct = json_decode($result, true, 16);
+        $struct = \json_decode($result, true, 16);
         if (!\is_array($struct)) {
             return;
         }
@@ -101,7 +101,7 @@ final class VersionProvider
 
         // first hit makes it
         foreach ($paths as $path) {
-            if (file_exists($path) && is_readable($path)) {
+            if (\file_exists($path) && \is_readable($path)) {
                 return $path;
             }
         }

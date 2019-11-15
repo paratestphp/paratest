@@ -65,7 +65,7 @@ class TestMethod extends ExecutableTest
      */
     public function getName(): string
     {
-        return implode('|', $this->filters);
+        return \implode('|', $this->filters);
     }
 
     /**
@@ -80,10 +80,10 @@ class TestMethod extends ExecutableTest
      */
     protected function prepareOptions(array $options): array
     {
-        $re = array_reduce($this->filters, function ($r, $v) {
-            $isDataSet = strpos($v, ' with data set ') !== false;
+        $re = \array_reduce($this->filters, function ($r, $v) {
+            $isDataSet = \strpos($v, ' with data set ') !== false;
 
-            return ($r ? $r . '|' : '') . preg_quote($v, '/') . ($isDataSet ? '$' : "(?:\s|\$)");
+            return ($r ? $r . '|' : '') . \preg_quote($v, '/') . ($isDataSet ? '$' : "(?:\s|\$)");
         });
         $options['filter'] = '/' . $re . '/';
 

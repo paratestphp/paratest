@@ -49,7 +49,7 @@ class Runner extends BaseRunner
                 }
             }
             $this->fillRunQueue();
-            usleep(10000);
+            \usleep(10000);
         }
         $this->complete();
     }
@@ -88,7 +88,7 @@ class Runner extends BaseRunner
                     'TEST_TOKEN' => $tokenData['token'],
                     'UNIQUE_TEST_TOKEN' => $tokenData['unique']
                 ] + Habitat::getAll();
-                $this->running[$tokenData['token']] = array_shift($this->pending)
+                $this->running[$tokenData['token']] = \array_shift($this->pending)
                     ->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
                 if ($opts->verbose) {
                     $cmd = $this->running[$tokenData['token']];
@@ -125,7 +125,7 @@ class Runner extends BaseRunner
             if (!$errorOutput) {
                 $errorOutput = $test->getStdout();
             }
-            throw new \Exception(sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
+            throw new \Exception(\sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
         }
         $this->printer->printFeedback($test);
         if ($this->hasCoverage()) {
@@ -158,7 +158,7 @@ class Runner extends BaseRunner
     {
         $this->tokens = [];
         for ($i = 1; $i <= $this->options->processes; ++$i) {
-            $this->tokens[$i] = ['token' => $i, 'unique' => uniqid(sprintf('%s_', $i)), 'available' => true];
+            $this->tokens[$i] = ['token' => $i, 'unique' => \uniqid(\sprintf('%s_', $i)), 'available' => true];
         }
     }
 
@@ -186,10 +186,10 @@ class Runner extends BaseRunner
      */
     protected function releaseToken($tokenIdentifier)
     {
-        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+        $filtered = \array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
             return $val['token'] === $tokenIdentifier;
         });
-        $keys = array_keys($filtered);
+        $keys = \array_keys($filtered);
         $this->tokens[$keys[0]]['available'] = true;
     }
 
@@ -200,10 +200,10 @@ class Runner extends BaseRunner
      */
     protected function acquireToken($tokenIdentifier)
     {
-        $filtered = array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+        $filtered = \array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
             return $val['token'] === $tokenIdentifier;
         });
-        $keys = array_keys($filtered);
+        $keys = \array_keys($filtered);
         $this->tokens[$keys[0]]['available'] = false;
     }
 

@@ -23,7 +23,7 @@ class LogInterpreter extends MetaProvider
      */
     public function rewind()
     {
-        reset($this->readers);
+        \reset($this->readers);
     }
 
     /**
@@ -78,10 +78,10 @@ class LogInterpreter extends MetaProvider
         $cases = [];
         foreach ($this->readers as $reader) {
             foreach ($reader->getSuites() as $suite) {
-                $cases = array_merge($cases, $suite->cases);
+                $cases = \array_merge($cases, $suite->cases);
                 foreach ($suite->suites as $nested) {
                     $this->extendEmptyCasesFromSuites($nested->cases, $suite);
-                    $cases = array_merge($cases, $nested->cases);
+                    $cases = \array_merge($cases, $nested->cases);
                 }
             }
         }
@@ -133,7 +133,7 @@ class LogInterpreter extends MetaProvider
             $dict[$case->file]->file = $case->file;
         }
 
-        return array_values($dict);
+        return \array_values($dict);
     }
 
     /**
@@ -147,7 +147,7 @@ class LogInterpreter extends MetaProvider
     {
         return ($property === 'time')
                ? (float) $this->accumulate('getTotalTime')
-               : (int) $this->accumulate('getTotal' . ucfirst($property));
+               : (int) $this->accumulate('getTotal' . \ucfirst($property));
     }
 
     /**
@@ -160,7 +160,7 @@ class LogInterpreter extends MetaProvider
      */
     protected function getMessages(string $type): array
     {
-        return $this->mergeMessages('get' . ucfirst($type));
+        return $this->mergeMessages('get' . \ucfirst($type));
     }
 
     /**
@@ -175,7 +175,7 @@ class LogInterpreter extends MetaProvider
     {
         $messages = [];
         foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->{$method}());
+            $messages = \array_merge($messages, $reader->{$method}());
         }
 
         return $messages;
@@ -191,7 +191,7 @@ class LogInterpreter extends MetaProvider
      */
     private function accumulate(string $method)
     {
-        return array_reduce($this->readers, function ($result, $reader) use ($method) {
+        return \array_reduce($this->readers, function ($result, $reader) use ($method) {
             $result += $reader->$method();
 
             return $result;

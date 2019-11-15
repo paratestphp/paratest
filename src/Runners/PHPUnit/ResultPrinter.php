@@ -138,7 +138,7 @@ class ResultPrinter
         $this->maxColumn = $this->numberOfColumns
                          + (\DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
                          - \strlen($this->getProgress());
-        printf(
+        \printf(
             "\nRunning phpunit in %d process%s with %s%s\n\n",
             $options->processes,
             $options->processes > 1 ? 'es' : '',
@@ -146,7 +146,7 @@ class ResultPrinter
             $options->functional ? '. Functional mode is ON.' : ''
         );
         if (isset($options->filtered['configuration'])) {
-            printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
+            \printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
         }
         $this->timer->start();
         $this->colors = $options->colors;
@@ -195,7 +195,7 @@ class ResultPrinter
         try {
             $reader = new Reader($test->getTempFile());
         } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException(sprintf(
+            throw new \RuntimeException(\sprintf(
                 "%s\n" .
                 "The process: %s\n" .
                 "This means a PHPUnit process was unable to run \"%s\"\n",
@@ -404,7 +404,7 @@ class ResultPrinter
         if ($count === 0) {
             return '';
         }
-        $output = sprintf(
+        $output = \sprintf(
             "There %s %d %s%s:\n",
             ($count === 1) ? 'was' : 'were',
             $count,
@@ -413,7 +413,7 @@ class ResultPrinter
         );
 
         for ($i = 1; $i <= \count($defects); ++$i) {
-            $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
+            $output .= \sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
         }
 
         return $output;
@@ -424,11 +424,11 @@ class ResultPrinter
      */
     protected function getProgress(): string
     {
-        return sprintf(
+        return \sprintf(
             ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
             $this->casesProcessed,
             $this->totalCases,
-            floor(($this->totalCases ? $this->casesProcessed / $this->totalCases : 0) * 100)
+            \floor(($this->totalCases ? $this->casesProcessed / $this->totalCases : 0) * 100)
         );
     }
 
@@ -443,7 +443,7 @@ class ResultPrinter
         $formatString = "FAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
 
         return "\n" . $this->red(
-            sprintf(
+            \sprintf(
                 $formatString,
                 $this->results->getTotalTests(),
                 $this->results->getTotalAssertions(),
@@ -467,7 +467,7 @@ class ResultPrinter
         if ($this->totalSkippedOrIncomplete > 0) {
             // phpunit 4.5 produce NOT plural version for test(s) and assertion(s) in that case
             // also it shows result in standard color scheme
-            return sprintf(
+            return \sprintf(
                 "OK, but incomplete, skipped, or risky tests!\n"
                 . "Tests: %d, Assertions: %d, Incomplete: %d.\n",
                 $tests,
@@ -478,7 +478,7 @@ class ResultPrinter
 
         // phpunit 4.5 produce plural version for test(s) and assertion(s) in that case
         // also it shows result as black text on green background
-        return $this->green(sprintf(
+        return $this->green(\sprintf(
             "OK (%d test%s, %d assertion%s)\n",
             $tests,
             ($tests === 1) ? '' : 's',

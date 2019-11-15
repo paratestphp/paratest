@@ -37,9 +37,9 @@ class ParsedClass extends ParsedObject
      */
     public function getMethods(array $annotations = []): array
     {
-        $methods = array_filter($this->methods, function (ParsedFunction $method) use ($annotations): bool {
+        $methods = \array_filter($this->methods, function (ParsedFunction $method) use ($annotations): bool {
             foreach ($annotations as $a => $v) {
-                foreach (explode(',', $v) as $subValue) {
+                foreach (\explode(',', $v) as $subValue) {
                     if ($method->hasAnnotation($a, $subValue)) {
                         return true;
                     }

@@ -151,7 +151,7 @@ class Options
         if ($opts['processes'] === 'auto') {
             $opts['processes'] = self::getNumberOfCPUCores();
         } elseif ($opts['processes'] === 'half') {
-            $opts['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
+            $opts['processes'] = \intdiv(self::getNumberOfCPUCores(), 2);
         }
 
         $this->processes = $opts['processes'];
@@ -177,10 +177,10 @@ class Options
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
         $this->groups = isset($opts['group']) && $opts['group'] !== ''
-            ? explode(',', $opts['group'])
+            ? \explode(',', $opts['group'])
             : [];
         $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ''
-            ? explode(',', $opts['exclude-group'])
+            ? \explode(',', $opts['exclude-group'])
             : [];
 
         if (isset($opts['filter']) && \strlen($opts['filter']) > 0 && !$this->functional) {
@@ -259,7 +259,7 @@ class Options
 
         $phpunit = $vendor . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit' .
             \DIRECTORY_SEPARATOR . 'phpunit';
-        if (file_exists($phpunit)) {
+        if (\file_exists($phpunit)) {
             return $phpunit;
         }
 
@@ -274,7 +274,7 @@ class Options
     protected static function vendorDir(): string
     {
         $vendor = \dirname(\dirname(\dirname(__DIR__))) . \DIRECTORY_SEPARATOR . 'vendor';
-        if (!file_exists($vendor)) {
+        if (!\file_exists($vendor)) {
             $vendor = \dirname(\dirname(\dirname(\dirname(\dirname(__DIR__)))));
         }
 
@@ -287,7 +287,7 @@ class Options
      */
     protected function filterOptions(array $options): array
     {
-        $filtered = array_diff_key($options, [
+        $filtered = \array_diff_key($options, [
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
@@ -341,15 +341,15 @@ class Options
     private function getDefaultConfigurationForPath(string $path = '.', string $default = null)
     {
         if ($this->isFile($path)) {
-            return realpath($path);
+            return \realpath($path);
         }
 
-        $path = rtrim($path, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR;
+        $path = \rtrim($path, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR;
         $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
             if ($this->isFile($path . $suffix)) {
-                return realpath($path . $suffix);
+                return \realpath($path . $suffix);
             }
         }
 
@@ -377,7 +377,7 @@ class Options
      */
     private function isFile(string $file): bool
     {
-        return file_exists($file) && !is_dir($file);
+        return \file_exists($file) && !\is_dir($file);
     }
 
     /**
@@ -390,22 +390,22 @@ class Options
     public static function getNumberOfCPUCores(): int
     {
         $cores = 2;
-        if (is_file('/proc/cpuinfo')) {
+        if (\is_file('/proc/cpuinfo')) {
             // Linux (and potentially Windows with linux sub systems)
-            $cpuinfo = file_get_contents('/proc/cpuinfo');
-            preg_match_all('/^processor/m', $cpuinfo, $matches);
+            $cpuinfo = \file_get_contents('/proc/cpuinfo');
+            \preg_match_all('/^processor/m', $cpuinfo, $matches);
             $cores = \count($matches[0]);
         } elseif (\DIRECTORY_SEPARATOR === '\\') {
             // Windows
-            if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
-                fgets($process);
-                $cores = (int) fgets($process);
-                pclose($process);
+            if (($process = @\popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
+                \fgets($process);
+                $cores = (int) \fgets($process);
+                \pclose($process);
             }
-        } elseif (($process = @popen('sysctl -n hw.ncpu', 'rb')) !== false) {
+        } elseif (($process = @\popen('sysctl -n hw.ncpu', 'rb')) !== false) {
             // *nix (Linux, BSD and Mac)
-            $cores = (int) fgets($process);
-            pclose($process);
+            $cores = (int) \fgets($process);
+            \pclose($process);
         }
 
         return $cores;

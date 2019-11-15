@@ -16,10 +16,10 @@ class Str
      */
     public static function explodeWithCleanup(string $delimiter, string $string): array
     {
-        $stringValues = explode($delimiter, $string);
+        $stringValues = \explode($delimiter, $string);
         $parsedValues = [];
         foreach ($stringValues as $k => $v) {
-            $v = trim($v);
+            $v = \trim($v);
             if (empty($v)) {
                 continue;
             }
