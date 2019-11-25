@@ -38,4 +38,11 @@ interface CoverageReporterInterface
      * @param string $target Report filename
      */
     public function xml(string $target);
+
+    /**
+     * Generate Crap4J XML coverage report.
+     *
+     * @param string $target Report filename
+     */
+    public function crap4j(string $target);
 }

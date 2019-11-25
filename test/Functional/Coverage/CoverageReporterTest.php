@@ -115,6 +115,33 @@ class CoverageReporterTest extends TestBase
      *
      * @param string[] $coverageFiles
      */
+    public function testGenerateCrap4J(array $coverageFiles)
+    {
+        $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
+        $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
+
+        $coverageMerger = new CoverageMerger();
+        $coverageMerger->addCoverageFromFile($filename1);
+        $coverageMerger->addCoverageFromFile($filename2);
+
+        $target = $this->targetDir . '/coverage.xml';
+
+        static::assertFileNotExists($target);
+
+        $coverageMerger->getReporter()->crap4j($target);
+
+        static::assertFileExists($target);
+
+        $reportXml = \PHPUnit\Util\XML::loadFile($target);
+        static::assertInstanceOf('DomDocument', $reportXml, 'Incorrect crap4j report xml was generated');
+        static::assertEquals('crap_result', $reportXml->documentElement->tagName);
+    }
+
+    /**
+     * @dataProvider getReporterProvider
+     *
+     * @param string[] $coverageFiles
+     */
     public function testGenerateHtml(array $coverageFiles)
     {
         $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);

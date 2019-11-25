@@ -138,6 +138,12 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
                 'Generate code coverage report in PHPUnit XML format.'
             ),
             new InputOption(
+                'coverage-crap4j',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in Crap4J XML format.'
+            ),
+            new InputOption(
                 'coverage-test-limit',
                 null,
                 InputOption::VALUE_REQUIRED,
