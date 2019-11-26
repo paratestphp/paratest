@@ -121,7 +121,7 @@ class CoverageMergerTest extends TestBase
     public function testCoverageFileIsEmpty()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageMatches('/Coverage file .*? is empty. This means a PHPUnit process has crashed./');
+        $this->expectExceptionMessageRegExp('/Coverage file .*? is empty. This means a PHPUnit process has crashed./');
         $filename = $this->copyCoverageFile('coverage-tests/empty_test.cov', $this->targetDir);
 
         $coverageMerger = new CoverageMerger();
