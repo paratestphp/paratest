@@ -51,6 +51,12 @@ class ParaTestCommand extends Command
                 'Generate code coverage report in Clover XML format.'
             )
             ->addOption(
+                'coverage-crap4j',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in Crap4J XML format.'
+            )
+            ->addOption(
                 'coverage-html',
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -63,12 +69,6 @@ class ParaTestCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Generate code coverage report in PHPUnit XML format.'
-            )
-            ->addOption(
-                'coverage-crap4j',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in Crap4J XML format.'
             )
             ->addOption(
                 'coverage-test-limit',
