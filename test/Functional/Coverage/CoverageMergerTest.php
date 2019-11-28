@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Functional\Coverage;
 
 use ParaTest\Coverage\CoverageMerger;
-use SebastianBergmann\CodeCoverage\CodeCoverage;
 use ParaTest\Tests\TestBase;
+use SebastianBergmann\CodeCoverage\CodeCoverage;
 
 class CoverageMergerTest extends TestBase
 {
@@ -121,7 +121,12 @@ class CoverageMergerTest extends TestBase
     public function testCoverageFileIsEmpty()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageRegExp('/Coverage file .*? is empty. This means a PHPUnit process has crashed./');
+        $regex = '/Coverage file .*? is empty. This means a PHPUnit process has crashed./';
+        if (method_exists($this, 'expectExceptionMessageMatches')) {
+            $this->expectExceptionMessageMatches($regex);
+        } else {
+            $this->expectExceptionMessageRegExp($regex);
+        }
         $filename = $this->copyCoverageFile('coverage-tests/empty_test.cov', $this->targetDir);
 
         $coverageMerger = new CoverageMerger();
