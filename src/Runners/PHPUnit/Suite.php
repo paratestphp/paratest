@@ -20,9 +20,9 @@ class Suite extends ExecutableTest
      */
     private $functions;
 
-    public function __construct(string $path, array $functions, string $fullyQualifiedClassName = null)
+    public function __construct(string $path, array $functions)
     {
-        parent::__construct($path, $fullyQualifiedClassName);
+        parent::__construct($path);
         $this->functions = $functions;
     }
 

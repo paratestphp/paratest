@@ -363,8 +363,7 @@ class SuiteLoader
             $this->executableTests(
                 $path,
                 $class
-            ),
-            $class->getName()
+            )
         );
     }
 
