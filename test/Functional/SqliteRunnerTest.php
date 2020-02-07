@@ -30,14 +30,6 @@ class SqliteRunnerTest extends FunctionalTestBase
         $this->assertTestsPassed($proc, $expected, $expected);
     }
 
-    public function testMultiLineClassDeclarationWithFilenameDifferentThanClassnameIsSupported()
-    {
-        $this->assertTestsPassed($this->invokeParatest('special-classes', [
-            'runner' => 'SqliteRunner',
-            'processes' => 3,
-        ]));
-    }
-
     public function testRunningFewerTestsThanTheWorkersIsPossible()
     {
         $generator = new TestGenerator();
