@@ -15,7 +15,7 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
 
     public function setUp(): void
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile', 'ClassNameTest');
+        $this->executableTestChild = new ExecutableTestChild('pathToFile');
         parent::setUp();
     }
 
@@ -31,7 +31,7 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
 
         $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
         $this->assertEquals(
-            "'/usr/bin/phpunit' '--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'",
+            "'/usr/bin/phpunit' '--bootstrap' 'test/bootstrap.php' 'pathToFile'",
             $command
         );
     }
@@ -62,7 +62,7 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
         $phpExecutable = $finder->find();
         $this->assertEquals(
             "$phpExecutable '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' " .
-                "'--bootstrap' 'test/bootstrap.php' 'ClassNameTest' 'pathToFile'",
+                "'--bootstrap' 'test/bootstrap.php' 'pathToFile'",
             $command
         );
     }
@@ -75,15 +75,6 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
         $command = $this->executableTestChild->command($binary, $options);
         $coverageFileName = str_replace('/', '\/', $this->executableTestChild->getCoverageFileName());
         $this->assertRegExp("/^'\/usr\/bin\/phpunit' '--a' 'b' '--coverage-php' '$coverageFileName' '.*'/", $command);
-    }
-
-    public function testGetCommandStringIncludesTheClassName()
-    {
-        $options = [];
-        $binary = '/usr/bin/phpunit';
-
-        $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals("'/usr/bin/phpunit' 'ClassNameTest' 'pathToFile'", $command);
     }
 
     public function testHandleEnvironmentVariablesAssignsToken()

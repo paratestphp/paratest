@@ -28,6 +28,7 @@ To install with composer run the following command:
 | <= 6.* | 1.* |
 | 7.* | 2.* |
 | 8.* | 3.* |
+| 9.* | 4.* |
 
 # Usage
 

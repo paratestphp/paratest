@@ -23,7 +23,7 @@ abstract class ExecutableTest
      * @var string
      */
     protected $temp;
-    protected $fullyQualifiedClassName;
+
     protected $pipes = [];
 
     /**
@@ -53,10 +53,9 @@ abstract class ExecutableTest
      */
     protected $lastCommand = '';
 
-    public function __construct(string $path, ?string $fullyQualifiedClassName = null)
+    public function __construct(string $path)
     {
         $this->path = $path;
-        $this->fullyQualifiedClassName = $fullyQualifiedClassName;
     }
 
     /**
@@ -371,7 +370,6 @@ abstract class ExecutableTest
             }
         }
 
-        $arguments[] = $this->fullyQualifiedClassName ?? '';
         $arguments[] = $this->getPath();
 
         $args = (new Process($arguments))->getCommandLine();

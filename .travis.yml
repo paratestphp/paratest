@@ -47,6 +47,10 @@ matrix:
         - PHPUNIT_DEV=true
     - name: "Tests PHP 7.3"
       php: 7.3
+    - name: "Tests PHP 7.3 with symfony 5"
+      php: 7.3
+      env: 
+        - SYMFONY_VERSION='5.0.x-dev'
     - name: "Tests PHP Nightly"
       php: nightly
   allow_failures:
@@ -54,6 +58,7 @@ matrix:
 
 install:
   - if [[ $CS_CHECK == 'true' ]]; then phpenv config-rm xdebug.ini || return 0; fi;
+  - if [[ $SYMFONY_VERSION != "" ]]; then composer require --no-update "symfony/symfony:${SYMFONY_VERSION}"; fi;
   - if [[ $PHPUNIT_DEV == 'true' ]]; then composer require --no-update phpunit/phpunit=*@dev; fi;
   - if [[ $DEPS == 'lowest' ]]; then COMPOSER_ARGS='--prefer-lowest --prefer-stable'; fi; composer update --no-interaction --prefer-dist $COMPOSER_ARGS;
   - if [[ $BUILD_PHAR == 'true' ]]; then wget https://github.com/humbug/box/releases/download/3.7.0/box.phar; fi;
