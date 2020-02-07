@@ -141,9 +141,14 @@ abstract class BaseRunner
             $reporter->clover($filteredOptions['coverage-clover']);
         }
 
+        if (isset($filteredOptions['coverage-crap4j'])) {
+            $reporter->crap4j($filteredOptions['coverage-crap4j']);
+        }
+
         if (isset($filteredOptions['coverage-html'])) {
             $reporter->html($filteredOptions['coverage-html']);
         }
+
         if (isset($filteredOptions['coverage-text'])) {
             $reporter->text();
         }

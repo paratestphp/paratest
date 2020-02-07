@@ -41,7 +41,7 @@ class TestBase extends PHPUnit\Framework\TestCase
         $files = [];
         foreach ($it as $file) {
             if (preg_match('/Test\.php$/', $file->getPathname())) {
-                $files[] = (string)$file;
+                $files[] = $file->getPathname();
             }
         }
 

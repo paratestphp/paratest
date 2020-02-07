@@ -2,6 +2,7 @@
 `paratest` is able to generate code coverage in multiple output formats:
 ````
  --coverage-clover Generate code coverage report in Clover XML format.
+ --coverage-crap4j Generate code coverage report in Crap4J XML format.
  --coverage-html   Generate code coverage report in HTML format.
  --coverage-php    Serialize PHP_CodeCoverage object to file.
  --coverage-text   Generate code coverage report in text format.

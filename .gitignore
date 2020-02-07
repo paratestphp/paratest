@@ -2,3 +2,4 @@ vendor
 composer.lock
 /test/fixtures/generated-tests
 .phpunit.result.cache
+.idea

@@ -238,6 +238,7 @@ class PHPUnit extends Tester
     {
         $isFileFormat = isset($options['coverage-html'])
             || isset($options['coverage-clover'])
+            || isset($options['coverage-crap4j'])
             || isset($options['coverage-xml']);
         $isTextFormat = isset($options['coverage-text']);
         $isPHP = isset($options['coverage-php']);

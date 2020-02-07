@@ -6,6 +6,7 @@ namespace ParaTest\Coverage;
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Report\Clover;
+use SebastianBergmann\CodeCoverage\Report\Crap4j;
 use SebastianBergmann\CodeCoverage\Report\Html;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use SebastianBergmann\CodeCoverage\Report\Text;
@@ -36,6 +37,17 @@ class CoverageReporter implements CoverageReporterInterface
     {
         $clover = new Clover();
         $clover->process($this->coverage, $target);
+    }
+
+    /**
+     * Generate Crap4J XML coverage report.
+     *
+     * @param string $target Report filename
+     */
+    public function crap4j(string $target)
+    {
+        $xml = new Crap4j();
+        $xml->process($this->coverage, $target);
     }
 
     /**

@@ -14,6 +14,13 @@ interface CoverageReporterInterface
     public function clover(string $target);
 
     /**
+     * Generate Crap4J XML coverage report.
+     *
+     * @param string $target Report filename
+     */
+    public function crap4j(string $target);
+
+    /**
      * Generate html coverage report.
      *
      * @param string $target Report filename
