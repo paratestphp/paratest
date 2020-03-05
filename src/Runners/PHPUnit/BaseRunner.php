@@ -196,9 +196,9 @@ abstract class BaseRunner
         $variables = $this->options->filtered['configuration']->getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            \putenv(\sprintf('%s=%s', $key, $value));
+            \putenv(\sprintf('%s=%s', $key, getenv($key, true) ?: $value));
 
-            $_ENV[$key] = $value;
+            $_ENV[$key] = getenv($key, true) ?: $value;
         }
     }
 

@@ -98,9 +98,11 @@ class ConfigurationTest extends \ParaTest\Tests\TestBase
 
     public function testGetEnvironmentVariables()
     {
-        $this->assertCount(2, $this->config->getEnvironmentVariables());
+        $this->assertCount(4, $this->config->getEnvironmentVariables());
         $this->assertArrayHasKey('APP_ENV', $this->config->getEnvironmentVariables());
         $this->assertArrayHasKey('CACHE_DRIVER', $this->config->getEnvironmentVariables());
+        $this->assertArrayHasKey('DB_CONNECTION', $this->config->getEnvironmentVariables());
+        $this->assertArrayHasKey('DB_DATABASE', $this->config->getEnvironmentVariables());
 
         $config = new Configuration(realpath(__DIR__ . '/phpunit.xml.dist'));
         $this->assertCount(0, $config->getEnvironmentVariables());
@@ -123,5 +125,16 @@ class ConfigurationTest extends \ParaTest\Tests\TestBase
             $e,
             'Could not instantiate Configuration: ' . ($e instanceof \Exception ? $e->getMessage() : 'no error given')
         );
+    }
+
+    public function testLoadedEnvironmentVariablesWillNotBeOverwritten()
+    {
+        \putenv('DB_CONNECTION=mysql');
+        \putenv('DB_DATABASE=localhost');
+
+        $config = new Configuration(realpath(__DIR__ . '/phpunit.xml.dist'));
+
+        $this->assertSame('mysql', \getenv('DB_CONNECTION'));
+        $this->assertSame('localhost', \getenv('DB_DATABASE'));
     }
 }
