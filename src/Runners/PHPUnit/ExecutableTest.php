@@ -192,8 +192,15 @@ abstract class ExecutableTest
             new Process($command, null, $environmentVariables);
 
         if (\method_exists($this->process, 'inheritEnvironmentVariables')) {
-            // no such method in 3.0, but emits warning if this isn't done in 3.3
-            $this->process->inheritEnvironmentVariables();
+            $reflectionMethod = new \ReflectionMethod($this->process, 'inheritEnvironmentVariables');
+            if (\stripos($reflectionMethod->getDocComment() ?: '', '@deprecated') === false) {
+                // no such method in 3.0, but emits warning if this isn't done in 3.3,
+                // and is deprecated starting in symfony/process 4.4 because it became the default.
+                //
+                // This checks for deprecation because E_USER_DEPRECATED may cause problems
+                // in custom error handlers in test bootstrap files
+                $this->process->inheritEnvironmentVariables();
+            }
         }
         $this->process->start();
 
