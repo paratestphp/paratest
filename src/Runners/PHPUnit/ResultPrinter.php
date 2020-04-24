@@ -380,13 +380,39 @@ class ResultPrinter
      */
     protected function printFeedbackItem(string $item)
     {
-        echo $item;
+        $this->printFeedbackItemColor($item);
         ++$this->column;
         ++$this->casesProcessed;
         if ($this->column === $this->maxColumn) {
             echo $this->getProgress();
             $this->println();
         }
+    }
+
+    protected function printFeedbackItemColor(string $item) {
+        if ($this->colors) {
+            switch ($item) {
+                case 'E':
+                    // fg-red
+                    echo "\x1b[31m" . $item . "\x1b[0m";
+                    return;
+                case 'F':
+                    // bg-red
+                    echo "\x1b[41m" . $item . "\x1b[0m";
+                    return;
+                case 'W':
+                case 'I':
+                case 'R':
+                    // fg-yellow
+                    echo "\x1b[33m" . $item . "\x1b[0m";
+                    return;
+                case 'S':
+                    // fg-cyan
+                    echo "\x1b[36m" . $item . "\x1b[0m";
+                    return;
+                }
+        }
+        echo $item;
     }
 
     /**
