@@ -389,7 +389,8 @@ class ResultPrinter
         }
     }
 
-    protected function printFeedbackItemColor(string $item) {
+    protected function printFeedbackItemColor(string $item)
+    {
         if ($this->colors) {
             switch ($item) {
                 case 'E':
@@ -410,7 +411,7 @@ class ResultPrinter
                     // fg-cyan
                     echo "\x1b[36m" . $item . "\x1b[0m";
                     return;
-                }
+            }
         }
         echo $item;
     }
