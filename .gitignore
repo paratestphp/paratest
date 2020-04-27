@@ -2,4 +2,5 @@ vendor
 composer.lock
 /test/fixtures/generated-tests
 .phpunit.result.cache
+.php_cs.cache
 .idea
