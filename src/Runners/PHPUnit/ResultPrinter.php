@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
+use SebastianBergmann\Timer\ResourceUsageFormatter;
 use SebastianBergmann\Timer\Timer;
 
 /**
@@ -58,11 +59,6 @@ class ResultPrinter
     protected $column = 0;
 
     /**
-     * @var Timer
-     */
-    protected $timer;
-
-    /**
      * The total number of cases printed so far.
      *
      * @var int
@@ -107,7 +103,6 @@ class ResultPrinter
     public function __construct(LogInterpreter $results)
     {
         $this->results = $results;
-        $this->timer = new Timer();
     }
 
     /**
@@ -148,7 +143,6 @@ class ResultPrinter
         if (isset($options->filtered['configuration'])) {
             \printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
         }
-        $this->timer->start();
         $this->colors = $options->colors;
         $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($options);
     }
@@ -215,7 +209,13 @@ class ResultPrinter
      */
     public function getHeader(): string
     {
-        return "\n\n" . $this->timer->resourceUsage() . "\n\n";
+        if (class_exists(ResourceUsageFormatter::class)) {
+            $resourceUsage = (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest();
+        } else {
+            $resourceUsage = Timer::resourceUsage();
+        }
+
+        return "\n\n" . $resourceUsage . "\n\n";
     }
 
     /**
