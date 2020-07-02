@@ -77,7 +77,7 @@ class CoverageReporterTest extends TestBase
 
         $target = $this->targetDir . '/coverage.php';
 
-        static::assertFileNotExists($target);
+        static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->php($target);
 
@@ -100,7 +100,7 @@ class CoverageReporterTest extends TestBase
 
         $target = $this->targetDir . '/coverage.xml';
 
-        static::assertFileNotExists($target);
+        static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->clover($target);
 
@@ -126,7 +126,7 @@ class CoverageReporterTest extends TestBase
 
         $target = $this->targetDir . '/coverage.xml';
 
-        static::assertFileNotExists($target);
+        static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->crap4j($target);
 
@@ -153,7 +153,7 @@ class CoverageReporterTest extends TestBase
 
         $target = $this->targetDir . '/coverage';
 
-        static::assertFileNotExists($target);
+        static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->html($target);
 

@@ -24,7 +24,7 @@ class DataProviderTest extends FunctionalTestBase
             'functional' => null,
             'max-batch-size' => 50,
         ]);
-        $this->assertRegExp('/OK \(1150 tests, 1150 assertions\)/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/OK \(1150 tests, 1150 assertions\)/', $proc->getOutput());
     }
 
     public function testNumericDataSetInFunctionalModeWithMethodFilter()
@@ -34,7 +34,7 @@ class DataProviderTest extends FunctionalTestBase
             'max-batch-size' => 50,
             'filter' => 'testNumericDataProvider50',
         ]);
-        $this->assertRegExp('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
     }
 
     public function testNumericDataSetInFunctionalModeWithCustomFilter()
@@ -44,7 +44,7 @@ class DataProviderTest extends FunctionalTestBase
             'max-batch-size' => 50,
             'filter' => 'testNumericDataProvider50.*1',
         ]);
-        $this->assertRegExp('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
     }
 
     public function testNamedDataSetInFunctionalModeWithMethodFilter()
@@ -54,7 +54,7 @@ class DataProviderTest extends FunctionalTestBase
             'max-batch-size' => 50,
             'filter' => 'testNamedDataProvider50',
         ]);
-        $this->assertRegExp('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
     }
 
     public function testNamedDataSetInFunctionalModeWithCustomFilter()
@@ -64,7 +64,7 @@ class DataProviderTest extends FunctionalTestBase
             'max-batch-size' => 50,
             'filter' => 'testNamedDataProvider50.*name_of_test_.*1',
         ]);
-        $this->assertRegExp('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
     }
 
     public function testNumericDataSet1000InFunctionalModeWithFilterAndMaxBatchSize()
@@ -74,6 +74,6 @@ class DataProviderTest extends FunctionalTestBase
             'max-batch-size' => 50,
             'filter' => 'testNumericDataProvider1000',
         ]);
-        $this->assertRegExp('/OK \(1000 tests, 1000 assertions\)/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/OK \(1000 tests, 1000 assertions\)/', $proc->getOutput());
     }
 }

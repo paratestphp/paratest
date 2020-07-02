@@ -25,7 +25,7 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals(1, $proc->getExitCode(), 'Unexpected exit code');
 
         // The [RuntimeException] message appears only on lower 6.x versions of Phpunit
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '/(\[RuntimeException\]|Bootstrap specified but could not be found)/',
             $errors,
             'Expected exception name not found in output'
@@ -118,7 +118,7 @@ class PHPUnitTest extends FunctionalTestBase
             'paratest-only-tests/EnvironmentTest.php',
             ['bootstrap' => BOOTSTRAP, 'runner' => 'WrapperRunner', 'no-test-tokens' => 0]
         );
-        $this->assertRegexp('/Failures: 1/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/Failures: 1/', $proc->getOutput());
     }
 
     public function testParatestEnvironmentVariableWithSqliteRunner()
@@ -142,7 +142,7 @@ class PHPUnitTest extends FunctionalTestBase
             'passing-tests',
             ['configuration' => FIXTURES . DS . 'phpunit.xml.disto']
         ); // dist"o" does not exist
-        $this->assertRegExp('/Could not read ".*phpunit.xml.disto"./', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/Could not read ".*phpunit.xml.disto"./', $proc->getOutput());
     }
 
     public function testFunctionalWithBootstrap()
@@ -167,7 +167,7 @@ class PHPUnitTest extends FunctionalTestBase
             'passing-tests',
             ['bootstrap' => BOOTSTRAP, 'processes' => 6]
         );
-        $this->assertRegExp('/Running phpunit in 6 processes/', $proc->getOutput());
+        $this->assertMatchesRegularExpression('/Running phpunit in 6 processes/', $proc->getOutput());
         $this->assertTestsPassed($proc);
     }
 
@@ -295,8 +295,8 @@ class PHPUnitTest extends FunctionalTestBase
         ]);
         $this->assertTestsPassed($proc);
         $results = $proc->getOutput();
-        $this->assertRegExp('/Running phpunit in 6 processes/', $results);
-        $this->assertRegExp('/Functional mode is on/i', $results);
+        $this->assertMatchesRegularExpression('/Running phpunit in 6 processes/', $results);
+        $this->assertMatchesRegularExpression('/Functional mode is on/i', $results);
         $this->assertFileExists($output);
         if (file_exists($output)) {
             unlink($output);

@@ -53,7 +53,7 @@ class CoverageMergerTest extends TestBase
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile($filename);
 
-        static::assertFileNotExists($filename);
+        static::assertFileDoesNotExist($filename);
     }
 
     /**
