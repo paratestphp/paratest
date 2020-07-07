@@ -86,8 +86,7 @@ class CoverageMerger
 
         unset($file);
 
-        \unlink($coverageFile);
-        
+        \unlink($coverageFile);   
     }
 
     /**
