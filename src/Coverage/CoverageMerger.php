@@ -84,7 +84,9 @@ class CoverageMerger
 
         $this->addCoverage($this->getCoverageObject($file));
 
-        \unlink($file->getRealPath());
+        unset($file);
+
+        \unlink($coverageFile);
     }
 
     /**
