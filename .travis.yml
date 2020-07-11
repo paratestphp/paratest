@@ -10,7 +10,7 @@ matrix:
   fast_finish: true
   include:
     - name: "PHPCS"
-      php: 7.3
+      php: 7.4
       env:
         - CS_CHECK=true
     - name: "Build Phar"
@@ -47,8 +47,18 @@ matrix:
         - PHPUNIT_DEV=true
     - name: "Tests PHP 7.3"
       php: 7.3
-    - name: "Tests PHP 7.3 with symfony 5"
-      php: 7.3
+    - php: 7.4
+      name: "Tests PHP 7.4 Lowest Dependencies"
+      env:
+        - DEPS=lowest
+    - name: "Tests PHP 7.4 PHPUnit Dev Version"
+      php: 7.4
+      env:
+        - PHPUNIT_DEV=true
+    - name: "Tests PHP 7.4"
+      php: 7.4
+    - name: "Tests PHP 7.4 with symfony 5"
+      php: 7.4
       env: 
         - SYMFONY_VERSION='5.0.x-dev'
     - name: "Tests PHP Nightly"
