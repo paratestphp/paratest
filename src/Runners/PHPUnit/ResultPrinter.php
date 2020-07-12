@@ -7,7 +7,6 @@ namespace ParaTest\Runners\PHPUnit;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
-use SebastianBergmann\Timer\Timer;
 
 /**
  * Class ResultPrinter.
@@ -209,11 +208,7 @@ class ResultPrinter
      */
     public function getHeader(): string
     {
-        if (class_exists(ResourceUsageFormatter::class)) {
-            $resourceUsage = (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest();
-        } else {
-            $resourceUsage = Timer::resourceUsage();
-        }
+        $resourceUsage = (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest();
 
         return "\n\n" . $resourceUsage . "\n\n";
     }
