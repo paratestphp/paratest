@@ -74,7 +74,10 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
 
         $command = $this->executableTestChild->command($binary, $options);
         $coverageFileName = str_replace('/', '\/', $this->executableTestChild->getCoverageFileName());
-        $this->assertMatchesRegularExpression("/^'\/usr\/bin\/phpunit' '--a' 'b' '--coverage-php' '$coverageFileName' '.*'/", $command);
+        $this->assertMatchesRegularExpression(
+            "/^'\/usr\/bin\/phpunit' '--a' 'b' '--coverage-php' '$coverageFileName' '.*'/",
+            $command
+        );
     }
 
     public function testHandleEnvironmentVariablesAssignsToken()
