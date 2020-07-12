@@ -300,7 +300,7 @@ class ReaderTest extends \ParaTest\Tests\TestBase
         file_put_contents($tmp, $contents);
         $reader = new Reader($tmp);
         $reader->removeLog();
-        $this->assertFileNotExists($tmp);
+        $this->assertFileDoesNotExist($tmp);
     }
 
     /**

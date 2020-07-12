@@ -165,7 +165,7 @@ class ResultPrinterTest extends ResultTester
 
         $header = $this->printer->getHeader();
 
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             "/\n\nTime: ([.:]?[0-9]{1,3})+ ?" .
             '(minute|minutes|second|seconds|ms|)?,' .
             " Memory:[\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
