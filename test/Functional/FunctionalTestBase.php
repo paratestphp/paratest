@@ -29,7 +29,7 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
 
     protected function assertTestsPassed(Process $proc, $testPattern = '\d+', $assertionPattern = '\d+')
     {
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
             $proc->getOutput()
         );

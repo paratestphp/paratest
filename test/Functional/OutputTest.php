@@ -25,7 +25,7 @@ class OutputTest extends FunctionalTestBase
         $output = $this->paratest->execute(['p' => 5])->getOutput();
         $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
         $this->assertStringContainsString('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
-        $this->assertRegExp('/[.F]{4}/', $output);
+        $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
     public function testMessagePrintedWhenInvalidConfigFileSupplied()
@@ -43,7 +43,7 @@ class OutputTest extends FunctionalTestBase
             ->getOutput();
         $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
         $this->assertStringContainsString('Functional mode is ON.', $output);
-        $this->assertRegExp('/[.F]{4}/', $output);
+        $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
     public function testProcCountIsReportedWithProcOption()
@@ -51,6 +51,6 @@ class OutputTest extends FunctionalTestBase
         $output = $this->paratest->execute(['p' => 1])
             ->getOutput();
         $this->assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
-        $this->assertRegExp('/[.F]{4}/', $output);
+        $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 }
