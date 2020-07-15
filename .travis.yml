@@ -55,7 +55,7 @@ install:
   - composer install
 
 script:
-  - if [[ $CS_CHECK == 'true' ]]; then vendor/bin/phpcs --ignore=*/test/fixtures/*,bootstrap.php --standard=PSR12 ./src/ ./test/; fi;
+  - if [[ $CS_CHECK == 'true' ]]; then composer style; fi;
   - if [[ $CS_CHECK != 'true' ]]; then vendor/bin/phpunit $COVERAGE_ARGS; fi;
 
 before_deploy:
