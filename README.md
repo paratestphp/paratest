@@ -253,7 +253,7 @@ ParaTest can run its own test suite by running it from the `bin` directory:
 `composer test` OR `bin/paratest`
 
 Before creating a Pull Request be sure to run the style checks and commit the eventual changes:
-`composer style-fix` OR `vendor/bin/php-cs-fixer fix`
+`composer style-fix`
 
 Use `composer style` to only show violations without fixing.
 
