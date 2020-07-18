@@ -62,18 +62,18 @@ jobs:
         id: "create-release"
         uses: "actions/create-release@v1"
         env:
-          GITHUB_TOKEN: "${{ secrets.PARATEST_BOT_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           draft: false
           prerelease: false
-          release_name: "${{ steps.determine-tag.outputs.tag }}"
+          release_name: "Version ${{ steps.determine-tag.outputs.tag }}"
           tag_name: "${{ steps.determine-tag.outputs.tag }}"
 
       - name: "Upload paratest.phar"
         if: "always()"
         uses: "actions/upload-release-asset@v1"
         env:
-          GITHUB_TOKEN: "${{ secrets.PARATEST_BOT_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           asset_content_type: "text/plain"
           asset_name: "paratest.phar"
