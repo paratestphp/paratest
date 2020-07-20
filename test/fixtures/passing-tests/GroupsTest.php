@@ -3,7 +3,7 @@
 /**
  * @group group4
  */
-class GroupsTest extends PHPUnit\FrameWork\TestCase
+class GroupsTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group group1

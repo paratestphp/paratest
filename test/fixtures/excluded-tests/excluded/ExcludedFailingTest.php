@@ -1,6 +1,6 @@
 <?php
 
-class ExcludedFailingTest extends PHPUnit\FrameWork\TestCase
+class ExcludedFailingTest extends PHPUnit\Framework\TestCase
 {
     public function testFail()
     {
