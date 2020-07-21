@@ -20,7 +20,7 @@ class Configuration
     protected $path;
 
     /**
-     * @var \SimpleXMLElement
+     * @var false|\SimpleXMLElement
      */
     protected $xml;
 

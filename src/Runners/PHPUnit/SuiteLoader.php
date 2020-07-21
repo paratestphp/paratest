@@ -20,7 +20,7 @@ class SuiteLoader
     protected $files = [];
 
     /**
-     * @var array
+     * @var null|array
      */
     protected $suitesName = null;
 
@@ -39,7 +39,7 @@ class SuiteLoader
     protected $configuration;
 
     /**
-     * @var Options
+     * @var null|Options
      */
     public $options;
 
