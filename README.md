@@ -1,7 +1,7 @@
 ParaTest
 ========
 
-[![Build Status](https://travis-ci.org/paratestphp/paratest.svg?branch=master)](https://travis-ci.org/paratestphp/paratest)
+[![Integrate](https://github.com/paratestphp/paratest/workflows/Integrate/badge.svg?branch=master)](https://github.com/paratestphp/paratest/actions)
 [![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
 
 The objective of ParaTest is to support parallel testing in PHPUnit. Provided you have well-written PHPUnit tests, you can drop `paratest` in your project and
