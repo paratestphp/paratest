@@ -7,6 +7,9 @@ parameters:
     bootstrapFiles:
         - test/constants.php
     paths:
+        - bin/paratest
+        - bin/phpunit-sqlite-wrapper
+        - bin/phpunit-wrapper
         - src/
         - test/
     excludes_analyse:
