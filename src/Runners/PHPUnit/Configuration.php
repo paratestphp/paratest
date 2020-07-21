@@ -88,7 +88,7 @@ class Configuration
     public function getSuites()
     {
         if (!$this->xml) {
-            return;
+            return null;
         }
         $suites = [];
         $nodes = $this->xml->xpath('//testsuites/testsuite');

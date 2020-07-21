@@ -30,7 +30,7 @@ class PHPUnit extends Tester
     private const TEST_SUITE_FILTER_SEPARATOR = ',';
 
     /**
-     * @var \ParaTest\Console\Commands\ParaTestCommand
+     * @var Command
      */
     protected $command;
 

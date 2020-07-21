@@ -11,6 +11,11 @@ use RuntimeException;
 
 class SqliteRunner extends WrapperRunner
 {
+    /**
+     * @var SqliteWorker[]
+     */
+    protected $workers;
+
     /** @var PDO */
     private $db;
 

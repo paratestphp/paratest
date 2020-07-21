@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Console\Testers;
 
+use ParaTest\Console\Commands\ParaTestCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;

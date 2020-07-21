@@ -1,5 +1,5 @@
 includes:
-    - phar://phpstan.phar/conf/config.level2.neon
+    - phar://phpstan.phar/conf/config.level3.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
