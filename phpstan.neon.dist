@@ -1,0 +1,11 @@
+includes:
+    - phar://phpstan.phar/conf/config.level0.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+
+parameters:
+    tipsOfTheDay: false
+    paths:
+        - src/
+        - test/
+    excludes_analyse:
+        - test/fixtures/fatal-tests/
