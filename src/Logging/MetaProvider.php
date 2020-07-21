@@ -43,4 +43,23 @@ abstract class MetaProvider
             return $this->getMessages($type);
         }
     }
+
+    /**
+     * Returns a value as either a float or int.
+     *
+     * @param $property
+     *
+     * @return float|int
+     */
+    abstract protected function getNumericValue(string $property);
+
+    /**
+     * Gets messages of a given type and
+     * merges them into a single collection.
+     *
+     * @param $type
+     *
+     * @return array
+     */
+    abstract protected function getMessages(string $type): array;
 }

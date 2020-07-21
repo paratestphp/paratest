@@ -61,8 +61,8 @@ class LogInterpreter extends MetaProvider
      */
     public function isSuccessful(): bool
     {
-        $failures = $this->getTotalFailures();
-        $errors = $this->getTotalErrors();
+        $failures = $this->getNumericValue('failures');
+        $errors = $this->getNumericValue('errors');
 
         return $failures === 0 && $errors === 0;
     }

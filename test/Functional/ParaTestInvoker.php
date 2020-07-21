@@ -48,7 +48,13 @@ class ParaTestInvoker
 
     private function buildCommand($options = [])
     {
-        $cmd = sprintf('%s %s --bootstrap %s --phpunit %s', PHP_BINARY, PARA_BINARY, $this->bootstrap, PHPUNIT);
+        $cmd = sprintf(
+            '%s %s --bootstrap %s --phpunit %s',
+            PHP_BINARY,
+            defined('PHP_WINDOWS_VERSION_BUILD') ? PARA_BINARY_WINDOWS : PARA_BINARY,
+            $this->bootstrap,
+            PHPUNIT
+        );
         foreach ($options as $switch => $value) {
             if (is_numeric($switch)) {
                 $switch = $value;

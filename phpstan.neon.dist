@@ -1,9 +1,11 @@
 includes:
-    - phar://phpstan.phar/conf/config.level0.neon
+    - phar://phpstan.phar/conf/config.level1.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
     tipsOfTheDay: false
+    bootstrapFiles:
+        - test/constants.php
     paths:
         - src/
         - test/
