@@ -26,7 +26,7 @@ class CoverageReporterTest extends TestBase
 
         static::skipIfCodeCoverageNotEnabled();
 
-        $this->targetDir = str_replace('.', '_', uniqid('/tmp/report-', true));
+        $this->targetDir = str_replace('.', '_', sys_get_temp_dir() . DS . uniqid('paratest-', true));
         $this->removeDirectory($this->targetDir);
         mkdir($this->targetDir);
     }
@@ -75,7 +75,7 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir . '/coverage.php';
+        $target = $this->targetDir . DS . 'coverage.php';
 
         static::assertFileDoesNotExist($target);
 
@@ -98,7 +98,7 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir . '/coverage.xml';
+        $target = $this->targetDir . DS . 'coverage.xml';
 
         static::assertFileDoesNotExist($target);
 
@@ -124,7 +124,7 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir . '/coverage.xml';
+        $target = $this->targetDir . DS . 'coverage.xml';
 
         static::assertFileDoesNotExist($target);
 
@@ -151,14 +151,14 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir . '/coverage';
+        $target = $this->targetDir . DS . 'coverage';
 
         static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->html($target);
 
         static::assertFileExists($target);
-        static::assertFileExists($target . '/index.html', 'Index html file was not generated');
+        static::assertFileExists($target . DS . 'index.html', 'Index html file was not generated');
     }
 
     /**
@@ -167,9 +167,10 @@ class CoverageReporterTest extends TestBase
     public static function getReporterProvider()
     {
         $version = 'CodeCoverage >4.0';
+        $windowsExt = defined('PHP_WINDOWS_VERSION_BUILD') ? '-windows' : '';
         $filenames = [
-            'coverage-tests/runner_test.cov',
-            'coverage-tests/result_printer_test.cov',
+            'coverage-tests' . DS . 'runner_test' . $windowsExt . '.cov',
+            'coverage-tests' . DS . 'result_printer_test' . $windowsExt . '.cov',
         ];
         $reporterClass = CoverageReporter::class;
 

@@ -24,24 +24,12 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
         $this->assertEquals('pathToFile', $this->getObjectValue($this->executableTestChild, 'path'));
     }
 
-    public function testGetCommandStringIncludesOptions()
-    {
-        $options = ['bootstrap' => 'test/bootstrap.php'];
-        $binary = '/usr/bin/phpunit';
-
-        $command = $this->call($this->executableTestChild, 'getCommandString', $binary, $options);
-        $this->assertEquals(
-            "'/usr/bin/phpunit' '--bootstrap' 'test/bootstrap.php' 'pathToFile'",
-            $command
-        );
-    }
-
     public function testGetCommandStringIncludesPassthruOptions()
     {
-        $options = ['bootstrap' => 'test/bootstrap.php'];
+        $options = ['bootstrap' => 'test' . DS . 'bootstrap.php'];
         $binary = '/usr/bin/phpunit';
-        $passthru = "'--prepend' 'xdebug-filter.php'";
-        $passthruPhp = "'-d' 'zend_extension=xdebug.so'";
+        $passthru = ['--prepend', 'xdebug-filter.php'];
+        $passthruPhp = ['-d', 'zend_extension=xdebug.so'];
 
         $command = $this->call(
             $this->executableTestChild,
@@ -54,17 +42,31 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
         // Note:
         // '--log-junit' '/tmp/PT_LKnfzA'
         // is appended by default where PT_LKnfzA is randomly generated - so we remove it from the resulting command
-        $command = preg_replace("# '--log-junit' '[^']+?'#", '', $command);
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $command = preg_replace("# --log-junit [^ ]+#", '', $command);
+        } else {
+            $command = preg_replace("# '--log-junit' '[^']+?'#", '', $command);
+        }
+        
         // Note:
         // The pass to the php executable depends on the system,
         // so we need to keep it flexible in the test
         $finder = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
-        $this->assertEquals(
-            "$phpExecutable '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' " .
-                "'--bootstrap' 'test/bootstrap.php' 'pathToFile'",
-            $command
-        );
+        
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $this->assertEquals(
+                "$phpExecutable -d zend_extension=xdebug.so \"/usr/bin/phpunit\" --prepend xdebug-filter.php " .
+                    "--bootstrap test" . DS . "bootstrap.php pathToFile",
+                $command
+            );
+        } else {
+            $this->assertEquals(
+                "'$phpExecutable' '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' " .
+                    "'--bootstrap' 'test" . DS . "bootstrap.php' 'pathToFile'",
+                $command
+            );
+        }
     }
 
     public function testCommandRedirectsCoverage()
@@ -74,10 +76,18 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
 
         $command = $this->executableTestChild->command($binary, $options);
         $coverageFileName = str_replace('/', '\/', $this->executableTestChild->getCoverageFileName());
-        $this->assertMatchesRegularExpression(
-            "/^'\/usr\/bin\/phpunit' '--a' 'b' '--coverage-php' '$coverageFileName' '.*'/",
-            $command
-        );
+
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $this->assertMatchesRegularExpression(
+                '#^"/usr/bin/phpunit" --a b --coverage-php ' . preg_quote($coverageFileName, '#') . ' .*#',
+                $command
+            );
+        } else {
+            $this->assertMatchesRegularExpression(
+                "#^'/usr/bin/phpunit' '--a' 'b' '--coverage-php' '" . $coverageFileName . "' '.*'#",
+                $command
+            );
+        }
     }
 
     public function testHandleEnvironmentVariablesAssignsToken()

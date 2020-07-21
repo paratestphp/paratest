@@ -6,13 +6,12 @@ if (!isset($argv[1])) {
 
 $db = new PDO('sqlite:' . $argv[1]);
 
-// git working copy
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-}
-// Composer installation
-if (file_exists(__DIR__ . '/../../../autoload.php')) {
-    require_once __DIR__ . '/../../../autoload.php';
+if (file_exists($dir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
+    // git working copy
+    require_once $dir;
+} elseif (file_exists($dir = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php')) {
+    // Composer installation
+    require_once $dir;
 }
 
 while ($test = $db->query('SELECT id, command FROM tests WHERE reserved_by_process_id IS NULL ORDER BY file_name LIMIT 1')->fetch()) {
@@ -28,10 +27,7 @@ while ($test = $db->query('SELECT id, command FROM tests WHERE reserved_by_proce
     }
 
     try {
-        if (!preg_match_all('/\'([^\']*)\'[ ]?/', $test['command'], $arguments)) {
-            throw new \Exception("Failed to parse arguments from command line: \"" . $test['command'] . "\"");
-        }
-        $_SERVER['argv'] = $arguments[1];
+        $_SERVER['argv'] = unserialize($test['command']);
 
         PHPUnit\TextUI\Command::main(false);
     } finally {

@@ -2,9 +2,9 @@
 echo "Worker starting\n";
 
 $composerAutoloadFiles = [
-    __DIR__ . '/../../../autoload.php',
-    __DIR__ . '/../../vendor/autoload.php',
-    __DIR__ . '/../vendor/autoload.php'
+    dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
+    dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+    dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php'
 ];
 
 foreach ($composerAutoloadFiles as $file) {
@@ -46,6 +46,9 @@ while (true) {
         echo "EXITED\n";
         exit($lastExitCode);
     }
+
+    $arguments = unserialize($command);
+    $command = implode(' ', $arguments);
     echo "Executing: $command\n";
 
     $info = [];
@@ -56,10 +59,7 @@ while (true) {
     $infoText = implode(PHP_EOL,$info).PHP_EOL;
     $logInfo($infoText);
 
-    if (!preg_match_all('/\'([^\']*)\'[ ]?/', $command, $arguments)) {
-        throw new \Exception("Failed to parse arguments from command line: \"" . $command . "\"");
-    }
-    $_SERVER['argv'] = $arguments[1];
+    $_SERVER['argv'] = $arguments;
 
     ob_start();
     $lastExitCode = PHPUnit\TextUI\Command::main(false);

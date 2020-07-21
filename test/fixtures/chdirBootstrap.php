@@ -1,2 +1,2 @@
 <?php
-chdir('/tmp');
+chdir(sys_get_temp_dir());

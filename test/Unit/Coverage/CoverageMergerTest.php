@@ -22,8 +22,8 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
      */
     public function testSimpleMerge()
     {
-        $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
+        $firstFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
@@ -74,8 +74,8 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
      */
     public function testSimpleMergeLimited()
     {
-        $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
+        $firstFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments

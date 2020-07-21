@@ -2,9 +2,9 @@
 <?php
 
 $files = array(
-    __DIR__ . '/../../vendor/autoload.php',
-    __DIR__ . '/../../../autoload.php',
-    dirname(__DIR__) . '/vendor/autoload.php'
+    dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
+    dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+    dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php'
 );
 
 $found = false;

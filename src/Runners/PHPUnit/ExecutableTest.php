@@ -167,8 +167,8 @@ abstract class ExecutableTest
      * @param string      $binary
      * @param array       $options
      * @param array       $environmentVariables
-     * @param string|null $passthru
-     * @param string|null $passthruPhp
+     * @param string[]|null $passthru
+     * @param string[]|null $passthruPhp
      *
      * @return $this
      */
@@ -176,8 +176,8 @@ abstract class ExecutableTest
         string $binary,
         array $options = [],
         array $environmentVariables = [],
-        ?string $passthru = null,
-        ?string $passthruPhp = null
+        ?array $passthru = null,
+        ?array $passthruPhp = null
     ) {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
@@ -187,21 +187,7 @@ abstract class ExecutableTest
         $this->assertValidCommandLineLength($command);
         $this->setLastCommand($command);
 
-        $this->process = \method_exists(Process::class, 'fromShellCommandline') ?
-            Process::fromShellCommandline($command, null, $environmentVariables) :
-            new Process($command, null, $environmentVariables);
-
-        if (\method_exists($this->process, 'inheritEnvironmentVariables')) {
-            $reflectionMethod = new \ReflectionMethod($this->process, 'inheritEnvironmentVariables');
-            if (\stripos($reflectionMethod->getDocComment() ?: '', '@deprecated') === false) {
-                // no such method in 3.0, but emits warning if this isn't done in 3.3,
-                // and is deprecated starting in symfony/process 4.4 because it became the default.
-                //
-                // This checks for deprecation because E_USER_DEPRECATED may cause problems
-                // in custom error handlers in test bootstrap files
-                $this->process->inheritEnvironmentVariables();
-            }
-        }
+        $this->process = Process::fromShellCommandline($command, null, $environmentVariables);
         $this->process->start();
 
         return $this;
@@ -213,29 +199,26 @@ abstract class ExecutableTest
      *
      * @param string $binary
      * @param array $options
-     * @param string|null $passthru
-     * @param string|null $passthruPhp
+     * @param string[]|null $passthru
+     * @param string[]|null $passthruPhp
      *
      * @return string
      */
     protected function getFullCommandlineString(
         string $binary,
         array $options,
-        ?string $passthru = null,
-        ?string $passthruPhp = null
+        ?array $passthru = null,
+        ?array $passthruPhp = null
     ) {
         $finder = new PhpExecutableFinder();
-        $args = [];
 
-        $args['php'] = $finder->find();
-        if (!empty($passthruPhp)) {
-            $args['phpOptions'] = $passthruPhp;
+        $args = [$finder->find()];
+        if (null !== $passthruPhp) {
+            $args = array_merge($args, $passthruPhp);
         }
-        $args['phpunit'] = $this->command($binary, $options, $passthru);
+        $args = array_merge($args, $this->commandArguments($binary, $options, $passthru));
 
-        $command = \implode(' ', $args);
-
-        return $command;
+        return (new Process($args))->getCommandLine();
     }
 
     /**
@@ -249,22 +232,47 @@ abstract class ExecutableTest
     }
 
     /**
-     * Generate command line with passed options suitable to handle through paratest.
+     * Generate command line arguments with passed options suitable to handle through paratest.
      *
      * @param string      $binary   executable binary name
      * @param array       $options  command line options
-     * @param string|null $passthru
+     * @param string[]|null $passthru
      *
-     * @return string command line
+     * @return string[] command line arguments
      */
-    public function command(string $binary, array $options = [], ?string $passthru = null): string
+    public function commandArguments(string $binary, array $options = [], ?array $passthru = null): array
     {
         $options = \array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         $options = $this->redirectCoverageOption($options);
 
-        $cmd = $this->getCommandString($binary, $options, $passthru);
+        $arguments = [$binary];
+        if (null !== $passthru) {
+            $arguments = array_merge($arguments, $passthru);
+        }
+        foreach ($options as $key => $value) {
+            $arguments[] = "--$key";
+            if ($value !== null) {
+                $arguments[] = $value;
+            }
+        }
+        $arguments[] = $this->getPath();
+        $arguments = array_map('strval', $arguments);
 
-        return $cmd;
+        return $arguments;
+    }
+
+    /**
+     * Generate command line with passed options suitable to handle through paratest.
+     *
+     * @param string      $binary   executable binary name
+     * @param array       $options  command line options
+     * @param string[]|null $passthru
+     *
+     * @return string command line
+     */
+    public function command(string $binary, array $options = [], ?array $passthru = null): string
+    {
+        return (new Process($this->commandArguments($binary, $options, $passthru)))->getCommandLine();
     }
 
     /**
@@ -339,49 +347,6 @@ abstract class ExecutableTest
     protected function prepareOptions(array $options): array
     {
         return $options;
-    }
-
-    /**
-     * Returns the command string that will be executed
-     * by proc_open.
-     *
-     * @param string      $binary
-     * @param array       $options
-     * @param string|null $passthru
-     *
-     * @return mixed
-     */
-    protected function getCommandString(string $binary, array $options = [], ?string $passthru = null)
-    {
-        // The order we add stuff into $arguments is important
-        $arguments = [$binary];
-        // Note:
-        // the arguments MUST come last and we need to "somehow"
-        // merge the passthru string in there.
-        // Thus, we "split" the command creation here.
-        // For a clean solution, we would need to manually parse and verify
-        // the passthru. I'll leave that as a
-        // TODO
-        // @see https://stackoverflow.com/a/34871367/413531
-        // @see https://github.com/symfony/console/blob/68001d4b65139ef4f22da581a8da7be714218aec/Input/StringInput.php
-        $cmd = (new Process($arguments))->getCommandLine();
-        if (!empty($passthru)) {
-            $cmd .= ' ' . $passthru;
-        }
-
-        $arguments = [];
-        foreach ($options as $key => $value) {
-            $arguments[] = "--$key";
-            if ($value !== null) {
-                $arguments[] = $value;
-            }
-        }
-
-        $arguments[] = $this->getPath();
-
-        $args = (new Process($arguments))->getCommandLine();
-
-        return $cmd . ' ' . $args;
     }
 
     /**

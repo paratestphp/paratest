@@ -55,7 +55,9 @@ class SqliteRunner extends WrapperRunner
      */
     protected function startWorkers(): void
     {
-        $wrapper = \realpath(__DIR__ . '/../../../bin/phpunit-sqlite-wrapper');
+        $wrapper = \realpath(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-sqlite-wrapper.php'
+        );
 
         for ($i = 1; $i <= $this->options->processes; ++$i) {
             $worker = new SqliteWorker($this->dbFileName);
@@ -115,7 +117,7 @@ class SqliteRunner extends WrapperRunner
         foreach ($this->pending as $fileName => $test) {
             $this->db->prepare('INSERT INTO tests (command, file_name) VALUES (:command, :fileName)')
                 ->execute([
-                    ':command' => $test->command($this->options->phpunit, $this->options->filtered),
+                    ':command' => serialize($test->commandArguments($this->options->phpunit, $this->options->filtered)),
                     ':fileName' => $fileName,
                 ]);
         }

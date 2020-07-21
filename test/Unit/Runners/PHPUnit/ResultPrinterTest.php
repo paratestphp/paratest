@@ -99,9 +99,13 @@ class ResultPrinterTest extends ResultTester
         $this->printer->addTest($suite);
         $this->getStartOutput(new Options());
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
-        $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
         $this->assertEquals(3, $numTestsWidth);
-        $this->assertEquals(63, $maxColumn);
+        $maxExpectedColumun = 63;
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $maxExpectedColumun -= 1;
+        }
+        $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
+        $this->assertEquals($maxExpectedColumun, $maxColumn);
     }
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
@@ -284,14 +288,21 @@ class ResultPrinterTest extends ResultTester
             $this->printer->printFeedback($this->passingSuite);
         }
         $feedback = ob_get_clean();
+        
+        $firstRowColumns = 63;
+        $secondRowColumns = 57;
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $firstRowColumns -= 1;
+            $secondRowColumns += 1;
+        }
 
         //assert it is as expected
         $expected = '';
-        for ($i = 0; $i < 63; ++$i) {
+        for ($i = 0; $i < $firstRowColumns; ++$i) {
             $expected .= '.';
         }
-        $expected .= "  63 / 120 ( 52%)\n";
-        for ($i = 0; $i < 57; ++$i) {
+        $expected .= sprintf("  %s / 120 ( %s%%)\n", $firstRowColumns, (int) ($firstRowColumns / 120 * 100));
+        for ($i = 0; $i < $secondRowColumns; ++$i) {
             $expected .= '.';
         }
         $this->assertEquals($expected, $feedback);
@@ -316,13 +327,20 @@ class ResultPrinterTest extends ResultTester
         }
         $feedback = ob_get_clean();
 
+        $firstRowColumns = 65;
+        $secondRowColumns = 1;
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $firstRowColumns -= 1;
+            $secondRowColumns += 1;
+        }
+
         //assert it is as expected
         $expected = '';
-        for ($i = 0; $i < 65; ++$i) {
+        for ($i = 0; $i < $firstRowColumns; ++$i) {
             $expected .= '.';
         }
-        $expected .= " 65 / 66 ( 98%)\n";
-        for ($i = 0; $i < 1; ++$i) {
+        $expected .= sprintf(" %s / 66 ( %s%%)\n", $firstRowColumns, (int) ($firstRowColumns / 66 * 100));
+        for ($i = 0; $i < $secondRowColumns; ++$i) {
             $expected .= '.';
         }
         $this->assertEquals($expected, $feedback);

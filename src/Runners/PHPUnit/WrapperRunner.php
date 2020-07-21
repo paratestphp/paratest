@@ -27,6 +27,15 @@ class WrapperRunner extends BaseRunner
      */
     protected $modified;
 
+    public function __construct(array $opts = [])
+    {
+        if (static::class === __CLASS__ && defined('PHP_WINDOWS_VERSION_BUILD')) {
+            throw new \RuntimeException('WrapperRunner is not supported on Windows');
+        }
+
+        parent::__construct($opts);
+    }
+
     public function run()
     {
         parent::run();
@@ -51,7 +60,9 @@ class WrapperRunner extends BaseRunner
 
     protected function startWorkers()
     {
-        $wrapper = \realpath(__DIR__ . '/../../../bin/phpunit-wrapper');
+        $wrapper = \realpath(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
+        );
         for ($i = 1; $i <= $this->options->processes; ++$i) {
             $worker = new WrapperWorker();
             if ($this->options->noTestTokens) {

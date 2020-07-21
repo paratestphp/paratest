@@ -28,19 +28,20 @@ abstract class BaseWorker
         array $parameters = [],
         ?Options $options = null
     ) {
-        $bin = 'PARATEST=1 ';
+        $env = getenv();
+        $env['PARATEST'] = 1;
         if (\is_numeric($token)) {
-            $bin .= 'XDEBUG_CONFIG="true" ';
-            $bin .= "TEST_TOKEN=$token ";
+            $env['XDEBUG_CONFIG'] = 'true';
+            $env['TEST_TOKEN'] = $token;
         }
         if ($uniqueToken) {
-            $bin .= "UNIQUE_TEST_TOKEN=$uniqueToken ";
+            $env['UNIQUE_TEST_TOKEN'] = $uniqueToken;
         }
         $finder = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
-        $bin .= "$phpExecutable ";
+        $bin = "$phpExecutable ";
         if ($options && $options->passthruPhp) {
-            $bin .= $options->passthruPhp . ' ';
+            $bin .= implode(' ', $options->passthruPhp) . ' ';
         }
         $bin .= " \"$wrapperBinary\"";
         if ($parameters) {
@@ -50,7 +51,7 @@ abstract class BaseWorker
         if ($options && $options->verbose) {
             echo "Starting WrapperWorker via: $bin\n";
         }
-        $process = \proc_open($bin, self::$descriptorspec, $pipes);
+        $process = \proc_open($bin, self::$descriptorspec, $pipes, null, $env);
         $this->proc = \is_resource($process) ? $process : null;
         $this->pipes = $pipes;
     }
