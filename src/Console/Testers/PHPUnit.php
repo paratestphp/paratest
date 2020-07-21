@@ -10,6 +10,7 @@ use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Util\Str;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -157,6 +158,20 @@ class PHPUnit extends Tester
         }
 
         return new Configuration($configFilename);
+    }
+
+    /**
+     * Displays help for the ParaTestCommand.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    protected function displayHelp(InputInterface $input, OutputInterface $output)
+    {
+        $help = $this->command->getApplication()->find('help');
+        $input = new ArrayInput(['command_name' => 'paratest']);
+        $help->run($input, $output);
+        exit(0);
     }
 
     /**

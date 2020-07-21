@@ -53,18 +53,4 @@ abstract class Tester
 
         return $options;
     }
-
-    /**
-     * Displays help for the ParaTestCommand.
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
-    protected function displayHelp(InputInterface $input, OutputInterface $output)
-    {
-        $help = $this->command->getApplication()->find('help');
-        $input = new ArrayInput(['command_name' => 'paratest']);
-        $help->run($input, $output);
-        exit(0);
-    }
 }
