@@ -26,7 +26,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, cs2pr, composer-normalize, composer-require-checker
+          tools: composer:v1, cs2pr, composer-normalize, composer-require-checker, composer-unused
 
       - name: "Get composer cache directory"
         id: composercache
@@ -46,10 +46,13 @@ jobs:
         run: "composer validate"
 
       - name: "Normalize composer.json"
-        run: "composer-normalize"
+        run: "composer-normalize --dry-run"
 
       - name: "Check composer.json explicit dependencies"
         run: "composer-require-checker check --config-file=$(realpath composer-require-checker.json)"
+
+      - name: "Check composer.json for unused dependencies"
+        run: "composer-unused"
 
   tests:
     name: "Tests"
