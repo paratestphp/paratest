@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\TestCase;
 use ParaTest\Logging\JUnit\TestSuite;
 
 class LogInterpreter extends MetaProvider
@@ -139,7 +140,7 @@ class LogInterpreter extends MetaProvider
     /**
      * Returns a value as either a float or int.
      *
-     * @param $property
+     * @param string $property
      *
      * @return float|int
      */
@@ -154,7 +155,7 @@ class LogInterpreter extends MetaProvider
      * Gets messages of a given type and
      * merges them into a single collection.
      *
-     * @param $type
+     * @param string $type
      *
      * @return array
      */
@@ -167,7 +168,7 @@ class LogInterpreter extends MetaProvider
      * Flatten messages into a single collection
      * based on an accessor method.
      *
-     * @param $method
+     * @param string $method
      *
      * @return array
      */
@@ -185,7 +186,7 @@ class LogInterpreter extends MetaProvider
      * Reduces a collection of readers down to a single
      * result based on an accessor.
      *
-     * @param $method
+     * @param string $method
      *
      * @return mixed
      */

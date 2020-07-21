@@ -9,6 +9,15 @@ namespace ParaTest\Logging;
  *
  * Adds __call behavior to a logging object
  * for aggregating totals and messages
+ *
+ * @method int getTotalTests()
+ * @method int getTotalAssertions()
+ * @method int getTotalFailures()
+ * @method int getTotalErrors()
+ * @method int getTotalWarning()
+ * @method string[] getFailures()
+ * @method string[] getErrors()
+ * @method string[] getWarnings()
  */
 abstract class MetaProvider
 {
@@ -31,8 +40,8 @@ abstract class MetaProvider
     /**
      * Simplify aggregation of totals or messages.
      *
-     * @param mixed $method
-     * @param mixed $args
+     * @param string $method
+     * @param array $args
      */
     public function __call(string $method, array $args)
     {
@@ -47,7 +56,7 @@ abstract class MetaProvider
     /**
      * Returns a value as either a float or int.
      *
-     * @param $property
+     * @param string $property
      *
      * @return float|int
      */
@@ -57,7 +66,7 @@ abstract class MetaProvider
      * Gets messages of a given type and
      * merges them into a single collection.
      *
-     * @param $type
+     * @param string $type
      *
      * @return array
      */

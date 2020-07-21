@@ -60,7 +60,7 @@ class CoverageMergerTest extends TestBase
      * @dataProvider getCoverageFileProvider
      *
      * @param string[] $coverageFiles
-     * @param $expectedClass
+     * @param string $expectedClass
      */
     public function testCodeCoverageObjectIsCreatedFromCoverageFile(array $coverageFiles, $expectedClass)
     {

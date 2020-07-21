@@ -210,7 +210,7 @@ class PHPUnit extends Tester
      * Require the bootstrap. If the file is specified, but does not exist
      * then an exception will be raised.
      *
-     * @param $file
+     * @param string $file
      *
      * @throws \RuntimeException
      */
@@ -233,7 +233,7 @@ class PHPUnit extends Tester
      * so that variables defined in it do not break
      * this object's configuration.
      *
-     * @param mixed $file
+     * @param string $file
      */
     protected function scopedRequire(string $file)
     {
@@ -245,7 +245,7 @@ class PHPUnit extends Tester
     /**
      * Return whether or not code coverage information should be collected.
      *
-     * @param $options
+     * @param array $options
      *
      * @return bool
      */

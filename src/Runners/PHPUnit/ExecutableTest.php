@@ -211,16 +211,16 @@ abstract class ExecutableTest
      * Build the full executable as we would do on the command line, e.g.
      * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
-     * @param $binary
-     * @param $options
+     * @param string $binary
+     * @param array $options
      * @param string|null $passthru
      * @param string|null $passthruPhp
      *
      * @return string
      */
     protected function getFullCommandlineString(
-        $binary,
-        $options,
+        string $binary,
+        array $options,
         ?string $passthru = null,
         ?string $passthruPhp = null
     ) {
@@ -388,7 +388,7 @@ abstract class ExecutableTest
      * Checks environment variables for the presence of a TEST_TOKEN
      * variable and sets $this->token based on its value.
      *
-     * @param $environmentVariables
+     * @param array $environmentVariables
      */
     protected function handleEnvironmentVariables(array $environmentVariables)
     {

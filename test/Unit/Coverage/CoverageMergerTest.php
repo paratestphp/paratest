@@ -27,8 +27,8 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine = 39;
-        $secondFileFirstLine = 39;
+        $firstFileFirstLine = 40;
+        $secondFileFirstLine = 48;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -79,8 +79,8 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine = 39;
-        $secondFileFirstLine = 39;
+        $firstFileFirstLine = 40;
+        $secondFileFirstLine = 48;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);

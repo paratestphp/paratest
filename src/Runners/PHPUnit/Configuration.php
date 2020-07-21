@@ -185,7 +185,7 @@ class Configuration
     /**
      * Returns a suite paths relative to the config file.
      *
-     * @param $path
+     * @param string $path
      *
      * @return array|string[]
      */

@@ -109,10 +109,10 @@ class Parser
      * Return the class name of the class contained
      * in the file.
      *
-     * @param mixed $filename
-     * @param mixed $previousDeclaredClasses
+     * @param string $filename
+     * @param array $previousDeclaredClasses
      *
-     * @return string
+     * @return null|string
      */
     private function getClassName(string $filename, array $previousDeclaredClasses)
     {
@@ -129,6 +129,8 @@ class Parser
         if (isset($className)) {
             return $className;
         }
+
+        return null;
     }
 
     /**
@@ -160,8 +162,8 @@ class Parser
     }
 
     /**
-     * @param $filename
-     * @param $className
+     * @param string $filename
+     * @param string $className
      *
      * @return bool
      */

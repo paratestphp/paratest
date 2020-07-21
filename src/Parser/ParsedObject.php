@@ -47,8 +47,8 @@ abstract class ParsedObject
      * has an annotation matching the name and value
      * if provided.
      *
-     * @param string $anno
-     * @param mixed  $value
+     * @param string $annotation
+     * @param null|string  $value
      *
      * @return bool
      */

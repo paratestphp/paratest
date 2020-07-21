@@ -87,8 +87,8 @@ class TestFileLoader
      * Loads suites based on a specific path.
      * A valid path can be a directory or file.
      *
-     * @param $path
-     * @param $pattern
+     * @param string $path
+     * @param string|null $pattern
      *
      * @throws \InvalidArgumentException
      *
@@ -135,7 +135,7 @@ class TestFileLoader
     /**
      * Load a single suite file.
      *
-     * @param $path
+     * @param string $path
      */
     private function loadFile(string $path)
     {

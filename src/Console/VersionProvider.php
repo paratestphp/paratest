@@ -105,5 +105,7 @@ final class VersionProvider
                 return $path;
             }
         }
+
+        return null;
     }
 }

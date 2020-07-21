@@ -167,7 +167,7 @@ class WrapperRunner extends BaseRunner
     /**
      * Returns the output streams of a subset of workers.
      *
-     * @param array    keys are positions in $this->workers
+     * @param array $workers    keys are positions in $this->workers
      *
      * @return array
      */
