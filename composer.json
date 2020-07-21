@@ -1,25 +1,13 @@
 {
     "name": "brianium/paratest",
-    "require": {
-        "php": "^7.3",
-        "ext-pcre": "*",
-        "ext-reflection": "*",
-        "ext-simplexml": "*",
-        "brianium/habitat": "1.0.0",
-        "phpunit/php-timer": "^5.0",
-        "phpunit/phpunit": "^9.2",
-        "symfony/console": "^3.4||^4.0||^5.0",
-        "symfony/process": "^3.4||^4.0||^5.0",
-        "phpunit/php-code-coverage": "^8.0"
-    },
-    "require-dev": {
-        "phpstan/phpstan": "^0.12.33",
-        "phpstan/phpstan-phpunit": "^0.12.12",
-        "squizlabs/php_codesniffer": "^3.5"
-    },
-    "type": "library",
     "description": "Parallel testing for PHP",
-    "keywords": ["testing","PHPUnit", "concurrent", "parallel"],
+    "type": "library",
+    "keywords": [
+        "testing",
+        "PHPUnit",
+        "concurrent",
+        "parallel"
+    ],
     "homepage": "https://github.com/paratestphp/paratest",
     "license": "MIT",
     "authors": [
@@ -30,10 +18,31 @@
             "role": "Lead"
         }
     ],
-    "bin": ["bin/paratest"],
+    "require": {
+        "php": "^7.3",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-pcre": "*",
+        "ext-pdo": "*",
+        "ext-reflection": "*",
+        "ext-simplexml": "*",
+        "brianium/habitat": "1.0.0",
+        "phpunit/php-code-coverage": "^8.0",
+        "phpunit/php-timer": "^5.0",
+        "phpunit/phpunit": "^9.2",
+        "symfony/console": "^3.4 || ^4.0 || ^5.0",
+        "symfony/process": "^3.4 || ^4.0 || ^5.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.33",
+        "phpstan/phpstan-phpunit": "^0.12.12",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
     "autoload": {
         "psr-4": {
-            "ParaTest\\": ["src/"]
+            "ParaTest\\": [
+                "src/"
+            ]
         }
     },
     "autoload-dev": {
@@ -41,36 +50,39 @@
             "ParaTest\\Tests\\": "test/"
         }
     },
+    "bin": [
+        "bin/paratest"
+    ],
     "scripts": {
+        "static-analysis": [
+            "vendor/bin/phpstan analyse"
+        ],
         "style": [
             "vendor/bin/phpcs"
         ],
         "style-fix": [
             "vendor/bin/phpcbf"
         ],
-        "static-analysis": [
-            "vendor/bin/phpstan analyse"
-        ],
         "test": [
             "phpunit"
-        ],
-        "test-unit": [
-            "phpunit test/Unit/"
         ],
         "test-functional": [
             "phpunit test/Functional/"
         ],
         "test-paratest": [
             "bin/paratest"
+        ],
+        "test-unit": [
+            "phpunit test/Unit/"
         ]
     },
     "scripts-descriptions": {
+        "static-analysis": "Run static analysis",
         "style": "Run style checks (only dry run - no fixing!)",
         "style-fix": "Run style checks and fix violations",
-        "static-analysis": "Run static analysis",
         "test": "Run all tests",
-        "test-unit": "Run only unit tests",
         "test-functional": "Run only functional tests",
-        "test-paratest": "Run all tests with paratest itself"
+        "test-paratest": "Run all tests with paratest itself",
+        "test-unit": "Run only unit tests"
     }
 }
