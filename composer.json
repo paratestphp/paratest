@@ -1,7 +1,7 @@
 {
     "name": "brianium/paratest",
-    "description": "Parallel testing for PHP",
     "type": "library",
+    "description": "Parallel testing for PHP",
     "keywords": [
         "testing",
         "PHPUnit",
