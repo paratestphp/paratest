@@ -1,5 +1,5 @@
 includes:
-    - phar://phpstan.phar/conf/config.level4.neon
+    - phar://phpstan.phar/conf/config.level5.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
@@ -17,6 +17,17 @@ parameters:
             message: "#^Strict comparison using \\=\\=\\= between int and false will always evaluate to false\\.$#"
             count: 1
             path: src/Runners/PHPUnit/SqliteRunner.php
+
+        # Symfony 3.4
+        -
+            message: "#^Parameter \\#1 \\$command of class Symfony\\\\Component\\\\Process\\\\Process constructor expects array, string given\\.$#"
+            count: 1
+            path: src/Console/VersionProvider.php
+
+        -
+            message: "#^Parameter \\#1 \\$command of class Symfony\\\\Component\\\\Process\\\\Process constructor expects array, string given\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/ExecutableTest.php
 
         # Known fixtures
         -
