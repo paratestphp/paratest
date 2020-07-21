@@ -96,7 +96,7 @@ class Writer
     /**
      * Write the xml structure to a file path.
      *
-     * @param $path
+     * @param string $path
      */
     public function write(string $path)
     {
@@ -107,7 +107,7 @@ class Writer
      * Append a testsuite node to the given
      * root element.
      *
-     * @param $root
+     * @param \DOMElement $root
      * @param TestSuite $suite
      *
      * @return \DOMElement
@@ -130,7 +130,7 @@ class Writer
      * Append a testcase node to the given testsuite
      * node.
      *
-     * @param $suiteNode
+     * @param \DOMElement $suiteNode
      * @param TestCase $case
      *
      * @return \DOMElement
@@ -157,9 +157,9 @@ class Writer
     /**
      * Append error or failure nodes to the given testcase node.
      *
-     * @param $caseNode
-     * @param $defects
-     * @param $type
+     * @param \DOMElement $caseNode
+     * @param array $defects
+     * @param string $type
      */
     protected function appendDefects(\DOMElement $caseNode, array $defects, string $type)
     {
@@ -173,7 +173,7 @@ class Writer
     /**
      * Get the root level testsuite node.
      *
-     * @param $suites
+     * @param array $suites
      *
      * @return \DOMElement
      */
@@ -198,7 +198,7 @@ class Writer
      * Get the attributes used on the root testsuite
      * node.
      *
-     * @param $suites
+     * @param array $suites
      *
      * @return mixed
      */

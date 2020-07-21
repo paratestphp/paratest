@@ -7,6 +7,27 @@ namespace ParaTest\Runners\PHPUnit;
 /**
  * An object containing all configurable information used
  * to run PHPUnit via ParaTest.
+ *
+ * @property-read int $processes
+ * @property-read string $path
+ * @property-read string $phpunit
+ * @property-read string $functional
+ * @property-read bool $stopOnFailure
+ * @property-read array $filtered
+ * @property-read string $runner
+ * @property-read bool $noTestTokens
+ * @property-read bool $colors
+ * @property-read string[] $testsuite
+ * @property-read int|null $maxBatchSize
+ * @property-read string $filter
+ * @property-read string[] $groups
+ * @property-read string[] $excludeGroups
+ * @property-read array $annotations
+ * @property-read bool $parallelSuite
+ * @property-read string|null $passthru
+ * @property-read string|null $passthruPhp
+ * @property-read int $verbose
+ * @property-read int $coverageTestLimit
  */
 class Options
 {
@@ -209,7 +230,7 @@ class Options
      *
      * @param string $var
      *
-     * @return mixed
+     * @return bool
      */
     public function __isset(string $var): bool
     {
@@ -316,7 +337,7 @@ class Options
      * Take an array of filtered options and return a
      * configuration path.
      *
-     * @param $filtered
+     * @param array $filtered
      *
      * @return string|null
      */
@@ -371,7 +392,7 @@ class Options
     }
 
     /**
-     * @param $file
+     * @param string $file
      *
      * @return bool
      */

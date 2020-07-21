@@ -6,7 +6,7 @@ namespace ParaTest\Tests\Functional;
 
 class DataProviderTest extends FunctionalTestBase
 {
-    /** @var ParatestInvoker */
+    /** @var ParaTestInvoker */
     private $invoker;
 
     public function setUp(): void

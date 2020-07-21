@@ -55,7 +55,7 @@ jobs:
         if: ${{ matrix.dependencies == 'highest' }}
         run: "composer update --no-interaction --no-progress"
 
-      - name: "Tests"
+      - name: "Run tests"
         run: "vendor/bin/phpunit"
 
   coding-standards:
@@ -96,6 +96,45 @@ jobs:
 
       - name: "Check coding standards"
         run: "composer style"
+
+  static-analysis:
+    name: "Static Analysis"
+
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: memory_limit=-1
+          tools: composer:v1, cs2pr
+
+      - name: "Get composer cache directory"
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache dependencies"
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
+
+      - name: "Install dependencies"
+        run: "composer update --no-interaction --no-progress"
+
+      - name: "Run static analysis"
+        run: "composer static-analysis"
 
   compile-phar:
     name: "Compile Phar"

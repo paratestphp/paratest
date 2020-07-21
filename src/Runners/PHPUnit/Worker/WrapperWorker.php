@@ -17,7 +17,7 @@ class WrapperWorker extends BaseWorker
     private $commands = [];
 
     /**
-     * @var ExecutableTest
+     * @var null|ExecutableTest
      */
     private $currentlyExecuting;
 

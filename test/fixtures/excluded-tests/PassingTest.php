@@ -1,6 +1,6 @@
 <?php
 
-class PassingTest extends PHPUnit\FrameWork\TestCase
+class PassingTest extends PHPUnit\Framework\TestCase
 {
     public function testTruth()
     {

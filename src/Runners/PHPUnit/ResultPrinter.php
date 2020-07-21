@@ -312,7 +312,7 @@ class ResultPrinter
      * @todo Skipped/Incomplete test tracking available only in functional mode for now
      *       or in regular mode but without group/exclude-group filters.
      *
-     * @param mixed $options
+     * @param Options $options
      *
      * @return bool
      */
@@ -371,7 +371,7 @@ class ResultPrinter
      * the total number of processed cases and the column
      * position.
      *
-     * @param $item
+     * @param string $item
      */
     protected function printFeedbackItem(string $item)
     {
@@ -416,7 +416,7 @@ class ResultPrinter
      * for a collection of errors or failures.
      *
      * @param array $defects
-     * @param $type
+     * @param string $type
      *
      * @return string
      */

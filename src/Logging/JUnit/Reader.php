@@ -156,8 +156,8 @@ class Reader extends MetaProvider
      * Creates and adds a TestSuite based on the given
      * suite properties and collection of test cases.
      *
-     * @param $properties
-     * @param $testCases
+     * @param array $properties
+     * @param array $testCases
      */
     protected function addSuite($properties, array $testCases)
     {
@@ -230,5 +230,43 @@ class Reader extends MetaProvider
         } else {
             $this->suites[] = TestSuite::suiteFromArray(self::$defaultSuite);
         }
+    }
+
+    /**
+     * Return a value as a float or integer.
+     *
+     * @param string $property
+     *
+     * @return float|int
+     */
+    protected function getNumericValue(string $property)
+    {
+        return ($property === 'time')
+            ? (float) $this->suites[0]->$property
+            : (int) $this->suites[0]->$property;
+    }
+
+    /**
+     * Return messages for a given type.
+     *
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function getMessages(string $type): array
+    {
+        $messages = [];
+        $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach ($suites as $suite) {
+            $messages = \array_merge($messages, \array_reduce($suite->cases, function ($result, $case) use ($type) {
+                return \array_merge($result, \array_reduce($case->$type, function ($msgs, $msg) {
+                    $msgs[] = $msg['text'];
+
+                    return $msgs;
+                }, []));
+            }, []));
+        }
+
+        return $messages;
     }
 }

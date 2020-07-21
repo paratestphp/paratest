@@ -1,6 +1,6 @@
 <?php
 
-class TestTokenTest extends PHPUnit\FrameWork\TestCase
+class TestTokenTest extends PHPUnit\Framework\TestCase
 {
     public function testThereIsAToken()
     {

@@ -95,8 +95,8 @@ class TestCase
      * Add a defect type (error or failure).
      *
      * @param string $collName the name of the collection to add to
-     * @param $type
-     * @param $text
+     * @param string $type
+     * @param string $text
      */
     protected function addDefect(string $collName, string $type, string $text)
     {

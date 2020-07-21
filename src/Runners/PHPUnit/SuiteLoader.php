@@ -20,7 +20,7 @@ class SuiteLoader
     protected $files = [];
 
     /**
-     * @var array
+     * @var null|array
      */
     protected $suitesName = null;
 
@@ -39,7 +39,7 @@ class SuiteLoader
     protected $configuration;
 
     /**
-     * @var Options
+     * @var null|Options
      */
     public $options;
 
@@ -235,7 +235,7 @@ class SuiteLoader
      * data provider is not used and return all test if has data provider and data provider is used.
      *
      * @param ParsedClass  $class  parsed class
-     * @param ParsedObject $method parsed method
+     * @param ParsedFunction $method parsed method
      *
      * @return string[] array of test names
      */

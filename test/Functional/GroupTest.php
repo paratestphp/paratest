@@ -6,7 +6,7 @@ namespace ParaTest\Tests\Functional;
 
 class GroupTest extends FunctionalTestBase
 {
-    /** @var ParatestInvoker */
+    /** @var ParaTestInvoker */
     private $invoker;
 
     public function setUp(): void

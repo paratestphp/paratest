@@ -130,9 +130,9 @@ class OptionsTest extends \ParaTest\Tests\TestBase
     }
 
     /**
-     * @param $configFileName
-     * @param $path
-     * @param $configurationParameter
+     * @param string $configFileName
+     * @param string $path
+     * @param string|null $configurationParameter
      */
     private function assertConfigurationFileFiltered($configFileName, $path, $configurationParameter = null)
     {

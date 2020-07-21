@@ -69,7 +69,7 @@ class ExecutableTestTest extends \ParaTest\Tests\TestBase
 
     public function testCommandRedirectsCoverage()
     {
-        $options = ['a' => 'b', 'coverage-php' => 'target_html', 'coverage-php' => 'target.php'];
+        $options = ['a' => 'b', 'coverage-php' => 'target.php'];
         $binary = '/usr/bin/phpunit';
 
         $command = $this->executableTestChild->command($binary, $options);

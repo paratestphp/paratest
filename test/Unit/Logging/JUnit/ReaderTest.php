@@ -13,6 +13,7 @@ class ReaderTest extends \ParaTest\Tests\TestBase
     protected $mixed;
     protected $single;
     protected $empty;
+    protected $multi_errors;
 
     public function setUp(): void
     {

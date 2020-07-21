@@ -10,7 +10,7 @@ namespace ParaTest\Tests\Functional;
  */
 class SkippedOrIncompleteTest extends FunctionalTestBase
 {
-    /** @var ParatestInvoker */
+    /** @var ParaTestInvoker */
     private $invoker;
 
     public function setUp(): void

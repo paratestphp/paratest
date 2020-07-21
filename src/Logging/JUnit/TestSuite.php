@@ -72,7 +72,7 @@ class TestSuite
      * @param int         $tests
      * @param int         $assertions
      * @param int         $failures
-     * @param mixed       $errors
+     * @param int         $errors
      * @param int         $skipped
      * @param float       $time
      * @param string|null $file

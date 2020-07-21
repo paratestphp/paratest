@@ -14,6 +14,14 @@ class WorkerTest extends \ParaTest\Tests\TestBase
        1 => ['pipe', 'w'],
        2 => ['pipe', 'w'],
     ];
+    /**
+     * @var string
+     */
+    protected $bootstrap;
+    /**
+     * @var string
+     */
+    private $phpunitWrapper;
 
     public function setUp(): void
     {

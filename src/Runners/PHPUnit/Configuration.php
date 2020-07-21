@@ -20,7 +20,7 @@ class Configuration
     protected $path;
 
     /**
-     * @var \SimpleXMLElement
+     * @var false|\SimpleXMLElement
      */
     protected $xml;
 
@@ -88,7 +88,7 @@ class Configuration
     public function getSuites()
     {
         if (!$this->xml) {
-            return;
+            return null;
         }
         $suites = [];
         $nodes = $this->xml->xpath('//testsuites/testsuite');
@@ -185,7 +185,7 @@ class Configuration
     /**
      * Returns a suite paths relative to the config file.
      *
-     * @param $path
+     * @param string $path
      *
      * @return array|string[]
      */

@@ -363,8 +363,8 @@ class PHPUnitTest extends FunctionalTestBase
     /**
      * @dataProvider setsCoveragePhpDataProvider
      *
-     * @param $options
-     * @param $coveragePhp
+     * @param array $options
+     * @param string $coveragePhp
      */
     public function testSetsCoveragePhp($options, $coveragePhp)
     {

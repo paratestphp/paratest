@@ -9,6 +9,15 @@ namespace ParaTest\Logging;
  *
  * Adds __call behavior to a logging object
  * for aggregating totals and messages
+ *
+ * @method int getTotalTests()
+ * @method int getTotalAssertions()
+ * @method int getTotalFailures()
+ * @method int getTotalErrors()
+ * @method int getTotalWarning()
+ * @method string[] getFailures()
+ * @method string[] getErrors()
+ * @method string[] getWarnings()
  */
 abstract class MetaProvider
 {
@@ -31,8 +40,8 @@ abstract class MetaProvider
     /**
      * Simplify aggregation of totals or messages.
      *
-     * @param mixed $method
-     * @param mixed $args
+     * @param string $method
+     * @param array $args
      */
     public function __call(string $method, array $args)
     {
@@ -45,40 +54,21 @@ abstract class MetaProvider
     }
 
     /**
-     * Return a value as a float or integer.
+     * Returns a value as either a float or int.
      *
-     * @param $property
+     * @param string $property
      *
      * @return float|int
      */
-    protected function getNumericValue(string $property)
-    {
-        return ($property === 'time')
-            ? (float) $this->suites[0]->$property
-            : (int) $this->suites[0]->$property;
-    }
+    abstract protected function getNumericValue(string $property);
 
     /**
-     * Return messages for a given type.
+     * Gets messages of a given type and
+     * merges them into a single collection.
      *
-     * @param $type
+     * @param string $type
      *
      * @return array
      */
-    protected function getMessages(string $type): array
-    {
-        $messages = [];
-        $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
-        foreach ($suites as $suite) {
-            $messages = \array_merge($messages, \array_reduce($suite->cases, function ($result, $case) use ($type) {
-                return \array_merge($result, \array_reduce($case->$type, function ($msgs, $msg) {
-                    $msgs[] = $msg['text'];
-
-                    return $msgs;
-                }, []));
-            }, []));
-        }
-
-        return $messages;
-    }
+    abstract protected function getMessages(string $type): array;
 }

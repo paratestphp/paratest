@@ -45,6 +45,11 @@ class TestFileLoader
      */
     protected $excludingFiles = false;
 
+    /**
+     * @var Options|null
+     */
+    protected $options;
+
     public function __construct(Options $options = null)
     {
         $this->options = $options;
@@ -82,8 +87,8 @@ class TestFileLoader
      * Loads suites based on a specific path.
      * A valid path can be a directory or file.
      *
-     * @param $path
-     * @param $pattern
+     * @param string $path
+     * @param string|null $pattern
      *
      * @throws \InvalidArgumentException
      *
@@ -96,10 +101,6 @@ class TestFileLoader
         $pattern = $pattern ?? self::TEST_PATTERN;
 
         $path = $path ?: $this->options->path;
-        if ($path instanceof SuitePath) {
-            $pattern = $path->getPattern();
-            $path = $path->getPath();
-        }
 
         if (!\file_exists($path)) {
             throw new \InvalidArgumentException("$path is not a valid directory or file");
@@ -130,7 +131,7 @@ class TestFileLoader
     /**
      * Load a single suite file.
      *
-     * @param $path
+     * @param string $path
      */
     private function loadFile(string $path)
     {

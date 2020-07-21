@@ -10,6 +10,7 @@ use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Util\Str;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -29,7 +30,7 @@ class PHPUnit extends Tester
     private const TEST_SUITE_FILTER_SEPARATOR = ',';
 
     /**
-     * @var \ParaTest\Console\Commands\ParaTestCommand
+     * @var Command
      */
     protected $command;
 
@@ -160,6 +161,20 @@ class PHPUnit extends Tester
     }
 
     /**
+     * Displays help for the ParaTestCommand.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    protected function displayHelp(InputInterface $input, OutputInterface $output)
+    {
+        $help = $this->command->getApplication()->find('help');
+        $input = new ArrayInput(['command_name' => 'paratest']);
+        $help->run($input, $output);
+        exit(0);
+    }
+
+    /**
      * @param \Symfony\Component\Console\Input\InputInterface $input
      *
      * @throws \RuntimeException
@@ -195,7 +210,7 @@ class PHPUnit extends Tester
      * Require the bootstrap. If the file is specified, but does not exist
      * then an exception will be raised.
      *
-     * @param $file
+     * @param string $file
      *
      * @throws \RuntimeException
      */
@@ -218,7 +233,7 @@ class PHPUnit extends Tester
      * so that variables defined in it do not break
      * this object's configuration.
      *
-     * @param mixed $file
+     * @param string $file
      */
     protected function scopedRequire(string $file)
     {
@@ -230,7 +245,7 @@ class PHPUnit extends Tester
     /**
      * Return whether or not code coverage information should be collected.
      *
-     * @param $options
+     * @param array $options
      *
      * @return bool
      */
