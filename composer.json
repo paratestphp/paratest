@@ -48,6 +48,9 @@
         "style-fix": [
             "vendor/bin/phpcbf"
         ],
+        "static-analysis": [
+            "vendor/bin/phpstan analyse"
+        ],
         "test": [
             "phpunit"
         ],
@@ -64,6 +67,7 @@
     "scripts-descriptions": {
         "style": "Run style checks (only dry run - no fixing!)",
         "style-fix": "Run style checks and fix violations",
+        "static-analysis": "Run static analysis",
         "test": "Run all tests",
         "test-unit": "Run only unit tests",
         "test-functional": "Run only functional tests",

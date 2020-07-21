@@ -234,6 +234,7 @@ composer run-script -l
 scripts:
   style            Run style checks (only dry run - no fixing!)
   style-fix        Run style checks and fix violations
+  static-analysis  Run static analysis
   test             Run all tests
   test-unit        Run only unit tests
   test-functional  Run only functional tests
@@ -251,6 +252,9 @@ You can run all tests at once by running phpunit from the project directory:
 
 ParaTest can run its own test suite by running it from the `bin` directory:
 `composer test` OR `bin/paratest`
+
+Analyse the code statically:
+`composer static-analysis`
 
 Before creating a Pull Request be sure to run the style checks and commit the eventual changes:
 `composer style-fix`
