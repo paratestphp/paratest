@@ -16,7 +16,6 @@ class Str
      */
     public static function explodeWithCleanup(string $delimiter, string $string): array
     {
-        assert(false);
         $stringValues = explode($delimiter, $string);
         $parsedValues = [];
         foreach ($stringValues as $k => $v) {
