@@ -51,7 +51,7 @@ final class VersionProvider
         return \trim($process->getOutput());
     }
 
-    public function getComposerInstalledVersion($package)
+    public function getComposerInstalledVersion(string $package)
     {
         if (null === $path = $this->getComposerInstalledJsonPath()) {
             return;

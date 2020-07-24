@@ -43,7 +43,7 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Validate composer.json"
-        run: "composer validate"
+        run: "composer validate --strict"
 
       - name: "Normalize composer.json"
         run: "composer-normalize --dry-run"
@@ -239,6 +239,9 @@ jobs:
 
       - name: "Run static analysis"
         run: "composer static-analysis"
+
+      - name: "Run PSalm for type-coverage"
+        run: "vendor/bin/psalm --no-progress --shepherd --show-info=false --stats"
 
   compile-phar:
     name: "Compile Phar"
