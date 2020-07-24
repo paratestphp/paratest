@@ -28,16 +28,6 @@
         <severity>0</severity>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
-        <severity>0</severity>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint">
-        <severity>0</severity>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
-        <severity>0</severity>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.ControlStructures.AssignmentInCondition.AssignmentInCondition">
         <severity>0</severity>
     </rule>

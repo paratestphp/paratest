@@ -36,6 +36,7 @@ abstract class BaseWorker
     ];
     /** @var resource|null */
     protected $proc;
+    /** @var array */
     protected $pipes;
     /** @var int */
     protected $inExecution = 0;
@@ -135,7 +136,7 @@ abstract class BaseWorker
         }
     }
 
-    public function getCrashReport()
+    public function getCrashReport(): string
     {
         $lastCommand = isset($this->commands) ? ' Last executed command: ' . end($this->commands) : '';
 
@@ -165,7 +166,7 @@ abstract class BaseWorker
         $this->exitCode = $status['exitcode'];
     }
 
-    private function readAllStderr()
+    private function readAllStderr(): string
     {
         return stream_get_contents($this->pipes[2]);
     }

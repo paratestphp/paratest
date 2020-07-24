@@ -24,8 +24,8 @@ class CoverageMerger
 {
     /** @var CodeCoverage */
     private $coverage = null;
-
-    private $test_limit = null;
+    /** @var int */
+    private $test_limit;
 
     public function __construct(int $test_limit = 0)
     {

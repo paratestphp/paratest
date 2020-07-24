@@ -42,6 +42,8 @@ abstract class MetaProvider
      * Simplify aggregation of totals or messages.
      *
      * @param array $args
+     *
+     * @return float|int|array
      */
     public function __call(string $method, array $args)
     {

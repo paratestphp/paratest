@@ -28,7 +28,7 @@ class ParaTestApplication extends Application
      *
      * @todo for now paratest will only run the phpunit command
      */
-    public function doRun(InputInterface $input, OutputInterface $output)
+    public function doRun(InputInterface $input, OutputInterface $output): int
     {
         $this->add(new ParaTestCommand(new PHPUnit()));
 

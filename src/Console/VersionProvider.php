@@ -21,29 +21,29 @@ final class VersionProvider
 {
     private const PACKAGE = 'brianium/paratest';
 
-    /** @var null */
+    /** @var string|null */
     private $default;
 
-    public function __construct($default = null)
+    public function __construct(?string $default = null)
     {
         $this->default = $default;
     }
 
-    public static function getVersion($default = null)
+    public static function getVersion(?string $default = null): ?string
     {
         $provider = new self($default);
 
         return $provider->getParaTestVersion();
     }
 
-    public function getParaTestVersion()
+    public function getParaTestVersion(): ?string
     {
         return $this->getComposerInstalledVersion(self::PACKAGE)
             ?? $this->getGitVersion()
             ?? $this->default;
     }
 
-    public function getGitVersion()
+    public function getGitVersion(): ?string
     {
         $cmd     = 'git describe --tags --always --first-parent';
         $process = Process::fromShellCommandline($cmd, __DIR__);
