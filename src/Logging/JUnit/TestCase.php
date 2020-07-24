@@ -6,6 +6,7 @@ namespace ParaTest\Logging\JUnit;
 
 use SimpleXMLElement;
 
+use function assert;
 use function trim;
 
 /**
@@ -113,6 +114,8 @@ class TestCase
 
         foreach ($defect_groups as $group => $defects) {
             foreach ($defects as $defect) {
+                assert($defect !== false);
+
                 $message  = (string) $defect;
                 $message .= (string) $system_output;
                 $case->addDefect($group, (string) $defect['type'], $message);
