@@ -123,6 +123,7 @@ jobs:
         with:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
+          ini-values: zend.assertions=1
           tools: composer:v1
           extensions: sqlite
 
