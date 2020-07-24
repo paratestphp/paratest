@@ -15,9 +15,8 @@ use function uniqid;
 
 class RunnerTest extends TestBase
 {
+    /** @var Runner  */
     protected $runner;
-    protected $files;
-    protected $testDir;
 
     public function setUp(): void
     {

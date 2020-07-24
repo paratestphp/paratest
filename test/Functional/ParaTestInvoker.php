@@ -17,10 +17,12 @@ use const PHP_BINARY;
 
 class ParaTestInvoker
 {
+    /** @var string  */
     public $path;
+    /** @var string  */
     public $bootstrap;
 
-    public function __construct($path, $bootstrap)
+    public function __construct(string $path, string $bootstrap)
     {
         $this->path      = $path;
         $this->bootstrap = $bootstrap;
@@ -46,7 +48,7 @@ class ParaTestInvoker
         return $proc;
     }
 
-    private function buildCommand($options = [])
+    private function buildCommand(array $options = []): string
     {
         $cmd = sprintf(
             '%s %s --bootstrap %s --phpunit %s',

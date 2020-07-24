@@ -12,6 +12,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
 use ReflectionObject;
+use ReflectionProperty;
 use SebastianBergmann\Environment\Runtime;
 use SplFileObject;
 
@@ -37,7 +38,7 @@ class TestBase extends PHPUnit\Framework\TestCase
         return Version::id();
     }
 
-    protected function fixture($fixture)
+    protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
@@ -47,7 +48,7 @@ class TestBase extends PHPUnit\Framework\TestCase
         return $fixture;
     }
 
-    protected function findTests($dir)
+    protected function findTests(string $dir): array
     {
         $it    = new RecursiveDirectoryIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
         $it    = new RecursiveIteratorIterator($it);
@@ -63,21 +64,27 @@ class TestBase extends PHPUnit\Framework\TestCase
         return $files;
     }
 
-    protected function getObjectValue($object, $property)
+    /**
+     * @return mixed
+     */
+    protected function getObjectValue(object $object, string $property)
     {
         $prop = $this->getAccessibleProperty($object, $property);
 
         return $prop->getValue($object);
     }
 
-    protected function setObjectValue($object, $property, $value)
+    /**
+     * @param mixed $value
+     */
+    protected function setObjectValue(object $object, string $property, $value): void
     {
         $prop = $this->getAccessibleProperty($object, $property);
 
-        return $prop->setValue($object, $value);
+        $prop->setValue($object, $value);
     }
 
-    private function getAccessibleProperty($object, $property)
+    private function getAccessibleProperty(object $object, string $property): ReflectionProperty
     {
         $refl = new ReflectionObject($object);
         $prop = $refl->getProperty($property);
@@ -114,7 +121,12 @@ class TestBase extends PHPUnit\Framework\TestCase
         return self::callMethod($class, $methodName, $args);
     }
 
-    protected static function callMethod($objectOrClassName, $methodName, $args = null)
+    /**
+     * @param string|object $objectOrClassName
+     *
+     * @return mixed
+     */
+    protected static function callMethod($objectOrClassName, string $methodName, ?array $args = null)
     {
         $isStatic = is_string($objectOrClassName);
 

@@ -20,6 +20,7 @@ use function unlink;
 
 class WorkerTest extends TestBase
 {
+    /** @var string[][]  */
     protected static $descriptorspec = [
         0 => ['pipe', 'r'],
         1 => ['pipe', 'w'],
@@ -43,7 +44,7 @@ class WorkerTest extends TestBase
         $this->deleteIfExists(sys_get_temp_dir() . DS . 'test2.xml');
     }
 
-    private function deleteIfExists($file): void
+    private function deleteIfExists(string $file): void
     {
         if (! file_exists($file)) {
             return;
@@ -130,6 +131,9 @@ class WorkerTest extends TestBase
         $this->assertTrue($worker->isCrashed());
     }
 
+    /**
+     * @return resource
+     */
     private function createSomeClosedProcess()
     {
         $descriptorspec = [
@@ -148,7 +152,10 @@ class WorkerTest extends TestBase
         return $proc;
     }
 
-    private function setPerReflection($instance, $property, $value): void
+    /**
+     * @param mixed $value
+     */
+    private function setPerReflection(object $instance, string $property, $value): void
     {
         $reflectionProperty = new ReflectionProperty(get_class($instance), $property);
         $reflectionProperty->setAccessible(true);
@@ -177,7 +184,7 @@ class WorkerTest extends TestBase
         $this->assertJUnitLogIsValid($testLog2);
     }
 
-    private function getCommand($testFile, $logFile)
+    private function getCommand(string $testFile, string $logFile): array
     {
         return [
             PHPUNIT,
@@ -189,7 +196,7 @@ class WorkerTest extends TestBase
         ];
     }
 
-    private function assertJUnitLogIsValid($logFile): void
+    private function assertJUnitLogIsValid(string $logFile): void
     {
         $this->assertFileExists($logFile);
         $log   = new SimpleXMLElement(file_get_contents($logFile));

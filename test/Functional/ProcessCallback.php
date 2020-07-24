@@ -6,27 +6,23 @@ namespace ParaTest\Tests\Functional;
 
 class ProcessCallback
 {
+    /** @var string */
     protected $type;
+    /** @var string */
     protected $buffer;
 
-    public function callback($type, $buffer): void
+    public function callback(string $type, string $buffer): void
     {
         $this->type   = $type;
         $this->buffer = $buffer;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getBuffer()
+    public function getBuffer(): string
     {
         return $this->buffer;
     }

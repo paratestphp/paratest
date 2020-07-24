@@ -13,7 +13,7 @@ use function file_exists;
 
 class FunctionalTestBase extends PHPUnit\Framework\TestCase
 {
-    protected function fixture($fixture)
+    protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
@@ -23,15 +23,18 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
         return $fixture;
     }
 
-    protected function invokeParatest($path, $options = [], $callback = null)
+    protected function invokeParatest(string $path, array $options = [], ?callable $callback = null): Process
     {
         $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
 
         return $invoker->execute($options, $callback);
     }
 
-    protected function assertTestsPassed(Process $proc, $testPattern = '\d+', $assertionPattern = '\d+'): void
-    {
+    protected function assertTestsPassed(
+        Process $proc,
+        string $testPattern = '\d+',
+        string $assertionPattern = '\d+'
+    ): void {
         $this->assertMatchesRegularExpression(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
             $proc->getOutput()

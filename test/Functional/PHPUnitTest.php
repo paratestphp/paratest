@@ -347,7 +347,7 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertTestsPassed($proc, 2, 2);
     }
 
-    public function setsCoveragePhpDataProvider()
+    public function setsCoveragePhpDataProvider(): array
     {
         return [
             [
@@ -420,7 +420,7 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals($expected, $options);
     }
 
-    public function getRunnerOptionsDataProvider()
+    public function getRunnerOptionsDataProvider(): array
     {
         return [
             'default' => [

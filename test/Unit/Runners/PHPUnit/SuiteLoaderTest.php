@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\SuiteLoader;
 use ParaTest\Tests\TestBase;
 use RuntimeException;
@@ -227,7 +228,7 @@ class SuiteLoaderTest extends TestBase
         $this->assertEquals($path, array_shift($paths));
     }
 
-    protected function getLoadedPaths($path, $loader = null)
+    protected function getLoadedPaths(string $path, ?SuiteLoader $loader = null): array
     {
         $loader = $loader ?: new SuiteLoader();
         $loader->load($path);
@@ -243,7 +244,7 @@ class SuiteLoaderTest extends TestBase
         $this->assertEquals($path, array_shift($paths));
     }
 
-    public function testLoadDirGetsPathOfAllTestsWithKeys()
+    public function testLoadDirGetsPathOfAllTestsWithKeys(): array
     {
         $path  = $this->fixture('passing-tests');
         $files = $this->findTests($path);
@@ -259,11 +260,9 @@ class SuiteLoaderTest extends TestBase
     }
 
     /**
-     * @param mixed $paraSuites
-     *
      * @depends testLoadDirGetsPathOfAllTestsWithKeys
      */
-    public function testFirstParallelSuiteHasCorrectFunctions($paraSuites): void
+    public function testFirstParallelSuiteHasCorrectFunctions(array $paraSuites): void
     {
         $first     = $this->suiteByPath('GroupsTest.php', $paraSuites);
         $functions = $first->getFunctions();
@@ -275,7 +274,7 @@ class SuiteLoaderTest extends TestBase
         $this->assertEquals('testAddition', $functions[4]->getName());
     }
 
-    private function suiteByPath($path, array $paraSuites)
+    private function suiteByPath(string $path, array $paraSuites): Suite
     {
         foreach ($paraSuites as $completePath => $suite) {
             if (strstr($completePath, $path)) {
@@ -287,11 +286,9 @@ class SuiteLoaderTest extends TestBase
     }
 
     /**
-     * @param mixed $paraSuites
-     *
      * @depends testLoadDirGetsPathOfAllTestsWithKeys
      */
-    public function testSecondParallelSuiteHasCorrectFunctions($paraSuites): void
+    public function testSecondParallelSuiteHasCorrectFunctions(array $paraSuites): void
     {
         $second    = $this->suiteByPath('LegacyNamespaceTest.php', $paraSuites);
         $functions = $second->getFunctions();

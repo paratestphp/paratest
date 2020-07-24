@@ -40,7 +40,7 @@ class TestSuite
     /**
      * Nested suites.
      *
-     * @var array
+     * @var TestSuite[]
      */
     public $suites = [];
 

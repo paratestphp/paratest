@@ -9,6 +9,7 @@ use ParaTest\Tests\TestBase;
 
 class ParsedObjectTest extends TestBase
 {
+    /** @var ParsedClass  */
     protected $parsedClass;
 
     public function setUp(): void

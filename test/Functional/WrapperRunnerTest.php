@@ -40,17 +40,7 @@ class WrapperRunnerTest extends FunctionalTestBase
         $this->assertTestsPassed($proc, 1, 1);
     }
 
-    public function functionalModeEnabledDataProvider()
-    {
-        return [[false]];
-    }
-
-    /**
-     * @param mixed $functionalModeEnabled
-     *
-     * @dataProvider functionalModeEnabledDataProvider
-     */
-    public function testExitCodes($functionalModeEnabled): void
+    public function testExitCodes(): void
     {
         $options = [
             'runner' => 'WrapperRunner',

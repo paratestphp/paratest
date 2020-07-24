@@ -9,6 +9,7 @@ use ParaTest\Tests\TestBase;
 
 class SuiteTest extends TestBase
 {
+    /** @var Suite  */
     protected $suite;
 
     public function setUp(): void

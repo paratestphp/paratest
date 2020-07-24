@@ -11,7 +11,9 @@ use function uniqid;
 
 class TestGenerator
 {
+    /** @var string */
     public $path;
+    /** @var string  */
     private $fullPath;
 
     public function __construct()
@@ -26,7 +28,7 @@ class TestGenerator
         mkdir($this->fullPath, 0777, true);
     }
 
-    public function generate($tests = 1, $methods = 1): void
+    public function generate(int $tests = 1, int $methods = 1): void
     {
         for ($i = 0; $i < $tests; ++$i) {
             $name = "Generated{$i}Test";
@@ -35,7 +37,7 @@ class TestGenerator
         }
     }
 
-    private function generateTestString($testName, $methods = 1)
+    private function generateTestString(string $testName, int $methods = 1): string
     {
         $php = '<' . "?php\n\nclass $testName extends PHPUnit\\Framework\\TestCase\n{\n";
 

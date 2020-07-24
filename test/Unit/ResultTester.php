@@ -10,12 +10,18 @@ use ParaTest\Tests\TestBase;
 
 abstract class ResultTester extends TestBase
 {
-    protected $errorSuite;
+    /** @var Suite */
     protected $failureSuite;
+    /** @var Suite */
     protected $otherErrorSuite;
+    /** @var Suite */
     protected $mixedSuite;
+    /** @var Suite */
     protected $passingSuite;
+    /** @var Suite */
     protected $dataProviderSuite;
+    /** @var Suite */
+    protected $errorSuite;
 
     public function setUp(): void
     {
@@ -27,12 +33,12 @@ abstract class ResultTester extends TestBase
         $this->dataProviderSuite = $this->getSuiteWithResult('data-provider-result.xml', 50);
     }
 
-    public function getSuiteWithResult($result, $methodCount)
+    public function getSuiteWithResult(string $result, int $methodCount): Suite
     {
         $result    = FIXTURES . DS . 'results' . DS . $result;
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
-            $functions[] = $this->mockFunction($i);
+            $functions[] = $this->mockFunction((string) $i);
         }
 
         $suite = new Suite('', $functions);
@@ -41,7 +47,7 @@ abstract class ResultTester extends TestBase
         return $suite;
     }
 
-    protected function mockFunction($functionCount)
+    protected function mockFunction(string $functionCount): ParsedFunction
     {
         return new ParsedFunction('doc', 'public', 'func' . $functionCount);
     }
