@@ -16,17 +16,13 @@ class SqliteWorker extends BaseWorker
         $this->dbFileName = $dbFileName;
     }
 
-    /**
-     * @param int|null $token
-     * @param null|string $uniqueToken
-     */
     public function start(
         string $wrapperBinary,
         ?int $token = 1,
         ?string $uniqueToken = null,
         array $parameters = [],
         ?Options $options = null
-    ) {
+    ): void {
         $parameters[] = $this->dbFileName;
 
         parent::start($wrapperBinary, $token, $uniqueToken, $parameters, $options);

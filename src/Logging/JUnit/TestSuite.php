@@ -4,53 +4,37 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
+use SimpleXMLElement;
+
 /**
- * Class TestSuite.
- *
  * A simple data structure for tracking
  * data associated with a testsuite node
  * in a JUnit xml document
  */
 class TestSuite
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $tests;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $assertions;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $failures;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $errors;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $skipped;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     public $time;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $file;
 
     /**
@@ -67,16 +51,6 @@ class TestSuite
      */
     public $cases = [];
 
-    /**
-     * @param string      $name
-     * @param int         $tests
-     * @param int         $assertions
-     * @param int         $failures
-     * @param int         $errors
-     * @param int         $skipped
-     * @param float       $time
-     * @param string|null $file
-     */
     public function __construct(
         string $name,
         int $tests,
@@ -85,16 +59,16 @@ class TestSuite
         int $errors,
         int $skipped,
         float $time,
-        string $file = null
+        ?string $file = null
     ) {
-        $this->name = $name;
-        $this->tests = $tests;
+        $this->name       = $name;
+        $this->tests      = $tests;
         $this->assertions = $assertions;
-        $this->failures = $failures;
-        $this->skipped = $skipped;
-        $this->errors = $errors;
-        $this->time = $time;
-        $this->file = $file;
+        $this->failures   = $failures;
+        $this->skipped    = $skipped;
+        $this->errors     = $errors;
+        $this->time       = $time;
+        $this->file       = $file;
     }
 
     /**
@@ -122,11 +96,9 @@ class TestSuite
     /**
      * Create a TestSuite from a SimpleXMLElement.
      *
-     * @param \SimpleXMLElement $node
-     *
      * @return TestSuite
      */
-    public static function suiteFromNode(\SimpleXMLElement $node): self
+    public static function suiteFromNode(SimpleXMLElement $node): self
     {
         return new self(
             (string) $node['name'],

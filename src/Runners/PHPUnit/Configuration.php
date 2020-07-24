@@ -4,9 +4,24 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use RuntimeException;
+use SimpleXMLElement;
+
+use function array_key_exists;
+use function array_merge_recursive;
+use function dirname;
+use function file_exists;
+use function file_get_contents;
+use function glob;
+use function realpath;
+use function simplexml_load_string;
+use function sprintf;
+use function strpos;
+
+use const DIRECTORY_SEPARATOR;
+use const GLOB_ONLYDIR;
+
 /**
- * Class Configuration.
- *
  * Stores information about the phpunit xml
  * configuration being used to run tests
  */
@@ -19,11 +34,10 @@ class Configuration
      */
     protected $path;
 
-    /**
-     * @var false|\SimpleXMLElement
-     */
+    /** @var false|SimpleXMLElement */
     protected $xml;
 
+    /** @var string[] */
     protected $availableNodes = ['exclude', 'file', 'directory', 'testsuite'];
 
     /**
@@ -38,16 +52,16 @@ class Configuration
     public function __construct(string $path)
     {
         $this->path = $path;
-        if (\file_exists($path)) {
-            $this->xml = \simplexml_load_string(\file_get_contents($path));
+        if (! file_exists($path)) {
+            return;
         }
+
+        $this->xml = simplexml_load_string(file_get_contents($path));
     }
 
     /**
      * Converting the configuration to a string
      * returns the configuration path.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -71,8 +85,6 @@ class Configuration
     /**
      * Returns the path to the phpunit configuration
      * file.
-     *
-     * @return string
      */
     public function getPath(): string
     {
@@ -85,16 +97,17 @@ class Configuration
      *
      * @return SuitePath[][]|null
      */
-    public function getSuites()
+    public function getSuites(): ?array
     {
-        if (!$this->xml) {
+        if (! $this->xml) {
             return null;
         }
+
         $suites = [];
-        $nodes = $this->xml->xpath('//testsuites/testsuite');
+        $nodes  = $this->xml->xpath('//testsuites/testsuite');
 
         foreach ($nodes as $node) {
-            $suites = \array_merge_recursive($suites, $this->getSuiteByName((string) $node['name']));
+            $suites = array_merge_recursive($suites, $this->getSuiteByName((string) $node['name']));
         }
 
         return $suites;
@@ -102,14 +115,15 @@ class Configuration
 
     public function hasSuites()
     {
-        return !empty($this->getSuitesName());
+        return ! empty($this->getSuitesName());
     }
 
-    public function getSuitesName()
+    public function getSuitesName(): ?array
     {
-        if (!$this->xml) {
-            return;
+        if (! $this->xml) {
+            return null;
         }
+
         $nodes = $this->xml->xpath('//testsuites/testsuite');
         $names = [];
         foreach ($nodes as $node) {
@@ -123,15 +137,13 @@ class Configuration
      * Return the contents of the <testsuite> nodes
      * contained in a PHPUnit configuration.
      *
-     * @param string $suiteName
-     *
      * @return SuitePath[]|null
      */
-    public function getSuiteByName(string $suiteName)
+    public function getSuiteByName(string $suiteName): ?array
     {
-        $nodes = $this->xml->xpath(\sprintf('//testsuite[@name="%s"]', $suiteName));
+        $nodes = $this->xml->xpath(sprintf('//testsuite[@name="%s"]', $suiteName));
 
-        $suites = [];
+        $suites        = [];
         $excludedPaths = [];
         foreach ($nodes as $node) {
             foreach ($this->availableNodes as $nodeName) {
@@ -141,18 +153,22 @@ class Configuration
                             foreach ($this->getSuitePaths((string) $nodeContent) as $excludedPath) {
                                 $excludedPaths[$excludedPath] = $excludedPath;
                             }
+
                             break;
                         case 'testsuite':
-                            $suites = \array_merge_recursive($suites, $this->getSuiteByName((string) $nodeContent));
+                            $suites = array_merge_recursive($suites, $this->getSuiteByName((string) $nodeContent));
                             break;
                         case 'directory':
                             // Replicate behaviour of PHPUnit
                             // if a directory is included and excluded at the same time, then it is considered included
                             foreach ($this->getSuitePaths((string) $nodeContent) as $dir) {
-                                if (\array_key_exists($dir, $excludedPaths)) {
-                                    unset($excludedPaths[$dir]);
+                                if (! array_key_exists($dir, $excludedPaths)) {
+                                    continue;
                                 }
+
+                                unset($excludedPaths[$dir]);
                             }
+
                             // no break on purpose
                         default:
                             foreach ($this->getSuitePaths((string) $nodeContent) as $path) {
@@ -162,6 +178,7 @@ class Configuration
                                     (string) $nodeContent->attributes()->suffix
                                 );
                             }
+
                             break;
                     }
                 }
@@ -174,24 +191,20 @@ class Configuration
     /**
      * Return the path of the directory
      * that contains the phpunit configuration.
-     *
-     * @return string
      */
     public function getConfigDir(): string
     {
-        return \dirname($this->path) . \DIRECTORY_SEPARATOR;
+        return dirname($this->path) . DIRECTORY_SEPARATOR;
     }
 
     /**
      * Returns a suite paths relative to the config file.
      *
-     * @param string $path
-     *
      * @return array|string[]
      */
-    public function getSuitePaths(string $path)
+    public function getSuitePaths(string $path): array
     {
-        $real = \realpath($this->getConfigDir() . $path);
+        $real = realpath($this->getConfigDir() . $path);
 
         if ($real !== false) {
             return [$real];
@@ -199,16 +212,18 @@ class Configuration
 
         if ($this->isGlobRequired($path)) {
             $paths = [];
-            foreach (\glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
-                if (($path = \realpath($path)) !== false) {
-                    $paths[] = $path;
+            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
+                if (($path = realpath($path)) === false) {
+                    continue;
                 }
+
+                $paths[] = $path;
             }
 
             return $paths;
         }
 
-        throw new \RuntimeException("Suite path $path could not be found");
+        throw new RuntimeException("Suite path $path could not be found");
     }
 
     /**
@@ -218,7 +233,7 @@ class Configuration
      */
     public function getEnvironmentVariables(): array
     {
-        if (!isset($this->xml->php->env)) {
+        if (! isset($this->xml->php->env)) {
             return [];
         }
 
@@ -233,13 +248,9 @@ class Configuration
 
     /**
      * Returns true if path needs globbing (like a /path/*-to/string).
-     *
-     * @param string $path
-     *
-     * @return bool
      */
     public function isGlobRequired(string $path): bool
     {
-        return \strpos($path, '*') !== false;
+        return strpos($path, '*') !== false;
     }
 }

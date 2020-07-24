@@ -4,33 +4,35 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
+use InvalidArgumentException;
 use ParaTest\Logging\MetaProvider;
+use SimpleXMLElement;
+
+use function array_merge;
+use function array_reduce;
+use function call_user_func_array;
+use function count;
+use function current;
+use function file_exists;
+use function file_get_contents;
+use function filesize;
+use function unlink;
 
 class Reader extends MetaProvider
 {
-    /**
-     * @var \SimpleXMLElement
-     */
+    /** @var SimpleXMLElement */
     protected $xml;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $isSingle = false;
 
-    /**
-     * @var TestSuite[]
-     */
+    /** @var TestSuite[] */
     protected $suites = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $logFile;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected static $defaultSuite = [
         'name' => '',
         'file' => '',
@@ -44,26 +46,25 @@ class Reader extends MetaProvider
 
     public function __construct(string $logFile)
     {
-        if (!\file_exists($logFile)) {
-            throw new \InvalidArgumentException("Log file $logFile does not exist");
+        if (! file_exists($logFile)) {
+            throw new InvalidArgumentException("Log file $logFile does not exist");
         }
 
         $this->logFile = $logFile;
-        if (\filesize($logFile) === 0) {
-            throw new \InvalidArgumentException(
+        if (filesize($logFile) === 0) {
+            throw new InvalidArgumentException(
                 "Log file $logFile is empty. This means a PHPUnit process has crashed."
             );
         }
-        $logFileContents = \file_get_contents($this->logFile);
-        $this->xml = new \SimpleXMLElement($logFileContents);
+
+        $logFileContents = file_get_contents($this->logFile);
+        $this->xml       = new SimpleXMLElement($logFileContents);
         $this->init();
     }
 
     /**
      * Returns whether or not this reader contains only
      * a single suite.
-     *
-     * @return bool
      */
     public function isSingleSuite(): bool
     {
@@ -94,7 +95,7 @@ class Reader extends MetaProvider
     public function getFeedback(): array
     {
         $feedback = [];
-        $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach ($suites as $suite) {
             foreach ($suite->cases as $case) {
                 if ($case->failures) {
@@ -117,16 +118,16 @@ class Reader extends MetaProvider
     /**
      * Remove the JUnit xml file.
      */
-    public function removeLog()
+    public function removeLog(): void
     {
-        \unlink($this->logFile);
+        unlink($this->logFile);
     }
 
     /**
      * Initialize the suite collection
      * from the JUnit xml document.
      */
-    protected function init()
+    protected function init(): void
     {
         $this->initSuite();
         $cases = $this->getCaseNodes();
@@ -140,15 +141,15 @@ class Reader extends MetaProvider
      *
      * @param array $nodeArray an array of SimpleXMLElement nodes representing testcase elements
      */
-    protected function initSuiteFromCases(array $nodeArray)
+    protected function initSuiteFromCases(array $nodeArray): void
     {
-        $testCases = [];
+        $testCases  = [];
         $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
-        if (!$this->isSingle) {
+        if (! $this->isSingle) {
             $this->addSuite($properties, $testCases);
         } else {
-            $suite = $this->suites[0];
-            $suite->cases = \array_merge($suite->cases, $testCases);
+            $suite        = $this->suites[0];
+            $suite->cases = array_merge($suite->cases, $testCases);
         }
     }
 
@@ -159,10 +160,10 @@ class Reader extends MetaProvider
      * @param array $properties
      * @param array $testCases
      */
-    protected function addSuite($properties, array $testCases)
+    protected function addSuite(array $properties, array $testCases): void
     {
-        $suite = TestSuite::suiteFromArray($properties);
-        $suite->cases = $testCases;
+        $suite                     = TestSuite::suiteFromArray($properties);
+        $suite->cases              = $testCases;
         $this->suites[0]->suites[] = $suite;
     }
 
@@ -178,16 +179,16 @@ class Reader extends MetaProvider
     {
         $cb = [TestCase::class, 'caseFromNode'];
 
-        return \array_reduce($nodeArray, function ($result, $c) use (&$testCases, $cb) {
-            $testCases[] = \call_user_func_array($cb, [$c]);
+        return array_reduce($nodeArray, static function ($result, $c) use (&$testCases, $cb) {
+            $testCases[]    = call_user_func_array($cb, [$c]);
             $result['name'] = (string) $c['class'];
             $result['file'] = (string) $c['file'];
             ++$result['tests'];
             $result['assertions'] += (int) $c['assertions'];
-            $result['failures'] += \count($c->xpath('failure'));
-            $result['errors'] += \count($c->xpath('error'));
-            $result['skipped'] += \count($c->xpath('skipped'));
-            $result['time'] += (float) $c['time'];
+            $result['failures']   += count($c->xpath('failure'));
+            $result['errors']     += count($c->xpath('error'));
+            $result['skipped']    += count($c->xpath('skipped'));
+            $result['time']       += (float) $c['time'];
 
             return $result;
         }, static::$defaultSuite);
@@ -202,12 +203,13 @@ class Reader extends MetaProvider
     protected function getCaseNodes(): array
     {
         $caseNodes = $this->xml->xpath('//testcase');
-        $cases = [];
+        $cases     = [];
         foreach ($caseNodes as $node) {
             $caseFilename = (string) $node['file'];
-            if (!isset($cases[$caseFilename])) {
+            if (! isset($cases[$caseFilename])) {
                 $cases[$caseFilename] = [];
             }
+
             $cases[$caseFilename][] = $node;
         }
 
@@ -219,11 +221,11 @@ class Reader extends MetaProvider
      * and initialize the suite collection with the first
      * suite.
      */
-    protected function initSuite()
+    protected function initSuite(): void
     {
-        $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
-        $this->isSingle = \count($suiteNodes) === 0;
-        $node = \current($this->xml->xpath('/testsuites/testsuite'));
+        $suiteNodes     = $this->xml->xpath('/testsuites/testsuite/testsuite');
+        $this->isSingle = count($suiteNodes) === 0;
+        $node           = current($this->xml->xpath('/testsuites/testsuite'));
 
         if ($node !== false) {
             $this->suites[] = TestSuite::suiteFromNode($node);
@@ -235,13 +237,11 @@ class Reader extends MetaProvider
     /**
      * Return a value as a float or integer.
      *
-     * @param string $property
-     *
      * @return float|int
      */
     protected function getNumericValue(string $property)
     {
-        return ($property === 'time')
+        return $property === 'time'
             ? (float) $this->suites[0]->$property
             : (int) $this->suites[0]->$property;
     }
@@ -249,22 +249,23 @@ class Reader extends MetaProvider
     /**
      * Return messages for a given type.
      *
-     * @param string $type
-     *
      * @return array
      */
     protected function getMessages(string $type): array
     {
         $messages = [];
-        $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach ($suites as $suite) {
-            $messages = \array_merge($messages, \array_reduce($suite->cases, function ($result, $case) use ($type) {
-                return \array_merge($result, \array_reduce($case->$type, function ($msgs, $msg) {
-                    $msgs[] = $msg['text'];
+            $messages = array_merge(
+                $messages,
+                array_reduce($suite->cases, static function ($result, $case) use ($type) {
+                    return array_merge($result, array_reduce($case->$type, static function ($msgs, $msg) {
+                        $msgs[] = $msg['text'];
 
-                    return $msgs;
-                }, []));
-            }, []));
+                        return $msgs;
+                    }, []));
+                }, [])
+            );
         }
 
         return $messages;

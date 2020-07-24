@@ -12,9 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ParaTestCommand extends Command
 {
-    /**
-     * @var \ParaTest\Console\Testers\Tester
-     */
+    /** @var Tester */
     protected $tester;
 
     public function __construct(Tester $tester)
@@ -27,7 +25,7 @@ class ParaTestCommand extends Command
     /**
      * Ubiquitous configuration options for ParaTest.
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 'auto')
@@ -111,9 +109,6 @@ class ParaTestCommand extends Command
 
     /**
      * Executes the specified tester.
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
      *
      * @return int|mixed|null
      */

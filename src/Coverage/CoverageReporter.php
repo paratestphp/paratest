@@ -15,14 +15,9 @@ use SebastianBergmann\CodeCoverage\Version;
 
 class CoverageReporter implements CoverageReporterInterface
 {
-    /**
-     * @var CodeCoverage
-     */
+    /** @var CodeCoverage */
     private $coverage;
 
-    /**
-     * @param CodeCoverage $coverage
-     */
     public function __construct(CodeCoverage $coverage)
     {
         $this->coverage = $coverage;
@@ -33,7 +28,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function clover(string $target)
+    public function clover(string $target): void
     {
         $clover = new Clover();
         $clover->process($this->coverage, $target);
@@ -44,7 +39,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function crap4j(string $target)
+    public function crap4j(string $target): void
     {
         $xml = new Crap4j();
         $xml->process($this->coverage, $target);
@@ -55,7 +50,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function html(string $target)
+    public function html(string $target): void
     {
         $html = new Html\Facade();
         $html->process($this->coverage, $target);
@@ -66,7 +61,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function php(string $target)
+    public function php(string $target): void
     {
         $php = new PHP();
         $php->process($this->coverage, $target);
@@ -75,7 +70,7 @@ class CoverageReporter implements CoverageReporterInterface
     /**
      * Generate text coverage report.
      */
-    public function text()
+    public function text(): void
     {
         $text = new Text();
         echo $text->process($this->coverage);
@@ -86,7 +81,7 @@ class CoverageReporter implements CoverageReporterInterface
      *
      * @param string $target Report filename
      */
-    public function xml(string $target)
+    public function xml(string $target): void
     {
         $xml = new XmlReport(Version::id());
         $xml->process($this->coverage, $target);

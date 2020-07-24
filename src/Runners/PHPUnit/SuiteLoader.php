@@ -7,8 +7,19 @@ namespace ParaTest\Runners\PHPUnit;
 use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
-use ParaTest\Parser\ParsedObject;
 use ParaTest\Parser\Parser;
+use RuntimeException;
+
+use function array_intersect;
+use function array_merge;
+use function array_unique;
+use function count;
+use function is_array;
+use function is_int;
+use function preg_match;
+use function preg_match_all;
+use function sprintf;
+use function substr;
 
 class SuiteLoader
 {
@@ -19,9 +30,7 @@ class SuiteLoader
      */
     protected $files = [];
 
-    /**
-     * @var null|array
-     */
+    /** @var array|null */
     protected $suitesName = null;
 
     /**
@@ -38,18 +47,14 @@ class SuiteLoader
      */
     protected $configuration;
 
-    /**
-     * @var null|Options
-     */
+    /** @var Options|null */
     public $options;
 
-    public function __construct(Options $options = null)
+    public function __construct(?Options $options = null)
     {
         $this->options = $options;
 
-        $this->configuration = isset($this->options->filtered['configuration'])
-            ? $this->options->filtered['configuration']
-            : new Configuration('');
+        $this->configuration = $this->options->filtered['configuration'] ?? new Configuration('');
     }
 
     /**
@@ -73,7 +78,7 @@ class SuiteLoader
     {
         $methods = [];
         foreach ($this->loadedSuites as $suite) {
-            $methods = \array_merge($methods, $suite->getFunctions());
+            $methods = array_merge($methods, $suite->getFunctions());
         }
 
         return $methods;
@@ -83,15 +88,13 @@ class SuiteLoader
      * Populates the loaded suite collection. Will load suites
      * based off a phpunit xml configuration or a specified path.
      *
-     * @param string $path
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function load(string $path = ''): void
     {
         if ($path) {
             $testFileLoader = new TestFileLoader($this->options);
-            $this->files = \array_merge(
+            $this->files    = array_merge(
                 $this->files,
                 $testFileLoader->loadPath($path)
             );
@@ -101,10 +104,10 @@ class SuiteLoader
         ) {
             $this->suitesName = $this->configuration->getSuitesName();
         } elseif ($this->configuration->hasSuites()) {
-            if (!empty($this->options->testsuite)) {
+            if (! empty($this->options->testsuite)) {
                 $suites = [];
                 foreach ($this->options->testsuite as $testsuite) {
-                    $suites = \array_merge($suites, $this->configuration->getSuiteByName($testsuite));
+                    $suites = array_merge($suites, $this->configuration->getSuiteByName($testsuite));
                 }
             } else {
                 $suites = $this->configuration->getSuites();
@@ -113,7 +116,7 @@ class SuiteLoader
             foreach ($suites as $suite) {
                 foreach ($suite as $suitePath) {
                     $testFileLoader = new TestFileLoader($this->options);
-                    $this->files = \array_merge(
+                    $this->files    = array_merge(
                         $this->files,
                         $testFileLoader->loadSuitePath($suitePath)
                     );
@@ -121,11 +124,11 @@ class SuiteLoader
             }
         }
 
-        if (!$this->files && !\is_array($this->suitesName)) {
-            throw new \RuntimeException('No path or configuration provided (tests must end with Test.php)');
+        if (! $this->files && ! is_array($this->suitesName)) {
+            throw new RuntimeException('No path or configuration provided (tests must end with Test.php)');
         }
 
-        $this->files = \array_unique($this->files); // remove duplicates
+        $this->files = array_unique($this->files); // remove duplicates
 
         $this->initSuites();
     }
@@ -136,7 +139,7 @@ class SuiteLoader
      */
     protected function initSuites(): void
     {
-        if (\is_array($this->suitesName)) {
+        if (is_array($this->suitesName)) {
             foreach ($this->suitesName as $suiteName) {
                 $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->getPath());
             }
@@ -146,7 +149,7 @@ class SuiteLoader
                     $parser = new Parser($path);
                     if ($class = $parser->getClass()) {
                         $suite = $this->createSuite($path, $class);
-                        if (\count($suite->getFunctions()) > 0) {
+                        if (count($suite->getFunctions()) > 0) {
                             $this->loadedSuites[$path] = $suite;
                         }
                     }
@@ -160,9 +163,9 @@ class SuiteLoader
     protected function executableTests(string $path, ParsedClass $class): array
     {
         $executableTests = [];
-        $methodBatches = $this->getMethodBatches($class);
+        $methodBatches   = $this->getMethodBatches($class);
         foreach ($methodBatches as $methodBatch) {
-            $executableTest = new TestMethod($path, $methodBatch);
+            $executableTest    = new TestMethod($path, $methodBatch);
             $executableTests[] = $executableTest;
         }
 
@@ -175,19 +178,17 @@ class SuiteLoader
      * Identify method dependencies, and group dependents and dependees on a single methodBatch.
      * Use max batch size to fill batches.
      *
-     * @param ParsedClass $class
-     *
      * @return array of MethodBatches. Each MethodBatch has an array of method names
      */
     protected function getMethodBatches(ParsedClass $class): array
     {
         $classMethods = $class->getMethods($this->options ? $this->options->annotations : []);
         $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
-        $batches = [];
+        $batches      = [];
         foreach ($classMethods as $method) {
             $tests = $this->getMethodTests($class, $method);
             // if filter passed to paratest then method tests can be blank if not match to filter
-            if (!$tests) {
+            if (! $tests) {
                 continue;
             }
 
@@ -206,7 +207,7 @@ class SuiteLoader
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
                 if ($dependsOn === $methodName) {
-                    $batches[$key] = \array_merge($batches[$key], $tests);
+                    $batches[$key] = array_merge($batches[$key], $tests);
                     continue;
                 }
             }
@@ -216,10 +217,10 @@ class SuiteLoader
     protected function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize): void
     {
         foreach ($tests as $test) {
-            $lastIndex = \count($batches) - 1;
+            $lastIndex = count($batches) - 1;
             if (
                 $lastIndex !== -1
-                && \count($batches[$lastIndex]) < $maxBatchSize
+                && count($batches[$lastIndex]) < $maxBatchSize
             ) {
                 $batches[$lastIndex][] = $test;
             } else {
@@ -234,7 +235,7 @@ class SuiteLoader
      * With empty filter this method returns single test if doesn't have data provider or
      * data provider is not used and return all test if has data provider and data provider is used.
      *
-     * @param ParsedClass  $class  parsed class
+     * @param ParsedClass    $class  parsed class
      * @param ParsedFunction $method parsed method
      *
      * @return string[] array of test names
@@ -248,17 +249,19 @@ class SuiteLoader
         $dataProvider = $this->methodDataProvider($method);
         if (isset($dataProvider)) {
             $testFullClassName = '\\' . $class->getName();
-            $testClass = new $testFullClassName();
-            $result = [];
+            $testClass         = new $testFullClassName();
+            $result            = [];
             foreach ($testClass->$dataProvider() as $key => $value) {
-                $test = \sprintf(
+                $test = sprintf(
                     '%s with data set %s',
                     $method->getName(),
-                    \is_int($key) ? '#' . $key : '"' . $key . '"'
+                    is_int($key) ? '#' . $key : '"' . $key . '"'
                 );
-                if ($this->testMatchOptions($class->getName(), $test, $groups)) {
-                    $result[] = $test;
+                if (! $this->testMatchOptions($class->getName(), $test, $groups)) {
+                    continue;
                 }
+
+                $result[] = $test;
             }
         } elseif ($this->testMatchOptions($class->getName(), $method->getName(), $groups)) {
             $result = [$method->getName()];
@@ -274,20 +277,14 @@ class SuiteLoader
         }
 
         if (
-            !empty($this->options->groups)
-            && !\array_intersect($groups, $this->options->groups)
+            ! empty($this->options->groups)
+            && ! array_intersect($groups, $this->options->groups)
         ) {
             return false;
         }
 
-        if (
-            !empty($this->options->excludeGroups)
-            && \array_intersect($groups, $this->options->excludeGroups)
-        ) {
-            return false;
-        }
-
-        return true;
+        return empty($this->options->excludeGroups)
+            || ! array_intersect($groups, $this->options->excludeGroups);
     }
 
     protected function testMatchFilterOptions(string $className, string $name): bool
@@ -296,25 +293,23 @@ class SuiteLoader
             return true;
         }
 
-        $re = \substr($this->options->filter, 0, 1) === '/'
+        $re       = substr($this->options->filter, 0, 1) === '/'
             ? $this->options->filter
             : '/' . $this->options->filter . '/';
         $fullName = $className . '::' . $name;
 
-        return 1 === \preg_match($re, $fullName);
+        return preg_match($re, $fullName) === 1;
     }
 
     protected function testMatchOptions(string $className, string $name, array $group): bool
     {
-        $result = $this->testMatchGroupOptions($group)
+        return $this->testMatchGroupOptions($group)
                 && $this->testMatchFilterOptions($className, $name);
-
-        return $result;
     }
 
     protected function testGroups(ParsedClass $class, ParsedFunction $method): array
     {
-        return \array_merge(
+        return array_merge(
             $this->classGroups($class),
             $this->methodGroups($method)
         );
@@ -322,7 +317,7 @@ class SuiteLoader
 
     protected function methodDataProvider(ParsedFunction $method): ?string
     {
-        if (\preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
 
@@ -331,7 +326,7 @@ class SuiteLoader
 
     protected function methodDependency(ParsedFunction $method): ?string
     {
-        if (\preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
 
@@ -340,7 +335,7 @@ class SuiteLoader
 
     protected function methodGroups(ParsedFunction $method): array
     {
-        if (\preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
+        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
             return $matches[1];
         }
 
@@ -349,7 +344,7 @@ class SuiteLoader
 
     protected function classGroups(ParsedClass $class): array
     {
-        if (\preg_match_all("/@\bgroup\b \b(.*)\b/", $class->getDocBlock(), $matches)) {
+        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $class->getDocBlock(), $matches)) {
             return $matches[1];
         }
 

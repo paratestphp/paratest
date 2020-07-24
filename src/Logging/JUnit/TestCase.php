@@ -4,43 +4,33 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
+use SimpleXMLElement;
+
+use function trim;
+
 /**
- * Class TestCase.
- *
  * A simple data structure for tracking
  * the results of a testcase node in a
  * JUnit xml document
  */
 class TestCase
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $class;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $file;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $line;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $assertions;
 
-    /**
-     * @var string|float (a stringified float, from phpunit XML output)
-     */
+    /** @var string|float (a stringified float, from phpunit XML output) */
     public $time;
 
     /**
@@ -67,14 +57,6 @@ class TestCase
     /** @var array */
     public $skipped = [];
 
-    /**
-     * @param string $name
-     * @param string $class
-     * @param string $file
-     * @param int    $line
-     * @param int    $assertions
-     * @param string $time
-     */
     public function __construct(
         string $name,
         string $class,
@@ -83,26 +65,24 @@ class TestCase
         int $assertions,
         string $time
     ) {
-        $this->name = $name;
-        $this->class = $class;
-        $this->file = $file;
-        $this->line = $line;
+        $this->name       = $name;
+        $this->class      = $class;
+        $this->file       = $file;
+        $this->line       = $line;
         $this->assertions = $assertions;
-        $this->time = $time;
+        $this->time       = $time;
     }
 
     /**
      * Add a defect type (error or failure).
      *
      * @param string $collName the name of the collection to add to
-     * @param string $type
-     * @param string $text
      */
-    protected function addDefect(string $collName, string $type, string $text)
+    protected function addDefect(string $collName, string $type, string $text): void
     {
         $this->{$collName}[] = [
             'type' => $type,
-            'text' => \trim($text),
+            'text' => trim($text),
         ];
     }
 
@@ -110,11 +90,9 @@ class TestCase
      * Factory method that creates a TestCase object
      * from a SimpleXMLElement.
      *
-     * @param \SimpleXMLElement $node
-     *
      * @return TestCase
      */
-    public static function caseFromNode(\SimpleXMLElement $node): self
+    public static function caseFromNode(SimpleXMLElement $node): self
     {
         $case = new self(
             (string) $node['name'],
@@ -135,7 +113,7 @@ class TestCase
 
         foreach ($defect_groups as $group => $defects) {
             foreach ($defects as $defect) {
-                $message = (string) $defect;
+                $message  = (string) $defect;
                 $message .= (string) $system_output;
                 $case->addDefect($group, (string) $defect['type'], $message);
             }
