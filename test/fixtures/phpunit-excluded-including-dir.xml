@@ -8,12 +8,11 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
         >
     <testsuites>
         <testsuite name="ParaTest Fixtures">
-            <exclude>./excluded-tests/excluded</exclude>
             <directory>./excluded-tests</directory>
+            <exclude>./excluded-tests/excluded</exclude>
         </testsuite>
     </testsuites>
 </phpunit>

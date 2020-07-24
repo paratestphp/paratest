@@ -47,7 +47,7 @@ class ResultPrinterTest extends ResultTester
 
     protected function getPathToConfig(): string
     {
-        return __DIR__ . DS . 'myconfig.xml';
+        return __DIR__ . DS . 'phpunit-myconfig.xml';
     }
 
     public function testConstructor(): void
