@@ -354,7 +354,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals($expected, $feedback);
     }
 
-    protected function getStartOutput(Options $options)
+    protected function getStartOutput(Options $options): string
     {
         ob_start();
         $this->printer->start($options);

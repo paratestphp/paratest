@@ -7,11 +7,13 @@ namespace ParaTest\Tests\Unit\Logging;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Tests\Unit\ResultTester;
+use PHPUnit\Framework\MockObject\MockObject;
 
 use function array_pop;
 
 class LogInterpreterTest extends ResultTester
 {
+    /** @var LogInterpreter */
     protected $interpreter;
 
     public function setUp(): void
@@ -163,7 +165,7 @@ class LogInterpreterTest extends ResultTester
         }
     }
 
-    public function testFlattenCasesReturnsCorrectNumberOfSuites()
+    public function testFlattenCasesReturnsCorrectNumberOfSuites(): array
     {
         $suites = $this->interpreter->flattenCases();
         $this->assertCount(4, $suites);
@@ -172,11 +174,9 @@ class LogInterpreterTest extends ResultTester
     }
 
     /**
-     * @param mixed $suites
-     *
      * @depends testFlattenCasesReturnsCorrectNumberOfSuites
      */
-    public function testFlattenedSuiteHasCorrectTotals($suites): void
+    public function testFlattenedSuiteHasCorrectTotals(array $suites): void
     {
         $first = $suites[0];
         $this->assertEquals('UnitTestWithClassAnnotationTest', $first->name);
@@ -191,12 +191,15 @@ class LogInterpreterTest extends ResultTester
         $this->assertEquals('0.006109', $first->time);
     }
 
-    protected function getReader($suiteName)
+    protected function getReader(string $suiteName): Reader
     {
         return new Reader($this->$suiteName->getTempFile());
     }
 
-    protected function getMockReader()
+    /**
+     * @return Reader&MockObject
+     */
+    protected function getMockReader(): Reader
     {
         return $this->getMockBuilder(Reader::class)
                     ->disableOriginalConstructor()

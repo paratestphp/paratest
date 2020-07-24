@@ -47,7 +47,7 @@ class RunnerIntegrationTest extends TestBase
         parent::tearDown();
     }
 
-    private function globTempDir($pattern)
+    private function globTempDir(string $pattern): array
     {
         return glob(sys_get_temp_dir() . DS . $pattern);
     }
@@ -95,7 +95,7 @@ class RunnerIntegrationTest extends TestBase
         unlink($outputPath);
     }
 
-    public function assertJunitXmlIsCorrect($path): void
+    public function assertJunitXmlIsCorrect(string $path): void
     {
         $doc      = simplexml_load_file($path);
         $suites   = $doc->xpath('//testsuite');

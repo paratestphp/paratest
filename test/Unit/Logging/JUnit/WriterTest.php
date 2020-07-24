@@ -15,10 +15,11 @@ use function unlink;
 
 class WriterTest extends TestBase
 {
+    /** @var Writer  */
     protected $writer;
-
     /** @var LogInterpreter */
     protected $interpreter;
+    /** @var string  */
     protected $passing;
 
     public function setUp(): void

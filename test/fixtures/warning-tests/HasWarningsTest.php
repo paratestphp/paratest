@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 class HasWarningsTest extends PHPUnit\Framework\TestCase
 {
-    public function testPassingTest()
+    public function testPassingTest(): void
     {
         $this->assertTrue(true);
     }
 
-    private function testPrivateTest()
+    private function testPrivateTest(): void
     {
         $this->assertTrue(true);
     }
@@ -15,7 +17,7 @@ class HasWarningsTest extends PHPUnit\Framework\TestCase
     /**
      * @dataProvider llamas
      */
-    private function testMissingDataProvider()
+    private function testMissingDataProvider(): void
     {
         $this->assertTrue(true);
     }

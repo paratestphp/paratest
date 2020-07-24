@@ -75,7 +75,7 @@ class Reader extends MetaProvider
      * Return the Reader's collection
      * of test suites.
      *
-     * @return array
+     * @return TestSuite[]
      */
     public function getSuites(): array
     {

@@ -26,6 +26,9 @@ class WrapperWorker extends BaseWorker
     /** @var ExecutableTest|null */
     private $currentlyExecuting;
 
+    /**
+     * @return resource
+     */
     public function stdout()
     {
         return $this->pipes[1];
@@ -126,10 +129,12 @@ class WrapperWorker extends BaseWorker
         }
     }
 
-    public function getCoverageFileName()
+    public function getCoverageFileName(): ?string
     {
         if ($this->currentlyExecuting !== null) {
             return $this->currentlyExecuting->getCoverageFileName();
         }
+
+        return null;
     }
 }

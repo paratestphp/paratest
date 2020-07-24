@@ -18,7 +18,9 @@ use function unlink;
 
 class OptionsTest extends TestBase
 {
+    /** @var Options */
     protected $options;
+    /** @var array<string, mixed>  */
     protected $unfiltered;
     /** @var string */
     private $currentCwd;

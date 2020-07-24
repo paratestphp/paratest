@@ -24,7 +24,7 @@ class StrTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function explodeWithCleanupDataProvider()
+    public function explodeWithCleanupDataProvider(): array
     {
         return [
             'default' => [

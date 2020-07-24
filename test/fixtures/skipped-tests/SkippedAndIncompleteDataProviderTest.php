@@ -1,6 +1,10 @@
 <?php
 
-class SkippedAndIncompleteDataProviderTest extends \PHPUnit\Framework\TestCase
+declare(strict_types=1);
+
+use PHPUnit\Framework\TestCase;
+
+class SkippedAndIncompleteDataProviderTest extends TestCase
 {
     public function dataProviderNumeric100()
     {
@@ -15,11 +19,11 @@ class SkippedAndIncompleteDataProviderTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider dataProviderNumeric100
      */
-    public function testDataProviderWithSkipped($expected, $actual)
+    public function testDataProviderWithSkipped($expected, $actual): void
     {
-        if ($expected % 3 == 0) {
+        if ($expected % 3 === 0) {
             $this->markTestSkipped();
-        } elseif ($expected % 3 == 1) {
+        } elseif ($expected % 3 === 1) {
             $this->markTestIncomplete();
         }
 

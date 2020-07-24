@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging;
 
+use Exception;
+
 use function preg_match;
 use function strtolower;
 
@@ -16,6 +18,7 @@ use function strtolower;
  * @method int getTotalFailures()
  * @method int getTotalErrors()
  * @method int getTotalWarning()
+ * @method int getTotalTime()
  * @method string[] getFailures()
  * @method string[] getErrors()
  * @method string[] getWarnings()
@@ -42,6 +45,8 @@ abstract class MetaProvider
      * Simplify aggregation of totals or messages.
      *
      * @param array $args
+     *
+     * @return float|int|array
      */
     public function __call(string $method, array $args)
     {
@@ -52,6 +57,8 @@ abstract class MetaProvider
         if (preg_match(self::$messageMethod, $method, $matches) && $type = strtolower($matches[1])) {
             return $this->getMessages($type);
         }
+
+        throw new Exception("Method $method uknown");
     }
 
     /**

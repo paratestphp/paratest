@@ -24,7 +24,7 @@ class WrapperRunnerTest extends FunctionalTestBase
         ]);
 
         $expected = self::TEST_CLASSES * self::TEST_METHODS_PER_CLASS;
-        $this->assertTestsPassed($proc, $expected, $expected);
+        $this->assertTestsPassed($proc, (string) $expected, (string) $expected);
     }
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void
@@ -37,20 +37,10 @@ class WrapperRunnerTest extends FunctionalTestBase
             'processes' => 2,
         ]);
 
-        $this->assertTestsPassed($proc, 1, 1);
+        $this->assertTestsPassed($proc, '1', '1');
     }
 
-    public function functionalModeEnabledDataProvider()
-    {
-        return [[false]];
-    }
-
-    /**
-     * @param mixed $functionalModeEnabled
-     *
-     * @dataProvider functionalModeEnabledDataProvider
-     */
-    public function testExitCodes($functionalModeEnabled): void
+    public function testExitCodes(): void
     {
         $options = [
             'runner' => 'WrapperRunner',

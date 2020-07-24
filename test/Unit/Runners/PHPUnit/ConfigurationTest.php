@@ -34,7 +34,7 @@ class ConfigurationTest extends TestBase
         $this->assertEquals($this->path, (string) $this->config);
     }
 
-    public function testGetSuitesShouldReturnCorrectNumberOfSuites()
+    public function testGetSuitesShouldReturnCorrectNumberOfSuites(): array
     {
         $suites = $this->config->getSuites();
         $this->assertCount(2, $suites);
@@ -48,30 +48,10 @@ class ConfigurationTest extends TestBase
         $this->assertTrue($actual);
     }
 
-    public function testGlobbingSupport()
-    {
-        $basePath      = getcwd() . DS;
-        $configuration = new Configuration($this->fixture('phpunit-globbing.xml'));
-        /** @var SuitePath[][] $suites */
-        $suites = $configuration->getSuites();
-        $this->assertEquals(
-            $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir',
-            $suites['ParaTest Fixtures'][0]->getPath()
-        );
-        $this->assertEquals(
-            $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir2',
-            $suites['ParaTest Fixtures'][1]->getPath()
-        );
-
-        return $suites;
-    }
-
     /**
-     * @param mixed $suites
-     *
      * @depends testGetSuitesShouldReturnCorrectNumberOfSuites
      */
-    public function testSuitesContainSuiteNameAtKey($suites)
+    public function testSuitesContainSuiteNameAtKey(array $suites): array
     {
         $this->assertArrayHasKey('ParaTest Unit Tests', $suites);
         $this->assertArrayHasKey('ParaTest Functional Tests', $suites);
@@ -80,11 +60,9 @@ class ConfigurationTest extends TestBase
     }
 
     /**
-     * @param mixed $suites
-     *
      * @depends testSuitesContainSuiteNameAtKey
      */
-    public function testSuitesContainPathAsValue($suites): void
+    public function testSuitesContainPathAsValue(array $suites): void
     {
         $basePath  = getcwd() . DS;
         $unitSuite = $suites['ParaTest Unit Tests'];
@@ -111,6 +89,22 @@ class ConfigurationTest extends TestBase
 
         $config = new Configuration(realpath(__DIR__ . '/phpunit-ConfigurationTest.xml'));
         $this->assertCount(0, $config->getEnvironmentVariables());
+    }
+
+    public function testGlobbingSupport(): void
+    {
+        $basePath      = getcwd() . DS;
+        $configuration = new Configuration($this->fixture('phpunit-globbing.xml'));
+        /** @var SuitePath[][] $suites */
+        $suites = $configuration->getSuites();
+        $this->assertEquals(
+            $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir',
+            $suites['ParaTest Fixtures'][0]->getPath()
+        );
+        $this->assertEquals(
+            $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir2',
+            $suites['ParaTest Fixtures'][1]->getPath()
+        );
     }
 
     public function testLoadConfigEvenIfLibXmlEntityLoaderIsDisabled(): void

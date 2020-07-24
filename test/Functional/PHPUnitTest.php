@@ -228,7 +228,7 @@ class PHPUnitTest extends FunctionalTestBase
             'passing-tests',
             ['path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php']
         );
-        $this->assertTestsPassed($proc, 1, 1);
+        $this->assertTestsPassed($proc, '1', '1');
     }
 
     public function testLoggingXmlOfSingleFile(): void
@@ -239,7 +239,7 @@ class PHPUnitTest extends FunctionalTestBase
             'log-junit' => $output,
             'bootstrap' => BOOTSTRAP,
         ]);
-        $this->assertTestsPassed($proc, 5, 5);
+        $this->assertTestsPassed($proc, '5', '5');
         $this->assertFileExists($output);
         if (! file_exists($output)) {
             return;
@@ -326,7 +326,7 @@ class PHPUnitTest extends FunctionalTestBase
             'passing-tests/DependsOnChain.php',
             ['bootstrap' => BOOTSTRAP, 'functional']
         );
-        $this->assertTestsPassed($proc, 5, 5);
+        $this->assertTestsPassed($proc, '5', '5');
     }
 
     public function testEachTestRunsExactlyOnceOnSameDependencyOnFunctionalMode(): void
@@ -335,7 +335,7 @@ class PHPUnitTest extends FunctionalTestBase
             'passing-tests/DependsOnSame.php',
             ['bootstrap' => BOOTSTRAP, 'functional']
         );
-        $this->assertTestsPassed($proc, 3, 3);
+        $this->assertTestsPassed($proc, '3', '3');
     }
 
     public function testFunctionalModeEachTestCalledOnce(): void
@@ -344,10 +344,10 @@ class PHPUnitTest extends FunctionalTestBase
             'passing-tests/FunctionalModeEachTestCalledOnce.php',
             ['bootstrap' => BOOTSTRAP, 'functional']
         );
-        $this->assertTestsPassed($proc, 2, 2);
+        $this->assertTestsPassed($proc, '2', '2');
     }
 
-    public function setsCoveragePhpDataProvider()
+    public function setsCoveragePhpDataProvider(): array
     {
         return [
             [
@@ -420,7 +420,7 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals($expected, $options);
     }
 
-    public function getRunnerOptionsDataProvider()
+    public function getRunnerOptionsDataProvider(): array
     {
         return [
             'default' => [

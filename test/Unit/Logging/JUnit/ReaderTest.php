@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit\Logging\JUnit;
 
 use InvalidArgumentException;
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Tests\TestBase;
 use PHPUnit\Framework\ExpectationFailedException;
 use stdClass;
@@ -15,10 +16,15 @@ use function file_put_contents;
 
 class ReaderTest extends TestBase
 {
+    /** @var string  */
     protected $mixedPath;
+    /** @var Reader  */
     protected $mixed;
+    /** @var Reader  */
     protected $single;
+    /** @var Reader  */
     protected $empty;
+    /** @var Reader  */
     protected $multi_errors;
 
     public function setUp(): void
@@ -50,7 +56,7 @@ class ReaderTest extends TestBase
         $this->assertFalse($this->mixed->isSingleSuite());
     }
 
-    public function testMixedSuiteShouldConstructRootSuite()
+    public function testMixedSuiteShouldConstructRootSuite(): TestSuite
     {
         $suites = $this->mixed->getSuites();
         $this->assertCount(1, $suites);
@@ -65,11 +71,9 @@ class ReaderTest extends TestBase
     }
 
     /**
-     * @param mixed $suite
-     *
      * @depends testMixedSuiteShouldConstructRootSuite
      */
-    public function testMixedSuiteConstructsChildSuites($suite)
+    public function testMixedSuiteConstructsChildSuites(TestSuite $suite): TestSuite
     {
         $this->assertCount(3, $suite->suites);
         $first = $suite->suites[0];
@@ -88,11 +92,9 @@ class ReaderTest extends TestBase
     }
 
     /**
-     * @param mixed $suite
-     *
      * @depends testMixedSuiteConstructsChildSuites
      */
-    public function testMixedSuiteConstructsTestCases($suite): void
+    public function testMixedSuiteConstructsTestCases(TestSuite $suite): void
     {
         $this->assertCount(3, $suite->cases);
         $first = $suite->cases[0];
@@ -135,7 +137,7 @@ class ReaderTest extends TestBase
         );
     }
 
-    public function testSingleSuiteShouldConstructRootSuite()
+    public function testSingleSuiteShouldConstructRootSuite(): TestSuite
     {
         $suites = $this->single->getSuites();
         $this->assertCount(1, $suites);
@@ -294,9 +296,7 @@ class ReaderTest extends TestBase
 
     public function testMixedGetFeedback(): void
     {
-        $totalCases     = 7;
-        $casesProcessed = 0;
-        $feedback       = $this->mixed->getFeedback($totalCases, $casesProcessed);
+        $feedback = $this->mixed->getFeedback();
         $this->assertEquals(['.', 'F', '.', 'E', '.', 'F', '.'], $feedback);
     }
 

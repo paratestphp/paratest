@@ -30,7 +30,7 @@ class SuiteLoader
      */
     protected $files = [];
 
-    /** @var array|null */
+    /** @var string[]|null */
     protected $suitesName = null;
 
     /**
@@ -362,7 +362,7 @@ class SuiteLoader
         );
     }
 
-    private function createFullSuite($suiteName, string $configPath): FullSuite
+    private function createFullSuite(string $suiteName, string $configPath): FullSuite
     {
         return new FullSuite($suiteName, $configPath);
     }

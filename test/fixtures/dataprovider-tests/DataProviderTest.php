@@ -1,11 +1,15 @@
 <?php
 
-class DataProviderTest extends \PHPUnit\Framework\TestCase
+declare(strict_types=1);
+
+use PHPUnit\Framework\TestCase;
+
+class DataProviderTest extends TestCase
 {
     /**
      * @dataProvider dataProviderNumeric50
      */
-    public function testNumericDataProvider50($expected, $actual)
+    public function testNumericDataProvider50($expected, $actual): void
     {
         $this->assertEquals($expected, $actual);
     }
@@ -23,7 +27,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider dataProviderNamed50
      */
-    public function testNamedDataProvider50($expected, $actual)
+    public function testNamedDataProvider50($expected, $actual): void
     {
         $this->assertEquals($expected, $actual);
     }
@@ -32,7 +36,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
     {
         $result = [];
         for ($i = 0; $i < 50; $i++) {
-            $name = 'name_of_test_' . $i;
+            $name          = 'name_of_test_' . $i;
             $result[$name] = [$i, $i];
         }
 
@@ -42,7 +46,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider dataProviderNumeric1000
      */
-    public function testNumericDataProvider1000($expected, $actual)
+    public function testNumericDataProvider1000($expected, $actual): void
     {
         $this->assertEquals($expected, $actual);
     }
@@ -60,7 +64,7 @@ class DataProviderTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider dataProviderIterable
      */
-    public function testIterableDataProvider($expected, $actual)
+    public function testIterableDataProvider($expected, $actual): void
     {
         $this->assertEquals($expected, $actual);
     }

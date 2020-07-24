@@ -122,7 +122,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $this->assertStringContainsString($expected, $proc->getOutput());
     }
 
-    protected function assertContainsNSkippedTests($n, $output): void
+    protected function assertContainsNSkippedTests(int $n, string $output): void
     {
         preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
         $this->assertCount(2, $matches);

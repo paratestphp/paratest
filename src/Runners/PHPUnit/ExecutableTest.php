@@ -34,6 +34,7 @@ abstract class ExecutableTest
      */
     protected $temp;
 
+    /** @var array */
     protected $pipes = [];
 
     /**

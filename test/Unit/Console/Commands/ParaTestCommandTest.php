@@ -16,7 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ParaTestCommandTest extends TestBase
 {
+    /** @var PHPUnit  */
     protected $tester;
+    /** @var ParaTestCommand  */
     protected $command;
 
     public function setUp(): void

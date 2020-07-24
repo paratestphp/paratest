@@ -10,9 +10,7 @@
 
     <file>src</file>
     <file>test</file>
-
     <exclude-pattern>*/test/fixtures/*</exclude-pattern>
-    <exclude-pattern>bootstrap.php</exclude-pattern>
 
     <config name="php_version" value="70300"/>
 
@@ -25,16 +23,6 @@
         <severity>0</severity>
     </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">
-        <severity>0</severity>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
-        <severity>0</severity>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint">
-        <severity>0</severity>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
         <severity>0</severity>
     </rule>
 

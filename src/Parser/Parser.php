@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Parser;
 
 use InvalidArgumentException;
+use PHPStan\Testing\TestCase;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -27,7 +28,7 @@ class Parser
      */
     private $path;
 
-    /** @var ReflectionClass */
+    /** @var ReflectionClass<TestCase> */
     private $refl;
 
     /**

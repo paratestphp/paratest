@@ -113,7 +113,7 @@ class Configuration
         return $suites;
     }
 
-    public function hasSuites()
+    public function hasSuites(): bool
     {
         return ! empty($this->getSuitesName());
     }

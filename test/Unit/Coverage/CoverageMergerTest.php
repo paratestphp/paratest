@@ -31,7 +31,7 @@ class CoverageMergerTest extends TestBase
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
         $firstFileFirstLine  = 46;
-        $secondFileFirstLine = 47;
+        $secondFileFirstLine = 53;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -83,7 +83,7 @@ class CoverageMergerTest extends TestBase
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
         $firstFileFirstLine  = 46;
-        $secondFileFirstLine = 47;
+        $secondFileFirstLine = 53;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);

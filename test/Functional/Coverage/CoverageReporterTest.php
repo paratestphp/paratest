@@ -43,7 +43,8 @@ class CoverageReporterTest extends TestBase
     }
 
     /**
-     * @param string[] $coverageFiles
+     * @param string[]     $coverageFiles
+     * @param class-string $expectedReportClass
      *
      * @dataProvider getReporterProvider
      */
