@@ -8,16 +8,20 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
 
 use function chdir;
-use function file_exists;
 use function file_put_contents;
 use function getcwd;
+use function glob;
 use function intdiv;
+use function is_dir;
+use function mkdir;
 use function unlink;
 
 class OptionsTest extends TestBase
 {
     protected $options;
     protected $unfiltered;
+    /** @var string */
+    private $currentCwd;
 
     public function setUp(): void
     {
@@ -30,7 +34,27 @@ class OptionsTest extends TestBase
             'bootstrap' => '/path/to/bootstrap',
         ];
         $this->options    = new Options($this->unfiltered);
-        $this->cleanUpConfigurations();
+        $this->currentCwd = getcwd();
+        $testCwd          = __DIR__ . DS . 'generated-configs';
+        if (! is_dir($testCwd)) {
+            mkdir($testCwd, 0777, true);
+        }
+
+        chdir($testCwd);
+        $this->cleanUpGeneratedFiles();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->cleanUpGeneratedFiles();
+        chdir($this->currentCwd);
+    }
+
+    private function cleanUpGeneratedFiles(): void
+    {
+        foreach (glob(getcwd() . DS . '*') as $file) {
+            unlink($file);
+        }
     }
 
     public function testFilteredOptionsShouldContainExtraneousOptions(): void
@@ -87,7 +111,7 @@ class OptionsTest extends TestBase
 
     public function testConfigurationShouldReturnSpecifiedConfigurationIfFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('myconfig.xml', getcwd(), 'myconfig.xml');
+        $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', getcwd(), 'phpunit-myconfig.xml');
     }
 
     public function testConfigurationShouldBeSetEvenIfFileDoesNotExist(): void
@@ -105,32 +129,6 @@ class OptionsTest extends TestBase
         $this->assertArrayNotHasKey('configuration', $options->filtered);
     }
 
-    /**
-     * Sets the current working directory to this source
-     * directory so we can test configuration details without
-     * using ParaTest's own configuration.
-     *
-     * Performs any cleanup to make sure no config files are
-     * present when a test starts
-     */
-    protected function cleanUpConfigurations(): void
-    {
-        chdir(__DIR__);
-        if (file_exists('phpunit.xml')) {
-            unlink('phpunit.xml');
-        }
-
-        if (file_exists('phpunit.xml.dist')) {
-            unlink('phpunit.xml.dist');
-        }
-
-        if (! file_exists('myconfig.xml')) {
-            return;
-        }
-
-        unlink('myconfig.xml');
-    }
-
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists(): void
     {
         $this->assertConfigurationFileFiltered('phpunit.xml', getcwd(), getcwd());
@@ -146,13 +144,16 @@ class OptionsTest extends TestBase
         string $path,
         ?string $configurationParameter = null
     ): void {
-        file_put_contents($configFileName, '<root />');
+        file_put_contents($configFileName, '<?xml version="1.0" encoding="UTF-8"?><phpunit />');
         $this->unfiltered['path'] = $path;
         if ($configurationParameter !== null) {
             $this->unfiltered['configuration'] = $configurationParameter;
         }
 
         $options = new Options($this->unfiltered);
-        $this->assertEquals(__DIR__ . DS . $configFileName, $options->filtered['configuration']->getPath());
+        $this->assertEquals(
+            __DIR__ . DS . 'generated-configs' . DS . $configFileName,
+            $options->filtered['configuration']->getPath()
+        );
     }
 }

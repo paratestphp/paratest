@@ -26,7 +26,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, cs2pr, composer-normalize, composer-require-checker, composer-unused
+          tools: composer:v1, composer-normalize, composer-require-checker, composer-unused
 
       - name: "Get composer cache directory"
         id: composercache
@@ -53,6 +53,46 @@ jobs:
 
       - name: "Check composer.json unused dependencies"
         run: "composer-unused"
+
+  xml-lint:
+    name: "Lint XMLs"
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          tools: composer:v1
+
+      - name: "Get composer cache directory"
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: "Cache dependencies"
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
+
+      - name: "Install dependencies"
+        run: "composer update --no-interaction --no-progress"
+
+      - name: "Lint XMLs"
+        uses: ./.github/lint-xml-configuration
+        with:
+          args: bash .github/lint-xml-configuration/lint-xml-configuration.sh
 
   tests:
     name: "Tests"
@@ -83,7 +123,7 @@ jobs:
         with:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, cs2pr
+          tools: composer:v1
           extensions: sqlite
 
       - name: "Get composer cache directory"
@@ -118,8 +158,6 @@ jobs:
       matrix:
         php-version:
           - "7.4"
-        dependencies:
-          - "highest"
 
     steps:
       - name: "Checkout"
@@ -133,7 +171,7 @@ jobs:
         with:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, cs2pr
+          tools: composer:v1
           extensions: sqlite
 
       - name: "Get composer cache directory"
@@ -147,12 +185,7 @@ jobs:
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
 
-      - name: "Install lowest dependencies"
-        if: ${{ matrix.dependencies == 'lowest' }}
-        run: "composer update --no-interaction --no-progress --prefer-lowest"
-
-      - name: "Install highest dependencies"
-        if: ${{ matrix.dependencies == 'highest' }}
+      - name: "Install dependencies"
         run: "composer update --no-interaction --no-progress"
 
       - name: "Run tests"
@@ -262,7 +295,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, cs2pr
+          tools: composer:v1
 
       - name: "Get composer cache directory"
         id: composercache

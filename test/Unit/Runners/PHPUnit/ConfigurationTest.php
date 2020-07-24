@@ -109,7 +109,7 @@ class ConfigurationTest extends TestBase
         $this->assertArrayHasKey('DB_CONNECTION', $this->config->getEnvironmentVariables());
         $this->assertArrayHasKey('DB_DATABASE', $this->config->getEnvironmentVariables());
 
-        $config = new Configuration(realpath(__DIR__ . '/phpunit.xml.dist'));
+        $config = new Configuration(realpath(__DIR__ . '/phpunit-ConfigurationTest.xml'));
         $this->assertCount(0, $config->getEnvironmentVariables());
     }
 
@@ -137,7 +137,7 @@ class ConfigurationTest extends TestBase
         putenv('DB_CONNECTION=mysql');
         putenv('DB_DATABASE=localhost');
 
-        $config = new Configuration(realpath(__DIR__ . '/phpunit.xml.dist'));
+        $config = new Configuration(realpath(__DIR__ . '/phpunit-ConfigurationTest.xml'));
 
         $this->assertSame('mysql', getenv('DB_CONNECTION'));
         $this->assertSame('localhost', getenv('DB_DATABASE'));

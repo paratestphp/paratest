@@ -1,6 +1,7 @@
-vendor
-composer.lock
+/.idea
 /test/fixtures/generated-tests
+/test/Unit/Runners/PHPUnit/generated-configs
+/vendor
+composer.lock
 .phpunit.result.cache
 .php_cs.cache
-.idea
