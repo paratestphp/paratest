@@ -14,5 +14,6 @@
     <exclude-pattern>*/test/fixtures/*</exclude-pattern>
     <exclude-pattern>bootstrap.php</exclude-pattern>
 
-    <rule ref="PSR12"/>
+    <config name="php_version" value="70300"/>
+    <rule ref="Doctrine"/>
 </ruleset>
