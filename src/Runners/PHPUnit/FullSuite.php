@@ -31,9 +31,9 @@ class FullSuite extends ExecutableTest
     /**
      * {@inheritdoc}
      */
-    protected function getCommandString(string $binary, array $options = [], ?string $passthru = null)
+    public function commandArguments(string $binary, array $options = [], ?array $passthru = null): array
     {
-        return parent::getCommandString(
+        return parent::commandArguments(
             $binary,
             \array_merge(
                 $options,

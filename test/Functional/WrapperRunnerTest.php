@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
+/**
+ * @requires OSFAMILY Linux
+ */
 class WrapperRunnerTest extends FunctionalTestBase
 {
     private const TEST_METHODS_PER_CLASS = 5;

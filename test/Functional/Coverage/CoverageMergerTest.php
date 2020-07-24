@@ -26,7 +26,7 @@ class CoverageMergerTest extends TestBase
 
         static::skipIfCodeCoverageNotEnabled();
 
-        $this->targetDir = str_replace('.', '_', uniqid('/tmp/paratest-', true));
+        $this->targetDir = str_replace('.', '_', sys_get_temp_dir() . DS . uniqid('paratest-', true));
         $this->removeDirectory($this->targetDir);
         mkdir($this->targetDir);
     }
@@ -123,7 +123,7 @@ class CoverageMergerTest extends TestBase
         $this->expectException(\RuntimeException::class);
         $regex = '/Coverage file .*? is empty. This means a PHPUnit process has crashed./';
         $this->expectExceptionMessageMatches($regex);
-        $filename = $this->copyCoverageFile('coverage-tests/empty_test.cov', $this->targetDir);
+        $filename = $this->copyCoverageFile('coverage-tests' . DS . 'empty_test.cov', $this->targetDir);
 
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile($filename);

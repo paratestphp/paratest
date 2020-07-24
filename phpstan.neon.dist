@@ -7,9 +7,8 @@ parameters:
     bootstrapFiles:
         - test/constants.php
     paths:
+        - bin/
         - bin/paratest
-        - bin/phpunit-sqlite-wrapper
-        - bin/phpunit-wrapper
         - src/
         - test/
     excludes_analyse:
@@ -20,17 +19,6 @@ parameters:
             message: "#^Strict comparison using \\=\\=\\= between int and false will always evaluate to false\\.$#"
             count: 1
             path: src/Runners/PHPUnit/SqliteRunner.php
-
-        # Symfony 3.4
-        -
-            message: "#^Parameter \\#1 \\$command of class Symfony\\\\Component\\\\Process\\\\Process constructor expects array, string given\\.$#"
-            count: 1
-            path: src/Console/VersionProvider.php
-
-        -
-            message: "#^Parameter \\#1 \\$command of class Symfony\\\\Component\\\\Process\\\\Process constructor expects array, string given\\.$#"
-            count: 1
-            path: src/Runners/PHPUnit/ExecutableTest.php
 
         # Known fixtures
         -

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use PHPStan\Parallel\Process;
+
 /**
  * An object containing all configurable information used
  * to run PHPUnit via ParaTest.
@@ -24,8 +26,8 @@ namespace ParaTest\Runners\PHPUnit;
  * @property-read string[] $excludeGroups
  * @property-read array $annotations
  * @property-read bool $parallelSuite
- * @property-read string|null $passthru
- * @property-read string|null $passthruPhp
+ * @property-read string[]|null $passthru
+ * @property-read string[]|null $passthruPhp
  * @property-read int $verbose
  * @property-read int $coverageTestLimit
  */
@@ -137,14 +139,14 @@ class Options
     /**
      * Strings that gets passed verbatim to the underlying phpunit command.
      *
-     * @var string|null
+     * @var string[]|null
      */
     protected $passthru;
 
     /**
      * Strings that gets passed verbatim to the underlying php process.
      *
-     * @var string|null
+     * @var string[]|null
      */
     protected $passthruPhp;
 
@@ -187,8 +189,8 @@ class Options
         $this->maxBatchSize = (int) $opts['max-batch-size'];
         $this->filter = $opts['filter'];
         $this->parallelSuite = $opts['parallel-suite'];
-        $this->passthru = $opts['passthru'] ?? null;
-        $this->passthruPhp = $opts['passthru-php'] ?? null;
+        $this->passthru = $this->parsePassthru($opts['passthru-php'] ?? null);
+        $this->passthruPhp = $this->parsePassthru($opts['passthru-php'] ?? null);
         $this->verbose = $opts['verbose'] ?? 0;
         $this->coverageTestLimit = $opts['coverage-test-limit'] ?? 0;
 
@@ -430,5 +432,30 @@ class Options
         }
 
         return $cores;
+    }
+
+    /**
+     * @param string|null $param
+     * @return string[]|null
+     */
+    private function parsePassthru(?string $param): ?array
+    {
+        if (null === $param) {
+            return null;
+        }
+
+        $stringToArgumentProcess = \Symfony\Component\Process\Process::fromShellCommandline(
+            sprintf('%s -r "echo serialize(\\$argv);" -- %s', PHP_BINARY, $param)
+        );
+        $stringToArgumentProcess->mustRun();
+
+        $passthruAsArguments = unserialize($stringToArgumentProcess->getOutput());
+        array_shift($passthruAsArguments);
+
+        if (0 === count($passthruAsArguments)) {
+            return null;
+        }
+
+        return $passthruAsArguments;
     }
 }

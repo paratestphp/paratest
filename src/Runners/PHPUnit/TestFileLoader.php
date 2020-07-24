@@ -122,6 +122,7 @@ class TestFileLoader
      */
     private function loadDir(string $path, string $pattern = self::TEST_PATTERN)
     {
+        $path = realpath($path);
         $files = \scandir($path);
         foreach ($files as $file) {
             $this->tryLoadTests($path . \DIRECTORY_SEPARATOR . $file, $pattern);

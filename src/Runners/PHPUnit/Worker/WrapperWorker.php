@@ -26,11 +26,14 @@ class WrapperWorker extends BaseWorker
         return $this->pipes[1];
     }
 
-    public function execute(string $testCmd)
+    /**
+     * @param string[] $testCmdArguments
+     */
+    public function execute(array $testCmdArguments)
     {
         $this->checkStarted();
-        $this->commands[] = $testCmd;
-        \fwrite($this->pipes[0], $testCmd . "\n");
+        $this->commands[] = implode(' ', $testCmdArguments);
+        \fwrite($this->pipes[0], serialize($testCmdArguments) . "\n");
         ++$this->inExecution;
     }
 
@@ -40,12 +43,13 @@ class WrapperWorker extends BaseWorker
             throw new Exception('Worker already has a test assigned - did you forget to call reset()?');
         }
         $this->currentlyExecuting = $test;
-        $command = $test->command($phpunit, $phpunitOptions, $options->passthru);
+        $commandArguments = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru);
+        $command = implode(' ', $commandArguments);
         if ($options->verbose) {
             echo "\nExecuting test via: $command\n";
         }
         $test->setLastCommand($command);
-        $this->execute($command);
+        $this->execute($commandArguments);
     }
 
     public function printFeedback(ResultPrinter $printer)

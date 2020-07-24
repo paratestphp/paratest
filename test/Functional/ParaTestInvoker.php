@@ -30,12 +30,7 @@ class ParaTestInvoker
     {
         $cmd = $this->buildCommand($options);
         $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
-        $proc = method_exists(Process::class, 'fromShellCommandline') ?
-            Process::fromShellCommandline($cmd, null, $env, null, $timeout = 600) :
-            new Process($cmd, null, $env, null, $timeout = 600);
-        if (method_exists($proc, 'inheritEnvironmentVariables')) {
-            $proc->inheritEnvironmentVariables();  // no such method in 3.0, but emits warning if this isn't done in 3.3
-        }
+        $proc = Process::fromShellCommandline($cmd, null, $env, null, $timeout = 600);
 
         if (!is_callable($callback)) {
             $proc->run();
@@ -51,7 +46,7 @@ class ParaTestInvoker
         $cmd = sprintf(
             '%s %s --bootstrap %s --phpunit %s',
             PHP_BINARY,
-            defined('PHP_WINDOWS_VERSION_BUILD') ? PARA_BINARY_WINDOWS : PARA_BINARY,
+            PARA_BINARY,
             $this->bootstrap,
             PHPUNIT
         );

@@ -39,6 +39,9 @@ class PHPUnitTest extends FunctionalTestBase
         ]));
     }
 
+    /**
+     * @requires OSFAMILY Linux
+     */
     public function testWithWrapperRunner()
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests', [
@@ -104,6 +107,9 @@ class PHPUnitTest extends FunctionalTestBase
         ));
     }
 
+    /**
+     * @requires OSFAMILY Linux
+     */
     public function testParatestEnvironmentVariableWithWrapperRunner()
     {
         $this->assertTestsPassed($this->invokeParatest(
@@ -112,6 +118,9 @@ class PHPUnitTest extends FunctionalTestBase
         ));
     }
 
+    /**
+     * @requires OSFAMILY Linux
+     */
     public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens()
     {
         $proc = $this->invokeParatest(

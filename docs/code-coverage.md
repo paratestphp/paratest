@@ -467,7 +467,7 @@ Running phpunit in 1 process with /codebase/paratest/vendor/phpunit/phpunit/phpu
 
 Configuration read from /codebase/paratest/phpunit.xml.dist
 
-Starting WrapperWorker via: PARATEST=1 XDEBUG_CONFIG="true" TEST_TOKEN=1 UNIQUE_TEST_TOKEN=5c4af2d88c0d9 /usr/bin/php7.2  "/codebase/paratest/bin/phpunit-wrapper"
+Starting WrapperWorker via: PARATEST=1 XDEBUG_CONFIG="true" TEST_TOKEN=1 UNIQUE_TEST_TOKEN=5c4af2d88c0d9 /usr/bin/php7.2  "/codebase/paratest/bin/phpunit-wrapper.php"
 
 Executing test via: '/codebase/paratest/vendor/phpunit/phpunit/phpunit' '--configuration' '/codebase/paratest/phpunit.xml.dist' '--log-junit' '/tmp/PT_tIUjT5' 'ParaTest\Util\StrTest' 'test/unit/Util/StrTest.php'
 .....

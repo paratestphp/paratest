@@ -172,10 +172,10 @@ class TestBase extends PHPUnit\Framework\TestCase
      *
      * @return string Copied coverage file
      */
-    protected function copyCoverageFile($fixture, $directory = '/tmp')
+    protected function copyCoverageFile($fixture, $directory)
     {
         $fixturePath = $this->fixture($fixture);
-        $filename = str_replace('.', '_', uniqid($directory . '/cov-', true));
+        $filename = str_replace('.', '_', $directory . DS . uniqid('cov-', true));
         copy($fixturePath, $filename);
 
         return $filename;

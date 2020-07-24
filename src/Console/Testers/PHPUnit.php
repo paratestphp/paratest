@@ -289,8 +289,10 @@ class PHPUnit extends Tester
     {
         if ($input->getOption('runner')) {
             $runnerClass = $input->getOption('runner') ?: '';
-            $runnerClass = \class_exists($runnerClass) ?
-                $runnerClass : ('\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass);
+            $runnerClass = \class_exists($runnerClass)
+                ? $runnerClass
+                : ('\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass)
+            ;
         } else {
             $runnerClass = Runner::class;
         }
