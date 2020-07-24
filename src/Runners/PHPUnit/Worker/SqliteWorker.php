@@ -16,10 +16,14 @@ class SqliteWorker extends BaseWorker
         $this->dbFileName = $dbFileName;
     }
 
+    /**
+     * @param int|null $token
+     * @param null|string $uniqueToken
+     */
     public function start(
         string $wrapperBinary,
-        $token = 1,
-        $uniqueToken = null,
+        ?int $token = 1,
+        ?string $uniqueToken = null,
         array $parameters = [],
         ?Options $options = null
     ) {

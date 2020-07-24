@@ -13,6 +13,7 @@ parameters:
         - test/
     excludes_analyse:
         - test/fixtures/fatal-tests/*
+        - test/fixtures/generated-tests/*
     ignoreErrors:
         # @see https://github.com/phpstan/phpstan-src/pull/281
         -

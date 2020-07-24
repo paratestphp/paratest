@@ -367,7 +367,7 @@ class SuiteLoader
         );
     }
 
-    private function createFullSuite($suiteName, $configPath): FullSuite
+    private function createFullSuite($suiteName, string $configPath): FullSuite
     {
         return new FullSuite($suiteName, $configPath);
     }

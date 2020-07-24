@@ -1,9 +1,11 @@
 ParaTest
 ========
 
+[![Latest Stable Version](https://img.shields.io/packagist/v/brianium/paratest.svg?style=flat-square)](https://packagist.org/packages/brianium/paratest)
+[![Downloads](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
 [![Integrate](https://github.com/paratestphp/paratest/workflows/Integrate/badge.svg?branch=master)](https://github.com/paratestphp/paratest/actions)
 [![Code Coverage](https://codecov.io/gh/paratestphp/paratest/coverage.svg?branch=master)](https://codecov.io/gh/paratestphp/paratest?branch=master)
-[![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
+[![Type Coverage](https://shepherd.dev/github/sebastianbergmann/phpunit/coverage.svg)](https://shepherd.dev/github/paratestphp/paratest)
 
 The objective of ParaTest is to support parallel testing in PHPUnit. Provided you have well-written PHPUnit tests, you can drop `paratest` in your project and
 start using it with no additional bootstrap or configurations!
