@@ -97,10 +97,8 @@ class PHPUnit extends Tester
     /**
      * Executes the PHPUnit Runner. Will Display help if no config and no path
      * supplied.
-     *
-     * @return int|mixed
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         if (! $this->hasConfig($input) && ! $this->hasPath($input)) {
             $this->displayHelp($input, $output);

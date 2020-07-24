@@ -22,10 +22,7 @@ abstract class Tester
      */
     abstract public function configure(Command $command);
 
-    /**
-     * @return mixed
-     */
-    abstract public function execute(InputInterface $input, OutputInterface $output);
+    abstract public function execute(InputInterface $input, OutputInterface $output): int;
 
     /**
      * Returns non-empty options.
