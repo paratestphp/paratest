@@ -296,9 +296,7 @@ class ReaderTest extends TestBase
 
     public function testMixedGetFeedback(): void
     {
-        $totalCases     = 7;
-        $casesProcessed = 0;
-        $feedback       = $this->mixed->getFeedback($totalCases, $casesProcessed);
+        $feedback = $this->mixed->getFeedback();
         $this->assertEquals(['.', 'F', '.', 'E', '.', 'F', '.'], $feedback);
     }
 
