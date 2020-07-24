@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../failing-tests/UnitTestWithMethodAnnotationsTest.php';
 
 /**
@@ -10,9 +12,9 @@ class UnitTestWithFatalFunctionErrorTest extends UnitTestWithMethodAnnotationsTe
     /**
      * @group fixtures
      */
-    public function testTruth()
+    public function testTruth(): void
     {
-        $fatal = function () {
+        $fatal = static function (): void {
             inexistent();
         };
 
@@ -22,7 +24,7 @@ class UnitTestWithFatalFunctionErrorTest extends UnitTestWithMethodAnnotationsTe
     /**
      * @test
      */
-    public function isItFalse()
+    public function isItFalse(): void
     {
         sleep(2);
         $this->assertFalse(false);

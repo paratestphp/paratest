@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 class HasOtherWarningsTest extends PHPUnit\Framework\TestCase
 {
     /**
      * The test will fail on the line that tries to mock the non-existent method
-     *
-     * @return void
      */
-    public function testMockingNonExistentMethod()
+    public function testMockingNonExistentMethod(): void
     {
-        $mock = $this->getMockBuilder(\RuntimeException::class)
+        $mock = $this->getMockBuilder(RuntimeException::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mock

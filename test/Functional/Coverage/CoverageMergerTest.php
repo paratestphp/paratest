@@ -58,6 +58,7 @@ class CoverageMergerTest extends TestBase
 
     /**
      * @param string[] $coverageFiles
+     * @param class-string $expectedClass
      *
      * @dataProvider getCoverageFileProvider
      */

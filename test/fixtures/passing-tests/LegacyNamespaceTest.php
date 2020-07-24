@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace {
 
 /**
  * This exampletest ensures that legacy namespaces (non PSR-0) can be used.
  */
-class LegacyNamespaceTest extends PHPUnit\Framework\TestCase
-{
-    public function testAlwaysTrue()
+    class LegacyNamespaceTest extends PHPUnit\Framework\TestCase
     {
-        $this->assertTrue(true);
+        public function testAlwaysTrue(): void
+        {
+            $this->assertTrue(true);
+        }
     }
-}
 
 }

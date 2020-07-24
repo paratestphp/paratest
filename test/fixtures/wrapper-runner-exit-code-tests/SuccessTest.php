@@ -1,8 +1,12 @@
 <?php
 
-class SuccessTest extends \PHPUnit\Framework\TestCase
+declare(strict_types=1);
+
+use PHPUnit\Framework\TestCase;
+
+class SuccessTest extends TestCase
 {
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $this->assertTrue(true);
     }

@@ -42,7 +42,7 @@ class TestGenerator
         $php = '<' . "?php\n\nclass $testName extends PHPUnit\\Framework\\TestCase\n{\n";
 
         for ($i = 0; $i < $methods; ++$i) {
-            $php .= "\tpublic function testMethod{$i}(){";
+            $php .= "\tpublic function testMethod{$i}(): void{";
             $php .= "\$this->assertTrue(true);}\n";
         }
 

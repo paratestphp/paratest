@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 class TestTokenTest extends PHPUnit\Framework\TestCase
 {
-    public function testThereIsAToken()
+    public function testThereIsAToken(): void
     {
         $token = getenv('TEST_TOKEN');
-        $this->assertTrue(false !== $token);
+        $this->assertTrue($token !== false);
     }
 }

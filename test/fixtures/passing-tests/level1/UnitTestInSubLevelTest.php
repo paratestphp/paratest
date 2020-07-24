@@ -1,16 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sublevel;
+
+use PHPUnit\Framework\TestCase;
+
+use function sizeof;
 
 /**
  * @runParallel
  */
-class UnitTestInSubLevelTest extends \PHPUnit\Framework\TestCase
+class UnitTestInSubLevelTest extends TestCase
 {
     /**
      * @group fixtures
      */
-    public function testTruth()
+    public function testTruth(): void
     {
         $this->assertTrue(true);
     }
@@ -18,7 +24,7 @@ class UnitTestInSubLevelTest extends \PHPUnit\Framework\TestCase
     /**
      * @group fixtures
      */
-    public function testFalsehood()
+    public function testFalsehood(): void
     {
         $this->assertFalse(false);
     }
@@ -26,9 +32,9 @@ class UnitTestInSubLevelTest extends \PHPUnit\Framework\TestCase
     /**
      * @group fixtures
      */
-    public function testArrayLength()
+    public function testArrayLength(): void
     {
-        $elems = [1,2,3,4,5];
+        $elems = [1, 2, 3, 4, 5];
         $this->assertEquals(5, sizeof($elems));
     }
 }

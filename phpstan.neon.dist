@@ -1,9 +1,10 @@
 includes:
-    - phar://phpstan.phar/conf/config.level5.neon
+    - phar://phpstan.phar/conf/config.level6.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
     tipsOfTheDay: false
+    checkMissingIterableValueType: false
     bootstrapFiles:
         - test/constants.php
     paths:
@@ -12,8 +13,7 @@ parameters:
         - src/
         - test/
     excludes_analyse:
-        - test/fixtures/fatal-tests/*
-        - test/fixtures/generated-tests/*
+        - test/fixtures/*
     ignoreErrors:
         # @see https://github.com/phpstan/phpstan-src/pull/281
         -

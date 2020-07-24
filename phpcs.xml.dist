@@ -10,9 +10,7 @@
 
     <file>src</file>
     <file>test</file>
-
     <exclude-pattern>*/test/fixtures/*</exclude-pattern>
-    <exclude-pattern>bootstrap.php</exclude-pattern>
 
     <config name="php_version" value="70300"/>
 
