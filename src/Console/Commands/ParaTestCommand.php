@@ -109,10 +109,8 @@ class ParaTestCommand extends Command
 
     /**
      * Executes the specified tester.
-     *
-     * @return int|mixed|null
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         return $this->tester->execute($input, $output);
     }

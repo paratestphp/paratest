@@ -106,7 +106,7 @@ abstract class ExecutableTest
      * Stop the process and return it's
      * exit code.
      */
-    public function stop(): int
+    public function stop(): ?int
     {
         return $this->process->stop();
     }
@@ -131,7 +131,7 @@ abstract class ExecutableTest
     /**
      * Return the exit code of the process.
      */
-    public function getExitCode(): int
+    public function getExitCode(): ?int
     {
         return $this->process->getExitCode();
     }

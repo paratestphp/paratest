@@ -137,7 +137,7 @@ class Configuration
      * Return the contents of the <testsuite> nodes
      * contained in a PHPUnit configuration.
      *
-     * @return SuitePath[]|null
+     * @return SuitePath[][]|null
      */
     public function getSuiteByName(string $suiteName): ?array
     {

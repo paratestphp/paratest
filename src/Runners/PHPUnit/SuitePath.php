@@ -19,7 +19,7 @@ class SuitePath
     /** @var string */
     protected $suffix;
 
-    /** @var string[]s */
+    /** @var string[] */
     protected $excludedPaths;
 
     public function __construct(string $path, array $excludedPaths, string $suffix)
