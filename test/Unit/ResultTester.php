@@ -6,8 +6,9 @@ namespace ParaTest\Tests\Unit;
 
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Runners\PHPUnit\Suite;
+use ParaTest\Tests\TestBase;
 
-abstract class ResultTester extends \ParaTest\Tests\TestBase
+abstract class ResultTester extends TestBase
 {
     protected $errorSuite;
     protected $failureSuite;
@@ -18,21 +19,22 @@ abstract class ResultTester extends \ParaTest\Tests\TestBase
 
     public function setUp(): void
     {
-        $this->errorSuite = $this->getSuiteWithResult('single-werror.xml', 1);
-        $this->otherErrorSuite = $this->getSuiteWithResult('single-werror2.xml', 1);
-        $this->failureSuite = $this->getSuiteWithResult('single-wfailure.xml', 3);
-        $this->mixedSuite = $this->getSuiteWithResult('mixed-results.xml', 7);
-        $this->passingSuite = $this->getSuiteWithResult('single-passing.xml', 3);
+        $this->errorSuite        = $this->getSuiteWithResult('single-werror.xml', 1);
+        $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);
+        $this->failureSuite      = $this->getSuiteWithResult('single-wfailure.xml', 3);
+        $this->mixedSuite        = $this->getSuiteWithResult('mixed-results.xml', 7);
+        $this->passingSuite      = $this->getSuiteWithResult('single-passing.xml', 3);
         $this->dataProviderSuite = $this->getSuiteWithResult('data-provider-result.xml', 50);
     }
 
     public function getSuiteWithResult($result, $methodCount)
     {
-        $result = FIXTURES . DS . 'results' . DS . $result;
+        $result    = FIXTURES . DS . 'results' . DS . $result;
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
             $functions[] = $this->mockFunction($i);
         }
+
         $suite = new Suite('', $functions);
         $suite->setTempFile($result);
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
+use function preg_match;
+use function substr_count;
+
 /**
  * @todo SkippedOrIncompleteTest can't be used in default mode with group filter
  *       (not implemented yet) so we have to split tests per file.
@@ -22,7 +25,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         );
     }
 
-    public function testSkippedInFunctionalMode()
+    public function testSkippedInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -36,7 +39,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
 
-    public function testIncompleteInFunctionalMode()
+    public function testIncompleteInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -50,7 +53,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
 
-    public function testDataProviderWithSkippedInFunctionalMode()
+    public function testDataProviderWithSkippedInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -64,7 +67,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $this->assertContainsNSkippedTests(67, $proc->getOutput());
     }
 
-    public function testSkippedInDefaultMode()
+    public function testSkippedInDefaultMode(): void
     {
         // amount of tests is known, based on amount of methods, so
         // we can identify skipped tests
@@ -82,7 +85,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
 
-    public function testIncompleteInDefaultMode()
+    public function testIncompleteInDefaultMode(): void
     {
         // amount of tests is known, based on amount of methods, so
         // we can identify skipped tests
@@ -101,7 +104,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
 
-    public function testDataProviderWithSkippedInDefaultMode()
+    public function testDataProviderWithSkippedInDefaultMode(): void
     {
         // TODO: update comments
         // amount of tests is known, but based on amount of methods,
@@ -119,7 +122,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $this->assertStringContainsString($expected, $proc->getOutput());
     }
 
-    protected function assertContainsNSkippedTests($n, $output)
+    protected function assertContainsNSkippedTests($n, $output): void
     {
         preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
         $this->assertCount(2, $matches);

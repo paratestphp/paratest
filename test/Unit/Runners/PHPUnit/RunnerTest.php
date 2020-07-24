@@ -8,8 +8,12 @@ use ParaTest\Logging\LogInterpreter;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Tests\TestBase;
 
-class RunnerTest extends \ParaTest\Tests\TestBase
+use function getcwd;
+use function uniqid;
+
+class RunnerTest extends TestBase
 {
     protected $runner;
     protected $files;
@@ -20,10 +24,10 @@ class RunnerTest extends \ParaTest\Tests\TestBase
         $this->runner = new Runner();
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner($opts);
+        $opts    = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $runner  = new Runner($opts);
         $options = $this->getObjectValue($runner, 'options');
 
         $this->assertEquals(4, $options->processes);
@@ -39,20 +43,20 @@ class RunnerTest extends \ParaTest\Tests\TestBase
         $this->assertInstanceOf(ResultPrinter::class, $this->getObjectValue($runner, 'printer'));
     }
 
-    public function testGetExitCode()
+    public function testGetExitCode(): void
     {
         $this->assertEquals(-1, $this->runner->getExitCode());
     }
 
-    public function testConstructorAssignsTokens()
+    public function testConstructorAssignsTokens(): void
     {
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);
         $tokens = $this->getObjectValue($runner, 'tokens');
         $this->assertCount(4, $tokens);
     }
 
-    public function testGetsNextAvailableTokenReturnsTokenIdentifier()
+    public function testGetsNextAvailableTokenReturnsTokenIdentifier(): void
     {
         $tokens = [
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
@@ -60,7 +64,7 @@ class RunnerTest extends \ParaTest\Tests\TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => true],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
@@ -68,7 +72,7 @@ class RunnerTest extends \ParaTest\Tests\TestBase
         $this->assertEquals(2, $tokenData['token']);
     }
 
-    public function testGetNextAvailableTokenReturnsFalseWhenNoTokensAreAvailable()
+    public function testGetNextAvailableTokenReturnsFalseWhenNoTokensAreAvailable(): void
     {
         $tokens = [
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
@@ -76,7 +80,7 @@ class RunnerTest extends \ParaTest\Tests\TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
@@ -84,7 +88,7 @@ class RunnerTest extends \ParaTest\Tests\TestBase
         $this->assertFalse($tokenData);
     }
 
-    public function testReleaseTokenMakesTokenAvailable()
+    public function testReleaseTokenMakesTokenAvailable(): void
     {
         $tokens = [
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
@@ -92,7 +96,7 @@ class RunnerTest extends \ParaTest\Tests\TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
         $runner = new Runner($opts);
         $this->setObjectValue($runner, 'tokens', $tokens);
 

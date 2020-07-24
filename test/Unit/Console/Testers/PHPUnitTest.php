@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Console\Testers;
 
 use ParaTest\Console\Testers\PHPUnit;
+use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 
-class PHPUnitTest extends \ParaTest\Tests\TestBase
+use function getcwd;
+
+class PHPUnitTest extends TestBase
 {
-    public function testConfigureAddsOptionsAndArgumentsToCommand()
+    public function testConfigureAddsOptionsAndArgumentsToCommand(): void
     {
         $testCommand = new TestCommand();
-        $definition = new InputDefinition([
+        $definition  = new InputDefinition([
             new InputOption(
                 'phpunit',
                 null,
@@ -67,16 +70,16 @@ class PHPUnitTest extends \ParaTest\Tests\TestBase
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
         ]);
-        $tester = new PHPUnit();
+        $tester      = new PHPUnit();
         $tester->configure($testCommand);
         $this->assertEquals($definition, $testCommand->getDefinition());
     }
 
-    public function testRequireBootstrapIsChdirResistent()
+    public function testRequireBootstrapIsChdirResistent(): void
     {
-        $file = __DIR__ . '/../../../fixtures/chdirBootstrap.php';
+        $file   = __DIR__ . '/../../../fixtures/chdirBootstrap.php';
         $tester = new PHPUnit();
-        $cwd = getcwd();
+        $cwd    = getcwd();
 
         $tester->requireBootstrap($file);
         $this->assertEquals($cwd, getcwd());

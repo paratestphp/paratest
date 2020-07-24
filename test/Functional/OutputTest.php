@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
+use function getcwd;
+
 class OutputTest extends FunctionalTestBase
 {
-    /**
-     * @var ParaTestInvoker
-     */
+    /** @var ParaTestInvoker */
     protected $paratest;
 
     public function setUp(): void
@@ -20,7 +20,7 @@ class OutputTest extends FunctionalTestBase
         );
     }
 
-    public function testDefaultMessagesDisplayed()
+    public function testDefaultMessagesDisplayed(): void
     {
         $output = $this->paratest->execute(['p' => 5])->getOutput();
         $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
@@ -28,7 +28,7 @@ class OutputTest extends FunctionalTestBase
         $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
-    public function testMessagePrintedWhenInvalidConfigFileSupplied()
+    public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
     {
         $output = $this->paratest
             ->execute(['configuration' => 'nope.xml'])
@@ -36,7 +36,7 @@ class OutputTest extends FunctionalTestBase
         $this->assertStringContainsString('Could not read "nope.xml"', $output);
     }
 
-    public function testMessagePrintedWhenFunctionalModeIsOn()
+    public function testMessagePrintedWhenFunctionalModeIsOn(): void
     {
         $output = $this->paratest
             ->execute(['functional', 'p' => 5])
@@ -46,7 +46,7 @@ class OutputTest extends FunctionalTestBase
         $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
-    public function testProcCountIsReportedWithProcOption()
+    public function testProcCountIsReportedWithProcOption(): void
     {
         $output = $this->paratest->execute(['p' => 1])
             ->getOutput();

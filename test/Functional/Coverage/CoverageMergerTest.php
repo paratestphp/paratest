@@ -6,7 +6,13 @@ namespace ParaTest\Tests\Functional\Coverage;
 
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Tests\TestBase;
+use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+
+use function mkdir;
+use function str_replace;
+use function sys_get_temp_dir;
+use function uniqid;
 
 class CoverageMergerTest extends TestBase
 {
@@ -17,9 +23,6 @@ class CoverageMergerTest extends TestBase
      */
     private $targetDir;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,9 +34,6 @@ class CoverageMergerTest extends TestBase
         mkdir($this->targetDir);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function tearDown(): void
     {
         $this->removeDirectory($this->targetDir);
@@ -42,11 +42,11 @@ class CoverageMergerTest extends TestBase
     }
 
     /**
-     * @dataProvider getCoverageFileProvider
-     *
      * @param string[] $coverageFiles
+     *
+     * @dataProvider getCoverageFileProvider
      */
-    public function testCoverageFromFileIsDeletedAfterAdd(array $coverageFiles)
+    public function testCoverageFromFileIsDeletedAfterAdd(array $coverageFiles): void
     {
         $filename = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
 
@@ -57,12 +57,11 @@ class CoverageMergerTest extends TestBase
     }
 
     /**
-     * @dataProvider getCoverageFileProvider
-     *
      * @param string[] $coverageFiles
-     * @param string $expectedClass
+     *
+     * @dataProvider getCoverageFileProvider
      */
-    public function testCodeCoverageObjectIsCreatedFromCoverageFile(array $coverageFiles, $expectedClass)
+    public function testCodeCoverageObjectIsCreatedFromCoverageFile(array $coverageFiles, string $expectedClass): void
     {
         $filename = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
 
@@ -80,11 +79,11 @@ class CoverageMergerTest extends TestBase
     }
 
     /**
-     * @dataProvider getCoverageFileProvider
-     *
      * @param string[] $coverageFiles
+     *
+     * @dataProvider getCoverageFileProvider
      */
-    public function testCoverageIsMergedOnSecondAddCoverageFromFile(array $coverageFiles)
+    public function testCoverageIsMergedOnSecondAddCoverageFromFile(array $coverageFiles): void
     {
         $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
         $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
@@ -118,9 +117,9 @@ class CoverageMergerTest extends TestBase
         );
     }
 
-    public function testCoverageFileIsEmpty()
+    public function testCoverageFileIsEmpty(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $regex = '/Coverage file .*? is empty. This means a PHPUnit process has crashed./';
         $this->expectExceptionMessageMatches($regex);
         $filename = $this->copyCoverageFile('coverage-tests' . DS . 'empty_test.cov', $this->targetDir);
@@ -129,7 +128,7 @@ class CoverageMergerTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename);
     }
 
-    public function testCoverageFileIsNull()
+    public function testCoverageFileIsNull(): void
     {
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile(null);
@@ -137,7 +136,7 @@ class CoverageMergerTest extends TestBase
         $this->assertNull($coverageMerger->getCodeCoverageObject());
     }
 
-    public function testCoverageFileDoesNotExist()
+    public function testCoverageFileDoesNotExist(): void
     {
         $coverageMerger = new CoverageMerger();
         $coverageMerger->addCoverageFromFile('no-such-file.cov');
@@ -148,10 +147,10 @@ class CoverageMergerTest extends TestBase
     /**
      * @return array
      */
-    public static function getCoverageFileProvider()
+    public static function getCoverageFileProvider(): array
     {
-        $version = 'CodeCoverage >4.0';
-        $filenames = [
+        $version       = 'CodeCoverage >4.0';
+        $filenames     = [
             'coverage-tests/runner_test.cov',
             'coverage-tests/result_printer_test.cov',
         ];
@@ -165,12 +164,7 @@ class CoverageMergerTest extends TestBase
         ];
     }
 
-    /**
-     * @param CoverageMerger $coverageMerger
-     *
-     * @return CodeCoverage
-     */
-    private function getCoverage(CoverageMerger $coverageMerger)
+    private function getCoverage(CoverageMerger $coverageMerger): CodeCoverage
     {
         return $this->getObjectValue($coverageMerger, 'coverage');
     }

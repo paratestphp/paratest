@@ -10,8 +10,6 @@ class ExecutableTestChild extends ExecutableTest
 {
     /**
      * Get the expected count of tests to be executed.
-     *
-     * @return int
      */
     public function getTestCount(): int
     {

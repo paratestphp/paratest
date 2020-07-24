@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Logging\JUnit;
 
+use InvalidArgumentException;
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Tests\TestBase;
 use PHPUnit\Framework\ExpectationFailedException;
+use stdClass;
 
-class ReaderTest extends \ParaTest\Tests\TestBase
+use function file_get_contents;
+use function file_put_contents;
+
+class ReaderTest extends TestBase
 {
     protected $mixedPath;
     protected $mixed;
@@ -17,29 +23,29 @@ class ReaderTest extends \ParaTest\Tests\TestBase
 
     public function setUp(): void
     {
-        $this->mixedPath = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
-        $this->mixed = new Reader($this->mixedPath);
-        $single = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
-        $this->single = new Reader($single);
-        $empty = FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml';
-        $this->empty = new Reader($empty);
-        $multi_errors = FIXTURES . DS . 'results' . DS . 'multiple-errors-with-system-out.xml';
+        $this->mixedPath    = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
+        $this->mixed        = new Reader($this->mixedPath);
+        $single             = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
+        $this->single       = new Reader($single);
+        $empty              = FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml';
+        $this->empty        = new Reader($empty);
+        $multi_errors       = FIXTURES . DS . 'results' . DS . 'multiple-errors-with-system-out.xml';
         $this->multi_errors = new Reader($multi_errors);
     }
 
-    public function testInvalidPathThrowsException()
+    public function testInvalidPathThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $reader = new Reader('/path/to/nowhere');
     }
 
-    public function testIsSingleSuiteReturnsTrueForSingleSuite()
+    public function testIsSingleSuiteReturnsTrueForSingleSuite(): void
     {
         $this->assertTrue($this->single->isSingleSuite());
     }
 
-    public function testIsSingleSuiteReturnsFalseForMultipleSuites()
+    public function testIsSingleSuiteReturnsFalseForMultipleSuites(): void
     {
         $this->assertFalse($this->mixed->isSingleSuite());
     }
@@ -59,9 +65,9 @@ class ReaderTest extends \ParaTest\Tests\TestBase
     }
 
     /**
-     * @depends testMixedSuiteShouldConstructRootSuite
-     *
      * @param mixed $suite
+     *
+     * @depends testMixedSuiteShouldConstructRootSuite
      */
     public function testMixedSuiteConstructsChildSuites($suite)
     {
@@ -82,11 +88,11 @@ class ReaderTest extends \ParaTest\Tests\TestBase
     }
 
     /**
-     * @depends testMixedSuiteConstructsChildSuites
-     *
      * @param mixed $suite
+     *
+     * @depends testMixedSuiteConstructsChildSuites
      */
-    public function testMixedSuiteConstructsTestCases($suite)
+    public function testMixedSuiteConstructsTestCases($suite): void
     {
         $this->assertCount(3, $suite->cases);
         $first = $suite->cases[0];
@@ -101,30 +107,30 @@ class ReaderTest extends \ParaTest\Tests\TestBase
         $this->assertEquals('0.001760', $first->time);
     }
 
-    public function testMixedSuiteCasesLoadFailures()
+    public function testMixedSuiteCasesLoadFailures(): void
     {
         $suites = $this->mixed->getSuites();
-        $case = $suites[0]->suites[0]->cases[1];
+        $case   = $suites[0]->suites[0]->cases[1];
         $this->assertCount(1, $case->failures);
         $failure = $case->failures[0];
         $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals(
             "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-            "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20',
             $failure['text']
         );
     }
 
-    public function testMixedSuiteCasesLoadErrors()
+    public function testMixedSuiteCasesLoadErrors(): void
     {
         $suites = $this->mixed->getSuites();
-        $case = $suites[0]->suites[1]->cases[0];
+        $case   = $suites[0]->suites[1]->cases[0];
         $this->assertCount(1, $case->errors);
         $error = $case->errors[0];
         $this->assertEquals('Exception', $error['type']);
         $this->assertEquals(
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
-                "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12",
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12',
             $error['text']
         );
     }
@@ -148,21 +154,21 @@ class ReaderTest extends \ParaTest\Tests\TestBase
     }
 
     /**
-     * @depends testSingleSuiteShouldConstructRootSuite
-     *
      * @param mixed $suite
+     *
+     * @depends testSingleSuiteShouldConstructRootSuite
      */
-    public function testSingleSuiteShouldHaveNoChildSuites($suite)
+    public function testSingleSuiteShouldHaveNoChildSuites($suite): void
     {
         $this->assertCount(0, $suite->suites);
     }
 
     /**
-     * @depends testSingleSuiteShouldConstructRootSuite
-     *
      * @param mixed $suite
+     *
+     * @depends testSingleSuiteShouldConstructRootSuite
      */
-    public function testSingleSuiteConstructsTestCases($suite)
+    public function testSingleSuiteConstructsTestCases($suite): void
     {
         $this->assertCount(3, $suite->cases);
         $first = $suite->cases[0];
@@ -177,21 +183,21 @@ class ReaderTest extends \ParaTest\Tests\TestBase
         $this->assertEquals('0.001632', $first->time);
     }
 
-    public function testSingleSuiteCasesLoadFailures()
+    public function testSingleSuiteCasesLoadFailures(): void
     {
         $suites = $this->single->getSuites();
-        $case = $suites[0]->cases[1];
+        $case   = $suites[0]->cases[1];
         $this->assertCount(1, $case->failures);
         $failure = $case->failures[0];
         $this->assertEquals(ExpectationFailedException::class, $failure['type']);
         $this->assertEquals(
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18',
             $failure['text']
         );
     }
 
-    public function testEmptySuiteConstructsTestCase()
+    public function testEmptySuiteConstructsTestCase(): void
     {
         $suites = $this->empty->getSuites();
         $this->assertCount(1, $suites);
@@ -206,7 +212,7 @@ class ReaderTest extends \ParaTest\Tests\TestBase
         $this->assertEquals(0, $suite->time);
     }
 
-    public function testMixedGetTotals()
+    public function testMixedGetTotals(): void
     {
         $this->assertEquals(7, $this->mixed->getTotalTests());
         $this->assertEquals(6, $this->mixed->getTotalAssertions());
@@ -215,7 +221,7 @@ class ReaderTest extends \ParaTest\Tests\TestBase
         $this->assertEquals(0.007625, $this->mixed->getTotalTime());
     }
 
-    public function testSingleGetTotals()
+    public function testSingleGetTotals(): void
     {
         $this->assertEquals(3, $this->single->getTotalTests());
         $this->assertEquals(3, $this->single->getTotalAssertions());
@@ -224,41 +230,41 @@ class ReaderTest extends \ParaTest\Tests\TestBase
         $this->assertEquals(0.005895, $this->single->getTotalTime());
     }
 
-    public function testMixedGetFailureMessages()
+    public function testMixedGetFailureMessages(): void
     {
         $failures = $this->mixed->getFailures();
         $this->assertCount(2, $failures);
         $this->assertEquals(
             "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20',
             $failures[0]
         );
         $this->assertEquals(
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false." .
                 "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest." .
-                "php:18",
+                'php:18',
             $failures[1]
         );
     }
 
-    public function testMixedGetErrorMessages()
+    public function testMixedGetErrorMessages(): void
     {
         $errors = $this->mixed->getErrors();
         $this->assertCount(1, $errors);
         $this->assertEquals(
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
-                "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12",
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12',
             $errors[0]
         );
     }
 
-    public function testSingleGetMessages()
+    public function testSingleGetMessages(): void
     {
         $failures = $this->single->getFailures();
         $this->assertCount(1, $failures);
         $this->assertEquals(
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18',
             $failures[0]
         );
     }
@@ -266,7 +272,7 @@ class ReaderTest extends \ParaTest\Tests\TestBase
     /**
      * https://github.com/paratestphp/paratest/issues/352
      */
-    public function testGetMultiErrorsMessages()
+    public function testGetMultiErrorsMessages(): void
     {
         $errors = $this->multi_errors->getErrors();
         $this->assertCount(2, $errors);
@@ -274,30 +280,30 @@ class ReaderTest extends \ParaTest\Tests\TestBase
             "Risky Test\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
-            "Custom error log on result test with multiple errors!",
+            'Custom error log on result test with multiple errors!',
             $errors[0]
         );
         $this->assertEquals(
             "Risky Test\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
-            "Custom error log on result test with multiple errors!",
+            'Custom error log on result test with multiple errors!',
             $errors[1]
         );
     }
 
-    public function testMixedGetFeedback()
+    public function testMixedGetFeedback(): void
     {
-        $totalCases = 7;
+        $totalCases     = 7;
         $casesProcessed = 0;
-        $feedback = $this->mixed->getFeedback($totalCases, $casesProcessed);
+        $feedback       = $this->mixed->getFeedback($totalCases, $casesProcessed);
         $this->assertEquals(['.', 'F', '.', 'E', '.', 'F', '.'], $feedback);
     }
 
-    public function testRemoveLog()
+    public function testRemoveLog(): void
     {
         $contents = file_get_contents($this->mixedPath);
-        $tmp = FIXTURES . DS . 'results' . DS . 'dummy.xml';
+        $tmp      = FIXTURES . DS . 'results' . DS . 'dummy.xml';
         file_put_contents($tmp, $contents);
         $reader = new Reader($tmp);
         $reader->removeLog();
@@ -307,27 +313,27 @@ class ReaderTest extends \ParaTest\Tests\TestBase
     /**
      * Extraction of log from xml file to use in test of validation "SystemOut" result.
      *
-     * @return \stdClass $log
+     * @return stdClass $log
      */
-    public static function extractLog()
+    public static function extractLog(): stdClass
     {
-        $log = new \stdClass();
-        $result = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
-        $node = new Reader($result);
+        $log          = new stdClass();
+        $result       = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
+        $node         = new Reader($result);
         $log->failure = $node->getSuites()[0]->suites[0]->cases[1]->failures[0]['text'];
-        $log->error = $node->getSuites()[0]->suites[1]->cases[0]->errors[0]['text'];
+        $log->error   = $node->getSuites()[0]->suites[1]->cases[0]->errors[0]['text'];
 
         return $log;
     }
 
-    public function testResultWithSystemOut()
+    public function testResultWithSystemOut(): void
     {
-        $customLog = "\nCustom error log on result test with ";
-        $result = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
-        $failLog = self::extractLog()->failure . $customLog . 'failure!';
-        $errorLog = self::extractLog()->error . $customLog . 'error!';
-        $node = new Reader($result);
-        $resultFail = $node->getSuites()[0]->suites[2]->cases[1]->failures[0]['text'];
+        $customLog   = "\nCustom error log on result test with ";
+        $result      = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
+        $failLog     = self::extractLog()->failure . $customLog . 'failure!';
+        $errorLog    = self::extractLog()->error . $customLog . 'error!';
+        $node        = new Reader($result);
+        $resultFail  = $node->getSuites()[0]->suites[2]->cases[1]->failures[0]['text'];
         $resultError = $node->getSuites()[0]->suites[1]->cases[1]->errors[0]['text'];
 
         $this->assertEquals($failLog, $resultFail);
