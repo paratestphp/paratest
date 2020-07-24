@@ -9,11 +9,23 @@ use ParaTest\Runners\PHPUnit\Worker\SqliteWorker;
 use PDO;
 use RuntimeException;
 
+use function count;
+use function dirname;
+use function implode;
+use function realpath;
+use function serialize;
+use function sys_get_temp_dir;
+use function tempnam;
+use function uniqid;
+use function unlink;
+use function usleep;
+
+use const DIRECTORY_SEPARATOR;
+use const PHP_EOL;
+
 class SqliteRunner extends WrapperRunner
 {
-    /**
-     * @var SqliteWorker[]
-     */
+    /** @var SqliteWorker[] */
     protected $workers;
 
     /** @var PDO */
@@ -26,19 +38,21 @@ class SqliteRunner extends WrapperRunner
     {
         parent::__construct($opts);
 
-        $this->dbFileName = (string) ($opts['database'] ?? \tempnam(\sys_get_temp_dir(), 'paratest_db_'));
-        $this->db = new PDO('sqlite:' . $this->dbFileName);
+        $this->dbFileName = (string) ($opts['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
+        $this->db         = new PDO('sqlite:' . $this->dbFileName);
     }
 
     public function __destruct()
     {
-        if ($this->db !== null) {
-            unset($this->db);
-            \unlink($this->dbFileName);
+        if ($this->db === null) {
+            return;
         }
+
+        unset($this->db);
+        unlink($this->dbFileName);
     }
 
-    public function run()
+    public function run(): void
     {
         $this->initialize();
 
@@ -55,19 +69,20 @@ class SqliteRunner extends WrapperRunner
      */
     protected function startWorkers(): void
     {
-        $wrapper = \realpath(
+        $wrapper = realpath(
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-sqlite-wrapper.php'
         );
 
         for ($i = 1; $i <= $this->options->processes; ++$i) {
             $worker = new SqliteWorker($this->dbFileName);
             if ($this->options->noTestTokens) {
-                $token = null;
+                $token       = null;
                 $uniqueToken = null;
             } else {
-                $token = $i;
-                $uniqueToken = \uniqid();
+                $token       = $i;
+                $uniqueToken = uniqid();
             }
+
             $worker->start($wrapper, $token, $uniqueToken);
             $this->workers[] = $worker;
         }
@@ -80,13 +95,16 @@ class SqliteRunner extends WrapperRunner
     {
         do {
             foreach ($this->workers as $key => $worker) {
-                if (!$worker->isRunning()) {
-                    unset($this->workers[$key]);
+                if ($worker->isRunning()) {
+                    continue;
                 }
+
+                unset($this->workers[$key]);
             }
-            \usleep(10000);
+
+            usleep(10000);
             $this->printOutput();
-        } while (\count($this->workers) > 0);
+        } while (count($this->workers) > 0);
     }
 
     /**
@@ -153,7 +171,7 @@ class SqliteRunner extends WrapperRunner
             . '----------------------' . PHP_EOL
             . 'Failed test command(s):' . PHP_EOL
             . '----------------------' . PHP_EOL
-            . \implode(PHP_EOL, $this->db->query('SELECT command FROM tests')->fetchAll(PDO::FETCH_COLUMN))
+            . implode(PHP_EOL, $this->db->query('SELECT command FROM tests')->fetchAll(PDO::FETCH_COLUMN))
         );
     }
 }

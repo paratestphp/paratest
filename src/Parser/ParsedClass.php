@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace ParaTest\Parser;
 
+use function array_filter;
+use function explode;
+
 class ParsedClass extends ParsedObject
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $namespace;
 
     /**
@@ -23,7 +24,7 @@ class ParsedClass extends ParsedObject
     {
         parent::__construct($doc, $name);
         $this->namespace = $namespace;
-        $this->methods = $methods;
+        $this->methods   = $methods;
     }
 
     /**
@@ -37,9 +38,9 @@ class ParsedClass extends ParsedObject
      */
     public function getMethods(array $annotations = []): array
     {
-        $methods = \array_filter($this->methods, function (ParsedFunction $method) use ($annotations): bool {
+        $methods = array_filter($this->methods, static function (ParsedFunction $method) use ($annotations): bool {
             foreach ($annotations as $a => $v) {
-                foreach (\explode(',', $v) as $subValue) {
+                foreach (explode(',', $v) as $subValue) {
                     if ($method->hasAnnotation($a, $subValue)) {
                         return true;
                     }
@@ -54,8 +55,6 @@ class ParsedClass extends ParsedObject
 
     /**
      * Return the namespace of the parsed class.
-     *
-     * @return string
      */
     public function getNamespace(): string
     {

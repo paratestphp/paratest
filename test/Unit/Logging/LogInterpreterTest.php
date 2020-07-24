@@ -8,6 +8,8 @@ use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Tests\Unit\ResultTester;
 
+use function array_pop;
+
 class LogInterpreterTest extends ResultTester
 {
     protected $interpreter;
@@ -21,27 +23,27 @@ class LogInterpreterTest extends ResultTester
             ->addReader($this->getReader('passingSuite'));
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $interpreter = new LogInterpreter();
         $this->assertEquals([], $this->getObjectValue($interpreter, 'readers'));
     }
 
-    public function testAddReaderIncrementsReaders()
+    public function testAddReaderIncrementsReaders(): void
     {
         $reader = $this->getMockReader();
         $this->interpreter->addReader($reader);
         $this->assertCount(3, $this->getObjectValue($this->interpreter, 'readers'));
     }
 
-    public function testAddReaderReturnsSelf()
+    public function testAddReaderReturnsSelf(): void
     {
         $reader = $this->getMockReader();
-        $self = $this->interpreter->addReader($reader);
+        $self   = $this->interpreter->addReader($reader);
         $this->assertSame($self, $this->interpreter);
     }
 
-    public function testGetReaders()
+    public function testGetReaders(): void
     {
         $reader = $this->getMockReader();
         $this->interpreter->addReader($reader);
@@ -51,82 +53,82 @@ class LogInterpreterTest extends ResultTester
         $this->assertSame($reader, $last);
     }
 
-    public function testGetTotalTests()
+    public function testGetTotalTests(): void
     {
         $this->assertEquals(10, $this->interpreter->getTotalTests());
     }
 
-    public function testGetTotalAssertions()
+    public function testGetTotalAssertions(): void
     {
         $this->assertEquals(9, $this->interpreter->getTotalAssertions());
     }
 
-    public function testGetTotalFailures()
+    public function testGetTotalFailures(): void
     {
         $this->assertEquals(2, $this->interpreter->getTotalFailures());
     }
 
-    public function testGetTotalErrors()
+    public function testGetTotalErrors(): void
     {
         $this->assertEquals(1, $this->interpreter->getTotalErrors());
     }
 
-    public function testIsSuccessfulReturnsFalseIfFailuresPresentAndNoErrors()
+    public function testIsSuccessfulReturnsFalseIfFailuresPresentAndNoErrors(): void
     {
         $interpreter = new LogInterpreter();
         $interpreter->addReader($this->getReader('failureSuite'));
         $this->assertFalse($interpreter->isSuccessful());
     }
 
-    public function testIsSuccessfulReturnsFalseIfErrorsPresentAndNoFailures()
+    public function testIsSuccessfulReturnsFalseIfErrorsPresentAndNoFailures(): void
     {
         $interpreter = new LogInterpreter();
         $interpreter->addReader($this->getReader('errorSuite'));
         $this->assertFalse($interpreter->isSuccessful());
     }
 
-    public function testIsSuccessfulReturnsFalseIfErrorsAndFailuresPresent()
+    public function testIsSuccessfulReturnsFalseIfErrorsAndFailuresPresent(): void
     {
         $this->assertFalse($this->interpreter->isSuccessful());
     }
 
-    public function testIsSuccessfulReturnsTrueIfNoErrorsOrFailures()
+    public function testIsSuccessfulReturnsTrueIfNoErrorsOrFailures(): void
     {
         $interpreter = new LogInterpreter();
         $interpreter->addReader($this->getReader('passingSuite'));
         $this->assertTrue($interpreter->isSuccessful());
     }
 
-    public function testGetErrorsReturnsArrayOfErrorMessages()
+    public function testGetErrorsReturnsArrayOfErrorMessages(): void
     {
         $errors = [
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/" .
-            "test/fixtures/tests/UnitTestWithErrorTest.php:12"
+            'test/fixtures/tests/UnitTestWithErrorTest.php:12',
         ];
         $this->assertEquals($errors, $this->interpreter->getErrors());
     }
 
-    public function testGetFailuresReturnsArrayOfFailureMessages()
+    public function testGetFailuresReturnsArrayOfFailureMessages(): void
     {
         $failures = [
             "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/" .
-                "home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20",
+                'home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20',
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18",
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18',
         ];
 
         $this->assertEquals($failures, $this->interpreter->getFailures());
     }
 
-    public function testGetCasesReturnsAllCases()
+    public function testGetCasesReturnsAllCases(): void
     {
         $cases = $this->interpreter->getCases();
         $this->assertCount(10, $cases);
     }
 
-    public function testGetCasesExtendEmptyCasesFromSuites()
+    public function testGetCasesExtendEmptyCasesFromSuites(): void
     {
-        $interpreter = new LogInterpreter();
+        $interpreter        = new LogInterpreter();
         $dataProviderReader = $this->getReader('dataProviderSuite');
         $interpreter->addReader($dataProviderReader);
         $cases = $interpreter->getCases();
@@ -141,6 +143,7 @@ class LogInterpreterTest extends ResultTester
             } else {
                 $this->assertEquals($case->class, 'DataProviderTest');
             }
+
             if ($case->name === 'testNumericDataProvider5 with data set #4') {
                 $this->assertEquals(
                     $case->file,
@@ -169,11 +172,11 @@ class LogInterpreterTest extends ResultTester
     }
 
     /**
-     * @depends testFlattenCasesReturnsCorrectNumberOfSuites
-     *
      * @param mixed $suites
+     *
+     * @depends testFlattenCasesReturnsCorrectNumberOfSuites
      */
-    public function testFlattenedSuiteHasCorrectTotals($suites)
+    public function testFlattenedSuiteHasCorrectTotals($suites): void
     {
         $first = $suites[0];
         $this->assertEquals('UnitTestWithClassAnnotationTest', $first->name);

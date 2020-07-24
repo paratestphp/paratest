@@ -6,7 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 class EmptyRunnerStub extends BaseRunner
 {
-    public function run()
+    public function run(): void
     {
         echo 'EXECUTED';
     }

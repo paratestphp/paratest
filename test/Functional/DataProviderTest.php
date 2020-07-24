@@ -18,7 +18,7 @@ class DataProviderTest extends FunctionalTestBase
         );
     }
 
-    public function testFunctionalMode()
+    public function testFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -27,7 +27,7 @@ class DataProviderTest extends FunctionalTestBase
         $this->assertMatchesRegularExpression('/OK \(1150 tests, 1150 assertions\)/', $proc->getOutput());
     }
 
-    public function testNumericDataSetInFunctionalModeWithMethodFilter()
+    public function testNumericDataSetInFunctionalModeWithMethodFilter(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -37,7 +37,7 @@ class DataProviderTest extends FunctionalTestBase
         $this->assertMatchesRegularExpression('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
     }
 
-    public function testNumericDataSetInFunctionalModeWithCustomFilter()
+    public function testNumericDataSetInFunctionalModeWithCustomFilter(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -47,7 +47,7 @@ class DataProviderTest extends FunctionalTestBase
         $this->assertMatchesRegularExpression('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
     }
 
-    public function testNamedDataSetInFunctionalModeWithMethodFilter()
+    public function testNamedDataSetInFunctionalModeWithMethodFilter(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -57,7 +57,7 @@ class DataProviderTest extends FunctionalTestBase
         $this->assertMatchesRegularExpression('/OK \(50 tests, 50 assertions\)/', $proc->getOutput());
     }
 
-    public function testNamedDataSetInFunctionalModeWithCustomFilter()
+    public function testNamedDataSetInFunctionalModeWithCustomFilter(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,
@@ -67,7 +67,7 @@ class DataProviderTest extends FunctionalTestBase
         $this->assertMatchesRegularExpression('/OK \(14 tests, 14 assertions\)/', $proc->getOutput());
     }
 
-    public function testNumericDataSet1000InFunctionalModeWithFilterAndMaxBatchSize()
+    public function testNumericDataSet1000InFunctionalModeWithFilterAndMaxBatchSize(): void
     {
         $proc = $this->invoker->execute([
             'functional' => null,

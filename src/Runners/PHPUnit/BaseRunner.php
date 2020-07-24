@@ -8,21 +8,21 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
 
+use function array_merge;
+use function file_exists;
+use function getenv;
+use function putenv;
+use function sprintf;
+
 abstract class BaseRunner
 {
-    /**
-     * @var Options
-     */
+    /** @var Options */
     protected $options;
 
-    /**
-     * @var \ParaTest\Logging\LogInterpreter
-     */
+    /** @var LogInterpreter */
     protected $interpreter;
 
-    /**
-     * @var ResultPrinter
-     */
+    /** @var ResultPrinter */
     protected $printer;
 
     /**
@@ -56,14 +56,17 @@ abstract class BaseRunner
      */
     protected $coverage = null;
 
+    /**
+     * @param array<string, mixed> $opts
+     */
     public function __construct(array $opts = [])
     {
-        $this->options = new Options($opts);
+        $this->options     = new Options($opts);
         $this->interpreter = new LogInterpreter();
-        $this->printer = new ResultPrinter($this->interpreter);
+        $this->printer     = new ResultPrinter($this->interpreter);
     }
 
-    public function run()
+    public function run(): void
     {
         $this->initialize();
     }
@@ -73,13 +76,13 @@ abstract class BaseRunner
      * causes ParaTest to print the error message and exit immediately
      * with an exit code of 1.
      */
-    protected function verifyConfiguration()
+    protected function verifyConfiguration(): void
     {
         if (
             isset($this->options->filtered['configuration']) &&
-            !\file_exists($this->options->filtered['configuration']->getPath())
+            ! file_exists($this->options->filtered['configuration']->getPath())
         ) {
-            $this->printer->println(\sprintf('Could not read "%s".', $this->options->filtered['configuration']));
+            $this->printer->println(sprintf('Could not read "%s".', $this->options->filtered['configuration']));
             exit(1);
         }
     }
@@ -90,11 +93,11 @@ abstract class BaseRunner
      * contain a collection of TestMethod objects instead of Suite
      * objects.
      */
-    protected function load(SuiteLoader $loader)
+    protected function load(SuiteLoader $loader): void
     {
         $loader->load($this->options->path);
-        $executables = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
-        $this->pending = \array_merge($this->pending, $executables);
+        $executables   = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
+        $this->pending = array_merge($this->pending, $executables);
         foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);
         }
@@ -103,8 +106,6 @@ abstract class BaseRunner
     /**
      * Returns the highest exit code encountered
      * throughout the course of test execution.
-     *
-     * @return int
      */
     public function getExitCode(): int
     {
@@ -114,11 +115,12 @@ abstract class BaseRunner
     /**
      * Write output to JUnit format if requested.
      */
-    protected function log()
+    protected function log(): void
     {
-        if (!isset($this->options->filtered['log-junit'])) {
+        if (! isset($this->options->filtered['log-junit'])) {
             return;
         }
+
         $output = $this->options->filtered['log-junit'];
         $writer = new Writer($this->interpreter, $this->options->path);
         $writer->write($output);
@@ -127,9 +129,9 @@ abstract class BaseRunner
     /**
      * Write coverage to file if requested.
      */
-    protected function logCoverage()
+    protected function logCoverage(): void
     {
-        if (!$this->hasCoverage()) {
+        if (! $this->hasCoverage()) {
             return;
         }
 
@@ -160,26 +162,21 @@ abstract class BaseRunner
         $reporter->php($filteredOptions['coverage-php']);
     }
 
-    protected function initCoverage()
+    protected function initCoverage(): void
     {
-        if (!isset($this->options->filtered['coverage-php'])) {
+        if (! isset($this->options->filtered['coverage-php'])) {
             return;
         }
-        $this->coverage = new CoverageMerger((int)$this->options->coverageTestLimit);
+
+        $this->coverage = new CoverageMerger((int) $this->options->coverageTestLimit);
     }
 
-    /**
-     * @return bool
-     */
     protected function hasCoverage(): bool
     {
         return $this->getCoverage() !== null;
     }
 
-    /**
-     * @return CoverageMerger|null
-     */
-    protected function getCoverage()
+    protected function getCoverage(): ?CoverageMerger
     {
         return $this->coverage;
     }
@@ -187,16 +184,16 @@ abstract class BaseRunner
     /**
      * Overrides envirenment variables if needed.
      */
-    protected function overrideEnvironmentVariables()
+    protected function overrideEnvironmentVariables(): void
     {
-        if (!isset($this->options->filtered['configuration'])) {
+        if (! isset($this->options->filtered['configuration'])) {
             return;
         }
 
         $variables = $this->options->filtered['configuration']->getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            \putenv(\sprintf('%s=%s', $key, getenv($key, true) ?: $value));
+            putenv(sprintf('%s=%s', $key, getenv($key, true) ?: $value));
 
             $_ENV[$key] = getenv($key, true) ?: $value;
         }

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging;
 
+use function preg_match;
+use function strtolower;
+
 /**
- * Class MetaProvider.
- *
  * Adds __call behavior to a logging object
  * for aggregating totals and messages
  *
@@ -40,23 +41,21 @@ abstract class MetaProvider
     /**
      * Simplify aggregation of totals or messages.
      *
-     * @param string $method
      * @param array $args
      */
     public function __call(string $method, array $args)
     {
-        if (\preg_match(self::$totalMethod, $method, $matches) && $property = \strtolower($matches[1])) {
+        if (preg_match(self::$totalMethod, $method, $matches) && $property = strtolower($matches[1])) {
             return $this->getNumericValue($property);
         }
-        if (\preg_match(self::$messageMethod, $method, $matches) && $type = \strtolower($matches[1])) {
+
+        if (preg_match(self::$messageMethod, $method, $matches) && $type = strtolower($matches[1])) {
             return $this->getMessages($type);
         }
     }
 
     /**
      * Returns a value as either a float or int.
-     *
-     * @param string $property
      *
      * @return float|int
      */
@@ -65,8 +64,6 @@ abstract class MetaProvider
     /**
      * Gets messages of a given type and
      * merges them into a single collection.
-     *
-     * @param string $type
      *
      * @return array
      */

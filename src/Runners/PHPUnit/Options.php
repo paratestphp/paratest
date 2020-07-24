@@ -4,7 +4,32 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPStan\Parallel\Process;
+use RuntimeException;
+use Symfony\Component\Process\Process;
+
+use function array_diff_key;
+use function array_shift;
+use function count;
+use function dirname;
+use function explode;
+use function fgets;
+use function file_exists;
+use function file_get_contents;
+use function in_array;
+use function intdiv;
+use function is_dir;
+use function is_file;
+use function pclose;
+use function popen;
+use function preg_match_all;
+use function realpath;
+use function rtrim;
+use function sprintf;
+use function strlen;
+use function unserialize;
+
+use const DIRECTORY_SEPARATOR;
+use const PHP_BINARY;
 
 /**
  * An object containing all configurable information used
@@ -79,19 +104,13 @@ class Options
      */
     protected $filtered;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $runner;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $noTestTokens;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $colors;
 
     /**
@@ -101,24 +120,16 @@ class Options
      */
     protected $testsuite;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     protected $maxBatchSize;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $filter;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $groups;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $excludeGroups;
 
     /**
@@ -165,6 +176,9 @@ class Options
      */
     protected $coverageTestLimit;
 
+    /**
+     * @param array<string, mixed> $opts
+     */
     public function __construct(array $opts = [])
     {
         foreach (self::defaults() as $opt => $value) {
@@ -174,24 +188,24 @@ class Options
         if ($opts['processes'] === 'auto') {
             $opts['processes'] = self::getNumberOfCPUCores();
         } elseif ($opts['processes'] === 'half') {
-            $opts['processes'] = \intdiv(self::getNumberOfCPUCores(), 2);
+            $opts['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
         }
 
-        $this->processes = $opts['processes'];
-        $this->path = $opts['path'];
-        $this->phpunit = $opts['phpunit'];
-        $this->functional = $opts['functional'];
-        $this->stopOnFailure = $opts['stop-on-failure'];
-        $this->runner = $opts['runner'];
-        $this->noTestTokens = $opts['no-test-tokens'];
-        $this->colors = $opts['colors'];
-        $this->testsuite = $opts['testsuite'];
-        $this->maxBatchSize = (int) $opts['max-batch-size'];
-        $this->filter = $opts['filter'];
-        $this->parallelSuite = $opts['parallel-suite'];
-        $this->passthru = $this->parsePassthru($opts['passthru-php'] ?? null);
-        $this->passthruPhp = $this->parsePassthru($opts['passthru-php'] ?? null);
-        $this->verbose = $opts['verbose'] ?? 0;
+        $this->processes         = $opts['processes'];
+        $this->path              = $opts['path'];
+        $this->phpunit           = $opts['phpunit'];
+        $this->functional        = $opts['functional'];
+        $this->stopOnFailure     = $opts['stop-on-failure'];
+        $this->runner            = $opts['runner'];
+        $this->noTestTokens      = $opts['no-test-tokens'];
+        $this->colors            = $opts['colors'];
+        $this->testsuite         = $opts['testsuite'];
+        $this->maxBatchSize      = (int) $opts['max-batch-size'];
+        $this->filter            = $opts['filter'];
+        $this->parallelSuite     = $opts['parallel-suite'];
+        $this->passthru          = $this->parsePassthru($opts['passthru-php'] ?? null);
+        $this->passthruPhp       = $this->parsePassthru($opts['passthru-php'] ?? null);
+        $this->verbose           = $opts['verbose'] ?? 0;
         $this->coverageTestLimit = $opts['coverage-test-limit'] ?? 0;
 
         // we need to register that options if they are blank but do not get them as
@@ -199,15 +213,15 @@ class Options
         // phpunit command line generation (it will add them in command line with no value
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
-        $this->groups = isset($opts['group']) && $opts['group'] !== ''
-            ? \explode(',', $opts['group'])
+        $this->groups        = isset($opts['group']) && $opts['group'] !== ''
+            ? explode(',', $opts['group'])
             : [];
         $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ''
-            ? \explode(',', $opts['exclude-group'])
+            ? explode(',', $opts['exclude-group'])
             : [];
 
-        if (isset($opts['filter']) && \strlen($opts['filter']) > 0 && !$this->functional) {
-            throw new \RuntimeException('Option --filter is not implemented for non functional mode');
+        if (isset($opts['filter']) && strlen($opts['filter']) > 0 && ! $this->functional) {
+            throw new RuntimeException('Option --filter is not implemented for non functional mode');
         }
 
         $this->filtered = $this->filterOptions($opts);
@@ -216,8 +230,6 @@ class Options
 
     /**
      * Public read accessibility.
-     *
-     * @param string $var
      *
      * @return mixed
      */
@@ -229,10 +241,6 @@ class Options
     /**
      * Public read accessibility
      * (e.g. to make empty($options->property) work as expected).
-     *
-     * @param string $var
-     *
-     * @return bool
      */
     public function __isset(string $var): bool
     {
@@ -263,7 +271,7 @@ class Options
             'passthru' => null,
             'passthru-php' => null,
             'verbose' => 0,
-            'coverage-test-limit' => 0
+            'coverage-test-limit' => 0,
         ];
     }
 
@@ -280,9 +288,9 @@ class Options
     {
         $vendor = static::vendorDir();
 
-        $phpunit = $vendor . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit' .
-            \DIRECTORY_SEPARATOR . 'phpunit';
-        if (\file_exists($phpunit)) {
+        $phpunit = $vendor . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'phpunit' .
+            DIRECTORY_SEPARATOR . 'phpunit';
+        if (file_exists($phpunit)) {
             return $phpunit;
         }
 
@@ -296,9 +304,9 @@ class Options
      */
     protected static function vendorDir(): string
     {
-        $vendor = \dirname(\dirname(\dirname(__DIR__))) . \DIRECTORY_SEPARATOR . 'vendor';
-        if (!\file_exists($vendor)) {
-            $vendor = \dirname(\dirname(\dirname(\dirname(\dirname(__DIR__)))));
+        $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
+        if (! file_exists($vendor)) {
+            $vendor = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
         }
 
         return $vendor;
@@ -310,7 +318,7 @@ class Options
      */
     protected function filterOptions(array $options): array
     {
-        $filtered = \array_diff_key($options, [
+        $filtered = array_diff_key($options, [
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
@@ -326,7 +334,7 @@ class Options
             'passthru' => $this->passthru,
             'passthru-php' => $this->passthruPhp,
             'verbose' => $this->verbose,
-            'coverage-test-limit' => $this->coverageTestLimit
+            'coverage-test-limit' => $this->coverageTestLimit,
         ]);
         if ($configuration = $this->getConfigurationPath($filtered)) {
             $filtered['configuration'] = new Configuration($configuration);
@@ -340,10 +348,8 @@ class Options
      * configuration path.
      *
      * @param array $filtered
-     *
-     * @return string|null
      */
-    protected function getConfigurationPath(array $filtered)
+    protected function getConfigurationPath(array $filtered): ?string
     {
         if (isset($filtered['configuration'])) {
             return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
@@ -358,21 +364,19 @@ class Options
      *
      * @param string $path    The path to search into
      * @param string $default The default value to give back
-     *
-     * @return string|null
      */
-    private function getDefaultConfigurationForPath(string $path = '.', string $default = null)
+    private function getDefaultConfigurationForPath(string $path = '.', ?string $default = null): ?string
     {
         if ($this->isFile($path)) {
-            return \realpath($path);
+            return realpath($path);
         }
 
-        $path = \rtrim($path, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR;
+        $path     = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
             if ($this->isFile($path . $suffix)) {
-                return \realpath($path . $suffix);
+                return realpath($path . $suffix);
             }
         }
 
@@ -383,24 +387,21 @@ class Options
      * Load options that are represented by annotations
      * inside of tests i.e @group group1 = --group group1.
      */
-    protected function initAnnotations()
+    protected function initAnnotations(): void
     {
         $annotatedOptions = ['group'];
         foreach ($this->filtered as $key => $value) {
-            if (\in_array($key, $annotatedOptions, true)) {
-                $this->annotations[$key] = $value;
+            if (! in_array($key, $annotatedOptions, true)) {
+                continue;
             }
+
+            $this->annotations[$key] = $value;
         }
     }
 
-    /**
-     * @param string $file
-     *
-     * @return bool
-     */
     private function isFile(string $file): bool
     {
-        return \file_exists($file) && !\is_dir($file);
+        return file_exists($file) && ! is_dir($file);
     }
 
     /**
@@ -413,38 +414,37 @@ class Options
     public static function getNumberOfCPUCores(): int
     {
         $cores = 2;
-        if (\is_file('/proc/cpuinfo')) {
+        if (is_file('/proc/cpuinfo')) {
             // Linux (and potentially Windows with linux sub systems)
-            $cpuinfo = \file_get_contents('/proc/cpuinfo');
-            \preg_match_all('/^processor/m', $cpuinfo, $matches);
-            $cores = \count($matches[0]);
-        } elseif (\DIRECTORY_SEPARATOR === '\\') {
+            $cpuinfo = file_get_contents('/proc/cpuinfo');
+            preg_match_all('/^processor/m', $cpuinfo, $matches);
+            $cores = count($matches[0]);
+        } elseif (DIRECTORY_SEPARATOR === '\\') {
             // Windows
-            if (($process = @\popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
-                \fgets($process);
-                $cores = (int) \fgets($process);
-                \pclose($process);
+            if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
+                fgets($process);
+                $cores = (int) fgets($process);
+                pclose($process);
             }
-        } elseif (($process = @\popen('sysctl -n hw.ncpu', 'rb')) !== false) {
+        } elseif (($process = @popen('sysctl -n hw.ncpu', 'rb')) !== false) {
             // *nix (Linux, BSD and Mac)
-            $cores = (int) \fgets($process);
-            \pclose($process);
+            $cores = (int) fgets($process);
+            pclose($process);
         }
 
         return $cores;
     }
 
     /**
-     * @param string|null $param
      * @return string[]|null
      */
     private function parsePassthru(?string $param): ?array
     {
-        if (null === $param) {
+        if ($param === null) {
             return null;
         }
 
-        $stringToArgumentProcess = \Symfony\Component\Process\Process::fromShellCommandline(
+        $stringToArgumentProcess = Process::fromShellCommandline(
             sprintf('%s -r "echo serialize(\\$argv);" -- %s', PHP_BINARY, $param)
         );
         $stringToArgumentProcess->mustRun();
@@ -452,7 +452,7 @@ class Options
         $passthruAsArguments = unserialize($stringToArgumentProcess->getOutput());
         array_shift($passthruAsArguments);
 
-        if (0 === count($passthruAsArguments)) {
+        if (count($passthruAsArguments) === 0) {
             return null;
         }
 

@@ -9,7 +9,7 @@ namespace ParaTest\Tests\Functional;
  */
 class PHPUnitWarningsTest extends FunctionalTestBase
 {
-    public function testTestsWithWarningsResultInFailure()
+    public function testTestsWithWarningsResultInFailure(): void
     {
         $proc = $this->invokeParatest(
             'warning-tests/HasWarningsTest.php',

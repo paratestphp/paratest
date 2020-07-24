@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
+use function file_put_contents;
+use function is_dir;
+use function mkdir;
+use function uniqid;
+
 class TestGenerator
 {
     public $path;
@@ -11,15 +16,17 @@ class TestGenerator
 
     public function __construct()
     {
-        $this->path = 'generated-tests' . DS . uniqid();
+        $this->path     = 'generated-tests' . DS . uniqid();
         $this->fullPath = FIXTURES . DS . $this->path;
 
-        if (!is_dir($this->fullPath)) {
-            mkdir($this->fullPath, 0777, true);
+        if (is_dir($this->fullPath)) {
+            return;
         }
+
+        mkdir($this->fullPath, 0777, true);
     }
 
-    public function generate($tests = 1, $methods = 1)
+    public function generate($tests = 1, $methods = 1): void
     {
         for ($i = 0; $i < $tests; ++$i) {
             $name = "Generated{$i}Test";

@@ -7,24 +7,25 @@ namespace ParaTest\Tests\Unit\Console\Commands;
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Console\Testers\Tester;
+use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ParaTestCommandTest extends \ParaTest\Tests\TestBase
+class ParaTestCommandTest extends TestBase
 {
     protected $tester;
     protected $command;
 
     public function setUp(): void
     {
-        $this->tester = new PHPUnit();
+        $this->tester  = new PHPUnit();
         $this->command = new ParaTestCommand($this->tester);
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $this->assertEquals('paratest', $this->command->getName());
         $this->assertSame($this->tester, $this->getObjectValue($this->command, 'tester'));
@@ -34,9 +35,9 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
      * Should be configured from the ParaTest command
      * as well as the Tester it is composed of.
      */
-    public function testConfiguredDefinitionWithPHPUnitTester()
+    public function testConfiguredDefinitionWithPHPUnitTester(): void
     {
-        $options = [
+        $options    = [
             new InputOption(
                 'processes',
                 'p',
@@ -192,14 +193,14 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
                 'Directory to add to the coverage whitelist.'
             ),
         ];
-        $expected = new InputDefinition($options);
+        $expected   = new InputDefinition($options);
         $definition = $this->command->getDefinition();
         $this->assertEquals($expected, $definition);
     }
 
-    public function testExecuteInvokesTestersExecuteMethod()
+    public function testExecuteInvokesTestersExecuteMethod(): void
     {
-        $input = $this->getMockBuilder(InputInterface::class)->getMock();
+        $input  = $this->getMockBuilder(InputInterface::class)->getMock();
         $output = $this->getMockBuilder(OutputInterface::class)->getMock();
         $tester = $this->getMockBuilder(Tester::class)->getMock();
         $tester
@@ -208,8 +209,7 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
             ->with(
                 $this->equalTo($input),
                 $this->equalTo($output)
-            )
-        ;
+            );
         $command = new ParaTestCommand($tester);
         $command->execute($input, $output);
     }

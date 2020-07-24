@@ -6,9 +6,7 @@ namespace ParaTest\Parser;
 
 class ParsedFunction extends ParsedObject
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $visibility;
 
     public function __construct(string $doc, string $visibility, string $name)
@@ -20,8 +18,6 @@ class ParsedFunction extends ParsedObject
     /**
      * Returns the accessibility level of the parsed
      * method - i.e public, private, protected.
-     *
-     * @return string
      */
     public function getVisibility(): string
     {

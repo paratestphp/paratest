@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Coverage;
 
 use ParaTest\Coverage\CoverageMerger;
+use ParaTest\Tests\TestBase;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Filter;
 
-class CoverageMergerTest extends \ParaTest\Tests\TestBase
+use function assert;
+
+class CoverageMergerTest extends TestBase
 {
     protected function setUp(): void
     {
@@ -20,15 +23,15 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
      *
      * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
      */
-    public function testSimpleMerge()
+    public function testSimpleMerge(): void
     {
-        $firstFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
+        $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
         $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine = 40;
-        $secondFileFirstLine = 48;
+        $firstFileFirstLine  = 46;
+        $secondFileFirstLine = 47;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -52,8 +55,8 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
         $this->call($merger, 'addCoverage', $coverage1);
         $this->call($merger, 'addCoverage', $coverage2);
 
-        /** @var CodeCoverage $coverage */
         $coverage = $this->getObjectValue($merger, 'coverage');
+        assert($coverage instanceof CodeCoverage);
 
         $this->assertInstanceOf(CodeCoverage::class, $coverage);
 
@@ -72,15 +75,15 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
      *
      * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
      */
-    public function testSimpleMergeLimited()
+    public function testSimpleMergeLimited(): void
     {
-        $firstFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
+        $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
         $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine = 40;
-        $secondFileFirstLine = 48;
+        $firstFileFirstLine  = 46;
+        $secondFileFirstLine = 47;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -104,8 +107,8 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
         $this->call($merger, 'addCoverage', $coverage1);
         $this->call($merger, 'addCoverage', $coverage2);
 
-        /** @var CodeCoverage $coverage */
         $coverage = $this->getObjectValue($merger, 'coverage');
+        assert($coverage instanceof CodeCoverage);
 
         $this->assertInstanceOf(CodeCoverage::class, $coverage);
         $data = $coverage->getData();

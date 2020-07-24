@@ -8,12 +8,15 @@ use Exception;
 use PHPUnit;
 use Symfony\Component\Process\Process;
 
+use function extension_loaded;
+use function file_exists;
+
 class FunctionalTestBase extends PHPUnit\Framework\TestCase
 {
     protected function fixture($fixture)
     {
         $fixture = FIXTURES . DS . $fixture;
-        if (!file_exists($fixture)) {
+        if (! file_exists($fixture)) {
             throw new Exception("Fixture $fixture not found");
         }
 
@@ -27,7 +30,7 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
         return $invoker->execute($options, $callback);
     }
 
-    protected function assertTestsPassed(Process $proc, $testPattern = '\d+', $assertionPattern = '\d+')
+    protected function assertTestsPassed(Process $proc, $testPattern = '\d+', $assertionPattern = '\d+'): void
     {
         $this->assertMatchesRegularExpression(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
@@ -39,11 +42,13 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
     /**
      * Checks if the sqlite extension is loaded and skips the test if not.
      */
-    protected function guardSqliteExtensionLoaded()
+    protected function guardSqliteExtensionLoaded(): void
     {
         $sqliteExtension = 'pdo_sqlite';
-        if (!extension_loaded($sqliteExtension)) {
-            $this->markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
+        if (extension_loaded($sqliteExtension)) {
+            return;
         }
+
+        $this->markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
     }
 }

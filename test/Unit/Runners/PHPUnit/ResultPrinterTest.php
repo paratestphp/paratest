@@ -6,35 +6,38 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Parser\ParsedFunction;
-use ParaTest\Tests\Unit\ResultTester;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\TestMethod;
+use ParaTest\Tests\Unit\ResultTester;
+
+use function defined;
+use function file_exists;
+use function file_put_contents;
+use function ob_end_clean;
+use function ob_get_clean;
+use function ob_start;
+use function sprintf;
+use function unlink;
 
 class ResultPrinterTest extends ResultTester
 {
-    /**
-     * @var ResultPrinter
-     */
+    /** @var ResultPrinter */
     protected $printer;
 
-    /**
-     * @var LogInterpreter
-     */
+    /** @var LogInterpreter */
     protected $interpreter;
 
-    /**
-     * @var Suite
-     */
+    /** @var Suite */
     protected $passingSuiteWithWrongTestCountEstimation;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->interpreter = new LogInterpreter();
-        $this->printer = new ResultPrinter($this->interpreter);
-        $pathToConfig = $this->getPathToConfig();
+        $this->printer     = new ResultPrinter($this->interpreter);
+        $pathToConfig      = $this->getPathToConfig();
         if (file_exists($pathToConfig)) {
             unlink($pathToConfig);
         }
@@ -42,15 +45,12 @@ class ResultPrinterTest extends ResultTester
         $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);
     }
 
-    /**
-     * @return string
-     */
-    protected function getPathToConfig()
+    protected function getPathToConfig(): string
     {
         return __DIR__ . DS . 'myconfig.xml';
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $this->assertEquals([], $this->getObjectValue($this->printer, 'suites'));
         $this->assertInstanceOf(
@@ -59,7 +59,7 @@ class ResultPrinterTest extends ResultTester
         );
     }
 
-    public function testAddTestShouldAddTest()
+    public function testAddTestShouldAddTest(): void
     {
         $suite = new Suite('/path/to/ResultSuite.php', []);
 
@@ -68,7 +68,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals([$suite], $this->getObjectValue($this->printer, 'suites'));
     }
 
-    public function testAddTestReturnsSelf()
+    public function testAddTestReturnsSelf(): void
     {
         $suite = new Suite('/path/to/ResultSuite.php', []);
 
@@ -77,9 +77,9 @@ class ResultPrinterTest extends ResultTester
         $this->assertSame($this->printer, $self);
     }
 
-    public function testStartPrintsOptionInfo()
+    public function testStartPrintsOptionInfo(): void
     {
-        $options = new Options();
+        $options  = new Options();
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\n",
@@ -89,12 +89,13 @@ class ResultPrinterTest extends ResultTester
         $this->assertStringStartsWith($expected, $contents);
     }
 
-    public function testStartSetsWidthAndMaxColumn()
+    public function testStartSetsWidthAndMaxColumn(): void
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
             $funcs[] = new ParsedFunction('doc', 'public', 'function' . $i);
         }
+
         $suite = new Suite('/path', $funcs);
         $this->printer->addTest($suite);
         $this->getStartOutput(new Options());
@@ -104,15 +105,16 @@ class ResultPrinterTest extends ResultTester
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $maxExpectedColumun -= 1;
         }
+
         $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
         $this->assertEquals($maxExpectedColumun, $maxColumn);
     }
 
-    public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent()
+    public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void
     {
         $pathToConfig = $this->getPathToConfig();
         file_put_contents($pathToConfig, '<root />');
-        $options = new Options(['configuration' => $pathToConfig]);
+        $options  = new Options(['configuration' => $pathToConfig]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
@@ -123,9 +125,9 @@ class ResultPrinterTest extends ResultTester
         $this->assertStringStartsWith($expected, $contents);
     }
 
-    public function testStartPrintsOptionInfoWithFunctionalMode()
+    public function testStartPrintsOptionInfoWithFunctionalMode(): void
     {
-        $options = new Options(['functional' => true]);
+        $options  = new Options(['functional' => true]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
@@ -135,15 +137,15 @@ class ResultPrinterTest extends ResultTester
         $this->assertStringStartsWith($expected, $contents);
     }
 
-    public function testStartPrintsOptionInfoWithSingularForOneProcess()
+    public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
     {
-        $options = new Options(['processes' => 1]);
+        $options  = new Options(['processes' => 1]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
         $this->assertStringStartsWith($expected, $contents);
     }
 
-    public function testAddSuiteAddsFunctionCountToTotalTestCases()
+    public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
             new ParsedFunction('doc', 'public', 'funcOne'),
@@ -153,14 +155,14 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals(2, $this->printer->getTotalCases());
     }
 
-    public function testAddTestMethodIncrementsCountByOne()
+    public function testAddTestMethodIncrementsCountByOne(): void
     {
         $method = new TestMethod('/path', ['testThisMethod']);
         $this->printer->addTest($method);
         $this->assertEquals(1, $this->printer->getTotalCases());
     }
 
-    public function testGetHeader()
+    public function testGetHeader(): void
     {
         $this->printer->addTest($this->errorSuite)
             ->addTest($this->failureSuite);
@@ -177,7 +179,7 @@ class ResultPrinterTest extends ResultTester
         );
     }
 
-    public function testGetErrorsSingleError()
+    public function testGetErrorsSingleError(): void
     {
         $this->printer->addTest($this->errorSuite)
             ->addTest($this->failureSuite);
@@ -186,7 +188,7 @@ class ResultPrinterTest extends ResultTester
 
         $errors = $this->printer->getErrors();
 
-        $eq = "There was 1 error:\n\n";
+        $eq  = "There was 1 error:\n\n";
         $eq .= "1) UnitTestWithErrorTest::testTruth\n";
         $eq .= "Exception: Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
@@ -194,7 +196,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals($eq, $errors);
     }
 
-    public function testGetErrorsMultipleErrors()
+    public function testGetErrorsMultipleErrors(): void
     {
         $this->printer->addTest($this->errorSuite)
             ->addTest($this->otherErrorSuite);
@@ -203,7 +205,7 @@ class ResultPrinterTest extends ResultTester
 
         $errors = $this->printer->getErrors();
 
-        $eq = "There were 2 errors:\n\n";
+        $eq  = "There were 2 errors:\n\n";
         $eq .= "1) UnitTestWithErrorTest::testTruth\n";
         $eq .= "Exception: Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
@@ -214,7 +216,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals($eq, $errors);
     }
 
-    public function testGetFailures()
+    public function testGetFailures(): void
     {
         $this->printer->addTest($this->mixedSuite);
 
@@ -222,7 +224,7 @@ class ResultPrinterTest extends ResultTester
 
         $failures = $this->printer->getFailures();
 
-        $eq = "There were 2 failures:\n\n";
+        $eq  = "There were 2 failures:\n\n";
         $eq .= "1) UnitTestWithClassAnnotationTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20\n";
@@ -233,7 +235,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals($eq, $failures);
     }
 
-    public function testGetFooterWithFailures()
+    public function testGetFooterWithFailures(): void
     {
         $this->printer->addTest($this->errorSuite)
             ->addTest($this->mixedSuite);
@@ -242,13 +244,13 @@ class ResultPrinterTest extends ResultTester
 
         $footer = $this->printer->getFooter();
 
-        $eq = "\nFAILURES!\n";
+        $eq  = "\nFAILURES!\n";
         $eq .= "Tests: 8, Assertions: 6, Failures: 2, Errors: 2.\n";
 
         $this->assertEquals($eq, $footer);
     }
 
-    public function testGetFooterWithSuccess()
+    public function testGetFooterWithSuccess(): void
     {
         $this->printer->addTest($this->passingSuite);
 
@@ -261,7 +263,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals($eq, $footer);
     }
 
-    public function testPrintFeedbackForMixed()
+    public function testPrintFeedbackForMixed(): void
     {
         $this->printer->addTest($this->mixedSuite);
         ob_start();
@@ -270,7 +272,7 @@ class ResultPrinterTest extends ResultTester
         $this->assertEquals('.F.E.F.', $contents);
     }
 
-    public function testPrintFeedbackForMoreThan100Suites()
+    public function testPrintFeedbackForMoreThan100Suites(): void
     {
         //add tests
         for ($i = 0; $i < 40; ++$i) {
@@ -287,12 +289,13 @@ class ResultPrinterTest extends ResultTester
         for ($i = 0; $i < 40; ++$i) {
             $this->printer->printFeedback($this->passingSuite);
         }
+
         $feedback = ob_get_clean();
-        
-        $firstRowColumns = 63;
+
+        $firstRowColumns  = 63;
         $secondRowColumns = 57;
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $firstRowColumns -= 1;
+            $firstRowColumns  -= 1;
             $secondRowColumns += 1;
         }
 
@@ -301,14 +304,16 @@ class ResultPrinterTest extends ResultTester
         for ($i = 0; $i < $firstRowColumns; ++$i) {
             $expected .= '.';
         }
+
         $expected .= sprintf("  %s / 120 ( %s%%)\n", $firstRowColumns, (int) ($firstRowColumns / 120 * 100));
         for ($i = 0; $i < $secondRowColumns; ++$i) {
             $expected .= '.';
         }
+
         $this->assertEquals($expected, $feedback);
     }
 
-    public function testResultPrinterAdjustsTotalCountForDataProviders()
+    public function testResultPrinterAdjustsTotalCountForDataProviders(): void
     {
         //add tests
         for ($i = 0; $i < 22; ++$i) {
@@ -325,12 +330,13 @@ class ResultPrinterTest extends ResultTester
         for ($i = 0; $i < 22; ++$i) {
             $this->printer->printFeedback($this->passingSuiteWithWrongTestCountEstimation);
         }
+
         $feedback = ob_get_clean();
 
-        $firstRowColumns = 65;
+        $firstRowColumns  = 65;
         $secondRowColumns = 1;
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $firstRowColumns -= 1;
+            $firstRowColumns  -= 1;
             $secondRowColumns += 1;
         }
 
@@ -339,10 +345,12 @@ class ResultPrinterTest extends ResultTester
         for ($i = 0; $i < $firstRowColumns; ++$i) {
             $expected .= '.';
         }
+
         $expected .= sprintf(" %s / 66 ( %s%%)\n", $firstRowColumns, (int) ($firstRowColumns / 66 * 100));
         for ($i = 0; $i < $secondRowColumns; ++$i) {
             $expected .= '.';
         }
+
         $this->assertEquals($expected, $feedback);
     }
 
@@ -350,18 +358,18 @@ class ResultPrinterTest extends ResultTester
     {
         ob_start();
         $this->printer->start($options);
-        $contents = ob_get_clean();
 
-        return $contents;
+        return ob_get_clean();
     }
 
-    private function prepareReaders()
+    private function prepareReaders(): void
     {
         $suites = $this->getObjectValue($this->printer, 'suites');
         ob_start();
         foreach ($suites as $suite) {
             $this->printer->printFeedback($suite);
         }
+
         ob_end_clean();
     }
 }

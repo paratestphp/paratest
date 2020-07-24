@@ -4,13 +4,21 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use InvalidArgumentException;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
+use RuntimeException;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
 
+use function count;
+use function floor;
+use function printf;
+use function sprintf;
+use function strlen;
+
+use const DIRECTORY_SEPARATOR;
+
 /**
- * Class ResultPrinter.
- *
  * Used for outputting ParaTest results
  */
 class ResultPrinter
@@ -22,9 +30,7 @@ class ResultPrinter
      */
     protected $suites = [];
 
-    /**
-     * @var \ParaTest\Logging\LogInterpreter
-     */
+    /** @var LogInterpreter */
     protected $results;
 
     /**
@@ -107,14 +113,12 @@ class ResultPrinter
     /**
      * Adds an ExecutableTest to the tracked results.
      *
-     * @param ExecutableTest $suite
-     *
      * @return $this
      */
     public function addTest(ExecutableTest $suite): self
     {
-        $this->suites[] = $suite;
-        $increment = $suite->getTestCount();
+        $this->suites[]    = $suite;
+        $increment         = $suite->getTestCount();
         $this->totalCases += $increment;
 
         return $this;
@@ -123,16 +127,14 @@ class ResultPrinter
     /**
      * Initializes printing constraints, prints header
      * information and starts the test timer.
-     *
-     * @param Options $options
      */
-    public function start(Options $options)
+    public function start(Options $options): void
     {
-        $this->numTestsWidth = \strlen((string) $this->totalCases);
-        $this->maxColumn = $this->numberOfColumns
-                         + (\DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
-                         - \strlen($this->getProgress());
-        \printf(
+        $this->numTestsWidth = strlen((string) $this->totalCases);
+        $this->maxColumn     = $this->numberOfColumns
+                         + (DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
+                         - strlen($this->getProgress());
+        printf(
             "\nRunning phpunit in %d process%s with %s%s\n\n",
             $options->processes,
             $options->processes > 1 ? 'es' : '',
@@ -140,16 +142,14 @@ class ResultPrinter
             $options->functional ? '. Functional mode is ON.' : ''
         );
         if (isset($options->filtered['configuration'])) {
-            \printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
+            printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
         }
-        $this->colors = $options->colors;
+
+        $this->colors         = $options->colors;
         $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($options);
     }
 
-    /**
-     * @param string $string
-     */
-    public function println(string $string = '')
+    public function println(string $string = ''): void
     {
         $this->column = 0;
         echo "$string\n";
@@ -159,7 +159,7 @@ class ResultPrinter
      * Prints all results and removes any log files
      * used for aggregating results.
      */
-    public function flush()
+    public function flush(): void
     {
         $this->printResults();
         $this->clearLogs();
@@ -168,7 +168,7 @@ class ResultPrinter
     /**
      * Print final results.
      */
-    public function printResults()
+    public function printResults(): void
     {
         echo $this->getHeader();
         echo $this->getErrors();
@@ -180,15 +180,13 @@ class ResultPrinter
     /**
      * Prints the individual "quick" feedback for run
      * tests, that is the ".EF" items.
-     *
-     * @param ExecutableTest $test
      */
-    public function printFeedback(ExecutableTest $test)
+    public function printFeedback(ExecutableTest $test): void
     {
         try {
             $reader = new Reader($test->getTempFile());
-        } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException(\sprintf(
+        } catch (InvalidArgumentException $e) {
+            throw new RuntimeException(sprintf(
                 "%s\n" .
                 "The process: %s\n" .
                 "This means a PHPUnit process was unable to run \"%s\"\n",
@@ -197,14 +195,13 @@ class ResultPrinter
                 $test->getPath()
             ));
         }
+
         $this->results->addReader($reader);
         $this->processReaderFeedback($reader, $test->getTestCount());
     }
 
     /**
      * Returns the header containing resource usage.
-     *
-     * @return string
      */
     public function getHeader(): string
     {
@@ -225,19 +222,15 @@ class ResultPrinter
 
     /**
      * Whether the test run is successful and has no warnings.
-     *
-     * @return bool
      */
     public function isSuccessful(): bool
     {
-        return $this->results->isSuccessful() && \count($this->warnings) === 0;
+        return $this->results->isSuccessful() && count($this->warnings) === 0;
     }
 
     /**
      * Return the footer information reporting success
      * or failure.
-     *
-     * @return string
      */
     public function getFooter(): string
     {
@@ -248,8 +241,6 @@ class ResultPrinter
 
     /**
      * Returns the failure messages.
-     *
-     * @return string
      */
     public function getFailures(): string
     {
@@ -260,8 +251,6 @@ class ResultPrinter
 
     /**
      * Returns error messages.
-     *
-     * @return string
      */
     public function getErrors(): string
     {
@@ -272,8 +261,6 @@ class ResultPrinter
 
     /**
      * Returns the total cases being printed.
-     *
-     * @return int
      */
     public function getTotalCases(): int
     {
@@ -282,28 +269,29 @@ class ResultPrinter
 
     /**
      * Process reader feedback and print it.
-     *
-     * @param Reader $reader
-     * @param int    $expectedTestCount
      */
-    protected function processReaderFeedback(Reader $reader, int $expectedTestCount)
+    protected function processReaderFeedback(Reader $reader, int $expectedTestCount): void
     {
         $feedbackItems = $reader->getFeedback();
 
-        $actualTestCount = \count($feedbackItems);
+        $actualTestCount = count($feedbackItems);
 
         $this->processTestOverhead($actualTestCount, $expectedTestCount);
 
         foreach ($feedbackItems as $item) {
             $this->printFeedbackItem($item);
-            if ($item === 'S') {
-                ++$this->totalSkippedOrIncomplete;
+            if ($item !== 'S') {
+                continue;
             }
+
+            ++$this->totalSkippedOrIncomplete;
         }
 
-        if ($this->processSkipped) {
-            $this->printSkippedAndIncomplete($actualTestCount, $expectedTestCount);
+        if (! $this->processSkipped) {
+            return;
         }
+
+        $this->printSkippedAndIncomplete($actualTestCount, $expectedTestCount);
     }
 
     /**
@@ -311,10 +299,6 @@ class ResultPrinter
      *
      * @todo Skipped/Incomplete test tracking available only in functional mode for now
      *       or in regular mode but without group/exclude-group filters.
-     *
-     * @param Options $options
-     *
-     * @return bool
      */
     protected function isSkippedIncompleTestCanBeTracked(Options $options): bool
     {
@@ -329,11 +313,8 @@ class ResultPrinter
      * this method correct total amount of tests so paratest progress will be auto corrected.
      *
      * @todo May be we need to throw Exception here instead of silent correction.
-     *
-     * @param int $actualTestCount
-     * @param int $expectedTestCount
      */
-    protected function processTestOverhead(int $actualTestCount, int $expectedTestCount)
+    protected function processTestOverhead(int $actualTestCount, int $expectedTestCount): void
     {
         $overhead = $actualTestCount - $expectedTestCount;
         if ($this->processSkipped) {
@@ -352,17 +333,16 @@ class ResultPrinter
      *
      * If for some reason process return less tests than expected then we threat all remaining
      * as skipped or incomplete and print them as skipped (S letter)
-     *
-     * @param int $actualTestCount
-     * @param int $expectedTestCount
      */
-    protected function printSkippedAndIncomplete(int $actualTestCount, int $expectedTestCount)
+    protected function printSkippedAndIncomplete(int $actualTestCount, int $expectedTestCount): void
     {
         $overhead = $expectedTestCount - $actualTestCount;
-        if ($overhead > 0) {
-            for ($i = 0; $i < $overhead; ++$i) {
-                $this->printFeedbackItem('S');
-            }
+        if ($overhead <= 0) {
+            return;
+        }
+
+        for ($i = 0; $i < $overhead; ++$i) {
+            $this->printFeedbackItem('S');
         }
     }
 
@@ -370,44 +350,52 @@ class ResultPrinter
      * Prints a single "quick" feedback item and increments
      * the total number of processed cases and the column
      * position.
-     *
-     * @param string $item
      */
-    protected function printFeedbackItem(string $item)
+    protected function printFeedbackItem(string $item): void
     {
         $this->printFeedbackItemColor($item);
         ++$this->column;
         ++$this->casesProcessed;
-        if ($this->column === $this->maxColumn) {
-            echo $this->getProgress();
-            $this->println();
+        if ($this->column !== $this->maxColumn) {
+            return;
         }
+
+        echo $this->getProgress();
+        $this->println();
     }
 
-    protected function printFeedbackItemColor(string $item)
+    protected function printFeedbackItemColor(string $item): void
     {
         if ($this->colors) {
             switch ($item) {
                 case 'E':
                     // fg-red
                     echo "\x1b[31m" . $item . "\x1b[0m";
+
                     return;
+
                 case 'F':
                     // bg-red
                     echo "\x1b[41m" . $item . "\x1b[0m";
+
                     return;
+
                 case 'W':
                 case 'I':
                 case 'R':
                     // fg-yellow
                     echo "\x1b[33m" . $item . "\x1b[0m";
+
                     return;
+
                 case 'S':
                     // fg-cyan
                     echo "\x1b[36m" . $item . "\x1b[0m";
+
                     return;
             }
         }
+
         echo $item;
     }
 
@@ -416,26 +404,24 @@ class ResultPrinter
      * for a collection of errors or failures.
      *
      * @param array $defects
-     * @param string $type
-     *
-     * @return string
      */
     protected function getDefects(array $defects, string $type): string
     {
-        $count = \count($defects);
+        $count = count($defects);
         if ($count === 0) {
             return '';
         }
-        $output = \sprintf(
+
+        $output = sprintf(
             "There %s %d %s%s:\n",
-            ($count === 1) ? 'was' : 'were',
+            $count === 1 ? 'was' : 'were',
             $count,
             $type,
-            ($count === 1) ? '' : 's'
+            $count === 1 ? '' : 's'
         );
 
-        for ($i = 1; $i <= \count($defects); ++$i) {
-            $output .= \sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
+        for ($i = 1; $i <= count($defects); ++$i) {
+            $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
         }
 
         return $output;
@@ -446,26 +432,24 @@ class ResultPrinter
      */
     protected function getProgress(): string
     {
-        return \sprintf(
+        return sprintf(
             ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
             $this->casesProcessed,
             $this->totalCases,
-            \floor(($this->totalCases ? $this->casesProcessed / $this->totalCases : 0) * 100)
+            floor(($this->totalCases ? $this->casesProcessed / $this->totalCases : 0) * 100)
         );
     }
 
     /**
      * Get the footer for a test collection that had tests with
      * failures or errors.
-     *
-     * @return string
      */
     private function getFailedFooter(): string
     {
         $formatString = "FAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
 
         return "\n" . $this->red(
-            \sprintf(
+            sprintf(
                 $formatString,
                 $this->results->getTotalTests(),
                 $this->results->getTotalAssertions(),
@@ -478,18 +462,16 @@ class ResultPrinter
     /**
      * Get the footer for a test collection containing all successful
      * tests.
-     *
-     * @return string
      */
     private function getSuccessFooter(): string
     {
-        $tests = $this->totalCases;
+        $tests   = $this->totalCases;
         $asserts = $this->results->getTotalAssertions();
 
         if ($this->totalSkippedOrIncomplete > 0) {
             // phpunit 4.5 produce NOT plural version for test(s) and assertion(s) in that case
             // also it shows result in standard color scheme
-            return \sprintf(
+            return sprintf(
                 "OK, but incomplete, skipped, or risky tests!\n"
                 . "Tests: %d, Assertions: %d, Incomplete: %d.\n",
                 $tests,
@@ -500,12 +482,12 @@ class ResultPrinter
 
         // phpunit 4.5 produce plural version for test(s) and assertion(s) in that case
         // also it shows result as black text on green background
-        return $this->green(\sprintf(
+        return $this->green(sprintf(
             "OK (%d test%s, %d assertion%s)\n",
             $tests,
-            ($tests === 1) ? '' : 's',
+            $tests === 1 ? '' : 's',
             $asserts,
-            ($asserts === 1) ? '' : 's'
+            $asserts === 1 ? '' : 's'
         ));
     }
 
@@ -535,7 +517,7 @@ class ResultPrinter
      * Deletes all the temporary log files for ExecutableTest objects
      * being printed.
      */
-    private function clearLogs()
+    private function clearLogs(): void
     {
         foreach ($this->suites as $suite) {
             $suite->deleteFile();

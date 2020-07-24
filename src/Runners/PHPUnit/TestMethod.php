@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use function array_reduce;
+use function count;
+use function implode;
+use function preg_quote;
+use function strpos;
+
 /**
- * Class TestMethod.
- *
  * Represents a set of tests grouped in batch which can be passed to a single phpunit process.
  * Batch limited to run tests only from one php test case file.
  * Used for running ParaTest in functional mode.
@@ -30,8 +34,6 @@ class TestMethod extends ExecutableTest
     protected $filters;
 
     /**
-     * Constructor.
-     *
      * Passed filters must be unescaped and must represent test name, optionally including
      * dataset name (numeric or named).
      *
@@ -60,12 +62,10 @@ class TestMethod extends ExecutableTest
      * Returns the test method's name.
      *
      * This method will join all filters via pipe character and return as string.
-     *
-     * @return string
      */
     public function getName(): string
     {
-        return \implode('|', $this->filters);
+        return implode('|', $this->filters);
     }
 
     /**
@@ -80,10 +80,10 @@ class TestMethod extends ExecutableTest
      */
     protected function prepareOptions(array $options): array
     {
-        $re = \array_reduce($this->filters, function ($r, $v) {
-            $isDataSet = \strpos($v, ' with data set ') !== false;
+        $re                = array_reduce($this->filters, static function ($r, $v) {
+            $isDataSet = strpos($v, ' with data set ') !== false;
 
-            return ($r ? $r . '|' : '') . \preg_quote($v, '/') . ($isDataSet ? '$' : "(?:\s|\$)");
+            return ($r ? $r . '|' : '') . preg_quote($v, '/') . ($isDataSet ? '$' : '(?:\s|$)');
         });
         $options['filter'] = '/' . $re . '/';
 
@@ -92,11 +92,9 @@ class TestMethod extends ExecutableTest
 
     /**
      * Get the expected count of tests to be executed.
-     *
-     * @return int
      */
     public function getTestCount(): int
     {
-        return \count($this->filters);
+        return count($this->filters);
     }
 }

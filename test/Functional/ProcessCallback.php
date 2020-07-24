@@ -9,9 +9,9 @@ class ProcessCallback
     protected $type;
     protected $buffer;
 
-    public function callback($type, $buffer)
+    public function callback($type, $buffer): void
     {
-        $this->type = $type;
+        $this->type   = $type;
         $this->buffer = $buffer;
     }
 

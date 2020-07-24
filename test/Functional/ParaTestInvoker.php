@@ -7,6 +7,14 @@ namespace ParaTest\Tests\Functional;
 use Habitat\Habitat;
 use Symfony\Component\Process\Process;
 
+use function defined;
+use function is_callable;
+use function is_numeric;
+use function sprintf;
+use function strlen;
+
+use const PHP_BINARY;
+
 class ParaTestInvoker
 {
     public $path;
@@ -14,7 +22,7 @@ class ParaTestInvoker
 
     public function __construct($path, $bootstrap)
     {
-        $this->path = $path;
+        $this->path      = $path;
         $this->bootstrap = $bootstrap;
     }
 
@@ -22,17 +30,14 @@ class ParaTestInvoker
      * Runs the command, returns the proc after it's done.
      *
      * @param array $options
-     * @param callable $callback
-     *
-     * @return Process
      */
-    public function execute($options = [], $callback = null)
+    public function execute(array $options = [], ?callable $callback = null): Process
     {
-        $cmd = $this->buildCommand($options);
-        $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
+        $cmd  = $this->buildCommand($options);
+        $env  = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
         $proc = Process::fromShellCommandline($cmd, null, $env, null, $timeout = 600);
 
-        if (!is_callable($callback)) {
+        if (! is_callable($callback)) {
             $proc->run();
         } else {
             $proc->run($callback);
@@ -53,15 +58,18 @@ class ParaTestInvoker
         foreach ($options as $switch => $value) {
             if (is_numeric($switch)) {
                 $switch = $value;
-                $value = null;
+                $value  = null;
             }
+
             if (strlen($switch) > 1) {
                 $switch = '--' . $switch;
             } else {
                 $switch = '-' . $switch;
             }
+
             $cmd .= sprintf(' %s', $value ? $switch . ' ' . $value : $switch);
         }
+
         $cmd .= sprintf(' %s', $this->path);
 
         return $cmd;

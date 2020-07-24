@@ -4,7 +4,19 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use Exception;
 use Habitat\Habitat;
+use Throwable;
+
+use function array_filter;
+use function array_keys;
+use function array_shift;
+use function count;
+use function sprintf;
+use function uniqid;
+use function usleep;
+
+use const PHP_EOL;
 
 class Runner extends BaseRunner
 {
@@ -27,30 +39,33 @@ class Runner extends BaseRunner
     /**
      * The money maker. Runs all ExecutableTest objects in separate processes.
      */
-    public function run()
+    public function run(): void
     {
         parent::run();
 
-        while (\count($this->running) || \count($this->pending)) {
+        while (count($this->running) || count($this->pending)) {
             foreach ($this->running as $key => $test) {
                 try {
-                    if (!$this->testIsStillRunning($test)) {
+                    if (! $this->testIsStillRunning($test)) {
                         unset($this->running[$key]);
                         $this->releaseToken($key);
                     }
-                } catch (\Exception $e) {
+                } catch (Throwable $e) {
                     if ($this->options->verbose) {
                         echo "An error for $key: {$e->getMessage()}" . PHP_EOL;
                         echo "Command: {$test->getLastCommand()}" . PHP_EOL;
                         echo 'StdErr: ' . $test->getStderr() . PHP_EOL;
                         echo 'StdOut: ' . $test->getStdout() . PHP_EOL;
                     }
+
                     throw $e;
                 }
             }
+
             $this->fillRunQueue();
-            \usleep(10000);
+            usleep(10000);
         }
+
         $this->complete();
     }
 
@@ -60,7 +75,7 @@ class Runner extends BaseRunner
      * logs any results to JUnit, and cleans up temporary
      * files.
      */
-    private function complete()
+    private function complete(): void
     {
         $this->printer->printResults();
         $this->interpreter->rewind();
@@ -77,24 +92,28 @@ class Runner extends BaseRunner
      * and adds them to the running collection. It is also in charge of recycling and
      * acquiring available test tokens for use.
      */
-    private function fillRunQueue()
+    private function fillRunQueue(): void
     {
         $opts = $this->options;
-        while (\count($this->pending) && \count($this->running) < $opts->processes) {
+        while (count($this->pending) && count($this->running) < $opts->processes) {
             $tokenData = $this->getNextAvailableToken();
-            if ($tokenData !== false) {
-                $this->acquireToken($tokenData['token']);
-                $env = [
-                    'TEST_TOKEN' => $tokenData['token'],
-                    'UNIQUE_TEST_TOKEN' => $tokenData['unique']
-                ] + Habitat::getAll();
-                $this->running[$tokenData['token']] = \array_shift($this->pending)
-                    ->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
-                if ($opts->verbose) {
-                    $cmd = $this->running[$tokenData['token']];
-                    echo "\nExecuting test via: {$cmd->getLastCommand()}\n";
-                }
+            if ($tokenData === false) {
+                continue;
             }
+
+            $this->acquireToken($tokenData['token']);
+            $env                                = [
+                'TEST_TOKEN' => $tokenData['token'],
+                'UNIQUE_TEST_TOKEN' => $tokenData['unique'],
+            ] + Habitat::getAll();
+            $this->running[$tokenData['token']] = array_shift($this->pending)
+                ->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
+            if (! $opts->verbose) {
+                continue;
+            }
+
+            $cmd = $this->running[$tokenData['token']];
+            echo "\nExecuting test via: {$cmd->getLastCommand()}\n";
         }
     }
 
@@ -104,29 +123,29 @@ class Runner extends BaseRunner
      * throwing an exception if a fatal error has occurred -
      * prints feedback, and updates the overall exit code.
      *
-     * @param ExecutableTest $test
-     *
-     * @throws \Exception
-     *
-     * @return bool
+     * @throws Exception
      */
     private function testIsStillRunning(ExecutableTest $test): bool
     {
-        if (!$test->isDoneRunning()) {
+        if (! $test->isDoneRunning()) {
             return true;
         }
+
         $this->setExitCode($test);
         $test->stop();
         if ($this->options->stopOnFailure && $test->getExitCode() > 0) {
             $this->pending = [];
         }
-        if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode()) {
+
+        if ($test->getExitCode() === self::PHPUNIT_FATAL_ERROR) {
             $errorOutput = $test->getStderr();
-            if (!$errorOutput) {
+            if (! $errorOutput) {
                 $errorOutput = $test->getStdout();
             }
-            throw new \Exception(\sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
+
+            throw new Exception(sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
         }
+
         $this->printer->printFeedback($test);
         if ($this->hasCoverage()) {
             $this->addCoverage($test);
@@ -139,26 +158,26 @@ class Runner extends BaseRunner
      * If the provided test object has an exit code
      * higher than the currently set exit code, that exit
      * code will be set as the overall exit code.
-     *
-     * @param ExecutableTest $test
      */
-    private function setExitCode(ExecutableTest $test)
+    private function setExitCode(ExecutableTest $test): void
     {
         $exit = $test->getExitCode();
-        if ($exit > $this->exitcode) {
-            $this->exitcode = $exit;
+        if ($exit <= $this->exitcode) {
+            return;
         }
+
+        $this->exitcode = $exit;
     }
 
     /**
      * Initialize the available test tokens based
      * on how many processes ParaTest will be run in.
      */
-    protected function initTokens()
+    protected function initTokens(): void
     {
         $this->tokens = [];
         for ($i = 1; $i <= $this->options->processes; ++$i) {
-            $this->tokens[$i] = ['token' => $i, 'unique' => \uniqid(\sprintf('%s_', $i)), 'available' => true];
+            $this->tokens[$i] = ['token' => $i, 'unique' => uniqid(sprintf('%s_', $i)), 'available' => true];
         }
     }
 
@@ -181,36 +200,33 @@ class Runner extends BaseRunner
 
     /**
      * Flag a token as available for use.
-     *
-     * @param string $tokenIdentifier
      */
-    protected function releaseToken($tokenIdentifier)
+    protected function releaseToken(int $tokenIdentifier): void
     {
-        $filtered = \array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier) {
             return $val['token'] === $tokenIdentifier;
         });
-        $keys = \array_keys($filtered);
+
+        $keys = array_keys($filtered);
+
         $this->tokens[$keys[0]]['available'] = true;
     }
 
     /**
      * Flag a token as acquired and not available for use.
-     *
-     * @param string $tokenIdentifier
      */
-    protected function acquireToken($tokenIdentifier)
+    protected function acquireToken(int $tokenIdentifier): void
     {
-        $filtered = \array_filter($this->tokens, function ($val) use ($tokenIdentifier) {
+        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier) {
             return $val['token'] === $tokenIdentifier;
         });
-        $keys = \array_keys($filtered);
+
+        $keys = array_keys($filtered);
+
         $this->tokens[$keys[0]]['available'] = false;
     }
 
-    /**
-     * @param ExecutableTest $test
-     */
-    private function addCoverage(ExecutableTest $test)
+    private function addCoverage(ExecutableTest $test): void
     {
         $coverageFile = $test->getCoverageFileName();
         $this->getCoverage()->addCoverageFromFile($coverageFile);
