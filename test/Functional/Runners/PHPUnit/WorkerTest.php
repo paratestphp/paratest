@@ -184,6 +184,9 @@ class WorkerTest extends TestBase
         $this->assertJUnitLogIsValid($testLog2);
     }
 
+    /**
+     * @return string[]
+     */
     private function getCommand(string $testFile, string $logFile): array
     {
         return [

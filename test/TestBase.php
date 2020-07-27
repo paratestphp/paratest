@@ -48,6 +48,9 @@ class TestBase extends PHPUnit\Framework\TestCase
         return $fixture;
     }
 
+    /**
+     * @return string[]
+     */
     protected function findTests(string $dir): array
     {
         $it    = new RecursiveDirectoryIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
@@ -123,6 +126,7 @@ class TestBase extends PHPUnit\Framework\TestCase
 
     /**
      * @param string|object $objectOrClassName
+     * @param mixed[]|null  $args
      *
      * @return mixed
      */
