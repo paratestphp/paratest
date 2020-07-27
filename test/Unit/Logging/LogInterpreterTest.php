@@ -167,7 +167,7 @@ class LogInterpreterTest extends ResultTester
     }
 
     /**
-     * @return array<string, TestSuite>
+     * @return TestSuite[]
      */
     public function testFlattenCasesReturnsCorrectNumberOfSuites(): array
     {
@@ -178,7 +178,7 @@ class LogInterpreterTest extends ResultTester
     }
 
     /**
-     * @param array<string, TestSuite> $suites
+     * @param TestSuite[] $suites
      *
      * @depends testFlattenCasesReturnsCorrectNumberOfSuites
      */

@@ -156,7 +156,7 @@ class Writer
     /**
      * Append error or failure nodes to the given testcase node.
      *
-     * @param array{type: string, text: string} $defects
+     * @param array<int, array{type: string, text: string}> $defects
      */
     protected function appendDefects(DOMElement $caseNode, array $defects, string $type): void
     {
@@ -170,7 +170,7 @@ class Writer
     /**
      * Get the root level testsuite node.
      *
-     * @param array<string, TestSuite> $suites
+     * @param TestSuite[] $suites
      */
     protected function getSuiteRoot(array $suites): DOMElement
     {

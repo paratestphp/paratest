@@ -4,7 +4,6 @@ includes:
 
 parameters:
     tipsOfTheDay: false
-    checkMissingIterableValueType: false
     bootstrapFiles:
         - test/constants.php
     paths:
@@ -22,6 +21,10 @@ parameters:
             path: src/Runners/PHPUnit/SqliteRunner.php
 
         # Known fixtures
+        -
+            message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\ExecutableTest\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/ExecutableTest.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1

@@ -121,7 +121,7 @@ class LogInterpreter extends MetaProvider
     /**
      * Flattens all cases into their respective suites.
      *
-     * @return array<string, TestSuite> $suites a collection of suites and their cases
+     * @return TestSuite[] $suites a collection of suites and their cases
      */
     public function flattenCases(): array
     {

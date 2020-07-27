@@ -73,7 +73,7 @@ class SuiteLoader
      * Returns a collection of TestMethod objects
      * for all loaded ExecutableTest instances.
      *
-     * @return TestMethod[]
+     * @return array<int, ParsedFunction|TestMethod>
      */
     public function getTestMethods(): array
     {

@@ -373,7 +373,7 @@ class PHPUnitTest extends FunctionalTestBase
     }
 
     /**
-     * @param array<int, array<int, string|array<string, string>>> $options
+     * @param array<string, string> $options
      *
      * @dataProvider setsCoveragePhpDataProvider
      */
@@ -424,7 +424,7 @@ class PHPUnitTest extends FunctionalTestBase
     }
 
     /**
-     * @return array<string, array<string, array<string, int|string>>>
+     * @return array<string, array<string, array<string, array<int, string>|int|string>>>
      */
     public function getRunnerOptionsDataProvider(): array
     {

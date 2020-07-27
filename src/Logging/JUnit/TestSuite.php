@@ -75,7 +75,7 @@ class TestSuite
      * Create a TestSuite from an associative
      * array.
      *
-     * @param array<string, int|string> $arr
+     * @param array<string, int|string|float> $arr
      *
      * @return TestSuite
      */

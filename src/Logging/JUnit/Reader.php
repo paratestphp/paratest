@@ -157,8 +157,8 @@ class Reader extends MetaProvider
      * Creates and adds a TestSuite based on the given
      * suite properties and collection of test cases.
      *
-     * @param array<string, int|string> $properties
-     * @param TestCase[]                $testCases
+     * @param array<string, int|string|float> $properties
+     * @param TestCase[]                      $testCases
      */
     protected function addSuite(array $properties, array $testCases): void
     {

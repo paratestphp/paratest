@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Parser\ParsedFunction;
+
 use function count;
 
 /**
@@ -16,12 +18,12 @@ class Suite extends ExecutableTest
     /**
      * A collection of test methods.
      *
-     * @var TestMethod[]
+     * @var array<int, ParsedFunction|TestMethod>
      */
     private $functions;
 
     /**
-     * @param TestMethod[] $functions
+     * @param array<int, ParsedFunction|TestMethod> $functions
      */
     public function __construct(string $path, array $functions)
     {
@@ -32,7 +34,7 @@ class Suite extends ExecutableTest
     /**
      * Return the collection of test methods.
      *
-     * @return TestMethod[]
+     * @return array<int, ParsedFunction|TestMethod>
      */
     public function getFunctions(): array
     {

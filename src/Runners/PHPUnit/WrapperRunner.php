@@ -204,7 +204,7 @@ class WrapperRunner extends BaseRunner
      *
      * @param WrapperWorker[] $workers keys are positions in $this->workers
      *
-     * @return int[]
+     * @return resource[]
      */
     private function streamsOf(array $workers): array
     {

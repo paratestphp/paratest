@@ -26,7 +26,7 @@ class Runner extends BaseRunner
      * A collection of available tokens based on the number
      * of processes specified in $options.
      *
-     * @var array<int, array<string, mixed>>
+     * @var array<int, array<string, int|string|bool>>
      */
     protected $tokens = [];
 

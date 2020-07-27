@@ -74,9 +74,9 @@ class TestMethod extends ExecutableTest
      * This sets up the --filter switch used to run a single PHPUnit test method.
      * This method also provide escaping for method name to be used as filter regexp.
      *
-     * @param array<string, (string|bool|int|Configuration|null)> $options
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
      *
-     * @return array<string, (string|bool|int|Configuration|null)>
+     * @return array<string, (string|bool|int|Configuration|string[]|null)>
      */
     protected function prepareOptions(array $options): array
     {

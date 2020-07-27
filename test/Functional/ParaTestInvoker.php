@@ -31,7 +31,9 @@ class ParaTestInvoker
     /**
      * Runs the command, returns the proc after it's done.
      *
-     * @param array<int|string, string> $options
+     * @param array<int|string, string|int|null> $options
+     *
+     * @return Process<string>
      */
     public function execute(array $options = [], ?callable $callback = null): Process
     {
@@ -49,7 +51,7 @@ class ParaTestInvoker
     }
 
     /**
-     * @param array<int|string, string> $options
+     * @param array<int|string, string|int|null> $options
      */
     private function buildCommand(array $options = []): string
     {

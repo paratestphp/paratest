@@ -34,16 +34,16 @@ class TestCase
     /** @var string|float (a stringified float, from phpunit XML output) */
     public $time;
 
-    /** @var array{type: string, text: string} */
+    /** @var array<int, array{type: string, text: string}> */
     public $failures = [];
 
-    /** @var array{type: string, text: string} */
+    /** @var array<int, array{type: string, text: string}> */
     public $errors = [];
 
-    /** @var array{type: string, text: string} */
+    /** @var array<int, array{type: string, text: string}> */
     public $warnings = [];
 
-    /** @var array{type: string, text: string} */
+    /** @var array<int, array{type: string, text: string}> */
     public $skipped = [];
 
     public function __construct(
