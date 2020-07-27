@@ -22,7 +22,7 @@ class LogInterpreter extends MetaProvider
      * A collection of Reader objects
      * to aggregate results from.
      *
-     * @var array
+     * @var Reader[]
      */
     protected $readers = [];
 
@@ -76,7 +76,7 @@ class LogInterpreter extends MetaProvider
      * Get all test case objects found within
      * the collection of Reader objects.
      *
-     * @return array
+     * @return TestCase[]
      */
     public function getCases(): array
     {
@@ -97,7 +97,7 @@ class LogInterpreter extends MetaProvider
     /**
      * Fix problem with empty testcase from DataProvider.
      *
-     * @param array $cases
+     * @param TestCase[] $cases
      */
     protected function extendEmptyCasesFromSuites(array $cases, TestSuite $suite): void
     {
@@ -121,7 +121,7 @@ class LogInterpreter extends MetaProvider
     /**
      * Flattens all cases into their respective suites.
      *
-     * @return array $suites a collection of suites and their cases
+     * @return TestSuite[] $suites a collection of suites and their cases
      */
     public function flattenCases(): array
     {
@@ -160,7 +160,7 @@ class LogInterpreter extends MetaProvider
      * Gets messages of a given type and
      * merges them into a single collection.
      *
-     * @return array
+     * @return string[]
      */
     protected function getMessages(string $type): array
     {
@@ -171,7 +171,7 @@ class LogInterpreter extends MetaProvider
      * Flatten messages into a single collection
      * based on an accessor method.
      *
-     * @return array
+     * @return string[]
      */
     private function mergeMessages(string $method): array
     {

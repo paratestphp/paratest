@@ -34,9 +34,6 @@ abstract class ExecutableTest
      */
     protected $temp;
 
-    /** @var array */
-    protected $pipes = [];
-
     /**
      * Path where the coveragereport is stored.
      *
@@ -155,10 +152,10 @@ abstract class ExecutableTest
     /**
      * Executes the test by creating a separate process.
      *
-     * @param array         $options
-     * @param array         $environmentVariables
-     * @param string[]|null $passthru
-     * @param string[]|null $passthruPhp
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param array<string, string|int>                                    $environmentVariables
+     * @param string[]|null                                                $passthru
+     * @param string[]|null                                                $passthruPhp
      *
      * @return $this
      */
@@ -187,9 +184,9 @@ abstract class ExecutableTest
      * Build the full executable as we would do on the command line, e.g.
      * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
-     * @param array         $options
-     * @param string[]|null $passthru
-     * @param string[]|null $passthruPhp
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param string[]|null                                                $passthru
+     * @param string[]|null                                                $passthruPhp
      */
     protected function getFullCommandlineString(
         string $binary,
@@ -220,9 +217,9 @@ abstract class ExecutableTest
     /**
      * Generate command line arguments with passed options suitable to handle through paratest.
      *
-     * @param string        $binary   executable binary name
-     * @param array         $options  command line options
-     * @param string[]|null $passthru
+     * @param string                                                       $binary   executable binary name
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options  command line options
+     * @param string[]|null                                                $passthru
      *
      * @return string[] command line arguments
      */
@@ -254,9 +251,9 @@ abstract class ExecutableTest
     /**
      * Generate command line with passed options suitable to handle through paratest.
      *
-     * @param string        $binary   executable binary name
-     * @param array         $options  command line options
-     * @param string[]|null $passthru
+     * @param string                $binary   executable binary name
+     * @param array<string, string> $options  command line options
+     * @param string[]|null         $passthru
      *
      * @return string command line
      */
@@ -325,9 +322,9 @@ abstract class ExecutableTest
     /**
      * A template method that can be overridden to add necessary options for a test.
      *
-     * @param array $options the options that are passed to the run method
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
      *
-     * @return array $options the prepared options
+     * @return array<string, (string|bool|int|Configuration|string[]|null)> $options
      */
     protected function prepareOptions(array $options): array
     {
@@ -338,7 +335,7 @@ abstract class ExecutableTest
      * Checks environment variables for the presence of a TEST_TOKEN
      * variable and sets $this->token based on its value.
      *
-     * @param array $environmentVariables
+     * @param array<string, string|int> $environmentVariables
      */
     protected function handleEnvironmentVariables(array $environmentVariables): void
     {
@@ -353,9 +350,9 @@ abstract class ExecutableTest
      * Checks if the coverage-php option is set and redirects it to a unique temp file.
      * This will ensure, that multiple tests write to separate coverage-files.
      *
-     * @param array $options
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
      *
-     * @return array $options
+     * @return array<string, (string|bool|int|Configuration|string[]|null)> $options
      */
     protected function redirectCoverageOption(array $options): array
     {

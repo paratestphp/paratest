@@ -26,10 +26,13 @@ class Runner extends BaseRunner
      * A collection of available tokens based on the number
      * of processes specified in $options.
      *
-     * @var array
+     * @var array<int, array<string, int|string|bool>>
      */
     protected $tokens = [];
 
+    /**
+     * {@inheritDoc}
+     */
     public function __construct(array $opts = [])
     {
         parent::__construct($opts);
@@ -185,7 +188,7 @@ class Runner extends BaseRunner
      * Gets the next token that is available to be acquired
      * from a finished process.
      *
-     * @return bool|array
+     * @return bool|array<string, mixed>
      */
     protected function getNextAvailableToken()
     {

@@ -7,6 +7,7 @@ namespace ParaTest\Runners\PHPUnit;
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
+use ParaTest\Parser\ParsedFunction;
 
 use function array_merge;
 use function file_exists;
@@ -29,7 +30,7 @@ abstract class BaseRunner
      * A collection of pending ExecutableTest objects that have
      * yet to run.
      *
-     * @var ExecutableTest[]
+     * @var array<int|string, ExecutableTest|TestMethod|ParsedFunction>
      */
     protected $pending = [];
 
@@ -57,7 +58,7 @@ abstract class BaseRunner
     protected $coverage = null;
 
     /**
-     * @param array<string, mixed> $opts
+     * @param array<string, string|bool|int> $opts
      */
     public function __construct(array $opts = [])
     {
@@ -80,9 +81,9 @@ abstract class BaseRunner
     {
         if (
             isset($this->options->filtered['configuration']) &&
-            ! file_exists($this->options->filtered['configuration']->getPath())
+            ! file_exists($path = $this->options->filtered['configuration']->getPath())
         ) {
-            $this->printer->println(sprintf('Could not read "%s".', $this->options->filtered['configuration']));
+            $this->printer->println(sprintf('Could not read "%s".', $path));
             exit(1);
         }
     }

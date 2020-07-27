@@ -146,7 +146,7 @@ class CoverageMergerTest extends TestBase
     }
 
     /**
-     * @return array
+     * @return array<string, array<string, string[]|class-string>>
      */
     public static function getCoverageFileProvider(): array
     {

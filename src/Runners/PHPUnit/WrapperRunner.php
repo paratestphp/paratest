@@ -26,15 +26,18 @@ class WrapperRunner extends BaseRunner
 
     private const PHPUNIT_ERRORS = 2;
 
-    /** @var array */
+    /** @var resource[] */
     protected $streams;
 
     /** @var WrapperWorker[] */
     protected $workers;
 
-    /** @var array */
+    /** @var resource[] */
     protected $modified;
 
+    /**
+     * {@inheritDoc}
+     */
     public function __construct(array $opts = [])
     {
         if (static::class === self::class && defined('PHP_WINDOWS_VERSION_BUILD')) {
@@ -155,7 +158,7 @@ class WrapperRunner extends BaseRunner
     /**
      * put on WorkersPool
      *
-     * @param array $modified
+     * @param resource[] $modified
      */
     private function waitForStreamsToChange(array $modified): int
     {
@@ -199,9 +202,9 @@ class WrapperRunner extends BaseRunner
     /**
      * Returns the output streams of a subset of workers.
      *
-     * @param array $workers keys are positions in $this->workers
+     * @param WrapperWorker[] $workers keys are positions in $this->workers
      *
-     * @return array
+     * @return resource[]
      */
     private function streamsOf(array $workers): array
     {

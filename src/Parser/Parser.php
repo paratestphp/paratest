@@ -96,7 +96,7 @@ class Parser
     /**
      * Return all test methods present in the file.
      *
-     * @return array
+     * @return ParsedFunction[]
      */
     private function getMethods(): array
     {
@@ -121,7 +121,7 @@ class Parser
      * Return the class name of the class contained
      * in the file.
      *
-     * @param array $previousDeclaredClasses
+     * @param string[] $previousDeclaredClasses
      */
     private function getClassName(string $filename, array $previousDeclaredClasses): ?string
     {

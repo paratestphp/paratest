@@ -13,6 +13,7 @@ use RuntimeException;
 use function array_intersect;
 use function array_merge;
 use function array_unique;
+use function assert;
 use function count;
 use function is_array;
 use function is_int;
@@ -26,7 +27,7 @@ class SuiteLoader
     /**
      * The collection of loaded files.
      *
-     * @var array
+     * @var string[]
      */
     protected $files = [];
 
@@ -36,7 +37,7 @@ class SuiteLoader
     /**
      * The collection of parsed test classes.
      *
-     * @var array
+     * @var array<string, ExecutableTest>
      */
     protected $loadedSuites = [];
 
@@ -61,7 +62,7 @@ class SuiteLoader
      * Returns all parsed suite objects as ExecutableTest
      * instances.
      *
-     * @return array
+     * @return array<string, ExecutableTest>
      */
     public function getSuites(): array
     {
@@ -72,12 +73,13 @@ class SuiteLoader
      * Returns a collection of TestMethod objects
      * for all loaded ExecutableTest instances.
      *
-     * @return array
+     * @return array<int, ParsedFunction|TestMethod>
      */
     public function getTestMethods(): array
     {
         $methods = [];
         foreach ($this->loadedSuites as $suite) {
+            assert($suite instanceof Suite);
             $methods = array_merge($methods, $suite->getFunctions());
         }
 
@@ -160,13 +162,15 @@ class SuiteLoader
         }
     }
 
+    /**
+     * @return TestMethod[]
+     */
     protected function executableTests(string $path, ParsedClass $class): array
     {
         $executableTests = [];
         $methodBatches   = $this->getMethodBatches($class);
         foreach ($methodBatches as $methodBatch) {
-            $executableTest    = new TestMethod($path, $methodBatch);
-            $executableTests[] = $executableTest;
+            $executableTests[] = new TestMethod($path, $methodBatch);
         }
 
         return $executableTests;
@@ -178,7 +182,7 @@ class SuiteLoader
      * Identify method dependencies, and group dependents and dependees on a single methodBatch.
      * Use max batch size to fill batches.
      *
-     * @return array of MethodBatches. Each MethodBatch has an array of method names
+     * @return string[][] of MethodBatches. Each MethodBatch has an array of method names
      */
     protected function getMethodBatches(ParsedClass $class): array
     {
@@ -202,6 +206,10 @@ class SuiteLoader
         return $batches;
     }
 
+    /**
+     * @param string[][] $batches
+     * @param string[]   $tests
+     */
     protected function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests): void
     {
         foreach ($batches as $key => $batch) {
@@ -214,6 +222,10 @@ class SuiteLoader
         }
     }
 
+    /**
+     * @param string[][] $batches
+     * @param string[]   $tests
+     */
     protected function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize): void
     {
         foreach ($tests as $test) {
@@ -270,6 +282,9 @@ class SuiteLoader
         return $result;
     }
 
+    /**
+     * @param string[] $groups
+     */
     protected function testMatchGroupOptions(array $groups): bool
     {
         if (empty($groups)) {
@@ -301,12 +316,18 @@ class SuiteLoader
         return preg_match($re, $fullName) === 1;
     }
 
+    /**
+     * @param string[] $group
+     */
     protected function testMatchOptions(string $className, string $name, array $group): bool
     {
         return $this->testMatchGroupOptions($group)
                 && $this->testMatchFilterOptions($className, $name);
     }
 
+    /**
+     * @return string[]
+     */
     protected function testGroups(ParsedClass $class, ParsedFunction $method): array
     {
         return array_merge(
@@ -333,6 +354,9 @@ class SuiteLoader
         return null;
     }
 
+    /**
+     * @return string[]
+     */
     protected function methodGroups(ParsedFunction $method): array
     {
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
@@ -342,6 +366,9 @@ class SuiteLoader
         return [];
     }
 
+    /**
+     * @return string[]
+     */
     protected function classGroups(ParsedClass $class): array
     {
         if (preg_match_all("/@\bgroup\b \b(.*)\b/", $class->getDocBlock(), $matches)) {

@@ -347,6 +347,9 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertTestsPassed($proc, '2', '2');
     }
 
+    /**
+     * @return array<int, array<int, string|array<string, string>>>
+     */
     public function setsCoveragePhpDataProvider(): array
     {
         return [
@@ -370,7 +373,7 @@ class PHPUnitTest extends FunctionalTestBase
     }
 
     /**
-     * @param array $options
+     * @param array<string, string> $options
      *
      * @dataProvider setsCoveragePhpDataProvider
      */
@@ -396,8 +399,8 @@ class PHPUnitTest extends FunctionalTestBase
     }
 
     /**
-     * @param array $options
-     * @param array $expected
+     * @param array<string, array<string, int|string>> $options
+     * @param array<string, array<string, int|string>> $expected
      *
      * @dataProvider getRunnerOptionsDataProvider
      */
@@ -420,6 +423,9 @@ class PHPUnitTest extends FunctionalTestBase
         $this->assertEquals($expected, $options);
     }
 
+    /**
+     * @return array<string, array<string, array<string, array<int, string>|int|string>>>
+     */
     public function getRunnerOptionsDataProvider(): array
     {
         return [

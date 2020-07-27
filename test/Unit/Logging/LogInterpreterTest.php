@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Tests\Unit\ResultTester;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -165,6 +166,9 @@ class LogInterpreterTest extends ResultTester
         }
     }
 
+    /**
+     * @return TestSuite[]
+     */
     public function testFlattenCasesReturnsCorrectNumberOfSuites(): array
     {
         $suites = $this->interpreter->flattenCases();
@@ -174,6 +178,8 @@ class LogInterpreterTest extends ResultTester
     }
 
     /**
+     * @param TestSuite[] $suites
+     *
      * @depends testFlattenCasesReturnsCorrectNumberOfSuites
      */
     public function testFlattenedSuiteHasCorrectTotals(array $suites): void

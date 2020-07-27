@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use InvalidArgumentException;
+use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\SuiteLoader;
@@ -228,6 +229,9 @@ class SuiteLoaderTest extends TestBase
         $this->assertEquals($path, array_shift($paths));
     }
 
+    /**
+     * @return string[]
+     */
     protected function getLoadedPaths(string $path, ?SuiteLoader $loader = null): array
     {
         $loader = $loader ?: new SuiteLoader();
@@ -244,6 +248,9 @@ class SuiteLoaderTest extends TestBase
         $this->assertEquals($path, array_shift($paths));
     }
 
+    /**
+     * @return ExecutableTest[]
+     */
     public function testLoadDirGetsPathOfAllTestsWithKeys(): array
     {
         $path  = $this->fixture('passing-tests');
@@ -260,6 +267,8 @@ class SuiteLoaderTest extends TestBase
     }
 
     /**
+     * @param ExecutableTest[] $paraSuites
+     *
      * @depends testLoadDirGetsPathOfAllTestsWithKeys
      */
     public function testFirstParallelSuiteHasCorrectFunctions(array $paraSuites): void
@@ -274,10 +283,15 @@ class SuiteLoaderTest extends TestBase
         $this->assertEquals('testAddition', $functions[4]->getName());
     }
 
+    /**
+     * @param ExecutableTest[] $paraSuites
+     */
     private function suiteByPath(string $path, array $paraSuites): Suite
     {
         foreach ($paraSuites as $completePath => $suite) {
             if (strstr($completePath, $path)) {
+                $this->assertInstanceOf(Suite::class, $suite);
+
                 return $suite;
             }
         }
@@ -286,6 +300,8 @@ class SuiteLoaderTest extends TestBase
     }
 
     /**
+     * @param ExecutableTest[] $paraSuites
+     *
      * @depends testLoadDirGetsPathOfAllTestsWithKeys
      */
     public function testSecondParallelSuiteHasCorrectFunctions(array $paraSuites): void

@@ -34,6 +34,9 @@ class ConfigurationTest extends TestBase
         $this->assertEquals($this->path, (string) $this->config);
     }
 
+    /**
+     * @return SuitePath[][]
+     */
     public function testGetSuitesShouldReturnCorrectNumberOfSuites(): array
     {
         $suites = $this->config->getSuites();
@@ -49,6 +52,10 @@ class ConfigurationTest extends TestBase
     }
 
     /**
+     * @param SuitePath[][] $suites
+     *
+     * @return  SuitePath[][]
+     *
      * @depends testGetSuitesShouldReturnCorrectNumberOfSuites
      */
     public function testSuitesContainSuiteNameAtKey(array $suites): array
@@ -60,6 +67,8 @@ class ConfigurationTest extends TestBase
     }
 
     /**
+     * @param SuitePath[][] $suites
+     *
      * @depends testSuitesContainSuiteNameAtKey
      */
     public function testSuitesContainPathAsValue(array $suites): void

@@ -20,7 +20,7 @@ class RunnerIntegrationTest extends TestBase
 {
     /** @var Runner $runner */
     protected $runner;
-    /** @var array */
+    /** @var array<string, string> */
     protected $options;
 
     protected function setUp(): void
@@ -47,6 +47,9 @@ class RunnerIntegrationTest extends TestBase
         parent::tearDown();
     }
 
+    /**
+     * @return string[]
+     */
     private function globTempDir(string $pattern): array
     {
         return glob(sys_get_temp_dir() . DS . $pattern);

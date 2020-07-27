@@ -27,7 +27,7 @@ abstract class Tester
     /**
      * Returns non-empty options.
      *
-     * @return array
+     * @return array<string, string>
      */
     protected function getOptions(InputInterface $input): array
     {

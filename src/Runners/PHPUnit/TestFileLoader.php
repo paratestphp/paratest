@@ -38,14 +38,14 @@ class TestFileLoader
     /**
      * The collection of loaded files for this test suite.
      *
-     * @var array
+     * @var string[]
      */
     protected $files = [];
 
     /**
      * The collection of excluded files.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $excludedFiles = [];
 

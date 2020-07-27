@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use Exception;
+use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
@@ -45,6 +46,9 @@ class WrapperWorker extends BaseWorker
         ++$this->inExecution;
     }
 
+    /**
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $phpunitOptions
+     */
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
         if ($this->currentlyExecuting !== null) {

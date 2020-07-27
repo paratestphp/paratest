@@ -74,17 +74,18 @@ class TestMethod extends ExecutableTest
      * This sets up the --filter switch used to run a single PHPUnit test method.
      * This method also provide escaping for method name to be used as filter regexp.
      *
-     * @param array $options
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
      *
-     * @return array
+     * @return array<string, (string|bool|int|Configuration|string[]|null)>
      */
     protected function prepareOptions(array $options): array
     {
-        $re                = array_reduce($this->filters, static function ($r, $v) {
+        $re = array_reduce($this->filters, static function (?string $r, string $v): string {
             $isDataSet = strpos($v, ' with data set ') !== false;
 
             return ($r ? $r . '|' : '') . preg_quote($v, '/') . ($isDataSet ? '$' : '(?:\s|$)');
         });
+
         $options['filter'] = '/' . $re . '/';
 
         return $options;

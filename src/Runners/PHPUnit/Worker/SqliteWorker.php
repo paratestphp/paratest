@@ -16,6 +16,9 @@ class SqliteWorker extends BaseWorker
         $this->dbFileName = $dbFileName;
     }
 
+    /**
+     * @param string[] $parameters
+     */
     public function start(
         string $wrapperBinary,
         ?int $token = 1,

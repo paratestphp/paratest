@@ -9,6 +9,7 @@ use Symfony\Component\Process\Process;
 
 use function array_diff_key;
 use function array_shift;
+use function assert;
 use function count;
 use function dirname;
 use function explode;
@@ -19,6 +20,7 @@ use function in_array;
 use function intdiv;
 use function is_dir;
 use function is_file;
+use function is_string;
 use function pclose;
 use function popen;
 use function preg_match_all;
@@ -40,16 +42,16 @@ use const PHP_BINARY;
  * @property-read string $phpunit
  * @property-read string $functional
  * @property-read bool $stopOnFailure
- * @property-read array $filtered
+ * @property-read array<string, (string|bool|int|Configuration|string[]|null)> $filtered
  * @property-read string $runner
  * @property-read bool $noTestTokens
  * @property-read bool $colors
- * @property-read string[] $testsuite
+ * @property-read string|string[] $testsuite
  * @property-read int|null $maxBatchSize
  * @property-read string $filter
  * @property-read string[] $groups
  * @property-read string[] $excludeGroups
- * @property-read array $annotations
+ * @property-read array<string, string> $annotations
  * @property-read bool $parallelSuite
  * @property-read string[]|null $passthru
  * @property-read string[]|null $passthruPhp
@@ -100,7 +102,7 @@ class Options
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options.
      *
-     * @var array
+     * @var array<string, (string|bool|int|Configuration|string[]|null)>
      */
     protected $filtered;
 
@@ -116,7 +118,7 @@ class Options
     /**
      * Filters which tests to run.
      *
-     * @var string[]
+     * @var string|string[]
      */
     protected $testsuite;
 
@@ -136,7 +138,7 @@ class Options
      * A collection of option values directly corresponding
      * to certain annotations - i.e group.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $annotations = [];
 
@@ -177,7 +179,7 @@ class Options
     protected $coverageTestLimit;
 
     /**
-     * @param array<string, mixed> $opts
+     * @param array<string, string|bool|int|string[]> $opts
      */
     public function __construct(array $opts = [])
     {
@@ -251,7 +253,7 @@ class Options
      * Returns a collection of ParaTest's default
      * option values.
      *
-     * @return array
+     * @return array<string, string|bool|int|null>
      */
     protected static function defaults(): array
     {
@@ -315,6 +317,10 @@ class Options
     /**
      * Filter options to distinguish between paratest
      * internal options and any other options.
+     *
+     * @param array<string, (string|bool|int|string[]|null)> $options
+     *
+     * @return array<string, (string|bool|int|Configuration|string[]|null)>
      */
     protected function filterOptions(array $options): array
     {
@@ -347,7 +353,7 @@ class Options
      * Take an array of filtered options and return a
      * configuration path.
      *
-     * @param array $filtered
+     * @param array<string, (string|bool|int|string[]|null)> $filtered
      */
     protected function getConfigurationPath(array $filtered): ?string
     {
@@ -395,6 +401,7 @@ class Options
                 continue;
             }
 
+            assert(is_string($value));
             $this->annotations[$key] = $value;
         }
     }

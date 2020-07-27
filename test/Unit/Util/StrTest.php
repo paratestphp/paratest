@@ -12,7 +12,7 @@ use function array_values;
 class StrTest extends TestCase
 {
     /**
-     * @param array $expected
+     * @param array<string, array<string, string|string[]>> $expected
      *
      * @dataProvider explodeWithCleanupDataProvider
      */
@@ -24,6 +24,9 @@ class StrTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    /**
+     * @return array<string, array<string, string|string[]>>
+     */
     public function explodeWithCleanupDataProvider(): array
     {
         return [

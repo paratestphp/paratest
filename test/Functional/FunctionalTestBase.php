@@ -23,6 +23,11 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
         return $fixture;
     }
 
+    /**
+     * @param array<int|string, string|int> $options
+     *
+     * @return Process<string>
+     */
     protected function invokeParatest(string $path, array $options = [], ?callable $callback = null): Process
     {
         $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
@@ -30,6 +35,9 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
         return $invoker->execute($options, $callback);
     }
 
+    /**
+     * @param Process<string> $proc
+     */
     protected function assertTestsPassed(
         Process $proc,
         string $testPattern = '\d+',

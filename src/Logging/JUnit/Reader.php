@@ -32,7 +32,7 @@ class Reader extends MetaProvider
     /** @var string */
     protected $logFile;
 
-    /** @var array */
+    /** @var array<string, int|string> */
     protected static $defaultSuite = [
         'name' => '',
         'file' => '',
@@ -90,7 +90,7 @@ class Reader extends MetaProvider
      * characters: .,F,E
      * TODO: Update this, skipped was added in phpunit.
      *
-     * @return array
+     * @return string[]
      */
     public function getFeedback(): array
     {
@@ -139,7 +139,7 @@ class Reader extends MetaProvider
     /**
      * Uses an array of testcase nodes to build a suite.
      *
-     * @param array $nodeArray an array of SimpleXMLElement nodes representing testcase elements
+     * @param SimpleXMLElement[] $nodeArray an array of SimpleXMLElement nodes representing testcase elements
      */
     protected function initSuiteFromCases(array $nodeArray): void
     {
@@ -157,8 +157,8 @@ class Reader extends MetaProvider
      * Creates and adds a TestSuite based on the given
      * suite properties and collection of test cases.
      *
-     * @param array $properties
-     * @param array $testCases
+     * @param array<string, int|string|float> $properties
+     * @param TestCase[]                      $testCases
      */
     protected function addSuite(array $properties, array $testCases): void
     {
@@ -170,35 +170,39 @@ class Reader extends MetaProvider
     /**
      * Fold an array of testcase nodes into a suite array.
      *
-     * @param array $nodeArray an array of testcase nodes
-     * @param array $testCases an array reference. Individual testcases will be placed here.
+     * @param SimpleXMLElement[] $nodeArray an array of testcase nodes
+     * @param TestCase[]         $testCases an array reference. Individual testcases will be placed here.
      *
-     * @return mixed
+     * @return array<string, int|string>
      */
-    protected function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = [])
+    protected function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = []): array
     {
         $cb = [TestCase::class, 'caseFromNode'];
 
-        return array_reduce($nodeArray, static function ($result, $c) use (&$testCases, $cb) {
-            $testCases[]    = call_user_func_array($cb, [$c]);
-            $result['name'] = (string) $c['class'];
-            $result['file'] = (string) $c['file'];
-            ++$result['tests'];
-            $result['assertions'] += (int) $c['assertions'];
-            $result['failures']   += count($c->xpath('failure'));
-            $result['errors']     += count($c->xpath('error'));
-            $result['skipped']    += count($c->xpath('skipped'));
-            $result['time']       += (float) $c['time'];
+        return array_reduce(
+            $nodeArray,
+            static function (array $result, SimpleXMLElement $c) use (&$testCases, $cb): array {
+                $testCases[]    = call_user_func_array($cb, [$c]);
+                $result['name'] = (string) $c['class'];
+                $result['file'] = (string) $c['file'];
+                ++$result['tests'];
+                $result['assertions'] += (int) $c['assertions'];
+                $result['failures']   += count($c->xpath('failure'));
+                $result['errors']     += count($c->xpath('error'));
+                $result['skipped']    += count($c->xpath('skipped'));
+                $result['time']       += (float) $c['time'];
 
-            return $result;
-        }, static::$defaultSuite);
+                return $result;
+            },
+            static::$defaultSuite
+        );
     }
 
     /**
      * Return a collection of testcase nodes
      * from the xml document.
      *
-     * @return array
+     * @return array<string, SimpleXMLElement[]>
      */
     protected function getCaseNodes(): array
     {
@@ -249,7 +253,7 @@ class Reader extends MetaProvider
     /**
      * Return messages for a given type.
      *
-     * @return array
+     * @return string[]
      */
     protected function getMessages(string $type): array
     {
@@ -258,8 +262,8 @@ class Reader extends MetaProvider
         foreach ($suites as $suite) {
             $messages = array_merge(
                 $messages,
-                array_reduce($suite->cases, static function ($result, $case) use ($type) {
-                    return array_merge($result, array_reduce($case->$type, static function ($msgs, $msg) {
+                array_reduce($suite->cases, static function ($result, TestCase $case) use ($type): array {
+                    return array_merge($result, array_reduce($case->$type, static function ($msgs, $msg): array {
                         $msgs[] = $msg['text'];
 
                         return $msgs;

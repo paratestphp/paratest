@@ -47,7 +47,7 @@ class TestSuite
     /**
      * Cases belonging to this suite.
      *
-     * @var array
+     * @var TestCase[]
      */
     public $cases = [];
 
@@ -75,7 +75,7 @@ class TestSuite
      * Create a TestSuite from an associative
      * array.
      *
-     * @param array $arr
+     * @param array<string, int|string|float> $arr
      *
      * @return TestSuite
      */

@@ -52,7 +52,7 @@ class Writer
      * A default suite to ease flattening of
      * suite structures.
      *
-     * @var array
+     * @var array<string, int>
      */
     protected static $defaultSuite = [
         'tests' => 0,
@@ -156,7 +156,7 @@ class Writer
     /**
      * Append error or failure nodes to the given testcase node.
      *
-     * @param array $defects
+     * @param array<int, array{type: string, text: string}> $defects
      */
     protected function appendDefects(DOMElement $caseNode, array $defects, string $type): void
     {
@@ -170,7 +170,7 @@ class Writer
     /**
      * Get the root level testsuite node.
      *
-     * @param array $suites
+     * @param TestSuite[] $suites
      */
     protected function getSuiteRoot(array $suites): DOMElement
     {
@@ -195,7 +195,7 @@ class Writer
      * Get the attributes used on the root testsuite
      * node.
      *
-     * @param array $suites
+     * @param array<string, TestSuite> $suites
      *
      * @return mixed
      */

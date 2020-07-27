@@ -40,15 +40,6 @@ class Configuration
     /** @var string[] */
     protected $availableNodes = ['exclude', 'file', 'directory', 'testsuite'];
 
-    /**
-     * A collection of datastructures
-     * build from the <testsuite> nodes inside of a
-     * PHPUnit configuration.
-     *
-     * @var array
-     */
-    protected $suites = [];
-
     public function __construct(string $path)
     {
         $this->path = $path;
@@ -118,6 +109,9 @@ class Configuration
         return ! empty($this->getSuitesName());
     }
 
+    /**
+     * @return string[]|null
+     */
     public function getSuitesName(): ?array
     {
         if (! $this->xml) {
@@ -229,7 +223,7 @@ class Configuration
     /**
      * Get override environment variables from phpunit config file.
      *
-     * @return array
+     * @return array<string, string>
      */
     public function getEnvironmentVariables(): array
     {
