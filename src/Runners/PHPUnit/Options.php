@@ -177,7 +177,7 @@ class Options
     protected $coverageTestLimit;
 
     /**
-     * @param array<string, mixed> $opts
+     * @param array<string, string|bool|int> $opts
      */
     public function __construct(array $opts = [])
     {

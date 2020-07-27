@@ -57,7 +57,7 @@ abstract class BaseRunner
     protected $coverage = null;
 
     /**
-     * @param array<string, mixed> $opts
+     * @param array<string, string|bool|int> $opts
      */
     public function __construct(array $opts = [])
     {
