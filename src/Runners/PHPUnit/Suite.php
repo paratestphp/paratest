@@ -16,10 +16,13 @@ class Suite extends ExecutableTest
     /**
      * A collection of test methods.
      *
-     * @var array
+     * @var TestMethod[]
      */
     private $functions;
 
+    /**
+     * @param TestMethod[] $functions
+     */
     public function __construct(string $path, array $functions)
     {
         parent::__construct($path);
@@ -29,7 +32,7 @@ class Suite extends ExecutableTest
     /**
      * Return the collection of test methods.
      *
-     * @return array
+     * @return TestMethod[]
      */
     public function getFunctions(): array
     {

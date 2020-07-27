@@ -163,7 +163,7 @@ class PHPUnit extends Tester
     }
 
     /**
-     * @return array
+     * @return array<string, string|string[]>
      *
      * @throws RuntimeException
      */
@@ -228,7 +228,7 @@ class PHPUnit extends Tester
     /**
      * Return whether or not code coverage information should be collected.
      *
-     * @param array $options
+     * @param array<string, string> $options
      */
     protected function hasCoverage(array $options): bool
     {
@@ -245,7 +245,7 @@ class PHPUnit extends Tester
     /**
      * Fetch the path to the bootstrap file.
      *
-     * @param array $options
+     * @param array<string, string> $options
      */
     protected function getBootstrapFile(InputInterface $input, array $options): string
     {

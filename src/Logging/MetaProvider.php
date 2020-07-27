@@ -44,9 +44,9 @@ abstract class MetaProvider
     /**
      * Simplify aggregation of totals or messages.
      *
-     * @param array $args
+     * @param mixed[] $args
      *
-     * @return float|int|array
+     * @return float|int|string[]
      */
     public function __call(string $method, array $args)
     {
@@ -72,7 +72,7 @@ abstract class MetaProvider
      * Gets messages of a given type and
      * merges them into a single collection.
      *
-     * @return array
+     * @return string[]
      */
     abstract protected function getMessages(string $type): array;
 }

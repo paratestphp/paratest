@@ -45,6 +45,9 @@ class WrapperWorker extends BaseWorker
         ++$this->inExecution;
     }
 
+    /**
+     * @param array<string, (string|bool|int|Configuration|null)> $phpunitOptions
+     */
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
         if ($this->currentlyExecuting !== null) {

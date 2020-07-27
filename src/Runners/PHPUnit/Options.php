@@ -40,7 +40,7 @@ use const PHP_BINARY;
  * @property-read string $phpunit
  * @property-read string $functional
  * @property-read bool $stopOnFailure
- * @property-read array $filtered
+ * @property-read array<string, (string|bool|int|Configuration|null)> $filtered
  * @property-read string $runner
  * @property-read bool $noTestTokens
  * @property-read bool $colors
@@ -49,7 +49,7 @@ use const PHP_BINARY;
  * @property-read string $filter
  * @property-read string[] $groups
  * @property-read string[] $excludeGroups
- * @property-read array $annotations
+ * @property-read array<string, string> $annotations
  * @property-read bool $parallelSuite
  * @property-read string[]|null $passthru
  * @property-read string[]|null $passthruPhp
@@ -100,7 +100,7 @@ class Options
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options.
      *
-     * @var array
+     * @var array<string, (string|bool|int|Configuration|null)>
      */
     protected $filtered;
 
@@ -136,7 +136,7 @@ class Options
      * A collection of option values directly corresponding
      * to certain annotations - i.e group.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $annotations = [];
 
@@ -251,7 +251,7 @@ class Options
      * Returns a collection of ParaTest's default
      * option values.
      *
-     * @return array
+     * @return array<string, string|bool|int|null>
      */
     protected static function defaults(): array
     {
@@ -315,6 +315,10 @@ class Options
     /**
      * Filter options to distinguish between paratest
      * internal options and any other options.
+     *
+     * @param array<string, string|bool|int|null> $options
+     *
+     * @return array<string, (string|bool|int|Configuration|null)>
      */
     protected function filterOptions(array $options): array
     {
@@ -347,7 +351,7 @@ class Options
      * Take an array of filtered options and return a
      * configuration path.
      *
-     * @param array $filtered
+     * @param array<string, string|bool|int|null> $filtered
      */
     protected function getConfigurationPath(array $filtered): ?string
     {

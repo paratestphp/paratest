@@ -22,6 +22,9 @@ class SuitePath
     /** @var string[] */
     protected $excludedPaths;
 
+    /**
+     * @param string[] $excludedPaths
+     */
     public function __construct(string $path, array $excludedPaths, string $suffix)
     {
         if (empty($suffix)) {

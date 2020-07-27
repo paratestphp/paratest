@@ -36,7 +36,7 @@ abstract class BaseWorker
     ];
     /** @var resource|null */
     protected $proc;
-    /** @var array */
+    /** @var resource[] */
     protected $pipes;
     /** @var int */
     protected $inExecution = 0;
@@ -47,6 +47,9 @@ abstract class BaseWorker
     /** @var string */
     private $alreadyReadOutput = '';
 
+    /**
+     * @param string[] $parameters
+     */
     public function start(
         string $wrapperBinary,
         ?int $token = 1,
@@ -153,6 +156,9 @@ abstract class BaseWorker
         fclose($this->pipes[0]);
     }
 
+    /**
+     * @param array<string, bool|int> $status
+     */
     protected function setExitCode(array $status): void
     {
         if ($status['running']) {

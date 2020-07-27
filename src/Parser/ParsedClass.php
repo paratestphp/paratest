@@ -16,10 +16,13 @@ class ParsedClass extends ParsedObject
      * A collection of methods belonging
      * to the parsed class.
      *
-     * @var array
+     * @var ParsedFunction[]
      */
     private $methods;
 
+    /**
+     * @param ParsedFunction[] $methods
+     */
     public function __construct(string $doc, string $name, string $namespace, array $methods = [])
     {
         parent::__construct($doc, $name);
@@ -32,9 +35,9 @@ class ParsedClass extends ParsedObject
      * optionally filtering on annotations present
      * on a method.
      *
-     * @param array $annotations
+     * @param array<string, string> $annotations
      *
-     * @return array
+     * @return ParsedFunction[]
      */
     public function getMethods(array $annotations = []): array
     {

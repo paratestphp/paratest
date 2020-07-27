@@ -34,6 +34,9 @@ class SqliteRunner extends WrapperRunner
     /** @var string */
     private $dbFileName = null;
 
+    /**
+     * {@inheritDoc}
+     */
     public function __construct(array $opts = [])
     {
         parent::__construct($opts);
