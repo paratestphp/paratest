@@ -275,7 +275,9 @@ jobs:
         run: "vendor/bin/phpstan analyse --no-progress --error-format=checkstyle | cs2pr"
 
       - name: "Run PSalm for type-coverage"
-        run: "vendor/bin/psalm --no-progress --shepherd --show-info=false --stats"
+        run: |
+          vendor/bin/psalm --no-progress --show-info=false > /dev/null || true
+          vendor/bin/psalm --no-progress --shepherd --show-info=false --stats
 
   compile-phar:
     name: "Compile Phar"
