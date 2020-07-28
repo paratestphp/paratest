@@ -1,6 +1,7 @@
 includes:
     - phar://phpstan.phar/conf/config.level6.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
 
 parameters:
     tipsOfTheDay: false

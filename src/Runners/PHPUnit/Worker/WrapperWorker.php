@@ -119,7 +119,8 @@ class WrapperWorker extends BaseWorker
     }
 
     /**
-     * @deprecated
+     * @internal
+     *
      * This function consumes a lot of CPU while waiting for
      * the worker to finish. Use it only in testing paratest
      * itself.
