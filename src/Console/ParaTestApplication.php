@@ -20,7 +20,7 @@ class ParaTestApplication extends Application
 
     public function __construct()
     {
-        parent::__construct(self::NAME, VersionProvider::getVersion(self::VERSION));
+        parent::__construct(self::NAME);
     }
 
     /**
