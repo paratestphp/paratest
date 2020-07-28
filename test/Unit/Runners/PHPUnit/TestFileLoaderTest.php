@@ -18,13 +18,13 @@ class TestFileLoaderTest extends TestBase
     {
         $options        = new Options(['group' => 'group1']);
         $testFileLoader = new TestFileLoader($options);
-        $this->assertEquals($options, $this->getObjectValue($testFileLoader, 'options'));
+        static::assertEquals($options, $this->getObjectValue($testFileLoader, 'options'));
     }
 
     public function testOptionsCanBeNull(): void
     {
         $testFileLoader = new TestFileLoader();
-        $this->assertNull($this->getObjectValue($testFileLoader, 'options'));
+        static::assertNull($this->getObjectValue($testFileLoader, 'options'));
     }
 
     public function testLoadThrowsExceptionWithInvalidPath(): void

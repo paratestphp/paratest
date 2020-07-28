@@ -12,6 +12,6 @@ class TestMethodTest extends TestBase
     public function testConstructor(): void
     {
         $testMethod = new TestMethod('pathToFile', ['methodName']);
-        $this->assertEquals('pathToFile', $this->getObjectValue($testMethod, 'path'));
+        static::assertEquals('pathToFile', $this->getObjectValue($testMethod, 'path'));
     }
 }

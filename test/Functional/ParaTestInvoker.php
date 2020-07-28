@@ -74,7 +74,7 @@ class ParaTestInvoker
                 $switch = '-' . $switch;
             }
 
-            $cmd .= sprintf(' %s', $value ? $switch . ' ' . $value : $switch);
+            $cmd .= sprintf(' %s', $value !== null ? $switch . ' ' . $value : $switch);
         }
 
         $cmd .= sprintf(' %s', $this->path);

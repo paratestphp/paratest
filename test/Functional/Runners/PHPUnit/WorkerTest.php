@@ -94,13 +94,13 @@ class WorkerTest extends TestBase
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker();
         $worker->start($this->phpunitWrapper);
-        $this->assertTrue($worker->isFree());
+        static::assertTrue($worker->isFree());
 
         $worker->execute($testCmd);
-        $this->assertFalse($worker->isFree());
+        static::assertFalse($worker->isFree());
 
         $worker->waitForFinishedJob();
-        $this->assertTrue($worker->isFree());
+        static::assertTrue($worker->isFree());
     }
 
     /**
@@ -109,14 +109,14 @@ class WorkerTest extends TestBase
     public function testTellsWhenItsStopped(): void
     {
         $worker = new WrapperWorker();
-        $this->assertFalse($worker->isRunning());
+        static::assertFalse($worker->isRunning());
 
         $worker->start($this->phpunitWrapper);
-        $this->assertTrue($worker->isRunning());
+        static::assertTrue($worker->isRunning());
 
         $worker->stop();
         $worker->waitForStop();
-        $this->assertFalse($worker->isRunning());
+        static::assertFalse($worker->isRunning());
     }
 
     /**
@@ -128,7 +128,7 @@ class WorkerTest extends TestBase
         $worker = new WrapperWorker();
         $this->setPerReflection($worker, 'proc', $this->createSomeClosedProcess());
         $this->setPerReflection($worker, 'pipes', [0 => true]);
-        $this->assertTrue($worker->isCrashed());
+        static::assertTrue($worker->isCrashed());
     }
 
     /**
@@ -201,9 +201,9 @@ class WorkerTest extends TestBase
 
     private function assertJUnitLogIsValid(string $logFile): void
     {
-        $this->assertFileExists($logFile);
+        static::assertFileExists($logFile);
         $log   = new SimpleXMLElement(file_get_contents($logFile));
         $count = count($log->testsuite->testcase);
-        $this->assertGreaterThan(1, $count, 'Not even a test has been executed');
+        static::assertGreaterThan(1, $count, 'Not even a test has been executed');
     }
 }

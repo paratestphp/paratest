@@ -106,11 +106,11 @@ class WrapperRunner extends BaseRunner
                 try {
                     $this->flushWorker($worker);
                     $pending = array_shift($this->pending);
-                    if ($pending) {
+                    if ($pending !== null) {
                         $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
                     }
                 } catch (Throwable $e) {
-                    if ($this->options->verbose) {
+                    if ($this->options->verbose > 0) {
                         $worker->stop();
                         echo "Error while assigning pending tests for worker $key: {$e->getMessage()}" . PHP_EOL;
                         echo $worker->getCrashReport();
@@ -142,7 +142,7 @@ class WrapperRunner extends BaseRunner
                         unset($toStop[$index]);
                     }
                 } catch (Throwable $e) {
-                    if ($this->options->verbose) {
+                    if ($this->options->verbose > 0) {
                         $worker->stop();
                         unset($toStop[$index]);
                         echo "Error while waiting to finish for worker $index: {$e->getMessage()}" . PHP_EOL;
@@ -231,9 +231,9 @@ class WrapperRunner extends BaseRunner
 
     private function setExitCode(): void
     {
-        if ($this->interpreter->getTotalErrors()) {
+        if ($this->interpreter->getTotalErrors() > 0) {
             $this->exitcode = self::PHPUNIT_ERRORS;
-        } elseif ($this->interpreter->getTotalFailures()) {
+        } elseif ($this->interpreter->getTotalFailures() > 0) {
             $this->exitcode = self::PHPUNIT_FAILURES;
         } else {
             $this->exitcode = 0;

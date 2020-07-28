@@ -296,7 +296,7 @@ class ResultPrinter
     protected function isSkippedIncompleTestCanBeTracked(Options $options): bool
     {
         return $options->functional
-            || (empty($options->groups) && empty($options->excludeGroups));
+            || (count($options->groups) === 0 && count($options->excludeGroups) === 0);
     }
 
     /**
@@ -429,7 +429,7 @@ class ResultPrinter
             ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
             $this->casesProcessed,
             $this->totalCases,
-            floor(($this->totalCases ? $this->casesProcessed / $this->totalCases : 0) * 100)
+            floor(($this->totalCases > 0 ? $this->casesProcessed / $this->totalCases : 0) * 100)
         );
     }
 

@@ -39,7 +39,7 @@ class ParsedClassTest extends TestBase
 
     public function testGetMethodsReturnsMethods(): void
     {
-        $this->assertEquals($this->methods, $this->class->getMethods());
+        static::assertEquals($this->methods, $this->class->getMethods());
     }
 
     public function testGetMethodsMultipleAnnotationsReturnsMethods(): void
@@ -67,13 +67,13 @@ class ParsedClassTest extends TestBase
         );
         $annotatedClass = new ParsedClass('', 'MyTestClass', '', [$goodMethod, $goodMethod2, $badMethod]);
         $methods        = $annotatedClass->getMethods(['group' => 'group1,group2']);
-        $this->assertEquals([$goodMethod, $goodMethod2], $methods);
+        static::assertEquals([$goodMethod, $goodMethod2], $methods);
     }
 
     public function testGetMethodsExceptsAdditionalAnnotationFilter(): void
     {
         $group1 = $this->class->getMethods(['group' => 'group1']);
-        $this->assertCount(1, $group1);
-        $this->assertEquals($this->methods[0], $group1[0]);
+        static::assertCount(1, $group1);
+        static::assertEquals($this->methods[0], $group1[0]);
     }
 }

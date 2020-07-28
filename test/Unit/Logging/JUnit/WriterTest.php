@@ -31,18 +31,18 @@ class WriterTest extends TestBase
 
     public function testConstructor(): void
     {
-        $this->assertInstanceOf(
+        static::assertInstanceOf(
             LogInterpreter::class,
             $this->getObjectValue($this->writer, 'interpreter')
         );
-        $this->assertEquals('test/fixtures/tests/', $this->writer->getName());
+        static::assertEquals('test/fixtures/tests/', $this->writer->getName());
     }
 
     public function testSingleFileLog(): void
     {
         $this->addPassingReader();
         $xml = $this->writer->getXml();
-        $this->assertXmlStringEqualsXmlString(file_get_contents($this->passing), $xml);
+        static::assertXmlStringEqualsXmlString(file_get_contents($this->passing), $xml);
     }
 
     public function testMixedFileLog(): void
@@ -52,7 +52,7 @@ class WriterTest extends TestBase
         $this->interpreter->addReader($reader);
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml    = $writer->getXml();
-        $this->assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
+        static::assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
     }
 
     public function testDataProviderWithSpecialCharacters(): void
@@ -62,7 +62,7 @@ class WriterTest extends TestBase
         $this->interpreter->addReader($reader);
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml    = $writer->getXml();
-        $this->assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
+        static::assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
     }
 
     public function testWrite(): void
@@ -70,7 +70,7 @@ class WriterTest extends TestBase
         $output = FIXTURES . DS . 'logs' . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
-        $this->assertXmlStringEqualsXmlString(file_get_contents($this->passing), file_get_contents($output));
+        static::assertXmlStringEqualsXmlString(file_get_contents($this->passing), file_get_contents($output));
         if (! file_exists($output)) {
             return;
         }
@@ -96,7 +96,7 @@ class WriterTest extends TestBase
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml    = $writer->getXml();
 
-        $this->assertStringNotContainsString(
+        static::assertStringNotContainsString(
             'line=""',
             $xml,
             'Expected no empty line attributes (line=""), but found one.'

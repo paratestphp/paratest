@@ -43,11 +43,11 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
         string $testPattern = '\d+',
         string $assertionPattern = '\d+'
     ): void {
-        $this->assertMatchesRegularExpression(
+        static::assertMatchesRegularExpression(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
             $proc->getOutput()
         );
-        $this->assertEquals(0, $proc->getExitCode());
+        static::assertEquals(0, $proc->getExitCode());
     }
 
     /**
@@ -60,6 +60,6 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
             return;
         }
 
-        $this->markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
+        static::markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
     }
 }

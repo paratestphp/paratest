@@ -104,7 +104,7 @@ class TestFileLoader
 
         $pattern = $pattern ?? self::TEST_PATTERN;
 
-        $path = $path ?: $this->options->path;
+        $path = $path !== '' ? $path : $this->options->path;
 
         if (! file_exists($path)) {
             throw new InvalidArgumentException("$path is not a valid directory or file");

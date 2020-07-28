@@ -23,9 +23,9 @@ class OutputTest extends FunctionalTestBase
     public function testDefaultMessagesDisplayed(): void
     {
         $output = $this->paratest->execute(['p' => 5])->getOutput();
-        $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
-        $this->assertStringContainsString('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
-        $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
+        static::assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        static::assertStringContainsString('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
+        static::assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
     public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
@@ -33,7 +33,7 @@ class OutputTest extends FunctionalTestBase
         $output = $this->paratest
             ->execute(['configuration' => 'nope.xml'])
             ->getOutput();
-        $this->assertStringContainsString('Could not read "nope.xml"', $output);
+        static::assertStringContainsString('Could not read "nope.xml"', $output);
     }
 
     public function testMessagePrintedWhenFunctionalModeIsOn(): void
@@ -41,16 +41,16 @@ class OutputTest extends FunctionalTestBase
         $output = $this->paratest
             ->execute(['functional', 'p' => 5])
             ->getOutput();
-        $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
-        $this->assertStringContainsString('Functional mode is ON.', $output);
-        $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
+        static::assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        static::assertStringContainsString('Functional mode is ON.', $output);
+        static::assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
     public function testProcCountIsReportedWithProcOption(): void
     {
         $output = $this->paratest->execute(['p' => 1])
             ->getOutput();
-        $this->assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
-        $this->assertMatchesRegularExpression('/[.F]{4}/', $output);
+        static::assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
+        static::assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 }

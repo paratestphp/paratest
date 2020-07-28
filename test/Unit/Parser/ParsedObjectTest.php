@@ -20,24 +20,24 @@ class ParsedObjectTest extends TestBase
     public function testHasAnnotationReturnsTrueWhenAnnotationPresent(): void
     {
         $hasAnnotation = $this->parsedClass->hasAnnotation('test');
-        $this->assertTrue($hasAnnotation);
+        static::assertTrue($hasAnnotation);
     }
 
     public function testHasAnnotationReturnsFalseWhenAnnotationNotPresent(): void
     {
         $hasAnnotation = $this->parsedClass->hasAnnotation('pizza');
-        $this->assertFalse($hasAnnotation);
+        static::assertFalse($hasAnnotation);
     }
 
     public function testHasAnnotationReturnsTrueWhenAnnotationAndValueMatch(): void
     {
         $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group1');
-        $this->assertTrue($hasAnnotation);
+        static::assertTrue($hasAnnotation);
     }
 
     public function testHasAnnotationReturnsFalseWhenAnnotationAndValueDontMatch(): void
     {
         $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group2');
-        $this->assertFalse($hasAnnotation);
+        static::assertFalse($hasAnnotation);
     }
 }

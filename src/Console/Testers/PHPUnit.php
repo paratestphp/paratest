@@ -120,7 +120,8 @@ class PHPUnit extends Tester
         $argument = $input->getArgument('path');
         $option   = $input->getOption('path');
 
-        return $argument || $option;
+        return ($argument !== null && $argument !== '')
+            || ($option !== null && $option !== '');
     }
 
     /**
@@ -178,7 +179,7 @@ class PHPUnit extends Tester
             $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');
         }
 
-        if ($path) {
+        if ($path !== null && $path !== '') {
             $options = array_merge(['path' => $path], $options);
         }
 
@@ -200,7 +201,7 @@ class PHPUnit extends Tester
      */
     public function requireBootstrap(string $file): void
     {
-        if (! $file) {
+        if ($file === '') {
             return;
         }
 
@@ -260,13 +261,14 @@ class PHPUnit extends Tester
         $config    = $this->getConfig($input);
         $bootstrap = $config->getBootstrap();
 
-        return $bootstrap ? $config->getConfigDir() . $bootstrap : '';
+        return $bootstrap !== '' ? $config->getConfigDir() . $bootstrap : '';
     }
 
     private function initializeRunner(InputInterface $input): BaseRunner
     {
-        if ($input->getOption('runner')) {
-            $runnerClass = $input->getOption('runner') ?: '';
+        $runner = $input->getOption('runner');
+        if ($runner !== null) {
+            $runnerClass = $runner;
             $runnerClass = class_exists($runnerClass)
                 ? $runnerClass
                 : '\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass;

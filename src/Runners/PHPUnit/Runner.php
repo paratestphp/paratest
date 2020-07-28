@@ -46,7 +46,7 @@ class Runner extends BaseRunner
     {
         parent::run();
 
-        while (count($this->running) || count($this->pending)) {
+        while (count($this->running) > 0 || count($this->pending) > 0) {
             foreach ($this->running as $key => $test) {
                 try {
                     if (! $this->testIsStillRunning($test)) {
@@ -54,7 +54,7 @@ class Runner extends BaseRunner
                         $this->releaseToken($key);
                     }
                 } catch (Throwable $e) {
-                    if ($this->options->verbose) {
+                    if ($this->options->verbose > 0) {
                         echo "An error for $key: {$e->getMessage()}" . PHP_EOL;
                         echo "Command: {$test->getLastCommand()}" . PHP_EOL;
                         echo 'StdErr: ' . $test->getStderr() . PHP_EOL;
@@ -98,7 +98,7 @@ class Runner extends BaseRunner
     private function fillRunQueue(): void
     {
         $opts = $this->options;
-        while (count($this->pending) && count($this->running) < $opts->processes) {
+        while (count($this->pending) > 0 && count($this->running) < $opts->processes) {
             $tokenData = $this->getNextAvailableToken();
             if ($tokenData === false) {
                 continue;
@@ -111,7 +111,7 @@ class Runner extends BaseRunner
             ] + Habitat::getAll();
             $this->running[$tokenData['token']] = array_shift($this->pending)
                 ->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
-            if (! $opts->verbose) {
+            if ($opts->verbose === 0) {
                 continue;
             }
 
@@ -142,7 +142,7 @@ class Runner extends BaseRunner
 
         if ($test->getExitCode() === self::PHPUNIT_FATAL_ERROR) {
             $errorOutput = $test->getStderr();
-            if (! $errorOutput) {
+            if ($errorOutput === '') {
                 $errorOutput = $test->getStdout();
             }
 
@@ -206,7 +206,7 @@ class Runner extends BaseRunner
      */
     protected function releaseToken(int $tokenIdentifier): void
     {
-        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier) {
+        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier): bool {
             return $val['token'] === $tokenIdentifier;
         });
 
@@ -220,7 +220,7 @@ class Runner extends BaseRunner
      */
     protected function acquireToken(int $tokenIdentifier): void
     {
-        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier) {
+        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier): bool {
             return $val['token'] === $tokenIdentifier;
         });
 

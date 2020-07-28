@@ -72,7 +72,7 @@ class PHPUnitTest extends TestBase
         ]);
         $tester      = new PHPUnit();
         $tester->configure($testCommand);
-        $this->assertEquals($definition, $testCommand->getDefinition());
+        static::assertEquals($definition, $testCommand->getDefinition());
     }
 
     public function testRequireBootstrapIsChdirResistent(): void
@@ -82,6 +82,6 @@ class PHPUnitTest extends TestBase
         $cwd    = getcwd();
 
         $tester->requireBootstrap($file);
-        $this->assertEquals($cwd, getcwd());
+        static::assertEquals($cwd, getcwd());
     }
 }

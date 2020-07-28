@@ -11,7 +11,6 @@ use ParaTest\Logging\JUnit\TestSuite;
 use function array_merge;
 use function array_reduce;
 use function array_values;
-use function assert;
 use function count;
 use function reset;
 use function ucfirst;
@@ -105,12 +104,11 @@ class LogInterpreter extends MetaProvider
         $file  = $suite->file;
 
         foreach ($cases as $case) {
-            assert($case instanceof TestCase);
-            if (empty($case->class)) {
+            if ($case->class === '') {
                 $case->class = $class;
             }
 
-            if (! empty($case->file)) {
+            if ($case->file !== '') {
                 continue;
             }
 
@@ -191,7 +189,7 @@ class LogInterpreter extends MetaProvider
      */
     private function accumulate(string $method)
     {
-        return array_reduce($this->readers, static function ($result, $reader) use ($method) {
+        return array_reduce($this->readers, static function (int $result, Reader $reader) use ($method): int {
             $result += $reader->$method();
 
             return $result;

@@ -48,24 +48,24 @@ class ReaderTest extends TestBase
 
     public function testIsSingleSuiteReturnsTrueForSingleSuite(): void
     {
-        $this->assertTrue($this->single->isSingleSuite());
+        static::assertTrue($this->single->isSingleSuite());
     }
 
     public function testIsSingleSuiteReturnsFalseForMultipleSuites(): void
     {
-        $this->assertFalse($this->mixed->isSingleSuite());
+        static::assertFalse($this->mixed->isSingleSuite());
     }
 
     public function testMixedSuiteShouldConstructRootSuite(): TestSuite
     {
         $suites = $this->mixed->getSuites();
-        $this->assertCount(1, $suites);
-        $this->assertEquals('test/fixtures/tests/', $suites[0]->name);
-        $this->assertEquals('7', $suites[0]->tests);
-        $this->assertEquals('6', $suites[0]->assertions);
-        $this->assertEquals('2', $suites[0]->failures);
-        $this->assertEquals('1', $suites[0]->errors);
-        $this->assertEquals('0.007625', $suites[0]->time);
+        static::assertCount(1, $suites);
+        static::assertEquals('test/fixtures/tests/', $suites[0]->name);
+        static::assertEquals('7', $suites[0]->tests);
+        static::assertEquals('6', $suites[0]->assertions);
+        static::assertEquals('2', $suites[0]->failures);
+        static::assertEquals('1', $suites[0]->errors);
+        static::assertEquals('0.007625', $suites[0]->time);
 
         return $suites[0];
     }
@@ -75,18 +75,18 @@ class ReaderTest extends TestBase
      */
     public function testMixedSuiteConstructsChildSuites(TestSuite $suite): TestSuite
     {
-        $this->assertCount(3, $suite->suites);
+        static::assertCount(3, $suite->suites);
         $first = $suite->suites[0];
-        $this->assertEquals('UnitTestWithClassAnnotationTest', $first->name);
-        $this->assertEquals(
+        static::assertEquals('UnitTestWithClassAnnotationTest', $first->name);
+        static::assertEquals(
             '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
-        $this->assertEquals('3', $first->tests);
-        $this->assertEquals('3', $first->assertions);
-        $this->assertEquals('1', $first->failures);
-        $this->assertEquals('0', $first->errors);
-        $this->assertEquals('0.006109', $first->time);
+        static::assertEquals('3', $first->tests);
+        static::assertEquals('3', $first->assertions);
+        static::assertEquals('1', $first->failures);
+        static::assertEquals('0', $first->errors);
+        static::assertEquals('0.006109', $first->time);
 
         return $first;
     }
@@ -96,27 +96,27 @@ class ReaderTest extends TestBase
      */
     public function testMixedSuiteConstructsTestCases(TestSuite $suite): void
     {
-        $this->assertCount(3, $suite->cases);
+        static::assertCount(3, $suite->cases);
         $first = $suite->cases[0];
-        $this->assertEquals('testTruth', $first->name);
-        $this->assertEquals('UnitTestWithClassAnnotationTest', $first->class);
-        $this->assertEquals(
+        static::assertEquals('testTruth', $first->name);
+        static::assertEquals('UnitTestWithClassAnnotationTest', $first->class);
+        static::assertEquals(
             '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
-        $this->assertEquals('10', $first->line);
-        $this->assertEquals('1', $first->assertions);
-        $this->assertEquals('0.001760', $first->time);
+        static::assertEquals('10', $first->line);
+        static::assertEquals('1', $first->assertions);
+        static::assertEquals('0.001760', $first->time);
     }
 
     public function testMixedSuiteCasesLoadFailures(): void
     {
         $suites = $this->mixed->getSuites();
         $case   = $suites[0]->suites[0]->cases[1];
-        $this->assertCount(1, $case->failures);
+        static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
-        $this->assertEquals(ExpectationFailedException::class, $failure['type']);
-        $this->assertEquals(
+        static::assertEquals(ExpectationFailedException::class, $failure['type']);
+        static::assertEquals(
             "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
             '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20',
             $failure['text']
@@ -127,10 +127,10 @@ class ReaderTest extends TestBase
     {
         $suites = $this->mixed->getSuites();
         $case   = $suites[0]->suites[1]->cases[0];
-        $this->assertCount(1, $case->errors);
+        static::assertCount(1, $case->errors);
         $error = $case->errors[0];
-        $this->assertEquals('Exception', $error['type']);
-        $this->assertEquals(
+        static::assertEquals('Exception', $error['type']);
+        static::assertEquals(
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
                 '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12',
             $error['text']
@@ -140,17 +140,17 @@ class ReaderTest extends TestBase
     public function testSingleSuiteShouldConstructRootSuite(): TestSuite
     {
         $suites = $this->single->getSuites();
-        $this->assertCount(1, $suites);
-        $this->assertEquals('UnitTestWithMethodAnnotationsTest', $suites[0]->name);
-        $this->assertEquals(
+        static::assertCount(1, $suites);
+        static::assertEquals('UnitTestWithMethodAnnotationsTest', $suites[0]->name);
+        static::assertEquals(
             '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php',
             $suites[0]->file
         );
-        $this->assertEquals('3', $suites[0]->tests);
-        $this->assertEquals('3', $suites[0]->assertions);
-        $this->assertEquals('1', $suites[0]->failures);
-        $this->assertEquals('0', $suites[0]->errors);
-        $this->assertEquals('0.005895', $suites[0]->time);
+        static::assertEquals('3', $suites[0]->tests);
+        static::assertEquals('3', $suites[0]->assertions);
+        static::assertEquals('1', $suites[0]->failures);
+        static::assertEquals('0', $suites[0]->errors);
+        static::assertEquals('0.005895', $suites[0]->time);
 
         return $suites[0];
     }
@@ -162,7 +162,7 @@ class ReaderTest extends TestBase
      */
     public function testSingleSuiteShouldHaveNoChildSuites($suite): void
     {
-        $this->assertCount(0, $suite->suites);
+        static::assertCount(0, $suite->suites);
     }
 
     /**
@@ -172,27 +172,27 @@ class ReaderTest extends TestBase
      */
     public function testSingleSuiteConstructsTestCases($suite): void
     {
-        $this->assertCount(3, $suite->cases);
+        static::assertCount(3, $suite->cases);
         $first = $suite->cases[0];
-        $this->assertEquals('testTruth', $first->name);
-        $this->assertEquals('UnitTestWithMethodAnnotationsTest', $first->class);
-        $this->assertEquals(
+        static::assertEquals('testTruth', $first->name);
+        static::assertEquals('UnitTestWithMethodAnnotationsTest', $first->class);
+        static::assertEquals(
             '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php',
             $first->file
         );
-        $this->assertEquals('7', $first->line);
-        $this->assertEquals('1', $first->assertions);
-        $this->assertEquals('0.001632', $first->time);
+        static::assertEquals('7', $first->line);
+        static::assertEquals('1', $first->assertions);
+        static::assertEquals('0.001632', $first->time);
     }
 
     public function testSingleSuiteCasesLoadFailures(): void
     {
         $suites = $this->single->getSuites();
         $case   = $suites[0]->cases[1];
-        $this->assertCount(1, $case->failures);
+        static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
-        $this->assertEquals(ExpectationFailedException::class, $failure['type']);
-        $this->assertEquals(
+        static::assertEquals(ExpectationFailedException::class, $failure['type']);
+        static::assertEquals(
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18',
             $failure['text']
@@ -202,46 +202,46 @@ class ReaderTest extends TestBase
     public function testEmptySuiteConstructsTestCase(): void
     {
         $suites = $this->empty->getSuites();
-        $this->assertCount(1, $suites);
+        static::assertCount(1, $suites);
 
         $suite = $suites[0];
-        $this->assertEquals('', $suite->name);
-        $this->assertEquals('', $suite->file);
-        $this->assertEquals(0, $suite->tests);
-        $this->assertEquals(0, $suite->assertions);
-        $this->assertEquals(0, $suite->failures);
-        $this->assertEquals(0, $suite->errors);
-        $this->assertEquals(0, $suite->time);
+        static::assertEquals('', $suite->name);
+        static::assertEquals('', $suite->file);
+        static::assertEquals(0, $suite->tests);
+        static::assertEquals(0, $suite->assertions);
+        static::assertEquals(0, $suite->failures);
+        static::assertEquals(0, $suite->errors);
+        static::assertEquals(0, $suite->time);
     }
 
     public function testMixedGetTotals(): void
     {
-        $this->assertEquals(7, $this->mixed->getTotalTests());
-        $this->assertEquals(6, $this->mixed->getTotalAssertions());
-        $this->assertEquals(2, $this->mixed->getTotalFailures());
-        $this->assertEquals(1, $this->mixed->getTotalErrors());
-        $this->assertEquals(0.007625, $this->mixed->getTotalTime());
+        static::assertEquals(7, $this->mixed->getTotalTests());
+        static::assertEquals(6, $this->mixed->getTotalAssertions());
+        static::assertEquals(2, $this->mixed->getTotalFailures());
+        static::assertEquals(1, $this->mixed->getTotalErrors());
+        static::assertEquals(0.007625, $this->mixed->getTotalTime());
     }
 
     public function testSingleGetTotals(): void
     {
-        $this->assertEquals(3, $this->single->getTotalTests());
-        $this->assertEquals(3, $this->single->getTotalAssertions());
-        $this->assertEquals(1, $this->single->getTotalFailures());
-        $this->assertEquals(0, $this->single->getTotalErrors());
-        $this->assertEquals(0.005895, $this->single->getTotalTime());
+        static::assertEquals(3, $this->single->getTotalTests());
+        static::assertEquals(3, $this->single->getTotalAssertions());
+        static::assertEquals(1, $this->single->getTotalFailures());
+        static::assertEquals(0, $this->single->getTotalErrors());
+        static::assertEquals(0.005895, $this->single->getTotalTime());
     }
 
     public function testMixedGetFailureMessages(): void
     {
         $failures = $this->mixed->getFailures();
-        $this->assertCount(2, $failures);
-        $this->assertEquals(
+        static::assertCount(2, $failures);
+        static::assertEquals(
             "UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20',
             $failures[0]
         );
-        $this->assertEquals(
+        static::assertEquals(
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false." .
                 "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest." .
                 'php:18',
@@ -252,8 +252,8 @@ class ReaderTest extends TestBase
     public function testMixedGetErrorMessages(): void
     {
         $errors = $this->mixed->getErrors();
-        $this->assertCount(1, $errors);
-        $this->assertEquals(
+        static::assertCount(1, $errors);
+        static::assertEquals(
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
                 '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12',
             $errors[0]
@@ -263,8 +263,8 @@ class ReaderTest extends TestBase
     public function testSingleGetMessages(): void
     {
         $failures = $this->single->getFailures();
-        $this->assertCount(1, $failures);
-        $this->assertEquals(
+        static::assertCount(1, $failures);
+        static::assertEquals(
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
                 '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18',
             $failures[0]
@@ -277,15 +277,15 @@ class ReaderTest extends TestBase
     public function testGetMultiErrorsMessages(): void
     {
         $errors = $this->multi_errors->getErrors();
-        $this->assertCount(2, $errors);
-        $this->assertEquals(
+        static::assertCount(2, $errors);
+        static::assertEquals(
             "Risky Test\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
             'Custom error log on result test with multiple errors!',
             $errors[0]
         );
-        $this->assertEquals(
+        static::assertEquals(
             "Risky Test\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
@@ -297,7 +297,7 @@ class ReaderTest extends TestBase
     public function testMixedGetFeedback(): void
     {
         $feedback = $this->mixed->getFeedback();
-        $this->assertEquals(['.', 'F', '.', 'E', '.', 'F', '.'], $feedback);
+        static::assertEquals(['.', 'F', '.', 'E', '.', 'F', '.'], $feedback);
     }
 
     public function testRemoveLog(): void
@@ -307,7 +307,7 @@ class ReaderTest extends TestBase
         file_put_contents($tmp, $contents);
         $reader = new Reader($tmp);
         $reader->removeLog();
-        $this->assertFileDoesNotExist($tmp);
+        static::assertFileDoesNotExist($tmp);
     }
 
     /**
@@ -336,7 +336,7 @@ class ReaderTest extends TestBase
         $resultFail  = $node->getSuites()[0]->suites[2]->cases[1]->failures[0]['text'];
         $resultError = $node->getSuites()[0]->suites[1]->cases[1]->errors[0]['text'];
 
-        $this->assertEquals($failLog, $resultFail);
-        $this->assertEquals($errorLog, $resultError);
+        static::assertEquals($failLog, $resultFail);
+        static::assertEquals($errorLog, $resultError);
     }
 }

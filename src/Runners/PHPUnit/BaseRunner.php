@@ -169,7 +169,7 @@ abstract class BaseRunner
             return;
         }
 
-        $this->coverage = new CoverageMerger((int) $this->options->coverageTestLimit);
+        $this->coverage = new CoverageMerger($this->options->coverageTestLimit);
     }
 
     protected function hasCoverage(): bool
@@ -194,9 +194,14 @@ abstract class BaseRunner
         $variables = $this->options->filtered['configuration']->getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            putenv(sprintf('%s=%s', $key, getenv($key, true) ?: $value));
+            $localEnvValue = getenv($key, true);
+            if ($localEnvValue === false) {
+                $localEnvValue = $value;
+            }
 
-            $_ENV[$key] = getenv($key, true) ?: $value;
+            putenv(sprintf('%s=%s', $key, $localEnvValue));
+
+            $_ENV[$key] = $localEnvValue;
         }
     }
 

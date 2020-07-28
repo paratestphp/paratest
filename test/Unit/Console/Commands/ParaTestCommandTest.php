@@ -29,8 +29,8 @@ class ParaTestCommandTest extends TestBase
 
     public function testConstructor(): void
     {
-        $this->assertEquals('paratest', $this->command->getName());
-        $this->assertSame($this->tester, $this->getObjectValue($this->command, 'tester'));
+        static::assertEquals('paratest', $this->command->getName());
+        static::assertSame($this->tester, $this->getObjectValue($this->command, 'tester'));
     }
 
     public function testApplicationFactory(): void
@@ -38,8 +38,8 @@ class ParaTestCommandTest extends TestBase
         $application = ParaTestCommand::applicationFactory($this->tester);
         $commands    = $application->all();
 
-        $this->assertArrayHasKey($this->command->getName(), $commands);
-        $this->assertInstanceOf(ParaTestCommand::class, $commands[$this->command->getName()]);
+        static::assertArrayHasKey($this->command->getName(), $commands);
+        static::assertInstanceOf(ParaTestCommand::class, $commands[$this->command->getName()]);
     }
 
     /**
@@ -221,7 +221,7 @@ class ParaTestCommandTest extends TestBase
         $command->mergeApplicationDefinition();
         $definition = $command->getDefinition();
 
-        $this->assertEquals($expected, $definition);
+        static::assertEquals($expected, $definition);
     }
 
     public function testExecuteInvokesTestersExecuteMethod(): void
@@ -230,11 +230,11 @@ class ParaTestCommandTest extends TestBase
         $output = $this->getMockBuilder(OutputInterface::class)->getMock();
         $tester = $this->getMockBuilder(Tester::class)->getMock();
         $tester
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('execute')
             ->with(
-                $this->equalTo($input),
-                $this->equalTo($output)
+                static::equalTo($input),
+                static::equalTo($output)
             );
         $command = new ParaTestCommand($tester);
         $command->execute($input, $output);

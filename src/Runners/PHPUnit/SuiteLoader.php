@@ -94,7 +94,7 @@ class SuiteLoader
      */
     public function load(string $path = ''): void
     {
-        if ($path) {
+        if ($path !== '') {
             $testFileLoader = new TestFileLoader($this->options);
             $this->files    = array_merge(
                 $this->files,
@@ -106,7 +106,7 @@ class SuiteLoader
         ) {
             $this->suitesName = $this->configuration->getSuitesName();
         } elseif ($this->configuration->hasSuites()) {
-            if (! empty($this->options->testsuite)) {
+            if (is_array($this->options->testsuite) && count($this->options->testsuite) > 0) {
                 $suites = [];
                 foreach ($this->options->testsuite as $testsuite) {
                     $suites = array_merge($suites, $this->configuration->getSuiteByName($testsuite));
@@ -126,7 +126,7 @@ class SuiteLoader
             }
         }
 
-        if (! $this->files && ! is_array($this->suitesName)) {
+        if (count($this->files) === 0 && ! is_array($this->suitesName)) {
             throw new RuntimeException('No path or configuration provided (tests must end with Test.php)');
         }
 
@@ -149,7 +149,7 @@ class SuiteLoader
             foreach ($this->files as $path) {
                 try {
                     $parser = new Parser($path);
-                    if ($class = $parser->getClass()) {
+                    if (($class = $parser->getClass()) !== null) {
                         $suite = $this->createSuite($path, $class);
                         if (count($suite->getFunctions()) > 0) {
                             $this->loadedSuites[$path] = $suite;
@@ -186,13 +186,13 @@ class SuiteLoader
      */
     protected function getMethodBatches(ParsedClass $class): array
     {
-        $classMethods = $class->getMethods($this->options ? $this->options->annotations : []);
-        $maxBatchSize = $this->options && $this->options->functional ? $this->options->maxBatchSize : 0;
+        $classMethods = $class->getMethods($this->options !== null ? $this->options->annotations : []);
+        $maxBatchSize = $this->options !== null && $this->options->functional ? $this->options->maxBatchSize : 0;
         $batches      = [];
         foreach ($classMethods as $method) {
             $tests = $this->getMethodTests($class, $method);
             // if filter passed to paratest then method tests can be blank if not match to filter
-            if (! $tests) {
+            if (count($tests) === 0) {
                 continue;
             }
 
@@ -287,24 +287,24 @@ class SuiteLoader
      */
     protected function testMatchGroupOptions(array $groups): bool
     {
-        if (empty($groups)) {
+        if (count($groups) === 0 || $this->options === null) {
             return true;
         }
 
         if (
-            ! empty($this->options->groups)
-            && ! array_intersect($groups, $this->options->groups)
+            count($this->options->groups) > 0
+            && count(array_intersect($groups, $this->options->groups)) === 0
         ) {
             return false;
         }
 
-        return empty($this->options->excludeGroups)
-            || ! array_intersect($groups, $this->options->excludeGroups);
+        return count($this->options->excludeGroups) === 0
+            || count(array_intersect($groups, $this->options->excludeGroups)) === 0;
     }
 
     protected function testMatchFilterOptions(string $className, string $name): bool
     {
-        if (empty($this->options->filter)) {
+        if ($this->options === null || $this->options->filter === null) {
             return true;
         }
 
