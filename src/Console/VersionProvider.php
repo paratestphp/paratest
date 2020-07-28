@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Console;
 
-use Symfony\Component\Process\Process;
-
 use function file_exists;
 use function file_get_contents;
 use function is_array;
 use function is_readable;
 use function json_decode;
-use function trim;
 
 /**
  * Obtain version information of the ParaTest application itself based on
@@ -39,19 +36,7 @@ final class VersionProvider
     public function getParaTestVersion(): ?string
     {
         return $this->getComposerInstalledVersion(self::PACKAGE)
-            ?? $this->getGitVersion()
             ?? $this->default;
-    }
-
-    public function getGitVersion(): ?string
-    {
-        $cmd     = 'git describe --tags --always --first-parent';
-        $process = Process::fromShellCommandline($cmd, __DIR__);
-        if ($process->run() !== 0) {
-            return null;
-        }
-
-        return trim($process->getOutput());
     }
 
     public function getComposerInstalledVersion(string $package): ?string

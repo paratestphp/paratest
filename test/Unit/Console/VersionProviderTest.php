@@ -36,12 +36,4 @@ class VersionProviderTest extends TestCase
         $actual = $provider->getComposerInstalledVersion('foooo/barazzoraz');
         $this->assertNull($actual, 'No version for non-existent package');
     }
-
-    public function testGitVersion(): void
-    {
-        $provider = new VersionProvider();
-        $actual   = $provider->getGitVersion();
-        $this->assertIsString($actual, 'Git is enabled and works');
-        $this->assertMatchesRegularExpression('~^\d.\d(?:.\d+)?(?:-\d+-g[\da-f]+)?$~', $actual, 'Git gives a version');
-    }
 }
