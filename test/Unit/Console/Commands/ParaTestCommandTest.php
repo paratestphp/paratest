@@ -33,13 +33,44 @@ class ParaTestCommandTest extends TestBase
         $this->assertSame($this->tester, $this->getObjectValue($this->command, 'tester'));
     }
 
+    public function testApplicationFactory(): void
+    {
+        $application = ParaTestCommand::applicationFactory($this->tester);
+        $commands    = $application->all();
+
+        $this->assertArrayHasKey($this->command->getName(), $commands);
+        $this->assertInstanceOf(ParaTestCommand::class, $commands[$this->command->getName()]);
+    }
+
     /**
      * Should be configured from the ParaTest command
      * as well as the Tester it is composed of.
      */
     public function testConfiguredDefinitionWithPHPUnitTester(): void
     {
-        $options    = [
+        $options  = [
+            // Arguments
+            new InputArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
+            ),
+
+            // Default Symfony options
+            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message'),
+            new InputOption('--quiet', '-q', InputOption::VALUE_NONE, 'Do not output any message'),
+            new InputOption(
+                '--verbose',
+                '-v|vv|vvv',
+                InputOption::VALUE_NONE,
+                'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
+            ),
+            new InputOption('--version', '-V', InputOption::VALUE_NONE, 'Display this application version'),
+            new InputOption('--ansi', '', InputOption::VALUE_NONE, 'Force ANSI output'),
+            new InputOption('--no-ansi', '', InputOption::VALUE_NONE, 'Disable ANSI output'),
+            new InputOption('--no-interaction', '-n', InputOption::VALUE_NONE, 'Do not ask any interactive question'),
+
+            // Custom options
             new InputOption(
                 'processes',
                 'p',
@@ -53,7 +84,6 @@ class ParaTestCommandTest extends TestBase
                 InputOption::VALUE_NONE,
                 'Run test methods instead of classes in separate processes.'
             ),
-            new InputOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.'),
             new InputOption(
                 'phpunit',
                 null,
@@ -98,11 +128,6 @@ class ParaTestCommandTest extends TestBase
                 'Log test execution in JUnit XML format to file.'
             ),
             new InputOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.'),
-            new InputArgument(
-                'path',
-                InputArgument::OPTIONAL,
-                'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
-            ),
             new InputOption(
                 'no-test-tokens',
                 null,
@@ -183,20 +208,19 @@ class ParaTestCommandTest extends TestBase
                     'Example: --passthru-php="\'-d\' \'zend_extension=xdebug.so\'"'
             ),
             new InputOption(
-                'verbose',
-                'v',
-                InputOption::VALUE_REQUIRED,
-                'If given, debug output is printed. Example: --verbose=1'
-            ),
-            new InputOption(
                 'whitelist',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Directory to add to the coverage whitelist.'
             ),
         ];
-        $expected   = new InputDefinition($options);
-        $definition = $this->command->getDefinition();
+        $expected = new InputDefinition($options);
+
+        $application = ParaTestCommand::applicationFactory($this->tester);
+        $command     = $application->get($this->command->getName());
+        $command->mergeApplicationDefinition();
+        $definition = $command->getDefinition();
+
         $this->assertEquals($expected, $definition);
     }
 

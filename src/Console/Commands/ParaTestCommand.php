@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Console\Commands;
 
 use ParaTest\Console\Testers\Tester;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,6 +21,17 @@ class ParaTestCommand extends Command
         parent::__construct('paratest');
         $this->tester = $tester;
         $this->tester->configure($this);
+    }
+
+    public static function applicationFactory(Tester $tester): Application
+    {
+        $application = new Application('ParaTest');
+        $command     = new ParaTestCommand($tester);
+
+        $application->add($command);
+        $application->setDefaultCommand($command->getName(), true);
+
+        return $application;
     }
 
     /**
@@ -97,12 +109,6 @@ class ParaTestCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' ' .
                     '\'zend_extension=xdebug.so\'"'
-            )
-            ->addOption(
-                'verbose',
-                'v',
-                InputOption::VALUE_REQUIRED,
-                'If given, debug output is printed. Example: --verbose=1'
             )
             ->addOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
     }
