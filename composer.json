@@ -21,7 +21,6 @@
     "require": {
         "php": "^7.3",
         "ext-dom": "*",
-        "ext-json": "*",
         "ext-pcre": "*",
         "ext-pdo": "*",
         "ext-reflection": "*",
