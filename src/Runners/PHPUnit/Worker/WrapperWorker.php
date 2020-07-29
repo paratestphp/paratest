@@ -19,13 +19,20 @@ use function serialize;
 use function stream_set_blocking;
 use function strstr;
 
-class WrapperWorker extends BaseWorker
+final class WrapperWorker extends BaseWorker
 {
     /** @var string[] */
     private $commands = [];
 
     /** @var ExecutableTest|null */
     private $currentlyExecuting;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureParameters(array &$parameters): void
+    {
+    }
 
     /**
      * @return resource
@@ -80,17 +87,16 @@ class WrapperWorker extends BaseWorker
         $this->currentlyExecuting = null;
     }
 
-    protected function checkStarted(): void
+    private function checkStarted(): void
     {
         if (! $this->isStarted()) {
             throw new RuntimeException('You have to start the Worker first!');
         }
     }
 
-    public function stop(): void
+    protected function doStop(): void
     {
         fwrite($this->pipes[0], "EXIT\n");
-        parent::stop();
     }
 
     /**

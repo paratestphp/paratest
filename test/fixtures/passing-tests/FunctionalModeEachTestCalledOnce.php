@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class FunctionalModeEachTestCalledOnce extends PHPUnit\Framework\TestCase
+final class FunctionalModeEachTestCalledOnce extends PHPUnit\Framework\TestCase
 {
     public function testOne(): void
     {

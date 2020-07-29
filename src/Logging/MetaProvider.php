@@ -48,7 +48,7 @@ abstract class MetaProvider
      *
      * @return float|int|string[]
      */
-    public function __call(string $method, array $args)
+    final public function __call(string $method, array $args)
     {
         if (preg_match(self::$totalMethod, $method, $matches) && ($property = strtolower($matches[1])) !== '') {
             return $this->getNumericValue($property);

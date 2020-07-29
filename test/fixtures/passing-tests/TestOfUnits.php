@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class TestOfUnits extends PHPUnit\Framework\TestCase
+final class TestOfUnits extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

@@ -8,18 +8,16 @@ use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Tests\Unit\ResultTester;
-use PHPUnit\Framework\MockObject\MockObject;
 
 use function array_pop;
 
-class LogInterpreterTest extends ResultTester
+final class LogInterpreterTest extends ResultTester
 {
     /** @var LogInterpreter */
-    protected $interpreter;
+    private $interpreter;
 
-    public function setUp(): void
+    protected function setUpInterpreter(): void
     {
-        parent::setUp();
         $this->interpreter = new LogInterpreter();
         $this->interpreter
             ->addReader(new Reader($this->mixedSuite->getTempFile()))
@@ -34,21 +32,20 @@ class LogInterpreterTest extends ResultTester
 
     public function testAddReaderIncrementsReaders(): void
     {
-        $reader = $this->getMockReader();
-        $this->interpreter->addReader($reader);
+        static::assertCount(2, $this->getObjectValue($this->interpreter, 'readers'));
+        $this->interpreter->addReader(new Reader($this->failureSuite->getTempFile()));
         static::assertCount(3, $this->getObjectValue($this->interpreter, 'readers'));
     }
 
     public function testAddReaderReturnsSelf(): void
     {
-        $reader = $this->getMockReader();
-        $self   = $this->interpreter->addReader($reader);
+        $self = $this->interpreter->addReader(new Reader($this->failureSuite->getTempFile()));
         static::assertSame($self, $this->interpreter);
     }
 
     public function testGetReaders(): void
     {
-        $reader = $this->getMockReader();
+        $reader = new Reader($this->failureSuite->getTempFile());
         $this->interpreter->addReader($reader);
         $readers = $this->interpreter->getReaders();
         static::assertCount(3, $readers);
@@ -193,15 +190,5 @@ class LogInterpreterTest extends ResultTester
         static::assertEquals('1', $first->failures);
         static::assertEquals('0', $first->errors);
         static::assertEquals('0.006109', $first->time);
-    }
-
-    /**
-     * @return Reader&MockObject
-     */
-    protected function getMockReader(): Reader
-    {
-        return $this->getMockBuilder(Reader::class)
-                    ->disableOriginalConstructor()
-                    ->getMock();
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-class SuccessTest extends TestCase
+final class SuccessTest extends TestCase
 {
     public function testSuccess(): void
     {

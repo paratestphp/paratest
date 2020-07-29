@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Parser;
 
-class ParsedFunction extends ParsedObject
+final class ParsedFunction extends ParsedObject
 {
     /** @var string */
     private $visibility;

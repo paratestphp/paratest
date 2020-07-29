@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class StopOnFailureTest extends PHPUnit\Framework\TestCase
+final class StopOnFailureTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

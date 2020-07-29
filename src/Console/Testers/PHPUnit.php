@@ -32,7 +32,7 @@ use const DIRECTORY_SEPARATOR;
 /**
  * Creates the interface for PHPUnit testing
  */
-class PHPUnit extends Tester
+final class PHPUnit extends Tester
 {
     /**
      * @see \PHPUnit\Util\Configuration
@@ -41,7 +41,7 @@ class PHPUnit extends Tester
     private const TEST_SUITE_FILTER_SEPARATOR = ',';
 
     /** @var Command */
-    protected $command;
+    private $command;
 
     /**
      * Configures the ParaTestCommand with PHPUnit specific
@@ -115,7 +115,7 @@ class PHPUnit extends Tester
      * Returns whether or not a test path has been supplied
      * via option or regular input.
      */
-    protected function hasPath(InputInterface $input): bool
+    private function hasPath(InputInterface $input): bool
     {
         $argument = $input->getArgument('path');
         $option   = $input->getOption('path');
@@ -127,7 +127,7 @@ class PHPUnit extends Tester
     /**
      * Is there a PHPUnit xml configuration present.
      */
-    protected function hasConfig(InputInterface $input): bool
+    private function hasConfig(InputInterface $input): bool
     {
         return $this->getConfig($input) !== false;
     }
@@ -135,7 +135,7 @@ class PHPUnit extends Tester
     /**
      * @return Configuration|bool
      */
-    protected function getConfig(InputInterface $input)
+    private function getConfig(InputInterface $input)
     {
         $cwd = getcwd() . DIRECTORY_SEPARATOR;
 
@@ -155,7 +155,7 @@ class PHPUnit extends Tester
     /**
      * Displays help for the ParaTestCommand.
      */
-    protected function displayHelp(InputInterface $input, OutputInterface $output): void
+    private function displayHelp(InputInterface $input, OutputInterface $output): void
     {
         $help  = $this->command->getApplication()->find('help');
         $input = new ArrayInput(['command_name' => 'paratest']);
@@ -219,7 +219,7 @@ class PHPUnit extends Tester
      * so that variables defined in it do not break
      * this object's configuration.
      */
-    protected function scopedRequire(string $file): void
+    private function scopedRequire(string $file): void
     {
         $cwd = getcwd();
         require_once $file;
@@ -231,7 +231,7 @@ class PHPUnit extends Tester
      *
      * @param array<string, string> $options
      */
-    protected function hasCoverage(array $options): bool
+    private function hasCoverage(array $options): bool
     {
         $isFileFormat = isset($options['coverage-html'])
             || isset($options['coverage-clover'])
@@ -248,7 +248,7 @@ class PHPUnit extends Tester
      *
      * @param array<string, string> $options
      */
-    protected function getBootstrapFile(InputInterface $input, array $options): string
+    private function getBootstrapFile(InputInterface $input, array $options): string
     {
         if (isset($options['bootstrap'])) {
             return $options['bootstrap'];

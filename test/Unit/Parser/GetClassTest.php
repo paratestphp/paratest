@@ -8,7 +8,7 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\Parser;
 use ParaTest\Tests\TestBase;
 
-class GetClassTest extends TestBase
+final class GetClassTest extends TestBase
 {
     public function testPreviouslyLoadedTestClassCanBeParsed(): void
     {
@@ -63,7 +63,7 @@ class GetClassTest extends TestBase
      *
      * @param mixed $path
      */
-    protected function parseFile($path): ParsedClass
+    private function parseFile($path): ParsedClass
     {
         $parser = new Parser($path);
 

@@ -23,7 +23,7 @@ abstract class ResultTester extends TestBase
     /** @var Suite */
     protected $errorSuite;
 
-    public function setUp(): void
+    final public function setUp(): void
     {
         $this->errorSuite        = $this->getSuiteWithResult('single-werror.xml', 1);
         $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);
@@ -31,9 +31,13 @@ abstract class ResultTester extends TestBase
         $this->mixedSuite        = $this->getSuiteWithResult('mixed-results.xml', 7);
         $this->passingSuite      = $this->getSuiteWithResult('single-passing.xml', 3);
         $this->dataProviderSuite = $this->getSuiteWithResult('data-provider-result.xml', 50);
+
+        $this->setUpInterpreter();
     }
 
-    public function getSuiteWithResult(string $result, int $methodCount): Suite
+    abstract protected function setUpInterpreter(): void;
+
+    final protected function getSuiteWithResult(string $result, int $methodCount): Suite
     {
         $result    = FIXTURES . DS . 'results' . DS . $result;
         $functions = [];
@@ -47,7 +51,7 @@ abstract class ResultTester extends TestBase
         return $suite;
     }
 
-    protected function mockFunction(string $functionCount): ParsedFunction
+    final protected function mockFunction(string $functionCount): ParsedFunction
     {
         return new ParsedFunction('doc', 'public', 'func' . $functionCount);
     }

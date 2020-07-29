@@ -29,7 +29,7 @@ abstract class Tester
      *
      * @return array<string, string>
      */
-    protected function getOptions(InputInterface $input): array
+    final protected function getOptions(InputInterface $input): array
     {
         $options = $input->getOptions();
         foreach ($options as $key => $value) {

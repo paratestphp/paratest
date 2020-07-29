@@ -14,7 +14,7 @@ use function strlen;
 
 use const PHP_BINARY;
 
-class ParaTestInvoker
+final class ParaTestInvoker
 {
     /** @var string  */
     public $path;

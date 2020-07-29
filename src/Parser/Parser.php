@@ -19,7 +19,7 @@ use function realpath;
 use function str_replace;
 use function strpos;
 
-class Parser
+final class Parser
 {
     /**
      * The path to the source file to parse.

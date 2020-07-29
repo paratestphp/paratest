@@ -6,7 +6,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 
-class ExecutableTestChild extends ExecutableTest
+final class ExecutableTestChild extends ExecutableTest
 {
     /**
      * Get the expected count of tests to be executed.
@@ -14,5 +14,13 @@ class ExecutableTestChild extends ExecutableTest
     public function getTestCount(): int
     {
         return 1;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function prepareOptions(array $options): array
+    {
+        return $options;
     }
 }

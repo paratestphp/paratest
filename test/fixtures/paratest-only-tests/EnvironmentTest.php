@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class EnvironmentTest extends PHPUnit\Framework\TestCase
+final class EnvironmentTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

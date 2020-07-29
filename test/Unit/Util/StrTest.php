@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 use function array_values;
 
-class StrTest extends TestCase
+final class StrTest extends TestCase
 {
     /**
      * @param array<string, array<string, string|string[]>> $expected

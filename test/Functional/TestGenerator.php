@@ -9,7 +9,7 @@ use function is_dir;
 use function mkdir;
 use function uniqid;
 
-class TestGenerator
+final class TestGenerator
 {
     /** @var string */
     public $path;

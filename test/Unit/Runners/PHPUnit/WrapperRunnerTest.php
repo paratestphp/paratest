@@ -8,7 +8,7 @@ use ParaTest\Runners\PHPUnit\WrapperRunner;
 use ParaTest\Tests\TestBase;
 use RuntimeException;
 
-class WrapperRunnerTest extends TestBase
+final class WrapperRunnerTest extends TestBase
 {
     /**
      * @requires OSFAMILY Windows

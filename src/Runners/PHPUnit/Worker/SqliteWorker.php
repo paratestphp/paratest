@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit\Worker;
 
-use ParaTest\Runners\PHPUnit\Options;
-
-class SqliteWorker extends BaseWorker
+final class SqliteWorker extends BaseWorker
 {
     /** @var string */
     private $dbFileName;
@@ -17,17 +15,14 @@ class SqliteWorker extends BaseWorker
     }
 
     /**
-     * @param string[] $parameters
+     * {@inheritDoc}
      */
-    public function start(
-        string $wrapperBinary,
-        ?int $token = 1,
-        ?string $uniqueToken = null,
-        array $parameters = [],
-        ?Options $options = null
-    ): void {
+    protected function configureParameters(array &$parameters): void
+    {
         $parameters[] = $this->dbFileName;
+    }
 
-        parent::start($wrapperBinary, $token, $uniqueToken, $parameters, $options);
+    protected function doStop(): void
+    {
     }
 }

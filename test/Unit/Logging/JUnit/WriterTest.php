@@ -13,7 +13,7 @@ use function file_exists;
 use function file_get_contents;
 use function unlink;
 
-class WriterTest extends TestBase
+final class WriterTest extends TestBase
 {
     /** @var Writer  */
     protected $writer;
@@ -78,7 +78,7 @@ class WriterTest extends TestBase
         unlink($output);
     }
 
-    protected function addPassingReader(): void
+    private function addPassingReader(): void
     {
         $reader = new Reader($this->passing);
         $this->interpreter->addReader($reader);

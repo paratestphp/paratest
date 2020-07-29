@@ -53,7 +53,7 @@ abstract class BaseWorker
     /**
      * @param string[] $parameters
      */
-    public function start(
+    final public function start(
         string $wrapperBinary,
         ?int $token = 1,
         ?string $uniqueToken = null,
@@ -79,6 +79,8 @@ abstract class BaseWorker
         }
 
         $bin .= ' ' . escapeshellarg($wrapperBinary);
+
+        $this->configureParameters($parameters);
         if (count($parameters) > 0) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
@@ -99,7 +101,12 @@ abstract class BaseWorker
         $this->pipes = $pipes;
     }
 
-    public function isFree(): bool
+    /**
+     * @param string[] $parameters
+     */
+    abstract protected function configureParameters(array &$parameters): void;
+
+    final public function isFree(): bool
     {
         $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
@@ -107,7 +114,7 @@ abstract class BaseWorker
         return $this->inExecution === 0;
     }
 
-    public function isRunning(): bool
+    final public function isRunning(): bool
     {
         if ($this->proc === null) {
             return false;
@@ -118,12 +125,12 @@ abstract class BaseWorker
         return $status !== false ? $status['running'] : false;
     }
 
-    public function isStarted(): bool
+    final public function isStarted(): bool
     {
         return $this->proc !== null && $this->pipes !== null;
     }
 
-    public function isCrashed(): bool
+    final public function isCrashed(): bool
     {
         if (! $this->isStarted()) {
             return false;
@@ -141,14 +148,14 @@ abstract class BaseWorker
         return $this->exitCode !== 0;
     }
 
-    public function checkNotCrashed(): void
+    final public function checkNotCrashed(): void
     {
         if ($this->isCrashed()) {
             throw new RuntimeException($this->getCrashReport());
         }
     }
 
-    public function getCrashReport(): string
+    final public function getCrashReport(): string
     {
         $lastCommand = isset($this->commands) ? ' Last executed command: ' . end($this->commands) : '';
 
@@ -160,15 +167,18 @@ abstract class BaseWorker
             . $this->readAllStderr();
     }
 
-    public function stop(): void
+    final public function stop(): void
     {
+        $this->doStop();
         fclose($this->pipes[0]);
     }
+
+    abstract protected function doStop(): void;
 
     /**
      * @param array<string, bool|int> $status
      */
-    protected function setExitCode(array $status): void
+    final protected function setExitCode(array $status): void
     {
         if ($status['running']) {
             return;

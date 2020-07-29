@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * @runParallel
  */
-class UnitTestInSubSubLevelTest extends PHPUnit\Framework\TestCase
+final class UnitTestInSubSubLevelTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

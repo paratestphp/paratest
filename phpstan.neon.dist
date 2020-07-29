@@ -4,6 +4,24 @@ includes:
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
 
+rules:
+    - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
+    - Ergebnis\PHPStan\Rules\Methods\FinalInAbstractClassRule
+    - Ergebnis\PHPStan\Rules\Methods\PrivateInFinalClassRule
+
+services:
+    -
+        class: Ergebnis\PHPStan\Rules\Classes\FinalRule
+        arguments:
+            allowAbstractClasses: true
+            classesNotRequiredToBeAbstractOrFinal: []
+        tags:
+            - phpstan.rules.rule
+    -
+        class: Ergebnis\PHPStan\Rules\Classes\PHPUnit\Framework\TestCaseWithSuffixRule
+        tags:
+            - phpstan.rules.rule
+
 parameters:
     tipsOfTheDay: false
     bootstrapFiles:
@@ -21,6 +39,9 @@ parameters:
             message: "#^Strict comparison using \\=\\=\\= between int and false will always evaluate to false\\.$#"
             count: 1
             path: src/Runners/PHPUnit/SqliteRunner.php
+
+        # @see https://github.com/ergebnis/phpstan-rules/pull/248
+        - "#^Method .+__construct\\(\\) is not final, but since the containing class is abstract, it should be\\.$#"
 
         # @see https://github.com/phpstan/phpstan-src/pull/288
         -

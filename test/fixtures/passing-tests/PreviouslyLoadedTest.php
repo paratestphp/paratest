@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class PreviouslyLoadedTest extends PHPUnit\Framework\TestCase
+final class PreviouslyLoadedTest extends PHPUnit\Framework\TestCase
 {
     public function testRuns(): void
     {

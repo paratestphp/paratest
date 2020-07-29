@@ -17,7 +17,7 @@ use function array_shift;
 use function count;
 use function strstr;
 
-class SuiteLoaderTest extends TestBase
+final class SuiteLoaderTest extends TestBase
 {
     public function testConstructor(): void
     {
@@ -232,7 +232,7 @@ class SuiteLoaderTest extends TestBase
     /**
      * @return string[]
      */
-    protected function getLoadedPaths(string $path, ?SuiteLoader $loader = null): array
+    private function getLoadedPaths(string $path, ?SuiteLoader $loader = null): array
     {
         $loader = $loader ?? new SuiteLoader();
         $loader->load($path);

@@ -16,7 +16,7 @@ use function libxml_disable_entity_loader;
 use function putenv;
 use function realpath;
 
-class ConfigurationTest extends TestBase
+final class ConfigurationTest extends TestBase
 {
     /** @var string */
     protected $path;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class DependsOnChain extends PHPUnit\Framework\TestCase
+final class DependsOnChain extends PHPUnit\Framework\TestCase
 {
     public function testOneA()
     {

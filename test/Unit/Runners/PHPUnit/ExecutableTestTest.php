@@ -13,7 +13,7 @@ use function preg_replace;
 use function str_replace;
 use function unlink;
 
-class ExecutableTestTest extends TestBase
+final class ExecutableTestTest extends TestBase
 {
     /** @var ExecutableTestChild */
     protected $executableTestChild;

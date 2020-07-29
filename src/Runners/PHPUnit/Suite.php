@@ -13,7 +13,7 @@ use function count;
  * object - this class is essentially used for running
  * entire test classes in parallel
  */
-class Suite extends ExecutableTest
+final class Suite extends ExecutableTest
 {
     /**
      * A collection of test methods.
@@ -47,5 +47,13 @@ class Suite extends ExecutableTest
     public function getTestCount(): int
     {
         return count($this->functions);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function prepareOptions(array $options): array
+    {
+        return $options;
     }
 }

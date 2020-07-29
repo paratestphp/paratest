@@ -23,10 +23,10 @@ use function usleep;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
-class SqliteRunner extends WrapperRunner
+final class SqliteRunner extends BaseWrapperRunner
 {
     /** @var SqliteWorker[] */
-    protected $workers;
+    private $workers;
 
     /** @var PDO */
     private $db;
@@ -58,7 +58,6 @@ class SqliteRunner extends WrapperRunner
     public function run(): void
     {
         $this->initialize();
-
         $this->createTable();
         $this->assignAllPendingTests();
         $this->startWorkers();
@@ -70,7 +69,7 @@ class SqliteRunner extends WrapperRunner
     /**
      * Start all workers.
      */
-    protected function startWorkers(): void
+    private function startWorkers(): void
     {
         $wrapper = realpath(
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-sqlite-wrapper.php'

@@ -8,7 +8,7 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Tests\TestBase;
 
-class ParsedClassTest extends TestBase
+final class ParsedClassTest extends TestBase
 {
     /** @var ParsedClass  */
     protected $class;

@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-class ParserTestClassFallsBack extends PHPUnit\Framework\TestCase
+final class ParserTestClassFallsBack extends PHPUnit\Framework\TestCase
 {
 }

@@ -12,7 +12,7 @@ use ParaTest\Tests\TestBase;
 /**
  * The functionnalities of this class is tested in SuiteLoaderTest.php.
  */
-class TestFileLoaderTest extends TestBase
+final class TestFileLoaderTest extends TestBase
 {
     public function testConstructor(): void
     {

@@ -26,20 +26,20 @@ use const GLOB_ONLYDIR;
  * Stores information about the phpunit xml
  * configuration being used to run tests
  */
-class Configuration
+final class Configuration
 {
     /**
      * Path to the configuration file.
      *
      * @var string
      */
-    protected $path;
+    private $path;
 
     /** @var false|SimpleXMLElement */
-    protected $xml;
+    private $xml;
 
     /** @var string[] */
-    protected $availableNodes = ['exclude', 'file', 'directory', 'testsuite'];
+    private $availableNodes = ['exclude', 'file', 'directory', 'testsuite'];
 
     public function __construct(string $path)
     {

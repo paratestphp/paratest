@@ -24,7 +24,7 @@ abstract class ParsedObject
     /**
      * Get the name of a parsed object.
      */
-    public function getName(): string
+    final public function getName(): string
     {
         return $this->name;
     }
@@ -32,7 +32,7 @@ abstract class ParsedObject
     /**
      * Get the doc block comments of a parsed object.
      */
-    public function getDocBlock(): string
+    final public function getDocBlock(): string
     {
         return $this->docBlock;
     }
@@ -42,7 +42,7 @@ abstract class ParsedObject
      * has an annotation matching the name and value
      * if provided.
      */
-    public function hasAnnotation(string $annotation, ?string $value = null): bool
+    final public function hasAnnotation(string $annotation, ?string $value = null): bool
     {
         $pattern = sprintf(
             '/@%s%s/',

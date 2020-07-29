@@ -11,7 +11,6 @@ use Throwable;
 use function array_keys;
 use function array_shift;
 use function count;
-use function defined;
 use function dirname;
 use function realpath;
 use function stream_select;
@@ -20,37 +19,14 @@ use function uniqid;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
-class WrapperRunner extends BaseRunner
+final class WrapperRunner extends BaseWrapperRunner
 {
-    private const PHPUNIT_FAILURES = 1;
-
-    private const PHPUNIT_ERRORS = 2;
-
-    /** @var resource[] */
-    protected $streams;
-
     /** @var WrapperWorker[] */
-    protected $workers;
-
-    /** @var resource[] */
-    protected $modified;
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct(array $opts = [])
-    {
-        if (static::class === self::class && defined('PHP_WINDOWS_VERSION_BUILD')) {
-            throw new RuntimeException('WrapperRunner is not supported on Windows');
-        }
-
-        parent::__construct($opts);
-    }
+    private $workers;
 
     public function run(): void
     {
-        parent::run();
-
+        $this->initialize();
         $this->startWorkers();
         $this->assignAllPendingTests();
         $this->sendStopMessages();
@@ -58,19 +34,7 @@ class WrapperRunner extends BaseRunner
         $this->complete();
     }
 
-    protected function load(SuiteLoader $loader): void
-    {
-        if ($this->options->functional) {
-            throw new RuntimeException(
-                'The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due ' .
-                    'to the current PHPUnit commands causing classloading issues.'
-            );
-        }
-
-        parent::load($loader);
-    }
-
-    protected function startWorkers(): void
+    private function startWorkers(): void
     {
         $wrapper = realpath(
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
@@ -113,39 +77,6 @@ class WrapperRunner extends BaseRunner
                     if ($this->options->verbose > 0) {
                         $worker->stop();
                         echo "Error while assigning pending tests for worker $key: {$e->getMessage()}" . PHP_EOL;
-                        echo $worker->getCrashReport();
-                    }
-
-                    throw $e;
-                }
-            }
-        }
-    }
-
-    private function sendStopMessages(): void
-    {
-        foreach ($this->workers as $worker) {
-            $worker->stop();
-        }
-    }
-
-    private function waitForAllToFinish(): void
-    {
-        $toStop = $this->workers;
-        while (count($toStop) > 0) {
-            $toCheck = $this->streamsOf($toStop);
-            $new     = $this->waitForStreamsToChange($toCheck);
-            foreach ($this->progressedWorkers() as $index => $worker) {
-                try {
-                    if (! $worker->isRunning()) {
-                        $this->flushWorker($worker);
-                        unset($toStop[$index]);
-                    }
-                } catch (Throwable $e) {
-                    if ($this->options->verbose > 0) {
-                        $worker->stop();
-                        unset($toStop[$index]);
-                        echo "Error while waiting to finish for worker $index: {$e->getMessage()}" . PHP_EOL;
                         echo $worker->getCrashReport();
                     }
 
@@ -199,6 +130,49 @@ class WrapperRunner extends BaseRunner
         return $result;
     }
 
+    private function flushWorker(WrapperWorker $worker): void
+    {
+        if ($this->hasCoverage()) {
+            $this->getCoverage()->addCoverageFromFile($worker->getCoverageFileName());
+        }
+
+        $worker->printFeedback($this->printer);
+        $worker->reset();
+    }
+
+    private function sendStopMessages(): void
+    {
+        foreach ($this->workers as $worker) {
+            $worker->stop();
+        }
+    }
+
+    private function waitForAllToFinish(): void
+    {
+        $toStop = $this->workers;
+        while (count($toStop) > 0) {
+            $toCheck = $this->streamsOf($toStop);
+            $new     = $this->waitForStreamsToChange($toCheck);
+            foreach ($this->progressedWorkers() as $index => $worker) {
+                try {
+                    if (! $worker->isRunning()) {
+                        $this->flushWorker($worker);
+                        unset($toStop[$index]);
+                    }
+                } catch (Throwable $e) {
+                    if ($this->options->verbose > 0) {
+                        $worker->stop();
+                        unset($toStop[$index]);
+                        echo "Error while waiting to finish for worker $index: {$e->getMessage()}" . PHP_EOL;
+                        echo $worker->getCrashReport();
+                    }
+
+                    throw $e;
+                }
+            }
+        }
+    }
+
     /**
      * Returns the output streams of a subset of workers.
      *
@@ -215,50 +189,4 @@ class WrapperRunner extends BaseRunner
 
         return $streams;
     }
-
-    protected function complete(): void
-    {
-        $this->setExitCode();
-        $this->printer->printResults();
-        $this->interpreter->rewind();
-        $this->log();
-        $this->logCoverage();
-        $readers = $this->interpreter->getReaders();
-        foreach ($readers as $reader) {
-            $reader->removeLog();
-        }
-    }
-
-    private function setExitCode(): void
-    {
-        if ($this->interpreter->getTotalErrors() > 0) {
-            $this->exitcode = self::PHPUNIT_ERRORS;
-        } elseif ($this->interpreter->getTotalFailures() > 0) {
-            $this->exitcode = self::PHPUNIT_FAILURES;
-        } else {
-            $this->exitcode = 0;
-        }
-    }
-
-    private function flushWorker(WrapperWorker $worker): void
-    {
-        if ($this->hasCoverage()) {
-            $this->getCoverage()->addCoverageFromFile($worker->getCoverageFileName());
-        }
-
-        $worker->printFeedback($this->printer);
-        $worker->reset();
-    }
-
-    /*
-    private function testIsStillRunning($test)
-    {
-        if(!$test->isDoneRunning()) return true;
-        $this->setExitCode($test);
-        $test->stop();
-        if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
-            throw new \Exception($test->getStderr(), $test->getExitCode());
-        return false;
-    }
-     */
 }

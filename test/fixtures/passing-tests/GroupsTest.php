@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * @group group4
  */
-class GroupsTest extends PHPUnit\Framework\TestCase
+final class GroupsTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group group1

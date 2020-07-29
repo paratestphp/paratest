@@ -18,7 +18,7 @@ use function preg_match;
 
 use const ENT_XML1;
 
-class Writer
+final class Writer
 {
     /**
      * The name attribute of the testsuite being
@@ -26,27 +26,27 @@ class Writer
      *
      * @var string
      */
-    protected $name;
+    private $name;
 
     /** @var LogInterpreter */
-    protected $interpreter;
+    private $interpreter;
 
     /** @var DOMDocument */
-    protected $document;
+    private $document;
 
     /**
      * A pattern for matching testsuite attributes.
      *
      * @var string
      */
-    protected static $suiteAttrs = '/name|(?:test|assertion|failure|error)s|time|file/';
+    private static $suiteAttrs = '/name|(?:test|assertion|failure|error)s|time|file/';
 
     /**
      * A pattern for matching testcase attrs.
      *
      * @var string
      */
-    protected static $caseAttrs = '/name|class|file|line|assertions|time/';
+    private static $caseAttrs = '/name|class|file|line|assertions|time/';
 
     /**
      * A default suite to ease flattening of
@@ -54,7 +54,7 @@ class Writer
      *
      * @var array<string, int>
      */
-    protected static $defaultSuite = [
+    private static $defaultSuite = [
         'tests' => 0,
         'assertions' => 0,
         'failures' => 0,
@@ -109,7 +109,7 @@ class Writer
      * Append a testsuite node to the given
      * root element.
      */
-    protected function appendSuite(DOMElement $root, TestSuite $suite): DOMElement
+    private function appendSuite(DOMElement $root, TestSuite $suite): DOMElement
     {
         $suiteNode = $this->document->createElement('testsuite');
         $vars      = get_object_vars($suite);
@@ -130,7 +130,7 @@ class Writer
      * Append a testcase node to the given testsuite
      * node.
      */
-    protected function appendCase(DOMElement $suiteNode, TestCase $case): DOMElement
+    private function appendCase(DOMElement $suiteNode, TestCase $case): DOMElement
     {
         $caseNode = $this->document->createElement('testcase');
         $vars     = get_object_vars($case);
@@ -158,7 +158,7 @@ class Writer
      *
      * @param array<int, array{type: string, text: string}> $defects
      */
-    protected function appendDefects(DOMElement $caseNode, array $defects, string $type): void
+    private function appendDefects(DOMElement $caseNode, array $defects, string $type): void
     {
         foreach ($defects as $defect) {
             $defectNode = $this->document->createElement($type, htmlspecialchars($defect['text'], ENT_XML1) . "\n");
@@ -172,7 +172,7 @@ class Writer
      *
      * @param TestSuite[] $suites
      */
-    protected function getSuiteRoot(array $suites): DOMElement
+    private function getSuiteRoot(array $suites): DOMElement
     {
         $testsuites = $this->document->createElement('testsuites');
         $this->document->appendChild($testsuites);
@@ -199,7 +199,7 @@ class Writer
      *
      * @return mixed
      */
-    protected function getSuiteRootAttributes(array $suites)
+    private function getSuiteRootAttributes(array $suites)
     {
         return array_reduce($suites, static function (array $result, TestSuite $suite): array {
             $result['tests']      += $suite->tests;

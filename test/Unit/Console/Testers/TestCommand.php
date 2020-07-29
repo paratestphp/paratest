@@ -6,7 +6,7 @@ namespace ParaTest\Tests\Unit\Console\Testers;
 
 use Symfony\Component\Console\Command\Command;
 
-class TestCommand extends Command
+final class TestCommand extends Command
 {
     public function __construct()
     {

@@ -28,17 +28,17 @@ use function str_replace;
 use function uniqid;
 use function unlink;
 
-class TestBase extends PHPUnit\Framework\TestCase
+abstract class TestBase extends PHPUnit\Framework\TestCase
 {
     /**
      * Get PHPUnit version.
      */
-    protected static function getPhpUnitVersion(): string
+    final protected static function getPhpUnitVersion(): string
     {
         return Version::id();
     }
 
-    protected function fixture(string $fixture): string
+    final protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
@@ -51,7 +51,7 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * @return string[]
      */
-    protected function findTests(string $dir): array
+    final protected function findTests(string $dir): array
     {
         $it    = new RecursiveDirectoryIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
         $it    = new RecursiveIteratorIterator($it);
@@ -70,7 +70,7 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * @return mixed
      */
-    protected function getObjectValue(object $object, string $property)
+    final protected function getObjectValue(object $object, string $property)
     {
         $prop = $this->getAccessibleProperty($object, $property);
 
@@ -80,7 +80,7 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * @param mixed $value
      */
-    protected function setObjectValue(object $object, string $property, $value): void
+    final protected function setObjectValue(object $object, string $property, $value): void
     {
         $prop = $this->getAccessibleProperty($object, $property);
 
@@ -105,7 +105,7 @@ class TestBase extends PHPUnit\Framework\TestCase
      *
      * @return mixed returns what the object's method call will return
      */
-    public function call(object $object, string $methodName, ...$args)
+    final public function call(object $object, string $methodName, ...$args)
     {
         return self::callMethod($object, $methodName, $args);
     }
@@ -119,7 +119,7 @@ class TestBase extends PHPUnit\Framework\TestCase
      *
      * @return mixed returns what the object's method call will return
      */
-    public function callStatic(string $class, string $methodName, ...$args)
+    final public function callStatic(string $class, string $methodName, ...$args)
     {
         return self::callMethod($class, $methodName, $args);
     }
@@ -130,7 +130,7 @@ class TestBase extends PHPUnit\Framework\TestCase
      *
      * @return mixed
      */
-    protected static function callMethod($objectOrClassName, string $methodName, ?array $args = null)
+    final protected static function callMethod($objectOrClassName, string $methodName, ?array $args = null)
     {
         $isStatic = is_string($objectOrClassName);
 
@@ -153,7 +153,7 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * @throws SkippedTestError When code coverage library is not found.
      */
-    protected static function skipIfCodeCoverageNotEnabled(): void
+    final protected static function skipIfCodeCoverageNotEnabled(): void
     {
         static $runtime;
         if ($runtime === null) {
@@ -170,7 +170,7 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * Remove dir and its files.
      */
-    protected function removeDirectory(string $dirname): void
+    final protected function removeDirectory(string $dirname): void
     {
         if (! file_exists($dirname) || ! is_dir($dirname)) {
             return;
@@ -203,7 +203,7 @@ class TestBase extends PHPUnit\Framework\TestCase
      *
      * @return string Copied coverage file
      */
-    protected function copyCoverageFile(string $fixture, string $directory): string
+    final protected function copyCoverageFile(string $fixture, string $directory): string
     {
         $fixturePath = $this->fixture($fixture);
         $filename    = str_replace('.', '_', $directory . DS . uniqid('cov-', true));

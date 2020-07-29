@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-class ErrorTest extends TestCase
+final class ErrorTest extends TestCase
 {
     public function testError(): void
     {

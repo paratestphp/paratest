@@ -18,7 +18,7 @@ use function usleep;
 
 use const PHP_EOL;
 
-class Runner extends BaseRunner
+final class Runner extends BaseRunner
 {
     private const PHPUNIT_FATAL_ERROR = 255;
 
@@ -28,7 +28,7 @@ class Runner extends BaseRunner
      *
      * @var array<int, array<string, int|string|bool>>
      */
-    protected $tokens = [];
+    private $tokens = [];
 
     /**
      * {@inheritDoc}
@@ -44,7 +44,7 @@ class Runner extends BaseRunner
      */
     public function run(): void
     {
-        parent::run();
+        $this->initialize();
 
         while (count($this->running) > 0 || count($this->pending) > 0) {
             foreach ($this->running as $key => $test) {
@@ -176,7 +176,7 @@ class Runner extends BaseRunner
      * Initialize the available test tokens based
      * on how many processes ParaTest will be run in.
      */
-    protected function initTokens(): void
+    private function initTokens(): void
     {
         $this->tokens = [];
         for ($i = 1; $i <= $this->options->processes; ++$i) {
@@ -190,7 +190,7 @@ class Runner extends BaseRunner
      *
      * @return bool|array<string, mixed>
      */
-    protected function getNextAvailableToken()
+    private function getNextAvailableToken()
     {
         foreach ($this->tokens as $data) {
             if ($data['available']) {
@@ -204,7 +204,7 @@ class Runner extends BaseRunner
     /**
      * Flag a token as available for use.
      */
-    protected function releaseToken(int $tokenIdentifier): void
+    private function releaseToken(int $tokenIdentifier): void
     {
         $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier): bool {
             return $val['token'] === $tokenIdentifier;
@@ -218,7 +218,7 @@ class Runner extends BaseRunner
     /**
      * Flag a token as acquired and not available for use.
      */
-    protected function acquireToken(int $tokenIdentifier): void
+    private function acquireToken(int $tokenIdentifier): void
     {
         $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier): bool {
             return $val['token'] === $tokenIdentifier;
@@ -233,5 +233,9 @@ class Runner extends BaseRunner
     {
         $coverageFile = $test->getCoverageFileName();
         $this->getCoverage()->addCoverageFromFile($coverageFile);
+    }
+
+    protected function beforeLoadChecks(): void
+    {
     }
 }

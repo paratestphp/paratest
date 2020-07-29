@@ -21,17 +21,17 @@ use const DIRECTORY_SEPARATOR;
 /**
  * Used for outputting ParaTest results
  */
-class ResultPrinter
+final class ResultPrinter
 {
     /**
      * A collection of ExecutableTest objects.
      *
      * @var ExecutableTest[]
      */
-    protected $suites = [];
+    private $suites = [];
 
     /** @var LogInterpreter */
-    protected $results;
+    private $results;
 
     /**
      * The number of tests results currently printed.
@@ -40,63 +40,63 @@ class ResultPrinter
      *
      * @var int
      */
-    protected $numTestsWidth;
+    private $numTestsWidth;
 
     /**
      * Used for formatting results to a given width.
      *
      * @var int
      */
-    protected $maxColumn;
+    private $maxColumn;
 
     /**
      * The total number of cases to be run.
      *
      * @var int
      */
-    protected $totalCases = 0;
+    private $totalCases = 0;
 
     /**
      * The current column being printed to.
      *
      * @var int
      */
-    protected $column = 0;
+    private $column = 0;
 
     /**
      * The total number of cases printed so far.
      *
      * @var int
      */
-    protected $casesProcessed = 0;
+    private $casesProcessed = 0;
 
     /**
      * Whether to display a red or green bar.
      *
      * @var bool
      */
-    protected $colors;
+    private $colors;
 
     /**
      * Number of columns.
      *
      * @var int
      */
-    protected $numberOfColumns = 80;
+    private $numberOfColumns = 80;
 
     /**
      * Number of skipped or incomplete tests.
      *
      * @var int
      */
-    protected $totalSkippedOrIncomplete = 0;
+    private $totalSkippedOrIncomplete = 0;
 
     /**
      * Do we need to try to process skipped/incompleted tests.
      *
      * @var bool
      */
-    protected $processSkipped = false;
+    private $processSkipped = false;
 
     public function __construct(LogInterpreter $results)
     {
@@ -263,7 +263,7 @@ class ResultPrinter
     /**
      * Process reader feedback and print it.
      */
-    protected function processReaderFeedback(Reader $reader, int $expectedTestCount): void
+    private function processReaderFeedback(Reader $reader, int $expectedTestCount): void
     {
         $feedbackItems = $reader->getFeedback();
 
@@ -293,7 +293,7 @@ class ResultPrinter
      * @todo Skipped/Incomplete test tracking available only in functional mode for now
      *       or in regular mode but without group/exclude-group filters.
      */
-    protected function isSkippedIncompleTestCanBeTracked(Options $options): bool
+    private function isSkippedIncompleTestCanBeTracked(Options $options): bool
     {
         return $options->functional
             || (count($options->groups) === 0 && count($options->excludeGroups) === 0);
@@ -307,7 +307,7 @@ class ResultPrinter
      *
      * @todo May be we need to throw Exception here instead of silent correction.
      */
-    protected function processTestOverhead(int $actualTestCount, int $expectedTestCount): void
+    private function processTestOverhead(int $actualTestCount, int $expectedTestCount): void
     {
         $overhead = $actualTestCount - $expectedTestCount;
         if ($this->processSkipped) {
@@ -327,7 +327,7 @@ class ResultPrinter
      * If for some reason process return less tests than expected then we threat all remaining
      * as skipped or incomplete and print them as skipped (S letter)
      */
-    protected function printSkippedAndIncomplete(int $actualTestCount, int $expectedTestCount): void
+    private function printSkippedAndIncomplete(int $actualTestCount, int $expectedTestCount): void
     {
         $overhead = $expectedTestCount - $actualTestCount;
         if ($overhead <= 0) {
@@ -344,7 +344,7 @@ class ResultPrinter
      * the total number of processed cases and the column
      * position.
      */
-    protected function printFeedbackItem(string $item): void
+    private function printFeedbackItem(string $item): void
     {
         $this->printFeedbackItemColor($item);
         ++$this->column;
@@ -357,7 +357,7 @@ class ResultPrinter
         $this->println();
     }
 
-    protected function printFeedbackItemColor(string $item): void
+    private function printFeedbackItemColor(string $item): void
     {
         if ($this->colors) {
             switch ($item) {
@@ -398,7 +398,7 @@ class ResultPrinter
      *
      * @param string[] $defects
      */
-    protected function getDefects(array $defects, string $type): string
+    private function getDefects(array $defects, string $type): string
     {
         $count = count($defects);
         if ($count === 0) {
@@ -423,7 +423,7 @@ class ResultPrinter
     /**
      * Prints progress for large test collections.
      */
-    protected function getProgress(): string
+    private function getProgress(): string
     {
         return sprintf(
             ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
