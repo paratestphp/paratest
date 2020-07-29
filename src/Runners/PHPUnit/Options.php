@@ -128,11 +128,15 @@ final class Options
     /** @var string */
     private $filter;
 
+    // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
+
     /** @var string[] */
     private $groups;
 
     /** @var string[] */
     private $excludeGroups;
+
+    // phpcs:enable
 
     /**
      * A collection of option values directly corresponding
@@ -205,7 +209,7 @@ final class Options
         $this->maxBatchSize      = (int) $opts['max-batch-size'];
         $this->filter            = $opts['filter'];
         $this->parallelSuite     = $opts['parallel-suite'];
-        $this->passthru          = $this->parsePassthru($opts['passthru-php'] ?? null);
+        $this->passthru          = $this->parsePassthru($opts['passthru'] ?? null);
         $this->passthruPhp       = $this->parsePassthru($opts['passthru-php'] ?? null);
         $this->verbose           = $opts['verbose'] ?? 0;
         $this->coverageTestLimit = $opts['coverage-test-limit'] ?? 0;

@@ -35,11 +35,11 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
             $proc->getOutput(),
         );
-        static::assertEquals(0, $proc->getExitCode(), $cmd);
+        static::assertEquals(0, $proc->getExitCode());
     }
 
     /**
-     * @param array<int|string, string|int> $options
+     * @param array<int|string, string|int|null> $options
      *
      * @return Process<string>
      */

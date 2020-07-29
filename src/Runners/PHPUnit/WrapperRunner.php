@@ -11,6 +11,7 @@ use Throwable;
 use function array_keys;
 use function array_shift;
 use function count;
+use function defined;
 use function dirname;
 use function realpath;
 use function stream_select;
@@ -23,6 +24,18 @@ final class WrapperRunner extends BaseWrapperRunner
 {
     /** @var WrapperWorker[] */
     private $workers;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(array $opts = [])
+    {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            throw new RuntimeException('WrapperRunner is not supported on Windows');
+        }
+
+        parent::__construct($opts);
+    }
 
     public function run(): void
     {

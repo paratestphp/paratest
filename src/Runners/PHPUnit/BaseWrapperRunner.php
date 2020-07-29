@@ -6,8 +6,6 @@ namespace ParaTest\Runners\PHPUnit;
 
 use RuntimeException;
 
-use function defined;
-
 abstract class BaseWrapperRunner extends BaseRunner
 {
     private const PHPUNIT_FAILURES = 1;
@@ -19,18 +17,6 @@ abstract class BaseWrapperRunner extends BaseRunner
 
     /** @var resource[] */
     protected $modified;
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct(array $opts = [])
-    {
-        if (static::class === self::class && defined('PHP_WINDOWS_VERSION_BUILD')) {
-            throw new RuntimeException('WrapperRunner is not supported on Windows');
-        }
-
-        parent::__construct($opts);
-    }
 
     final protected function beforeLoadChecks(): void
     {

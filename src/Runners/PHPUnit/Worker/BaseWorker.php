@@ -176,7 +176,7 @@ abstract class BaseWorker
     abstract protected function doStop(): void;
 
     /**
-     * @param array<string, bool|int> $status
+     * @param array<string, bool|int|string> $status
      */
     final protected function setExitCode(array $status): void
     {
