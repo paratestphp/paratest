@@ -11,6 +11,7 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use function array_map;
 use function count;
 use function end;
+use function escapeshellarg;
 use function explode;
 use function fclose;
 use function fread;
@@ -70,12 +71,12 @@ abstract class BaseWorker
 
         $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
-        $bin           = "$phpExecutable ";
+        $bin           = escapeshellarg($phpExecutable);
         if ($options !== null && $options->passthruPhp !== null) {
-            $bin .= implode(' ', $options->passthruPhp) . ' ';
+            $bin .= ' ' . implode(' ', $options->passthruPhp) . ' ';
         }
 
-        $bin .= " \"$wrapperBinary\"";
+        $bin .= ' ' . escapeshellarg($wrapperBinary);
         if (count($parameters) > 0) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }

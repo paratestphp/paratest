@@ -10,7 +10,6 @@ use Symfony\Component\Process\Process;
 use function defined;
 use function is_callable;
 use function is_numeric;
-use function sprintf;
 use function strlen;
 
 use const PHP_BINARY;
@@ -39,7 +38,7 @@ class ParaTestInvoker
     {
         $cmd  = $this->buildCommand($options);
         $env  = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
-        $proc = Process::fromShellCommandline($cmd, null, $env, null, $timeout = 600);
+        $proc = new Process($cmd, null, $env, null, $timeout = 60);
 
         if (! is_callable($callback)) {
             $proc->run();
@@ -52,16 +51,20 @@ class ParaTestInvoker
 
     /**
      * @param array<int|string, string|int|null> $options
+     *
+     * @return string[]
      */
-    private function buildCommand(array $options = []): string
+    private function buildCommand(array $options = []): array
     {
-        $cmd = sprintf(
-            '%s %s --bootstrap %s --phpunit %s',
+        $cmd = [
             PHP_BINARY,
             PARA_BINARY,
+            '--bootstrap',
             $this->bootstrap,
-            PHPUNIT
-        );
+            '--phpunit',
+            PHPUNIT,
+        ];
+
         foreach ($options as $switch => $value) {
             if (is_numeric($switch)) {
                 $switch = $value;
@@ -74,10 +77,15 @@ class ParaTestInvoker
                 $switch = '-' . $switch;
             }
 
-            $cmd .= sprintf(' %s', $value !== null ? $switch . ' ' . $value : $switch);
+            $cmd[] = $switch;
+            if ($value === null) {
+                continue;
+            }
+
+            $cmd[] = $value;
         }
 
-        $cmd .= sprintf(' %s', $this->path);
+        $cmd[] = $this->path;
 
         return $cmd;
     }
