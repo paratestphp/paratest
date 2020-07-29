@@ -114,12 +114,12 @@ class CoverageMerger
 
     private function limitCoverageTests(CodeCoverage $coverage): void
     {
-        if (! $this->test_limit) {
+        if ($this->test_limit === 0) {
             return;
         }
 
         $coverage->setData(array_map(
-            function (array $lines) {
+            function (array $lines): array {
                 return array_map(function ($value) {
                     if (! is_array($value)) {
                         return $value;

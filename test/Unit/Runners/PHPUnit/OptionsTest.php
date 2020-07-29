@@ -61,44 +61,44 @@ class OptionsTest extends TestBase
 
     public function testFilteredOptionsShouldContainExtraneousOptions(): void
     {
-        $this->assertEquals('group1', $this->options->filtered['group']);
-        $this->assertEquals('/path/to/bootstrap', $this->options->filtered['bootstrap']);
+        static::assertEquals('group1', $this->options->filtered['group']);
+        static::assertEquals('/path/to/bootstrap', $this->options->filtered['bootstrap']);
     }
 
     public function testFilteredOptionsIsSet(): void
     {
-        $this->assertEquals($this->unfiltered['processes'], $this->options->processes);
-        $this->assertEquals($this->unfiltered['path'], $this->options->path);
-        $this->assertEquals($this->unfiltered['phpunit'], $this->options->phpunit);
-        $this->assertEquals($this->unfiltered['functional'], $this->options->functional);
-        $this->assertEquals([$this->unfiltered['group']], $this->options->groups);
+        static::assertEquals($this->unfiltered['processes'], $this->options->processes);
+        static::assertEquals($this->unfiltered['path'], $this->options->path);
+        static::assertEquals($this->unfiltered['phpunit'], $this->options->phpunit);
+        static::assertEquals($this->unfiltered['functional'], $this->options->functional);
+        static::assertEquals([$this->unfiltered['group']], $this->options->groups);
     }
 
     public function testAnnotationsReturnsAnnotations(): void
     {
-        $this->assertCount(1, $this->options->annotations);
-        $this->assertEquals('group1', $this->options->annotations['group']);
+        static::assertCount(1, $this->options->annotations);
+        static::assertEquals('group1', $this->options->annotations['group']);
     }
 
     public function testAnnotationsDefaultsToEmptyArray(): void
     {
         $options = new Options([]);
-        $this->assertEmpty($options->annotations);
+        static::assertEmpty($options->annotations);
     }
 
     public function testDefaults(): void
     {
         $options = new Options();
-        $this->assertEquals(Options::getNumberOfCPUCores(), $options->processes);
-        $this->assertEmpty($options->path);
-        $this->assertEquals(PHPUNIT, $options->phpunit);
-        $this->assertFalse($options->functional);
+        static::assertEquals(Options::getNumberOfCPUCores(), $options->processes);
+        static::assertEmpty($options->path);
+        static::assertEquals(PHPUNIT, $options->phpunit);
+        static::assertFalse($options->functional);
     }
 
     public function testHalfProcessesMode(): void
     {
         $options = new Options(['processes' => 'half']);
-        $this->assertEquals(intdiv(Options::getNumberOfCPUCores(), 2), $options->processes);
+        static::assertEquals(intdiv(Options::getNumberOfCPUCores(), 2), $options->processes);
     }
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd(): void
@@ -121,14 +121,14 @@ class OptionsTest extends TestBase
         $this->unfiltered['path']          = getcwd();
         $this->unfiltered['configuration'] = '/path/to/config';
         $options                           = new Options($this->unfiltered);
-        $this->assertEquals('/path/to/config', $options->filtered['configuration']->getPath());
+        static::assertEquals('/path/to/config', $options->filtered['configuration']->getPath());
     }
 
     public function testConfigurationKeyIsNotPresentIfNoConfigGiven(): void
     {
         $this->unfiltered['path'] = getcwd();
         $options                  = new Options($this->unfiltered);
-        $this->assertArrayNotHasKey('configuration', $options->filtered);
+        static::assertArrayNotHasKey('configuration', $options->filtered);
     }
 
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists(): void
@@ -153,7 +153,7 @@ class OptionsTest extends TestBase
         }
 
         $options = new Options($this->unfiltered);
-        $this->assertEquals(
+        static::assertEquals(
             __DIR__ . DS . 'generated-configs' . DS . $configFileName,
             $options->filtered['configuration']->getPath()
         );

@@ -98,13 +98,13 @@ class Reader extends MetaProvider
         $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach ($suites as $suite) {
             foreach ($suite->cases as $case) {
-                if ($case->failures) {
+                if (count($case->failures) > 0) {
                     $feedback[] = 'F';
-                } elseif ($case->errors) {
+                } elseif (count($case->errors) > 0) {
                     $feedback[] = 'E';
-                } elseif ($case->skipped) {
+                } elseif (count($case->skipped) > 0) {
                     $feedback[] = 'S';
-                } elseif ($case->warnings) {
+                } elseif (count($case->warnings) > 0) {
                     $feedback[] = 'W';
                 } else {
                     $feedback[] = '.';

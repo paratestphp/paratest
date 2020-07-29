@@ -30,13 +30,13 @@ class ParserTest extends TestBase
     {
         $filename = FIXTURES . DS . 'special-classes' . DS . 'SomeNamespace' . DS . 'ParserTestClass.php';
         $parser   = new Parser($filename);
-        $this->assertEquals('SomeNamespace\\ParserTestClass', $parser->getClass()->getName());
+        static::assertEquals('SomeNamespace\\ParserTestClass', $parser->getClass()->getName());
     }
 
     public function testClassFallsBackOnExisting(): void
     {
         $filename = FIXTURES . DS . 'special-classes' . DS . 'NameDoesNotMatch.php';
         $parser   = new Parser($filename);
-        $this->assertEquals('ParserTestClassFallsBack', $parser->getClass()->getName());
+        static::assertEquals('ParserTestClassFallsBack', $parser->getClass()->getName());
     }
 }

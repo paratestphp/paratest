@@ -20,13 +20,6 @@ use function strpos;
 class TestMethod extends ExecutableTest
 {
     /**
-     * The path to the test case file.
-     *
-     * @var string
-     */
-    protected $path;
-
-    /**
      * A set of filters for test, they are merged into phpunit's --filter option.
      *
      * @var string[]
@@ -42,7 +35,7 @@ class TestMethod extends ExecutableTest
      */
     public function __construct(string $testPath, array $filters)
     {
-        $this->path = $testPath;
+        parent::__construct($testPath);
         // for compatibility with other code (tests), which can pass string (one filter)
         // instead of array of filters
         $this->filters = $filters;
@@ -83,7 +76,7 @@ class TestMethod extends ExecutableTest
         $re = array_reduce($this->filters, static function (?string $r, string $v): string {
             $isDataSet = strpos($v, ' with data set ') !== false;
 
-            return ($r ? $r . '|' : '') . preg_quote($v, '/') . ($isDataSet ? '$' : '(?:\s|$)');
+            return ($r !== null ? $r . '|' : '') . preg_quote($v, '/') . ($isDataSet ? '$' : '(?:\s|$)');
         });
 
         $options['filter'] = '/' . $re . '/';

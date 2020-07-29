@@ -19,6 +19,6 @@ class SuiteTest extends TestBase
 
     public function testConstruction(): void
     {
-        $this->assertNull($this->getObjectValue($this->suite, 'process'));
+        static::assertNull($this->getObjectValue($this->suite, 'process'));
     }
 }

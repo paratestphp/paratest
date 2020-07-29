@@ -9,13 +9,11 @@ use ParaTest\Tests\TestBase;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Filter;
 
-use function assert;
-
 class CoverageMergerTest extends TestBase
 {
     protected function setUp(): void
     {
-        $this->skipIfCodeCoverageNotEnabled();
+        static::skipIfCodeCoverageNotEnabled();
     }
 
     /**
@@ -30,7 +28,7 @@ class CoverageMergerTest extends TestBase
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine  = 46;
+        $firstFileFirstLine  = 45;
         $secondFileFirstLine = 53;
 
         $filter = new Filter();
@@ -56,18 +54,16 @@ class CoverageMergerTest extends TestBase
         $this->call($merger, 'addCoverage', $coverage2);
 
         $coverage = $this->getObjectValue($merger, 'coverage');
-        assert($coverage instanceof CodeCoverage);
-
-        $this->assertInstanceOf(CodeCoverage::class, $coverage);
+        static::assertInstanceOf(CodeCoverage::class, $coverage);
 
         $data = $coverage->getData();
 
-        $this->assertCount(2, $data[$firstFile][$firstFileFirstLine]);
-        $this->assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
-        $this->assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);
+        static::assertCount(2, $data[$firstFile][$firstFileFirstLine]);
+        static::assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
+        static::assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);
 
-        $this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
-        $this->assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);
+        static::assertCount(1, $data[$secondFile][$secondFileFirstLine]);
+        static::assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);
     }
 
     /**
@@ -82,7 +78,7 @@ class CoverageMergerTest extends TestBase
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine  = 46;
+        $firstFileFirstLine  = 45;
         $secondFileFirstLine = 53;
 
         $filter = new Filter();
@@ -108,12 +104,10 @@ class CoverageMergerTest extends TestBase
         $this->call($merger, 'addCoverage', $coverage2);
 
         $coverage = $this->getObjectValue($merger, 'coverage');
-        assert($coverage instanceof CodeCoverage);
-
-        $this->assertInstanceOf(CodeCoverage::class, $coverage);
+        static::assertInstanceOf(CodeCoverage::class, $coverage);
         $data = $coverage->getData();
 
-        $this->assertCount(1, $data[$firstFile][$firstFileFirstLine]);
-        $this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
+        static::assertCount(1, $data[$firstFile][$firstFileFirstLine]);
+        static::assertCount(1, $data[$secondFile][$secondFileFirstLine]);
     }
 }

@@ -9,6 +9,7 @@ use SimpleXMLElement;
 
 use function array_key_exists;
 use function array_merge_recursive;
+use function count;
 use function dirname;
 use function file_exists;
 use function file_get_contents;
@@ -106,7 +107,9 @@ class Configuration
 
     public function hasSuites(): bool
     {
-        return ! empty($this->getSuitesName());
+        $suitesName = $this->getSuitesName();
+
+        return $suitesName !== null && count($suitesName) > 0;
     }
 
     /**
@@ -206,12 +209,12 @@ class Configuration
 
         if ($this->isGlobRequired($path)) {
             $paths = [];
-            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $path) {
-                if (($path = realpath($path)) === false) {
+            foreach (glob($this->getConfigDir() . $path, GLOB_ONLYDIR) as $globPath) {
+                if (($globPath = realpath($globPath)) === false) {
                     continue;
                 }
 
-                $paths[] = $path;
+                $paths[] = $globPath;
             }
 
             return $paths;

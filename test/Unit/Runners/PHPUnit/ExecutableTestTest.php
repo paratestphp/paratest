@@ -26,7 +26,7 @@ class ExecutableTestTest extends TestBase
 
     public function testConstructor(): void
     {
-        $this->assertEquals('pathToFile', $this->getObjectValue($this->executableTestChild, 'path'));
+        static::assertEquals('pathToFile', $this->getObjectValue($this->executableTestChild, 'path'));
     }
 
     public function testGetCommandStringIncludesPassthruOptions(): void
@@ -60,13 +60,13 @@ class ExecutableTestTest extends TestBase
         $phpExecutable = $finder->find();
 
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $this->assertEquals(
+            static::assertEquals(
                 "$phpExecutable -d zend_extension=xdebug.so \"/usr/bin/phpunit\" --prepend xdebug-filter.php " .
                     '--bootstrap test' . DS . 'bootstrap.php pathToFile',
                 $command
             );
         } else {
-            $this->assertEquals(
+            static::assertEquals(
                 "'$phpExecutable' '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' " .
                     "'--bootstrap' 'test" . DS . "bootstrap.php' 'pathToFile'",
                 $command
@@ -83,12 +83,12 @@ class ExecutableTestTest extends TestBase
         $coverageFileName = str_replace('/', '\/', $this->executableTestChild->getCoverageFileName());
 
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $this->assertMatchesRegularExpression(
+            static::assertMatchesRegularExpression(
                 '#^"/usr/bin/phpunit" --a b --coverage-php ' . preg_quote($coverageFileName, '#') . ' .*#',
                 $command
             );
         } else {
-            $this->assertMatchesRegularExpression(
+            static::assertMatchesRegularExpression(
                 "#^'/usr/bin/phpunit' '--a' 'b' '--coverage-php' '" . $coverageFileName . "' '.*'#",
                 $command
             );
@@ -99,19 +99,19 @@ class ExecutableTestTest extends TestBase
     {
         $environmentVariables = ['TEST_TOKEN' => 3, 'APPLICATION_ENVIRONMENT_VAR' => 'abc'];
         $this->call($this->executableTestChild, 'handleEnvironmentVariables', $environmentVariables);
-        $this->assertEquals(3, $this->getObjectValue($this->executableTestChild, 'token'));
+        static::assertEquals(3, $this->getObjectValue($this->executableTestChild, 'token'));
     }
 
     public function testGetTokenReturnsValidToken(): void
     {
         $this->setObjectValue($this->executableTestChild, 'token', 3);
-        $this->assertEquals(3, $this->executableTestChild->getToken());
+        static::assertEquals(3, $this->executableTestChild->getToken());
     }
 
     public function testGetTempFileShouldCreateTempFile(): void
     {
         $file = $this->executableTestChild->getTempFile();
-        $this->assertFileExists($file);
+        static::assertFileExists($file);
         unlink($file);
     }
 
@@ -119,7 +119,7 @@ class ExecutableTestTest extends TestBase
     {
         $file      = $this->executableTestChild->getTempFile();
         $fileAgain = $this->executableTestChild->getTempFile();
-        $this->assertEquals($file, $fileAgain);
+        static::assertEquals($file, $fileAgain);
         unlink($file);
     }
 }

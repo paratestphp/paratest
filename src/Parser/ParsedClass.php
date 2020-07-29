@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Parser;
 
 use function array_filter;
+use function count;
 use function explode;
 
 class ParsedClass extends ParsedObject
@@ -53,7 +54,7 @@ class ParsedClass extends ParsedObject
             return false;
         });
 
-        return $methods ?: $this->methods;
+        return count($methods) > 0 ? $methods : $this->methods;
     }
 
     /**

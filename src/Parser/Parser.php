@@ -56,7 +56,7 @@ class Parser
         $declaredClasses = get_declared_classes();
         require_once $this->path;
         $class = $this->getClassName($this->path, $declaredClasses);
-        if (! $class) {
+        if ($class === null) {
             throw new NoClassInFileException();
         }
 

@@ -20,7 +20,7 @@ class Str
         $parsedValues = [];
         foreach ($stringValues as $k => $v) {
             $v = trim($v);
-            if (empty($v)) {
+            if ($v === '') {
                 continue;
             }
 

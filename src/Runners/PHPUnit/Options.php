@@ -40,7 +40,7 @@ use const PHP_BINARY;
  * @property-read int $processes
  * @property-read string $path
  * @property-read string $phpunit
- * @property-read string $functional
+ * @property-read bool $functional
  * @property-read bool $stopOnFailure
  * @property-read array<string, (string|bool|int|Configuration|string[]|null)> $filtered
  * @property-read string $runner
@@ -87,7 +87,7 @@ class Options
      * functional mode. If enabled, ParaTest will run
      * every test method in a separate process.
      *
-     * @var string
+     * @var bool
      */
     protected $functional;
 
@@ -342,7 +342,7 @@ class Options
             'verbose' => $this->verbose,
             'coverage-test-limit' => $this->coverageTestLimit,
         ]);
-        if ($configuration = $this->getConfigurationPath($filtered)) {
+        if (($configuration = $this->getConfigurationPath($filtered)) !== null) {
             $filtered['configuration'] = new Configuration($configuration);
         }
 

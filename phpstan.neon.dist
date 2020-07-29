@@ -1,6 +1,8 @@
 includes:
     - phar://phpstan.phar/conf/config.level6.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
     tipsOfTheDay: false
@@ -20,7 +22,31 @@ parameters:
             count: 1
             path: src/Runners/PHPUnit/SqliteRunner.php
 
-        # Known fixtures
+        # @see https://github.com/phpstan/phpstan-src/pull/288
+        -
+            message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/Worker/BaseWorker.php
+        -
+            message: "#^Strict comparison using \\!\\=\\= between array and false will always evaluate to true\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/Worker/BaseWorker.php
+
+        # Known errors
+        - "#^Variable property access on .+$#"
+        - "#^Variable method call on .+$#"
+        -
+            message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
+            count: 2
+            path: bin/phpunit-wrapper.php
+        -
+            message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+            count: 1
+            path: src/Console/Testers/Tester.php
+        -
+            message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+            count: 1
+            path: src/Logging/JUnit/Writer.php
         -
             message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\ExecutableTest\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
             count: 1

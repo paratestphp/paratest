@@ -34,7 +34,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
             . 'Tests: 1, Assertions: 0, Incomplete: 1.';
-        $this->assertStringContainsString($expected, $proc->getOutput());
+        static::assertStringContainsString($expected, $proc->getOutput());
 
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
@@ -48,7 +48,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
             . 'Tests: 1, Assertions: 0, Incomplete: 1.';
-        $this->assertStringContainsString($expected, $proc->getOutput());
+        static::assertStringContainsString($expected, $proc->getOutput());
 
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
@@ -63,7 +63,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
             . 'Tests: 100, Assertions: 33, Incomplete: 67.';
-        $this->assertStringContainsString($expected, $proc->getOutput());
+        static::assertStringContainsString($expected, $proc->getOutput());
         $this->assertContainsNSkippedTests(67, $proc->getOutput());
     }
 
@@ -81,7 +81,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
             . 'Tests: 1, Assertions: 0, Incomplete: 1.';
-        $this->assertStringContainsString($expected, $proc->getOutput());
+        static::assertStringContainsString($expected, $proc->getOutput());
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
 
@@ -100,7 +100,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         // TODO: What happened to the incomplete test?
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
             . 'Tests: 1, Assertions: 0, Incomplete: 1.';
-        $this->assertStringContainsString($expected, $proc->getOutput());
+        static::assertStringContainsString($expected, $proc->getOutput());
         $this->assertContainsNSkippedTests(1, $proc->getOutput());
     }
 
@@ -119,15 +119,15 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         $proc = $this->invoker->execute();
 
         $expected = "OK, but incomplete, skipped, or risky tests!\nTests: 100, Assertions: 33, Incomplete: 67.";
-        $this->assertStringContainsString($expected, $proc->getOutput());
+        static::assertStringContainsString($expected, $proc->getOutput());
     }
 
     protected function assertContainsNSkippedTests(int $n, string $output): void
     {
         preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
-        $this->assertCount(2, $matches);
+        static::assertCount(2, $matches);
         $numberOfS = substr_count($matches[1], 'S');
-        $this->assertEquals(
+        static::assertEquals(
             $n,
             $numberOfS,
             "The test should have skipped $n tests, instead it skipped $numberOfS, $matches[1]"

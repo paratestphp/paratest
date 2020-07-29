@@ -31,7 +31,7 @@ class ConfigurationTest extends TestBase
 
     public function testToStringReturnsPath(): void
     {
-        $this->assertEquals($this->path, (string) $this->config);
+        static::assertEquals($this->path, (string) $this->config);
     }
 
     /**
@@ -40,7 +40,7 @@ class ConfigurationTest extends TestBase
     public function testGetSuitesShouldReturnCorrectNumberOfSuites(): array
     {
         $suites = $this->config->getSuites();
-        $this->assertCount(2, $suites);
+        static::assertCount(2, $suites);
 
         return $suites;
     }
@@ -48,7 +48,7 @@ class ConfigurationTest extends TestBase
     public function testHasSuites(): void
     {
         $actual = $this->config->hasSuites();
-        $this->assertTrue($actual);
+        static::assertTrue($actual);
     }
 
     /**
@@ -60,8 +60,8 @@ class ConfigurationTest extends TestBase
      */
     public function testSuitesContainSuiteNameAtKey(array $suites): array
     {
-        $this->assertArrayHasKey('ParaTest Unit Tests', $suites);
-        $this->assertArrayHasKey('ParaTest Functional Tests', $suites);
+        static::assertArrayHasKey('ParaTest Unit Tests', $suites);
+        static::assertArrayHasKey('ParaTest Functional Tests', $suites);
 
         return $suites;
     }
@@ -75,29 +75,25 @@ class ConfigurationTest extends TestBase
     {
         $basePath  = getcwd() . DS;
         $unitSuite = $suites['ParaTest Unit Tests'];
-        $this->assertIsArray($unitSuite);
-        $this->assertCount(1, $unitSuite);
+        static::assertCount(1, $unitSuite);
         $unitSuitePath = $unitSuite[0];
-        $this->assertInstanceOf(SuitePath::class, $unitSuitePath);
-        $this->assertEquals($basePath . 'test' . DS . 'Unit', $unitSuitePath->getPath());
+        static::assertEquals($basePath . 'test' . DS . 'Unit', $unitSuitePath->getPath());
         $functionalSuite = $suites['ParaTest Functional Tests'];
-        $this->assertIsArray($functionalSuite);
-        $this->assertCount(1, $functionalSuite);
+        static::assertCount(1, $functionalSuite);
         $functionalSuitePath = $functionalSuite[0];
-        $this->assertInstanceOf(SuitePath::class, $functionalSuitePath);
-        $this->assertEquals($basePath . 'test' . DS . 'Functional', $functionalSuitePath->getPath());
+        static::assertEquals($basePath . 'test' . DS . 'Functional', $functionalSuitePath->getPath());
     }
 
     public function testGetEnvironmentVariables(): void
     {
-        $this->assertCount(4, $this->config->getEnvironmentVariables());
-        $this->assertArrayHasKey('APP_ENV', $this->config->getEnvironmentVariables());
-        $this->assertArrayHasKey('CACHE_DRIVER', $this->config->getEnvironmentVariables());
-        $this->assertArrayHasKey('DB_CONNECTION', $this->config->getEnvironmentVariables());
-        $this->assertArrayHasKey('DB_DATABASE', $this->config->getEnvironmentVariables());
+        static::assertCount(4, $this->config->getEnvironmentVariables());
+        static::assertArrayHasKey('APP_ENV', $this->config->getEnvironmentVariables());
+        static::assertArrayHasKey('CACHE_DRIVER', $this->config->getEnvironmentVariables());
+        static::assertArrayHasKey('DB_CONNECTION', $this->config->getEnvironmentVariables());
+        static::assertArrayHasKey('DB_DATABASE', $this->config->getEnvironmentVariables());
 
         $config = new Configuration(realpath(__DIR__ . '/phpunit-ConfigurationTest.xml'));
-        $this->assertCount(0, $config->getEnvironmentVariables());
+        static::assertCount(0, $config->getEnvironmentVariables());
     }
 
     public function testGlobbingSupport(): void
@@ -106,11 +102,11 @@ class ConfigurationTest extends TestBase
         $configuration = new Configuration($this->fixture('phpunit-globbing.xml'));
         /** @var SuitePath[][] $suites */
         $suites = $configuration->getSuites();
-        $this->assertEquals(
+        static::assertEquals(
             $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir',
             $suites['ParaTest Fixtures'][0]->getPath()
         );
-        $this->assertEquals(
+        static::assertEquals(
             $basePath . 'test' . DS . 'fixtures' . DS . 'globbing-support-tests' . DS . 'some-dir2',
             $suites['ParaTest Fixtures'][1]->getPath()
         );
@@ -129,7 +125,7 @@ class ConfigurationTest extends TestBase
 
         libxml_disable_entity_loader($before);
 
-        $this->assertNull(
+        static::assertNull(
             $e,
             'Could not instantiate Configuration: ' . ($e instanceof Exception ? $e->getMessage() : 'no error given')
         );
@@ -142,7 +138,7 @@ class ConfigurationTest extends TestBase
 
         $config = new Configuration(realpath(__DIR__ . '/phpunit-ConfigurationTest.xml'));
 
-        $this->assertSame('mysql', getenv('DB_CONNECTION'));
-        $this->assertSame('localhost', getenv('DB_DATABASE'));
+        static::assertSame('mysql', getenv('DB_CONNECTION'));
+        static::assertSame('localhost', getenv('DB_DATABASE'));
     }
 }

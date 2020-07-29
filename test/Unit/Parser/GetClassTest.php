@@ -16,25 +16,25 @@ class GetClassTest extends TestBase
         require_once $testFile;
 
         $class = $this->parseFile($testFile);
-        $this->assertEquals('PreviouslyLoadedTest', $class->getName());
+        static::assertEquals('PreviouslyLoadedTest', $class->getName());
     }
 
     public function testParsedClassHasName(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
-        $this->assertEquals('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $class->getName());
+        static::assertEquals('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $class->getName());
     }
 
     public function testParsedAnonymousClassNameHasNoNullByte(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests/AnonymousClass.inc'));
-        $this->assertStringNotContainsString("\x00", $class->getName());
+        static::assertStringNotContainsString("\x00", $class->getName());
     }
 
     public function testParsedClassHasDocBlock(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
-        $this->assertEquals('/**
+        static::assertEquals('/**
  * @runParallel
  * @pizzaBox
  */', $class->getDocBlock());
@@ -43,19 +43,19 @@ class GetClassTest extends TestBase
     public function testParsedClassHasNamespace(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
-        $this->assertEquals('Fixtures\\Tests', $class->getNamespace());
+        static::assertEquals('Fixtures\\Tests', $class->getNamespace());
     }
 
     public function testParsedClassHasCorrectNumberOfTestMethods(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
-        $this->assertCount(4, $class->getMethods());
+        static::assertCount(4, $class->getMethods());
     }
 
     public function testParsedClassWithParentHasCorrectNumberOfTestMethods(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithErrorTest.php'));
-        $this->assertCount(4, $class->getMethods());
+        static::assertCount(4, $class->getMethods());
     }
 
     /**

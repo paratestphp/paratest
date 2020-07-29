@@ -58,7 +58,7 @@ class WrapperWorker extends BaseWorker
         $this->currentlyExecuting = $test;
         $commandArguments         = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru);
         $command                  = implode(' ', $commandArguments);
-        if ($options->verbose) {
+        if ($options->verbose > 0) {
             echo "\nExecuting test via: $command\n";
         }
 
@@ -119,7 +119,8 @@ class WrapperWorker extends BaseWorker
     }
 
     /**
-     * @deprecated
+     * @internal
+     *
      * This function consumes a lot of CPU while waiting for
      * the worker to finish. Use it only in testing paratest
      * itself.

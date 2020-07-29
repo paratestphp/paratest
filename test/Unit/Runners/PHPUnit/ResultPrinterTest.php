@@ -52,8 +52,8 @@ class ResultPrinterTest extends ResultTester
 
     public function testConstructor(): void
     {
-        $this->assertEquals([], $this->getObjectValue($this->printer, 'suites'));
-        $this->assertInstanceOf(
+        static::assertEquals([], $this->getObjectValue($this->printer, 'suites'));
+        static::assertInstanceOf(
             LogInterpreter::class,
             $this->getObjectValue($this->printer, 'results')
         );
@@ -65,7 +65,7 @@ class ResultPrinterTest extends ResultTester
 
         $this->printer->addTest($suite);
 
-        $this->assertEquals([$suite], $this->getObjectValue($this->printer, 'suites'));
+        static::assertEquals([$suite], $this->getObjectValue($this->printer, 'suites'));
     }
 
     public function testAddTestReturnsSelf(): void
@@ -74,7 +74,7 @@ class ResultPrinterTest extends ResultTester
 
         $self = $this->printer->addTest($suite);
 
-        $this->assertSame($this->printer, $self);
+        static::assertSame($this->printer, $self);
     }
 
     public function testStartPrintsOptionInfo(): void
@@ -86,7 +86,7 @@ class ResultPrinterTest extends ResultTester
             Options::getNumberOfCPUCores(),
             $options->phpunit
         );
-        $this->assertStringStartsWith($expected, $contents);
+        static::assertStringStartsWith($expected, $contents);
     }
 
     public function testStartSetsWidthAndMaxColumn(): void
@@ -100,14 +100,14 @@ class ResultPrinterTest extends ResultTester
         $this->printer->addTest($suite);
         $this->getStartOutput(new Options());
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
-        $this->assertEquals(3, $numTestsWidth);
+        static::assertEquals(3, $numTestsWidth);
         $maxExpectedColumun = 63;
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $maxExpectedColumun -= 1;
         }
 
         $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
-        $this->assertEquals($maxExpectedColumun, $maxColumn);
+        static::assertEquals($maxExpectedColumun, $maxColumn);
     }
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void
@@ -122,7 +122,7 @@ class ResultPrinterTest extends ResultTester
             $options->phpunit,
             $pathToConfig
         );
-        $this->assertStringStartsWith($expected, $contents);
+        static::assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithFunctionalMode(): void
@@ -134,7 +134,7 @@ class ResultPrinterTest extends ResultTester
             Options::getNumberOfCPUCores(),
             $options->phpunit
         );
-        $this->assertStringStartsWith($expected, $contents);
+        static::assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
@@ -142,7 +142,7 @@ class ResultPrinterTest extends ResultTester
         $options  = new Options(['processes' => 1]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
-        $this->assertStringStartsWith($expected, $contents);
+        static::assertStringStartsWith($expected, $contents);
     }
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
@@ -152,14 +152,14 @@ class ResultPrinterTest extends ResultTester
             new ParsedFunction('doc', 'public', 'funcTwo'),
         ]);
         $this->printer->addTest($suite);
-        $this->assertEquals(2, $this->printer->getTotalCases());
+        static::assertEquals(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
         $method = new TestMethod('/path', ['testThisMethod']);
         $this->printer->addTest($method);
-        $this->assertEquals(1, $this->printer->getTotalCases());
+        static::assertEquals(1, $this->printer->getTotalCases());
     }
 
     public function testGetHeader(): void
@@ -171,7 +171,7 @@ class ResultPrinterTest extends ResultTester
 
         $header = $this->printer->getHeader();
 
-        $this->assertMatchesRegularExpression(
+        static::assertMatchesRegularExpression(
             "/\n\nTime: ([.:]?[0-9]{1,3})+ ?" .
             '(minute|minutes|second|seconds|ms|)?,' .
             " Memory:[\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
@@ -193,7 +193,7 @@ class ResultPrinterTest extends ResultTester
         $eq .= "Exception: Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
 
-        $this->assertEquals($eq, $errors);
+        static::assertEquals($eq, $errors);
     }
 
     public function testGetErrorsMultipleErrors(): void
@@ -213,7 +213,7 @@ class ResultPrinterTest extends ResultTester
         $eq .= "Exception: Another Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php:12\n";
 
-        $this->assertEquals($eq, $errors);
+        static::assertEquals($eq, $errors);
     }
 
     public function testGetFailures(): void
@@ -232,7 +232,7 @@ class ResultPrinterTest extends ResultTester
         $eq .= "Failed asserting that true is false.\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n";
 
-        $this->assertEquals($eq, $failures);
+        static::assertEquals($eq, $failures);
     }
 
     public function testGetFooterWithFailures(): void
@@ -247,7 +247,7 @@ class ResultPrinterTest extends ResultTester
         $eq  = "\nFAILURES!\n";
         $eq .= "Tests: 8, Assertions: 6, Failures: 2, Errors: 2.\n";
 
-        $this->assertEquals($eq, $footer);
+        static::assertEquals($eq, $footer);
     }
 
     public function testGetFooterWithSuccess(): void
@@ -260,7 +260,7 @@ class ResultPrinterTest extends ResultTester
 
         $eq = "OK (3 tests, 3 assertions)\n";
 
-        $this->assertEquals($eq, $footer);
+        static::assertEquals($eq, $footer);
     }
 
     public function testPrintFeedbackForMixed(): void
@@ -269,7 +269,7 @@ class ResultPrinterTest extends ResultTester
         ob_start();
         $this->printer->printFeedback($this->mixedSuite);
         $contents = ob_get_clean();
-        $this->assertEquals('.F.E.F.', $contents);
+        static::assertEquals('.F.E.F.', $contents);
     }
 
     public function testPrintFeedbackForMoreThan100Suites(): void
@@ -310,7 +310,7 @@ class ResultPrinterTest extends ResultTester
             $expected .= '.';
         }
 
-        $this->assertEquals($expected, $feedback);
+        static::assertEquals($expected, $feedback);
     }
 
     public function testResultPrinterAdjustsTotalCountForDataProviders(): void
@@ -351,7 +351,7 @@ class ResultPrinterTest extends ResultTester
             $expected .= '.';
         }
 
-        $this->assertEquals($expected, $feedback);
+        static::assertEquals($expected, $feedback);
     }
 
     protected function getStartOutput(Options $options): string

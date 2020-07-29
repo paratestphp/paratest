@@ -25,7 +25,7 @@ class RunnerIntegrationTest extends TestBase
 
     protected function setUp(): void
     {
-        $this->skipIfCodeCoverageNotEnabled();
+        static::skipIfCodeCoverageNotEnabled();
 
         $this->options = [
             'path' => FIXTURES . DS . 'failing-tests',
@@ -67,12 +67,12 @@ class RunnerIntegrationTest extends TestBase
         $countAfter         = count($this->globTempDir('PT_*'));
         $countCoverageAfter = count($this->globTempDir('CV_*'));
 
-        $this->assertEquals(
+        static::assertEquals(
             $countAfter,
             $countBefore,
             "Test Runner failed to clean up the 'PT_*' file in " . sys_get_temp_dir()
         );
-        $this->assertEquals(
+        static::assertEquals(
             $countCoverageAfter,
             $countCoverageBefore,
             "Test Runner failed to clean up the 'CV_*' file in " . sys_get_temp_dir()
@@ -89,7 +89,7 @@ class RunnerIntegrationTest extends TestBase
         $runner->run();
         ob_end_clean();
 
-        $this->assertFileExists($outputPath);
+        static::assertFileExists($outputPath);
         $this->assertJunitXmlIsCorrect($outputPath);
         if (! file_exists($outputPath)) {
             return;
@@ -108,9 +108,9 @@ class RunnerIntegrationTest extends TestBase
 
         // these numbers represent the tests in fixtures/failing-tests
         // so will need to be updated when tests are added or removed
-        $this->assertCount(6, $suites);
-        $this->assertCount(16, $cases);
-        $this->assertCount(6, $failures);
-        $this->assertCount(1, $errors);
+        static::assertCount(6, $suites);
+        static::assertCount(16, $cases);
+        static::assertCount(6, $failures);
+        static::assertCount(1, $errors);
     }
 }

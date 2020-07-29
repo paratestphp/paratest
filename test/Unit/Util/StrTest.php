@@ -21,7 +21,7 @@ class StrTest extends TestCase
         $actual = Str::explodeWithCleanup($delimiter, $valueString);
         $actual = array_values($actual);
 
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     /**

@@ -64,24 +64,24 @@ abstract class BaseWorker
             $env['TEST_TOKEN']    = $token;
         }
 
-        if ($uniqueToken) {
+        if ($uniqueToken !== null) {
             $env['UNIQUE_TEST_TOKEN'] = $uniqueToken;
         }
 
         $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
         $bin           = "$phpExecutable ";
-        if ($options && $options->passthruPhp) {
+        if ($options !== null && $options->passthruPhp !== null) {
             $bin .= implode(' ', $options->passthruPhp) . ' ';
         }
 
         $bin .= " \"$wrapperBinary\"";
-        if ($parameters) {
+        if (count($parameters) > 0) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
 
         $pipes = [];
-        if ($options && $options->verbose) {
+        if ($options !== null && $options->verbose > 0) {
             echo "Starting WrapperWorker via: $bin\n";
         }
 
@@ -106,7 +106,7 @@ abstract class BaseWorker
 
         $status = proc_get_status($this->proc);
 
-        return $status ? $status['running'] : false;
+        return $status !== false ? $status['running'] : false;
     }
 
     public function isStarted(): bool
