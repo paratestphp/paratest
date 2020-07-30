@@ -24,7 +24,7 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param array<int|string, string|int> $options
+     * @param array<int|string, string|int|null> $options
      *
      * @return Process<string>
      */
@@ -45,7 +45,8 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
     ): void {
         static::assertMatchesRegularExpression(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
-            $proc->getOutput()
+            $proc->getOutput(),
+            $proc->getCommandLine()
         );
         static::assertEquals(0, $proc->getExitCode());
     }

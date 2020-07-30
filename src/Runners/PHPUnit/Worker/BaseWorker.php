@@ -11,6 +11,7 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use function array_map;
 use function count;
 use function end;
+use function escapeshellarg;
 use function explode;
 use function fclose;
 use function fread;
@@ -20,10 +21,12 @@ use function is_numeric;
 use function is_resource;
 use function proc_get_status;
 use function proc_open;
+use function sprintf;
 use function stream_get_contents;
 use function stream_set_blocking;
 use function strstr;
 
+use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
 abstract class BaseWorker
@@ -70,12 +73,12 @@ abstract class BaseWorker
 
         $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
-        $bin           = "$phpExecutable ";
+        $bin           = escapeshellarg($phpExecutable);
         if ($options !== null && $options->passthruPhp !== null) {
-            $bin .= implode(' ', $options->passthruPhp) . ' ';
+            $bin .= ' ' . implode(' ', $options->passthruPhp) . ' ';
         }
 
-        $bin .= " \"$wrapperBinary\"";
+        $bin .= ' ' . escapeshellarg($wrapperBinary);
         if (count($parameters) > 0) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
@@ -83,6 +86,12 @@ abstract class BaseWorker
         $pipes = [];
         if ($options !== null && $options->verbose > 0) {
             echo "Starting WrapperWorker via: $bin\n";
+        }
+
+        // Taken from \Symfony\Component\Process\Process::prepareWindowsCommandLine
+        // Needed to handle spaces in the binary path, boring to test in CI
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin);
         }
 
         $process     = proc_open($bin, self::$descriptorspec, $pipes, null, $env);

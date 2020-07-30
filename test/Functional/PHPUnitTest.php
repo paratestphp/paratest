@@ -281,8 +281,8 @@ class PHPUnitTest extends FunctionalTestBase
     {
         $proc    = $this->invokeParatest('failing-tests/StopOnFailureTest.php', [
             'bootstrap' => BOOTSTRAP,
-            'stop-on-failure' => '',
-            'f' => '',
+            'stop-on-failure' => null,
+            'f' => null,
             'p' => '1',
         ]);
         $results = $proc->getOutput();
@@ -296,7 +296,7 @@ class PHPUnitTest extends FunctionalTestBase
         $proc   = $this->invokeParatest('passing-tests', [
             'bootstrap' => BOOTSTRAP,
             'phpunit' => PHPUNIT,
-            'f' => '',
+            'f' => null,
             'p' => '6',
             'log-junit' => $output,
         ]);
