@@ -21,10 +21,12 @@ use function is_numeric;
 use function is_resource;
 use function proc_get_status;
 use function proc_open;
+use function sprintf;
 use function stream_get_contents;
 use function stream_set_blocking;
 use function strstr;
 
+use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
 abstract class BaseWorker
@@ -84,6 +86,12 @@ abstract class BaseWorker
         $pipes = [];
         if ($options !== null && $options->verbose > 0) {
             echo "Starting WrapperWorker via: $bin\n";
+        }
+
+        // Taken from \Symfony\Component\Process\Process::prepareWindowsCommandLine
+        // Needed to handle spaces in the binary path, boring to test in CI
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin);
         }
 
         $process     = proc_open($bin, self::$descriptorspec, $pipes, null, $env);
