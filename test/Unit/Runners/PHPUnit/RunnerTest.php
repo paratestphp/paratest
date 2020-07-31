@@ -13,7 +13,7 @@ use ParaTest\Tests\TestBase;
 use function getcwd;
 use function uniqid;
 
-class RunnerTest extends TestBase
+final class RunnerTest extends TestBase
 {
     /** @var Runner  */
     protected $runner;

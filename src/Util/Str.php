@@ -7,7 +7,7 @@ namespace ParaTest\Util;
 use function explode;
 use function trim;
 
-class Str
+final class Str
 {
     /**
      * Split $string on $delimiter and trim the individual parts.

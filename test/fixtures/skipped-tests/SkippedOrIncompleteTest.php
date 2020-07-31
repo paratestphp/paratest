@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-class SkippedOrIncompleteTest extends TestCase
+final class SkippedOrIncompleteTest extends TestCase
 {
     /**
      * @group skipped-group

@@ -11,7 +11,7 @@ use function substr_count;
  * @todo SkippedOrIncompleteTest can't be used in default mode with group filter
  *       (not implemented yet) so we have to split tests per file.
  */
-class SkippedOrIncompleteTest extends FunctionalTestBase
+final class SkippedOrIncompleteTest extends FunctionalTestBase
 {
     /** @var ParaTestInvoker */
     private $invoker;
@@ -122,7 +122,7 @@ class SkippedOrIncompleteTest extends FunctionalTestBase
         static::assertStringContainsString($expected, $proc->getOutput());
     }
 
-    protected function assertContainsNSkippedTests(int $n, string $output): void
+    private function assertContainsNSkippedTests(int $n, string $output): void
     {
         preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
         static::assertCount(2, $matches);

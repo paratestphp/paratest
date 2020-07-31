@@ -7,7 +7,7 @@ require_once __DIR__ . '/../failing-tests/UnitTestWithMethodAnnotationsTest.php'
 /**
  * @runParallel
  */
-class UnitTestWithFatalParseErrorTest extends UnitTestWithMethodAnnotationsTest
+final class UnitTestWithFatalParseErrorTest extends UnitTestWithMethodAnnotationsTest
 {
     /**
      * @group fixtures

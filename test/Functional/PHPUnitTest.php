@@ -16,7 +16,7 @@ use function sys_get_temp_dir;
 use function tempnam;
 use function unlink;
 
-class PHPUnitTest extends FunctionalTestBase
+final class PHPUnitTest extends FunctionalTestBase
 {
     public function testWithJustBootstrap(): void
     {

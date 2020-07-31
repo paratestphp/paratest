@@ -7,7 +7,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Tests\TestBase;
 
-class SuiteTest extends TestBase
+final class SuiteTest extends TestBase
 {
     /** @var Suite  */
     protected $suite;

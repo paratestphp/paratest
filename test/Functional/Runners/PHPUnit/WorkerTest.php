@@ -18,7 +18,7 @@ use function proc_open;
 use function sys_get_temp_dir;
 use function unlink;
 
-class WorkerTest extends TestBase
+final class WorkerTest extends TestBase
 {
     /** @var string[][]  */
     protected static $descriptorspec = [

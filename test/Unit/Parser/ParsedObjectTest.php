@@ -7,7 +7,7 @@ namespace ParaTest\Tests\Unit\Parser;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Tests\TestBase;
 
-class ParsedObjectTest extends TestBase
+final class ParsedObjectTest extends TestBase
 {
     /** @var ParsedClass  */
     protected $parsedClass;

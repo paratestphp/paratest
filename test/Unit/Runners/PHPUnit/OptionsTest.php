@@ -16,7 +16,7 @@ use function is_dir;
 use function mkdir;
 use function unlink;
 
-class OptionsTest extends TestBase
+final class OptionsTest extends TestBase
 {
     /** @var Options */
     protected $options;

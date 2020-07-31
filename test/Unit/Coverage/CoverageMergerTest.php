@@ -9,7 +9,7 @@ use ParaTest\Tests\TestBase;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Filter;
 
-class CoverageMergerTest extends TestBase
+final class CoverageMergerTest extends TestBase
 {
     protected function setUp(): void
     {

@@ -9,18 +9,18 @@ use function preg_quote;
 /**
  * Representation of test suite paths found in phpunit.xml.
  */
-class SuitePath
+final class SuitePath
 {
     private const DEFAULT_SUFFIX = 'Test.php';
 
     /** @var string */
-    protected $path;
+    private $path;
 
     /** @var string */
-    protected $suffix;
+    private $suffix;
 
     /** @var string[] */
-    protected $excludedPaths;
+    private $excludedPaths;
 
     /**
      * @param string[] $excludedPaths

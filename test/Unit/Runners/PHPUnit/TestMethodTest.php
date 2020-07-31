@@ -7,7 +7,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\TestBase;
 
-class TestMethodTest extends TestBase
+final class TestMethodTest extends TestBase
 {
     public function testConstructor(): void
     {

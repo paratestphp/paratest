@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class DependsOnSame extends PHPUnit\Framework\TestCase
+final class DependsOnSame extends PHPUnit\Framework\TestCase
 {
     public function testOneA()
     {

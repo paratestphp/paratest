@@ -18,22 +18,22 @@ use function file_get_contents;
 use function filesize;
 use function unlink;
 
-class Reader extends MetaProvider
+final class Reader extends MetaProvider
 {
     /** @var SimpleXMLElement */
-    protected $xml;
+    private $xml;
 
     /** @var bool */
-    protected $isSingle = false;
+    private $isSingle = false;
 
     /** @var TestSuite[] */
-    protected $suites = [];
+    private $suites = [];
 
     /** @var string */
     protected $logFile;
 
     /** @var array<string, int|string> */
-    protected static $defaultSuite = [
+    private static $defaultSuite = [
         'name' => '',
         'file' => '',
         'tests' => 0,
@@ -127,7 +127,7 @@ class Reader extends MetaProvider
      * Initialize the suite collection
      * from the JUnit xml document.
      */
-    protected function init(): void
+    private function init(): void
     {
         $this->initSuite();
         $cases = $this->getCaseNodes();
@@ -141,7 +141,7 @@ class Reader extends MetaProvider
      *
      * @param SimpleXMLElement[] $nodeArray an array of SimpleXMLElement nodes representing testcase elements
      */
-    protected function initSuiteFromCases(array $nodeArray): void
+    private function initSuiteFromCases(array $nodeArray): void
     {
         $testCases  = [];
         $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
@@ -160,7 +160,7 @@ class Reader extends MetaProvider
      * @param array<string, int|string|float> $properties
      * @param TestCase[]                      $testCases
      */
-    protected function addSuite(array $properties, array $testCases): void
+    private function addSuite(array $properties, array $testCases): void
     {
         $suite                     = TestSuite::suiteFromArray($properties);
         $suite->cases              = $testCases;
@@ -175,7 +175,7 @@ class Reader extends MetaProvider
      *
      * @return array<string, int|string>
      */
-    protected function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = []): array
+    private function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = []): array
     {
         $cb = [TestCase::class, 'caseFromNode'];
 
@@ -204,7 +204,7 @@ class Reader extends MetaProvider
      *
      * @return array<string, SimpleXMLElement[]>
      */
-    protected function getCaseNodes(): array
+    private function getCaseNodes(): array
     {
         $caseNodes = $this->xml->xpath('//testcase');
         $cases     = [];
@@ -225,7 +225,7 @@ class Reader extends MetaProvider
      * and initialize the suite collection with the first
      * suite.
      */
-    protected function initSuite(): void
+    private function initSuite(): void
     {
         $suiteNodes     = $this->xml->xpath('/testsuites/testsuite/testsuite');
         $this->isSingle = count($suiteNodes) === 0;

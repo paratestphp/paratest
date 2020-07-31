@@ -16,7 +16,7 @@ use function simplexml_load_file;
 use function sys_get_temp_dir;
 use function unlink;
 
-class RunnerIntegrationTest extends TestBase
+final class RunnerIntegrationTest extends TestBase
 {
     /** @var Runner $runner */
     protected $runner;

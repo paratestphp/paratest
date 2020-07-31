@@ -17,7 +17,7 @@ use function strpos;
  *
  * @todo Rename to Batch
  */
-class TestMethod extends ExecutableTest
+final class TestMethod extends ExecutableTest
 {
     /**
      * A set of filters for test, they are merged into phpunit's --filter option.

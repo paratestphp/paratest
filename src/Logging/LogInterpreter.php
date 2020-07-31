@@ -15,7 +15,7 @@ use function count;
 use function reset;
 use function ucfirst;
 
-class LogInterpreter extends MetaProvider
+final class LogInterpreter extends MetaProvider
 {
     /**
      * A collection of Reader objects
@@ -98,7 +98,7 @@ class LogInterpreter extends MetaProvider
      *
      * @param TestCase[] $cases
      */
-    protected function extendEmptyCasesFromSuites(array $cases, TestSuite $suite): void
+    private function extendEmptyCasesFromSuites(array $cases, TestSuite $suite): void
     {
         $class = $suite->name;
         $file  = $suite->file;

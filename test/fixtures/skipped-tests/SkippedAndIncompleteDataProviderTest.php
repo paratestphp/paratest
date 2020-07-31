@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-class SkippedAndIncompleteDataProviderTest extends TestCase
+final class SkippedAndIncompleteDataProviderTest extends TestCase
 {
     public function dataProviderNumeric100()
     {

@@ -7,14 +7,14 @@ namespace SomeNamespace;
 use PHPUnit\Framework\TestCase;
 
 // Test that it gives the class matching the file name priority.
-class SomeOtherClass extends TestCase
+final class SomeOtherClass extends TestCase
 {
 }
 
-class ParserTestClass extends TestCase
+final class ParserTestClass extends TestCase
 {
 }
 
-class AnotherClass extends TestCase
+final class AnotherClass extends TestCase
 {
 }

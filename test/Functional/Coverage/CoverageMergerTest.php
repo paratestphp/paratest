@@ -14,7 +14,7 @@ use function str_replace;
 use function sys_get_temp_dir;
 use function uniqid;
 
-class CoverageMergerTest extends TestBase
+final class CoverageMergerTest extends TestBase
 {
     /**
      * Directory to store coverage files.

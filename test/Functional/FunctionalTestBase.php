@@ -11,9 +11,9 @@ use Symfony\Component\Process\Process;
 use function extension_loaded;
 use function file_exists;
 
-class FunctionalTestBase extends PHPUnit\Framework\TestCase
+abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
 {
-    protected function fixture(string $fixture): string
+    final protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
@@ -24,21 +24,9 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param array<int|string, string|int|null> $options
-     *
-     * @return Process<string>
-     */
-    protected function invokeParatest(string $path, array $options = [], ?callable $callback = null): Process
-    {
-        $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
-
-        return $invoker->execute($options, $callback);
-    }
-
-    /**
      * @param Process<string> $proc
      */
-    protected function assertTestsPassed(
+    final protected function assertTestsPassed(
         Process $proc,
         string $testPattern = '\d+',
         string $assertionPattern = '\d+'
@@ -46,15 +34,26 @@ class FunctionalTestBase extends PHPUnit\Framework\TestCase
         static::assertMatchesRegularExpression(
             "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
             $proc->getOutput(),
-            $proc->getCommandLine()
         );
         static::assertEquals(0, $proc->getExitCode());
     }
 
     /**
+     * @param array<int|string, string|int|null> $options
+     *
+     * @return Process<string>
+     */
+    final protected function invokeParatest(string $path, array $options = [], ?callable $callback = null): Process
+    {
+        $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
+
+        return $invoker->execute($options, $callback);
+    }
+
+    /**
      * Checks if the sqlite extension is loaded and skips the test if not.
      */
-    protected function guardSqliteExtensionLoaded(): void
+    final protected function guardSqliteExtensionLoaded(): void
     {
         $sqliteExtension = 'pdo_sqlite';
         if (extension_loaded($sqliteExtension)) {

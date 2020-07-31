@@ -20,7 +20,7 @@ use function unserialize;
 
 use const PHP_SAPI;
 
-class CoverageMerger
+final class CoverageMerger
 {
     /** @var CodeCoverage */
     private $coverage = null;

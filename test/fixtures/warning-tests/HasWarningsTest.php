@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HasWarningsTest extends PHPUnit\Framework\TestCase
+final class HasWarningsTest extends PHPUnit\Framework\TestCase
 {
     public function testPassingTest(): void
     {

@@ -15,7 +15,7 @@ use function scandir;
 
 use const DIRECTORY_SEPARATOR;
 
-class TestFileLoader
+final class TestFileLoader
 {
     /**
      * The pattern used for grabbing test files. Uses the *Test.php convention
@@ -40,24 +40,24 @@ class TestFileLoader
      *
      * @var string[]
      */
-    protected $files = [];
+    private $files = [];
 
     /**
      * The collection of excluded files.
      *
      * @var array<string, string>
      */
-    protected $excludedFiles = [];
+    private $excludedFiles = [];
 
     /**
      * When true, the SuiteLoader add the files to excluded files.
      *
      * @var bool
      */
-    protected $excludingFiles = false;
+    private $excludingFiles = false;
 
     /** @var Options|null */
-    protected $options;
+    private $options;
 
     public function __construct(?Options $options = null)
     {

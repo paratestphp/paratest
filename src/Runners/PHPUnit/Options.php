@@ -58,14 +58,14 @@ use const PHP_BINARY;
  * @property-read int $verbose
  * @property-read int $coverageTestLimit
  */
-class Options
+final class Options
 {
     /**
      * The number of processes to run at a time.
      *
      * @var int
      */
-    protected $processes;
+    private $processes;
 
     /**
      * The test path pointing to tests that will
@@ -73,14 +73,14 @@ class Options
      *
      * @var string
      */
-    protected $path;
+    private $path;
 
     /**
      * The path to the PHPUnit binary that will be run.
      *
      * @var string
      */
-    protected $phpunit;
+    private $phpunit;
 
     /**
      * Determines whether or not ParaTest runs in
@@ -89,14 +89,14 @@ class Options
      *
      * @var bool
      */
-    protected $functional;
+    private $functional;
 
     /**
      * Prevents starting new tests after a test has failed.
      *
      * @var bool
      */
-    protected $stopOnFailure;
+    private $stopOnFailure;
 
     /**
      * A collection of post-processed option values. This is the collection
@@ -104,35 +104,39 @@ class Options
      *
      * @var array<string, (string|bool|int|Configuration|string[]|null)>
      */
-    protected $filtered;
+    private $filtered;
 
     /** @var string */
-    protected $runner;
+    private $runner;
 
     /** @var bool */
-    protected $noTestTokens;
+    private $noTestTokens;
 
     /** @var bool */
-    protected $colors;
+    private $colors;
 
     /**
      * Filters which tests to run.
      *
      * @var string|string[]
      */
-    protected $testsuite;
+    private $testsuite;
 
     /** @var int|null */
-    protected $maxBatchSize;
+    private $maxBatchSize;
 
     /** @var string */
-    protected $filter;
+    private $filter;
+
+    // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
 
     /** @var string[] */
-    protected $groups;
+    private $groups;
 
     /** @var string[] */
-    protected $excludeGroups;
+    private $excludeGroups;
+
+    // phpcs:enable
 
     /**
      * A collection of option values directly corresponding
@@ -140,35 +144,35 @@ class Options
      *
      * @var array<string, string>
      */
-    protected $annotations = [];
+    private $annotations = [];
 
     /**
      * Running the suite defined in the config in parallel.
      *
      * @var bool
      */
-    protected $parallelSuite;
+    private $parallelSuite;
 
     /**
      * Strings that gets passed verbatim to the underlying phpunit command.
      *
      * @var string[]|null
      */
-    protected $passthru;
+    private $passthru;
 
     /**
      * Strings that gets passed verbatim to the underlying php process.
      *
      * @var string[]|null
      */
-    protected $passthruPhp;
+    private $passthruPhp;
 
     /**
      * Verbosity. If true, debug output will be printed.
      *
      * @var int
      */
-    protected $verbose;
+    private $verbose;
 
     /**
      * Limit the number of tests recorded in coverage reports
@@ -176,7 +180,7 @@ class Options
      *
      * @var int
      */
-    protected $coverageTestLimit;
+    private $coverageTestLimit;
 
     /**
      * @param array<string, string|bool|int|string[]> $opts
@@ -205,7 +209,7 @@ class Options
         $this->maxBatchSize      = (int) $opts['max-batch-size'];
         $this->filter            = $opts['filter'];
         $this->parallelSuite     = $opts['parallel-suite'];
-        $this->passthru          = $this->parsePassthru($opts['passthru-php'] ?? null);
+        $this->passthru          = $this->parsePassthru($opts['passthru'] ?? null);
         $this->passthruPhp       = $this->parsePassthru($opts['passthru-php'] ?? null);
         $this->verbose           = $opts['verbose'] ?? 0;
         $this->coverageTestLimit = $opts['coverage-test-limit'] ?? 0;
@@ -255,7 +259,7 @@ class Options
      *
      * @return array<string, string|bool|int|null>
      */
-    protected static function defaults(): array
+    private static function defaults(): array
     {
         return [
             'processes' => 'auto',
@@ -286,7 +290,7 @@ class Options
      *
      * @return string $phpunit the path to phpunit
      */
-    protected static function phpunit(): string
+    private static function phpunit(): string
     {
         $vendor = static::vendorDir();
 
@@ -304,7 +308,7 @@ class Options
      * First assumes vendor directory is accessible from src (i.e development)
      * Second assumes vendor directory is accessible within src.
      */
-    protected static function vendorDir(): string
+    private static function vendorDir(): string
     {
         $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
         if (! file_exists($vendor)) {
@@ -322,7 +326,7 @@ class Options
      *
      * @return array<string, (string|bool|int|Configuration|string[]|null)>
      */
-    protected function filterOptions(array $options): array
+    private function filterOptions(array $options): array
     {
         $filtered = array_diff_key($options, [
             'processes' => $this->processes,
@@ -355,7 +359,7 @@ class Options
      *
      * @param array<string, (string|bool|int|string[]|null)> $filtered
      */
-    protected function getConfigurationPath(array $filtered): ?string
+    private function getConfigurationPath(array $filtered): ?string
     {
         if (isset($filtered['configuration'])) {
             return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
@@ -393,7 +397,7 @@ class Options
      * Load options that are represented by annotations
      * inside of tests i.e @group group1 = --group group1.
      */
-    protected function initAnnotations(): void
+    private function initAnnotations(): void
     {
         $annotatedOptions = ['group'];
         foreach ($this->filtered as $key => $value) {

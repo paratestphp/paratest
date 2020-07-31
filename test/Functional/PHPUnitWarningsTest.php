@@ -7,7 +7,7 @@ namespace ParaTest\Tests\Functional;
 /**
  * Specifically tests warnings in PHPUnit.
  */
-class PHPUnitWarningsTest extends FunctionalTestBase
+final class PHPUnitWarningsTest extends FunctionalTestBase
 {
     public function testTestsWithWarningsResultInFailure(): void
     {

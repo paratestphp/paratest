@@ -11,7 +11,7 @@ use SimpleXMLElement;
  * data associated with a testsuite node
  * in a JUnit xml document
  */
-class TestSuite
+final class TestSuite
 {
     /** @var string */
     public $name;

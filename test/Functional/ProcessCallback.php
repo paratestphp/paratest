@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-class ProcessCallback
+final class ProcessCallback
 {
     /** @var string */
-    protected $type;
+    private $type;
     /** @var string */
-    protected $buffer;
+    private $buffer;
 
     public function callback(string $type, string $buffer): void
     {

@@ -14,7 +14,7 @@ use stdClass;
 use function file_get_contents;
 use function file_put_contents;
 
-class ReaderTest extends TestBase
+final class ReaderTest extends TestBase
 {
     /** @var string  */
     protected $mixedPath;

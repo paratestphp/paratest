@@ -6,7 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use function array_merge;
 
-class FullSuite extends ExecutableTest
+final class FullSuite extends ExecutableTest
 {
     /** @var string */
     protected $suiteName;
@@ -23,20 +23,16 @@ class FullSuite extends ExecutableTest
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function commandArguments(string $binary, array $options = [], ?array $passthru = null): array
+    protected function prepareOptions(array $options): array
     {
-        return parent::commandArguments(
-            $binary,
-            array_merge(
-                $options,
-                [
-                    'configuration' => $this->configPath,
-                    'testsuite' => $this->suiteName,
-                ]
-            ),
-            $passthru
+        return array_merge(
+            $options,
+            [
+                'configuration' => $this->configPath,
+                'testsuite' => $this->suiteName,
+            ]
         );
     }
 

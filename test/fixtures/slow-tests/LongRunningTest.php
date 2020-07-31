@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class LongRunningTest extends PHPUnit\Framework\TestCase
+final class LongRunningTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures

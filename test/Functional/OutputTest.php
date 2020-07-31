@@ -6,7 +6,7 @@ namespace ParaTest\Tests\Functional;
 
 use function getcwd;
 
-class OutputTest extends FunctionalTestBase
+final class OutputTest extends FunctionalTestBase
 {
     /** @var ParaTestInvoker */
     protected $paratest;

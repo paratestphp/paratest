@@ -11,7 +11,7 @@ use function sizeof;
 /**
  * @runParallel
  */
-class UnitTestInSubLevelTest extends TestCase
+final class UnitTestInSubLevelTest extends TestCase
 {
     /**
      * @group fixtures

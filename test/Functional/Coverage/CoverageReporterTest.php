@@ -15,7 +15,7 @@ use function str_replace;
 use function sys_get_temp_dir;
 use function uniqid;
 
-class CoverageReporterTest extends TestBase
+final class CoverageReporterTest extends TestBase
 {
     /**
      * Target directory for reports.

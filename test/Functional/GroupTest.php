@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-class GroupTest extends FunctionalTestBase
+final class GroupTest extends FunctionalTestBase
 {
     /** @var ParaTestInvoker */
     private $invoker;

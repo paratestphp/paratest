@@ -67,17 +67,14 @@ abstract class BaseRunner
         $this->printer     = new ResultPrinter($this->interpreter);
     }
 
-    public function run(): void
-    {
-        $this->initialize();
-    }
+    abstract public function run(): void;
 
     /**
      * Ensures a valid configuration was supplied. If not
      * causes ParaTest to print the error message and exit immediately
      * with an exit code of 1.
      */
-    protected function verifyConfiguration(): void
+    private function verifyConfiguration(): void
     {
         if (
             isset($this->options->filtered['configuration']) &&
@@ -94,8 +91,9 @@ abstract class BaseRunner
      * contain a collection of TestMethod objects instead of Suite
      * objects.
      */
-    protected function load(SuiteLoader $loader): void
+    private function load(SuiteLoader $loader): void
     {
+        $this->beforeLoadChecks();
         $loader->load($this->options->path);
         $executables   = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
@@ -104,11 +102,13 @@ abstract class BaseRunner
         }
     }
 
+    abstract protected function beforeLoadChecks(): void;
+
     /**
      * Returns the highest exit code encountered
      * throughout the course of test execution.
      */
-    public function getExitCode(): int
+    final public function getExitCode(): int
     {
         return $this->exitcode;
     }
@@ -116,7 +116,7 @@ abstract class BaseRunner
     /**
      * Write output to JUnit format if requested.
      */
-    protected function log(): void
+    final protected function log(): void
     {
         if (! isset($this->options->filtered['log-junit'])) {
             return;
@@ -130,7 +130,7 @@ abstract class BaseRunner
     /**
      * Write coverage to file if requested.
      */
-    protected function logCoverage(): void
+    final protected function logCoverage(): void
     {
         if (! $this->hasCoverage()) {
             return;
@@ -163,7 +163,7 @@ abstract class BaseRunner
         $reporter->php($filteredOptions['coverage-php']);
     }
 
-    protected function initCoverage(): void
+    private function initCoverage(): void
     {
         if (! isset($this->options->filtered['coverage-php'])) {
             return;
@@ -172,12 +172,12 @@ abstract class BaseRunner
         $this->coverage = new CoverageMerger($this->options->coverageTestLimit);
     }
 
-    protected function hasCoverage(): bool
+    final protected function hasCoverage(): bool
     {
         return $this->getCoverage() !== null;
     }
 
-    protected function getCoverage(): ?CoverageMerger
+    final protected function getCoverage(): ?CoverageMerger
     {
         return $this->coverage;
     }
@@ -185,7 +185,7 @@ abstract class BaseRunner
     /**
      * Overrides envirenment variables if needed.
      */
-    protected function overrideEnvironmentVariables(): void
+    private function overrideEnvironmentVariables(): void
     {
         if (! isset($this->options->filtered['configuration'])) {
             return;
@@ -205,7 +205,7 @@ abstract class BaseRunner
         }
     }
 
-    protected function initialize(): void
+    final protected function initialize(): void
     {
         $this->verifyConfiguration();
         $this->overrideEnvironmentVariables();

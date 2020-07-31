@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ParaTestCommand extends Command
+final class ParaTestCommand extends Command
 {
     /** @var Tester */
     protected $tester;

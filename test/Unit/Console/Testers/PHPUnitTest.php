@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 use function getcwd;
 
-class PHPUnitTest extends TestBase
+final class PHPUnitTest extends TestBase
 {
     public function testConfigureAddsOptionsAndArgumentsToCommand(): void
     {

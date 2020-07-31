@@ -14,7 +14,7 @@ use function trim;
  * the results of a testcase node in a
  * JUnit xml document
  */
-class TestCase
+final class TestCase
 {
     /** @var string */
     public $name;
@@ -67,7 +67,7 @@ class TestCase
      *
      * @param string $collName the name of the collection to add to
      */
-    protected function addDefect(string $collName, string $type, string $text): void
+    private function addDefect(string $collName, string $type, string $text): void
     {
         $this->{$collName}[] = [
             'type' => $type,

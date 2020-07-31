@@ -12,7 +12,7 @@ use function sizeof;
  * @runParallel
  * @pizzaBox
  */
-class UnitTestWithClassAnnotationTest extends TestCase
+final class UnitTestWithClassAnnotationTest extends TestCase
 {
     /**
      * @group fixtures

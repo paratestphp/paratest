@@ -21,20 +21,19 @@ use function ob_start;
 use function sprintf;
 use function unlink;
 
-class ResultPrinterTest extends ResultTester
+final class ResultPrinterTest extends ResultTester
 {
     /** @var ResultPrinter */
-    protected $printer;
+    private $printer;
 
     /** @var LogInterpreter */
-    protected $interpreter;
+    private $interpreter;
 
     /** @var Suite */
-    protected $passingSuiteWithWrongTestCountEstimation;
+    private $passingSuiteWithWrongTestCountEstimation;
 
-    public function setUp(): void
+    protected function setUpInterpreter(): void
     {
-        parent::setUp();
         $this->interpreter = new LogInterpreter();
         $this->printer     = new ResultPrinter($this->interpreter);
         $pathToConfig      = $this->getPathToConfig();
@@ -45,7 +44,7 @@ class ResultPrinterTest extends ResultTester
         $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);
     }
 
-    protected function getPathToConfig(): string
+    private function getPathToConfig(): string
     {
         return __DIR__ . DS . 'phpunit-myconfig.xml';
     }
@@ -354,7 +353,7 @@ class ResultPrinterTest extends ResultTester
         static::assertEquals($expected, $feedback);
     }
 
-    protected function getStartOutput(Options $options): string
+    private function getStartOutput(Options $options): string
     {
         ob_start();
         $this->printer->start($options);

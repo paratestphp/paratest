@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HasOtherWarningsTest extends PHPUnit\Framework\TestCase
+final class HasOtherWarningsTest extends PHPUnit\Framework\TestCase
 {
     /**
      * The test will fail on the line that tries to mock the non-existent method

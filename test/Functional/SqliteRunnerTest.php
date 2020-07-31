@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-class SqliteRunnerTest extends FunctionalTestBase
+final class SqliteRunnerTest extends FunctionalTestBase
 {
     private const TEST_METHODS_PER_CLASS = 5;
 
