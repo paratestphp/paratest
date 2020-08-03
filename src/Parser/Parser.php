@@ -111,7 +111,7 @@ final class Parser
                 continue;
             }
 
-            $tests[] = new ParsedFunction((string) $method->getDocComment(), 'public', $method->getName());
+            $tests[] = new ParsedFunction((string) $method->getDocComment(), $method->getName());
         }
 
         return $tests;

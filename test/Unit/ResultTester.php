@@ -53,6 +53,6 @@ abstract class ResultTester extends TestBase
 
     final protected function mockFunction(string $functionCount): ParsedFunction
     {
-        return new ParsedFunction('doc', 'public', 'func' . $functionCount);
+        return new ParsedFunction('doc', 'func' . $functionCount);
     }
 }
