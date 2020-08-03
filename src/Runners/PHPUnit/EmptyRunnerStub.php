@@ -8,7 +8,7 @@ final class EmptyRunnerStub extends BaseRunner
 {
     public function run(): void
     {
-        echo 'EXECUTED';
+        $this->output->write('EXECUTED');
     }
 
     protected function beforeLoadChecks(): void

@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 use function array_keys;
@@ -18,23 +19,19 @@ use function stream_select;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
-use const PHP_EOL;
 
 final class WrapperRunner extends BaseWrapperRunner
 {
     /** @var WrapperWorker[] */
     private $workers;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct(array $opts = [])
+    public function __construct(Options $opts, OutputInterface $output)
     {
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             throw new RuntimeException('WrapperRunner is not supported on Windows');
         }
 
-        parent::__construct($opts);
+        parent::__construct($opts, $output);
     }
 
     public function run(): void
@@ -53,7 +50,7 @@ final class WrapperRunner extends BaseWrapperRunner
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
         );
         for ($i = 1; $i <= $this->options->processes; ++$i) {
-            $worker = new WrapperWorker();
+            $worker = new WrapperWorker($this->output);
             if ($this->options->noTestTokens) {
                 $token       = null;
                 $uniqueToken = null;
@@ -89,8 +86,10 @@ final class WrapperRunner extends BaseWrapperRunner
                 } catch (Throwable $e) {
                     if ($this->options->verbose > 0) {
                         $worker->stop();
-                        echo "Error while assigning pending tests for worker $key: {$e->getMessage()}" . PHP_EOL;
-                        echo $worker->getCrashReport();
+                        $this->output->writeln(
+                            "Error while assigning pending tests for worker $key: {$e->getMessage()}"
+                        );
+                        $this->output->write($worker->getCrashReport());
                     }
 
                     throw $e;
@@ -176,8 +175,8 @@ final class WrapperRunner extends BaseWrapperRunner
                     if ($this->options->verbose > 0) {
                         $worker->stop();
                         unset($toStop[$index]);
-                        echo "Error while waiting to finish for worker $index: {$e->getMessage()}" . PHP_EOL;
-                        echo $worker->getCrashReport();
+                        $this->output->writeln("Error while waiting to finish for worker $index: {$e->getMessage()}");
+                        $this->output->write($worker->getCrashReport());
                     }
 
                     throw $e;

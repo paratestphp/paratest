@@ -37,7 +37,7 @@ interface CoverageReporterInterface
     /**
      * Generate text coverage report.
      */
-    public function text(): void;
+    public function text(): string;
 
     /**
      * Generate PHPUnit XML coverage report.

@@ -11,8 +11,6 @@ use PHPUnit\Util\Xml;
 
 use function defined;
 use function mkdir;
-use function ob_get_clean;
-use function ob_start;
 use function str_replace;
 use function sys_get_temp_dir;
 use function uniqid;
@@ -178,11 +176,8 @@ final class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        ob_start();
-        $coverageMerger->getReporter()->text();
-        $output = ob_get_clean();
+        $output = $coverageMerger->getReporter()->text();
 
-        static::assertIsString($output);
         static::assertStringContainsString('Code Coverage Report:', $output);
     }
 

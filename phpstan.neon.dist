@@ -3,6 +3,7 @@ includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/ekino/phpstan-banned-code/extension.neon
 
 rules:
     - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
@@ -34,6 +35,42 @@ parameters:
     excludes_analyse:
         - test/fixtures/*
     ignoreErrors:
+        # Allowed forbidden calls
+        -
+            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
+            count: 2
+            path: bin/paratest
+
+        -
+            message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
+            count: 1
+            path: bin/paratest
+
+        -
+            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
+            count: 1
+            path: bin/phpunit-sqlite-wrapper.php
+
+        -
+            message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
+            count: 4
+            path: bin/phpunit-wrapper.php
+
+        -
+            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
+            count: 3
+            path: bin/phpunit-wrapper.php
+
+        -
+            message: "#^Should not use function \"proc_open\", please change the code\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/Worker/BaseWorker.php
+
+        -
+            message: "#^Should not use function \"proc_open\", please change the code\\.$#"
+            count: 1
+            path: test/Functional/Runners/PHPUnit/WorkerTest.php
+    
         # Known errors
         - "#^Variable property access on .+$#"
         - "#^Variable method call on .+$#"

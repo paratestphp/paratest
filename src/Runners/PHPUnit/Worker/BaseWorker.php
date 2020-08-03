@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\Options;
 use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 use function array_map;
@@ -43,12 +44,20 @@ abstract class BaseWorker
     protected $pipes;
     /** @var int */
     protected $inExecution = 0;
+    /** @var OutputInterface */
+    protected $output;
+
     /** @var int|null */
     private $exitCode = null;
     /** @var string */
     private $chunks = '';
     /** @var string */
     private $alreadyReadOutput = '';
+
+    public function __construct(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
 
     /**
      * @param string[] $parameters
@@ -87,7 +96,7 @@ abstract class BaseWorker
 
         $pipes = [];
         if ($options !== null && $options->verbose > 0) {
-            echo "Starting WrapperWorker via: $bin\n";
+            $this->output->writeln("Starting WrapperWorker via: $bin");
         }
 
         // Taken from \Symfony\Component\Process\Process::prepareWindowsCommandLine

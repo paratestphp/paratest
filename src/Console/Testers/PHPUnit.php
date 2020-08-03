@@ -7,6 +7,7 @@ namespace ParaTest\Console\Testers;
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Configuration;
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Util\Str;
 use RuntimeException;
@@ -101,11 +102,23 @@ final class PHPUnit extends Tester
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         if (! $this->hasConfig($input) && ! $this->hasPath($input)) {
-            $this->displayHelp($input, $output);
+            return $this->displayHelp($input, $output);
         }
 
-        $runner = $this->initializeRunner($input);
+        $bareOptions = $this->getRunnerOptions($input);
+        $options     = new Options($bareOptions);
+        if (
+            isset($options->filtered['configuration']) &&
+            ! file_exists($path = $options->filtered['configuration']->getPath())
+        ) {
+            $output->writeln(sprintf('Could not read "%s".', $path));
 
+            return 1;
+        }
+
+        $runnerClass = $this->getRunnerClass($input);
+
+        $runner = new $runnerClass($options, $output);
         $runner->run();
 
         return $runner->getExitCode();
@@ -155,12 +168,12 @@ final class PHPUnit extends Tester
     /**
      * Displays help for the ParaTestCommand.
      */
-    private function displayHelp(InputInterface $input, OutputInterface $output): void
+    private function displayHelp(InputInterface $input, OutputInterface $output): int
     {
         $help  = $this->command->getApplication()->find('help');
         $input = new ArrayInput(['command_name' => 'paratest']);
-        $help->run($input, $output);
-        exit(0);
+
+        return $help->run($input, $output);
     }
 
     /**
@@ -264,7 +277,10 @@ final class PHPUnit extends Tester
         return $bootstrap !== '' ? $config->getConfigDir() . $bootstrap : '';
     }
 
-    private function initializeRunner(InputInterface $input): BaseRunner
+    /**
+     * @return class-string<BaseRunner>
+     */
+    private function getRunnerClass(InputInterface $input): string
     {
         $runner = $input->getOption('runner');
         if ($runner !== null) {
@@ -280,6 +296,6 @@ final class PHPUnit extends Tester
             throw new InvalidArgumentException('Selected runner does not exist.');
         }
 
-        return new $runnerClass($this->getRunnerOptions($input));
+        return $runnerClass;
     }
 }

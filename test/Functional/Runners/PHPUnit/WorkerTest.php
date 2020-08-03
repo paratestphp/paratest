@@ -8,6 +8,7 @@ use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use ParaTest\Tests\TestBase;
 use ReflectionProperty;
 use SimpleXMLElement;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 use function count;
 use function file_exists;
@@ -30,12 +31,15 @@ final class WorkerTest extends TestBase
     protected $bootstrap;
     /** @var string */
     private $phpunitWrapper;
+    /** @var BufferedOutput */
+    private $output;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->bootstrap      = PARATEST_ROOT . DS . 'test' . DS . 'bootstrap.php';
         $this->phpunitWrapper = PARATEST_ROOT . DS . 'bin' . DS . 'phpunit-wrapper.php';
+        $this->output         = new BufferedOutput();
     }
 
     public function tearDown(): void
@@ -60,7 +64,7 @@ final class WorkerTest extends TestBase
     {
         $testLog = sys_get_temp_dir() . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
-        $worker  = new WrapperWorker();
+        $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
 
@@ -77,7 +81,7 @@ final class WorkerTest extends TestBase
     {
         $testLog = sys_get_temp_dir() . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
-        $worker  = new WrapperWorker();
+        $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
         $worker->waitForFinishedJob();
@@ -92,7 +96,7 @@ final class WorkerTest extends TestBase
     {
         $testLog = sys_get_temp_dir() . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
-        $worker  = new WrapperWorker();
+        $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
         static::assertTrue($worker->isFree());
 
@@ -108,7 +112,7 @@ final class WorkerTest extends TestBase
      */
     public function testTellsWhenItsStopped(): void
     {
-        $worker = new WrapperWorker();
+        $worker = new WrapperWorker($this->output);
         static::assertFalse($worker->isRunning());
 
         $worker->start($this->phpunitWrapper);
@@ -125,7 +129,7 @@ final class WorkerTest extends TestBase
     public function testProcessIsMarkedAsCrashedWhenItFinishesWithNonZeroExitCode(): void
     {
         // fake state: process has already exited (with non-zero exit code) but worker did not yet notice
-        $worker = new WrapperWorker();
+        $worker = new WrapperWorker($this->output);
         $this->setPerReflection($worker, 'proc', $this->createSomeClosedProcess());
         $this->setPerReflection($worker, 'pipes', [0 => true]);
         static::assertTrue($worker->isCrashed());
@@ -166,7 +170,7 @@ final class WorkerTest extends TestBase
     {
         $bin = 'bin/phpunit-wrapper.php';
 
-        $worker = new WrapperWorker();
+        $worker = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
 
         $testLog = sys_get_temp_dir() . DS . 'test.xml';
