@@ -152,7 +152,7 @@ final class ResultPrinter
     public function println(string $string = ''): void
     {
         $this->column = 0;
-        $this->output->writeln($string);
+        $this->output->write($string . "\n");
     }
 
     /**
