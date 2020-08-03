@@ -4,6 +4,7 @@ includes:
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/ekino/phpstan-banned-code/extension.neon
+    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
 
 rules:
     - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit\Worker;
 
-use Exception;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
@@ -59,7 +58,7 @@ final class WrapperWorker extends BaseWorker
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
         if ($this->currentlyExecuting !== null) {
-            throw new Exception('Worker already has a test assigned - did you forget to call reset()?');
+            throw new RuntimeException('Worker already has a test assigned - did you forget to call reset()?');
         }
 
         $this->currentlyExecuting = $test;

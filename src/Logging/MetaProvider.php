@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging;
 
-use Exception;
+use RuntimeException;
 
 use function preg_match;
 use function strtolower;
@@ -58,7 +58,7 @@ abstract class MetaProvider
             return $this->getMessages($type);
         }
 
-        throw new Exception("Method $method uknown");
+        throw new RuntimeException("Method $method uknown");
     }
 
     /**
