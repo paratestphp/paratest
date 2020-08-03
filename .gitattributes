@@ -6,5 +6,6 @@
 /phpcs.xml.dist export-ignore
 /phpstan.neon.dist export-ignore
 /phpunit.xml.dist export-ignore
+/psalm.xml.dist export-ignore
 /.github/ export-ignore
 /test/ export-ignore
