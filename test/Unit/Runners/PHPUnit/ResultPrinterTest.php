@@ -92,7 +92,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new ParsedFunction('doc', 'public', 'function' . $i);
+            $funcs[] = new ParsedFunction('doc', 'function' . $i);
         }
 
         $suite = new Suite('/path', $funcs);
@@ -147,8 +147,8 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new ParsedFunction('doc', 'public', 'funcOne'),
-            new ParsedFunction('doc', 'public', 'funcTwo'),
+            new ParsedFunction('doc', 'funcOne'),
+            new ParsedFunction('doc', 'funcTwo'),
         ]);
         $this->printer->addTest($suite);
         static::assertEquals(2, $this->printer->getTotalCases());

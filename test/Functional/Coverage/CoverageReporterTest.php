@@ -11,6 +11,8 @@ use PHPUnit\Util\Xml;
 
 use function defined;
 use function mkdir;
+use function ob_get_clean;
+use function ob_start;
 use function str_replace;
 use function sys_get_temp_dir;
 use function uniqid;
@@ -160,6 +162,55 @@ final class CoverageReporterTest extends TestBase
 
         static::assertFileExists($target);
         static::assertFileExists($target . DS . 'index.html', 'Index html file was not generated');
+    }
+
+    /**
+     * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
+     */
+    public function testGenerateText(array $coverageFiles): void
+    {
+        $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
+        $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
+
+        $coverageMerger = new CoverageMerger();
+        $coverageMerger->addCoverageFromFile($filename1);
+        $coverageMerger->addCoverageFromFile($filename2);
+
+        ob_start();
+        $coverageMerger->getReporter()->text();
+        $output = ob_get_clean();
+
+        static::assertIsString($output);
+        static::assertStringContainsString('Code Coverage Report:', $output);
+    }
+
+    /**
+     * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
+     */
+    public function testGenerateXml(array $coverageFiles): void
+    {
+        $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
+        $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
+
+        $coverageMerger = new CoverageMerger();
+        $coverageMerger->addCoverageFromFile($filename1);
+        $coverageMerger->addCoverageFromFile($filename2);
+
+        $target = $this->targetDir . DS . 'coverage.xml';
+
+        static::assertFileDoesNotExist($target);
+
+        $coverageMerger->getReporter()->xml($target);
+
+        static::assertFileExists($target);
+        static::assertFileExists($target . DS . 'index.xml', 'Index xml file was not generated');
+
+        $reportXml = Xml::loadFile($target . DS . 'index.xml');
+        static::assertTrue($reportXml->hasChildNodes(), 'Incorrect xml was generated');
     }
 
     /**
