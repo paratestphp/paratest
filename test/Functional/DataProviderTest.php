@@ -12,16 +12,13 @@ final class DataProviderTest extends FunctionalTestBase
     public function setUp(): void
     {
         parent::setUp();
-        $this->invoker = new ParaTestInvoker(
-            $this->fixture('dataprovider-tests/DataProviderTest.php'),
-            BOOTSTRAP
-        );
+        $this->invoker = new ParaTestInvoker($this->fixture('dataprovider-tests/DataProviderTest.php'));
     }
 
     public function testFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'max-batch-size' => 50,
         ]);
         static::assertMatchesRegularExpression('/OK \(1150 tests, 1150 assertions\)/', $proc->getOutput());
@@ -30,7 +27,7 @@ final class DataProviderTest extends FunctionalTestBase
     public function testNumericDataSetInFunctionalModeWithMethodFilter(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'max-batch-size' => 50,
             'filter' => 'testNumericDataProvider50',
         ]);
@@ -40,7 +37,7 @@ final class DataProviderTest extends FunctionalTestBase
     public function testNumericDataSetInFunctionalModeWithCustomFilter(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'max-batch-size' => 50,
             'filter' => 'testNumericDataProvider50.*1',
         ]);
@@ -50,7 +47,7 @@ final class DataProviderTest extends FunctionalTestBase
     public function testNamedDataSetInFunctionalModeWithMethodFilter(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'max-batch-size' => 50,
             'filter' => 'testNamedDataProvider50',
         ]);
@@ -60,7 +57,7 @@ final class DataProviderTest extends FunctionalTestBase
     public function testNamedDataSetInFunctionalModeWithCustomFilter(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'max-batch-size' => 50,
             'filter' => 'testNamedDataProvider50.*name_of_test_.*1',
         ]);
@@ -70,7 +67,7 @@ final class DataProviderTest extends FunctionalTestBase
     public function testNumericDataSet1000InFunctionalModeWithFilterAndMaxBatchSize(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'max-batch-size' => 50,
             'filter' => 'testNumericDataProvider1000',
         ]);

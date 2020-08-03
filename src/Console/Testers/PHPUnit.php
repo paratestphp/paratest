@@ -20,10 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_key_exists;
 use function array_merge;
+use function assert;
 use function chdir;
 use function class_exists;
 use function file_exists;
 use function getcwd;
+use function is_string;
 use function sprintf;
 use function sys_get_temp_dir;
 use function tempnam;
@@ -106,7 +108,9 @@ final class PHPUnit extends Tester
         }
 
         $bareOptions = $this->getRunnerOptions($input);
-        $options     = new Options($bareOptions);
+        $this->requireBootstrap($this->getBootstrapFile($input, $bareOptions));
+
+        $options = new Options($bareOptions);
         if (
             isset($options->filtered['configuration']) &&
             ! file_exists($path = $options->filtered['configuration']->getPath())
@@ -183,10 +187,8 @@ final class PHPUnit extends Tester
      */
     public function getRunnerOptions(InputInterface $input): array
     {
-        $path      = $input->getArgument('path');
-        $options   = $this->getOptions($input);
-        $bootstrap = $this->getBootstrapFile($input, $options);
-        $this->requireBootstrap($bootstrap);
+        $path    = $input->getArgument('path');
+        $options = $this->getOptions($input);
 
         if ($this->hasCoverage($options)) {
             $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');
@@ -259,11 +261,13 @@ final class PHPUnit extends Tester
     /**
      * Fetch the path to the bootstrap file.
      *
-     * @param array<string, string> $options
+     * @param array<string, string|string[]> $options
      */
     private function getBootstrapFile(InputInterface $input, array $options): string
     {
         if (isset($options['bootstrap'])) {
+            assert(is_string($options['bootstrap']));
+
             return $options['bootstrap'];
         }
 

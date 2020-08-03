@@ -19,16 +19,13 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
     public function setUp(): void
     {
         parent::setUp();
-        $this->invoker = new ParaTestInvoker(
-            $this->fixture('skipped-tests/SkippedOrIncompleteTest.php'),
-            BOOTSTRAP
-        );
+        $this->invoker = new ParaTestInvoker($this->fixture('skipped-tests/SkippedOrIncompleteTest.php'));
     }
 
     public function testSkippedInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'filter' => 'testSkipped',
         ]);
 
@@ -42,7 +39,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
     public function testIncompleteInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'filter' => 'testIncomplete',
         ]);
 
@@ -56,7 +53,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
     public function testDataProviderWithSkippedInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => null,
+            'functional' => true,
             'max-batch-size' => 50,
             'filter' => 'testDataProviderWithSkipped',
         ]);
@@ -72,10 +69,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
         // amount of tests is known, based on amount of methods, so
         // we can identify skipped tests
 
-        $this->invoker = new ParaTestInvoker(
-            $this->fixture('skipped-tests/SkippedTest.php'),
-            BOOTSTRAP
-        );
+        $this->invoker = new ParaTestInvoker($this->fixture('skipped-tests/SkippedTest.php'));
 
         $proc = $this->invoker->execute();
 
@@ -90,10 +84,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
         // amount of tests is known, based on amount of methods, so
         // we can identify skipped tests
 
-        $this->invoker = new ParaTestInvoker(
-            $this->fixture('skipped-tests/IncompleteTest.php'),
-            BOOTSTRAP
-        );
+        $this->invoker = new ParaTestInvoker($this->fixture('skipped-tests/IncompleteTest.php'));
 
         $proc = $this->invoker->execute();
 
@@ -111,10 +102,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
         // but test has more actual tests from data provider so
         // we can't identify skipped tests
 
-        $this->invoker = new ParaTestInvoker(
-            $this->fixture('skipped-tests/SkippedAndIncompleteDataProviderTest.php'),
-            BOOTSTRAP
-        );
+        $this->invoker = new ParaTestInvoker($this->fixture('skipped-tests/SkippedAndIncompleteDataProviderTest.php'));
 
         $proc = $this->invoker->execute();
 

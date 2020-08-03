@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Console\Testers;
 
+use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Tests\TestBase;
+use RuntimeException;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 use function getcwd;
+use function uniqid;
 
 final class PHPUnitTest extends TestBase
 {
@@ -83,5 +88,29 @@ final class PHPUnitTest extends TestBase
 
         $tester->requireBootstrap($file);
         static::assertEquals($cwd, getcwd());
+    }
+
+    public function testWithBootstrapThatDoesNotExist(): void
+    {
+        $file   = __DIR__ . '/' . uniqid('bootstrap_');
+        $tester = new PHPUnit();
+
+        self::expectException(RuntimeException::class);
+        self::expectDeprecationMessageMatches('/Bootstrap specified but could not be found/');
+
+        $tester->requireBootstrap($file);
+    }
+
+    public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
+    {
+        $tester  = new PHPUnit();
+        $command = new ParaTestCommand($tester);
+        $input   = new ArgvInput([], $command->getDefinition());
+        $input->setOption('configuration', 'nope.xml');
+        $output = new BufferedOutput();
+
+        $tester->execute($input, $output);
+
+        static::assertStringContainsString('Could not read "nope.xml"', $output->fetch());
     }
 }

@@ -12,10 +12,7 @@ final class GroupTest extends FunctionalTestBase
     public function setUp(): void
     {
         parent::setUp();
-        $this->invoker = new ParaTestInvoker(
-            $this->fixture('passing-tests/GroupsTest.php'),
-            BOOTSTRAP
-        );
+        $this->invoker = new ParaTestInvoker($this->fixture('passing-tests/GroupsTest.php'));
     }
 
     public function testGroupSwitchOnlyExecutesThoseGroups(): void
@@ -31,27 +28,21 @@ final class GroupTest extends FunctionalTestBase
         static::assertMatchesRegularExpression('/OK \(3 tests, 3 assertions\)/', $proc->getOutput());
     }
 
-    public function testGroupSwitchExecutesGroupsUsingShortOption(): void
-    {
-        $proc = $this->invoker->execute(['g' => 'group1']);
-        static::assertMatchesRegularExpression('/OK \(2 tests, 2 assertions\)/', $proc->getOutput());
-    }
-
     public function testGroupSwitchOnlyExecutesThoseGroupsInFunctionalMode(): void
     {
-        $proc = $this->invoker->execute(['functional', 'g' => 'group1']);
+        $proc = $this->invoker->execute(['functional' => true, 'group' => 'group1']);
         static::assertMatchesRegularExpression('/OK \(2 tests, 2 assertions\)/', $proc->getOutput());
     }
 
     public function testGroupSwitchOnlyExecutesThoseGroupsWhereTestHasMultipleGroups(): void
     {
-        $proc = $this->invoker->execute(['functional', 'group' => 'group3']);
+        $proc = $this->invoker->execute(['functional' => true, 'group' => 'group3']);
         static::assertMatchesRegularExpression('/OK \(1 test, 1 assertion\)/', $proc->getOutput());
     }
 
     public function testGroupsSwitchExecutesMultipleGroups(): void
     {
-        $proc = $this->invoker->execute(['functional', 'group' => 'group1,group3']);
+        $proc = $this->invoker->execute(['functional' => true, 'group' => 'group1,group3']);
         static::assertMatchesRegularExpression('/OK \(3 tests, 3 assertions\)/', $proc->getOutput());
     }
 }
