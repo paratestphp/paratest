@@ -11,13 +11,11 @@ use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\Unit\ResultTester;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 use function defined;
 use function file_exists;
 use function file_put_contents;
-use function ob_end_clean;
-use function ob_get_clean;
-use function ob_start;
 use function sprintf;
 use function unlink;
 
@@ -25,6 +23,9 @@ final class ResultPrinterTest extends ResultTester
 {
     /** @var ResultPrinter */
     private $printer;
+
+    /** @var BufferedOutput */
+    private $output;
 
     /** @var LogInterpreter */
     private $interpreter;
@@ -35,7 +36,8 @@ final class ResultPrinterTest extends ResultTester
     protected function setUpInterpreter(): void
     {
         $this->interpreter = new LogInterpreter();
-        $this->printer     = new ResultPrinter($this->interpreter);
+        $this->output      = new BufferedOutput();
+        $this->printer     = new ResultPrinter($this->interpreter, $this->output);
         $pathToConfig      = $this->getPathToConfig();
         if (file_exists($pathToConfig)) {
             unlink($pathToConfig);
@@ -265,9 +267,8 @@ final class ResultPrinterTest extends ResultTester
     public function testPrintFeedbackForMixed(): void
     {
         $this->printer->addTest($this->mixedSuite);
-        ob_start();
         $this->printer->printFeedback($this->mixedSuite);
-        $contents = ob_get_clean();
+        $contents = $this->output->fetch();
         static::assertEquals('.F.E.F.', $contents);
     }
 
@@ -278,18 +279,14 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuite);
         }
 
-        //start the printer so boundaries are established
-        ob_start();
         $this->printer->start(new Options());
-        ob_end_clean();
+        $this->output->fetch();
 
-        //get the feedback string
-        ob_start();
         for ($i = 0; $i < 40; ++$i) {
             $this->printer->printFeedback($this->passingSuite);
         }
 
-        $feedback = ob_get_clean();
+        $feedback = $this->output->fetch();
 
         $firstRowColumns  = 63;
         $secondRowColumns = 57;
@@ -319,18 +316,14 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuiteWithWrongTestCountEstimation);
         }
 
-        //start the printer so boundaries are established
-        ob_start();
         $this->printer->start(new Options());
-        ob_end_clean();
+        $this->output->fetch();
 
-        //get the feedback string
-        ob_start();
         for ($i = 0; $i < 22; ++$i) {
             $this->printer->printFeedback($this->passingSuiteWithWrongTestCountEstimation);
         }
 
-        $feedback = ob_get_clean();
+        $feedback = $this->output->fetch();
 
         $firstRowColumns  = 65;
         $secondRowColumns = 1;
@@ -355,20 +348,18 @@ final class ResultPrinterTest extends ResultTester
 
     private function getStartOutput(Options $options): string
     {
-        ob_start();
         $this->printer->start($options);
 
-        return ob_get_clean();
+        return $this->output->fetch();
     }
 
     private function prepareReaders(): void
     {
         $suites = $this->getObjectValue($this->printer, 'suites');
-        ob_start();
         foreach ($suites as $suite) {
             $this->printer->printFeedback($suite);
         }
 
-        ob_end_clean();
+        $this->output->fetch();
     }
 }

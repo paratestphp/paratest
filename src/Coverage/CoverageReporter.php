@@ -70,10 +70,11 @@ final class CoverageReporter implements CoverageReporterInterface
     /**
      * Generate text coverage report.
      */
-    public function text(): void
+    public function text(): string
     {
         $text = new Text();
-        echo $text->process($this->coverage);
+
+        return $text->process($this->coverage);
     }
 
     /**

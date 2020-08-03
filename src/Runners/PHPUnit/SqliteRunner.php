@@ -8,6 +8,7 @@ use Exception;
 use ParaTest\Runners\PHPUnit\Worker\SqliteWorker;
 use PDO;
 use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function count;
 use function dirname;
@@ -34,14 +35,11 @@ final class SqliteRunner extends BaseWrapperRunner
     /** @var string */
     private $dbFileName = null;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct(array $opts = [])
+    public function __construct(Options $opts, OutputInterface $output)
     {
-        parent::__construct($opts);
+        parent::__construct($opts, $output);
 
-        $this->dbFileName = (string) ($opts['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
+        $this->dbFileName = (string) ($opts->filtered['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
         $this->db         = new PDO('sqlite:' . $this->dbFileName);
     }
 
@@ -76,7 +74,7 @@ final class SqliteRunner extends BaseWrapperRunner
         );
 
         for ($i = 1; $i <= $this->options->processes; ++$i) {
-            $worker = new SqliteWorker($this->dbFileName);
+            $worker = new SqliteWorker($this->output, $this->dbFileName);
             if ($this->options->noTestTokens) {
                 $token       = null;
                 $uniqueToken = null;

@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use Exception;
 use Habitat\Habitat;
+use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 use function array_filter;
@@ -15,8 +16,6 @@ use function count;
 use function sprintf;
 use function uniqid;
 use function usleep;
-
-use const PHP_EOL;
 
 final class Runner extends BaseRunner
 {
@@ -30,12 +29,9 @@ final class Runner extends BaseRunner
      */
     private $tokens = [];
 
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct(array $opts = [])
+    public function __construct(Options $opts, OutputInterface $output)
     {
-        parent::__construct($opts);
+        parent::__construct($opts, $output);
         $this->initTokens();
     }
 
@@ -55,10 +51,10 @@ final class Runner extends BaseRunner
                     }
                 } catch (Throwable $e) {
                     if ($this->options->verbose > 0) {
-                        echo "An error for $key: {$e->getMessage()}" . PHP_EOL;
-                        echo "Command: {$test->getLastCommand()}" . PHP_EOL;
-                        echo 'StdErr: ' . $test->getStderr() . PHP_EOL;
-                        echo 'StdOut: ' . $test->getStdout() . PHP_EOL;
+                        $this->output->writeln("An error for $key: {$e->getMessage()}");
+                        $this->output->writeln("Command: {$test->getLastCommand()}");
+                        $this->output->writeln('StdErr: ' . $test->getStderr());
+                        $this->output->writeln('StdOut: ' . $test->getStdout());
                     }
 
                     throw $e;
@@ -116,7 +112,7 @@ final class Runner extends BaseRunner
             }
 
             $cmd = $this->running[$tokenData['token']];
-            echo "\nExecuting test via: {$cmd->getLastCommand()}\n";
+            $this->output->write("\nExecuting test via: {$cmd->getLastCommand()}\n");
         }
     }
 

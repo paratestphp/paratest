@@ -9,10 +9,10 @@ use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
 use RuntimeException;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function count;
 use function floor;
-use function printf;
 use function sprintf;
 use function strlen;
 
@@ -98,9 +98,13 @@ final class ResultPrinter
      */
     private $processSkipped = false;
 
-    public function __construct(LogInterpreter $results)
+    /** @var OutputInterface */
+    private $output;
+
+    public function __construct(LogInterpreter $results, OutputInterface $output)
     {
         $this->results = $results;
+        $this->output  = $output;
     }
 
     /**
@@ -127,15 +131,18 @@ final class ResultPrinter
         $this->maxColumn     = $this->numberOfColumns
                          + (DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
                          - strlen($this->getProgress());
-        printf(
+        $this->output->write(sprintf(
             "\nRunning phpunit in %d process%s with %s%s\n\n",
             $options->processes,
             $options->processes > 1 ? 'es' : '',
             $options->phpunit,
             $options->functional ? '. Functional mode is ON.' : ''
-        );
+        ));
         if (isset($options->filtered['configuration'])) {
-            printf("Configuration read from %s\n\n", $options->filtered['configuration']->getPath());
+            $this->output->write(sprintf(
+                "Configuration read from %s\n\n",
+                $options->filtered['configuration']->getPath()
+            ));
         }
 
         $this->colors         = $options->colors;
@@ -145,7 +152,7 @@ final class ResultPrinter
     public function println(string $string = ''): void
     {
         $this->column = 0;
-        echo "$string\n";
+        $this->output->write($string . "\n");
     }
 
     /**
@@ -163,11 +170,11 @@ final class ResultPrinter
      */
     public function printResults(): void
     {
-        echo $this->getHeader();
-        echo $this->getErrors();
-        echo $this->getFailures();
-        echo $this->getWarnings();
-        echo $this->getFooter();
+        $this->output->write($this->getHeader());
+        $this->output->write($this->getErrors());
+        $this->output->write($this->getFailures());
+        $this->output->write($this->getWarnings());
+        $this->output->write($this->getFooter());
     }
 
     /**
@@ -353,43 +360,44 @@ final class ResultPrinter
             return;
         }
 
-        echo $this->getProgress();
+        $this->output->write($this->getProgress());
         $this->println();
     }
 
     private function printFeedbackItemColor(string $item): void
     {
+        $format = '%s';
         if ($this->colors) {
             switch ($item) {
                 case 'E':
                     // fg-red
-                    echo "\x1b[31m" . $item . "\x1b[0m";
+                    $format = "\x1b[31m%s\x1b[0m";
 
-                    return;
+                    break;
 
                 case 'F':
                     // bg-red
-                    echo "\x1b[41m" . $item . "\x1b[0m";
+                    $format = "\x1b[41m%s\x1b[0m";
 
-                    return;
+                    break;
 
                 case 'W':
                 case 'I':
                 case 'R':
                     // fg-yellow
-                    echo "\x1b[33m" . $item . "\x1b[0m";
+                    $format = "\x1b[33m%s\x1b[0m";
 
-                    return;
+                    break;
 
                 case 'S':
                     // fg-cyan
-                    echo "\x1b[36m" . $item . "\x1b[0m";
+                    $format = "\x1b[36m%s\x1b[0m";
 
-                    return;
+                    break;
             }
         }
 
-        echo $item;
+        $this->output->write(sprintf($format, $item));
     }
 
     /**

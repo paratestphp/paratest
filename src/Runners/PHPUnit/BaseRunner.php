@@ -8,9 +8,9 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Parser\ParsedFunction;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
-use function file_exists;
 use function getenv;
 use function putenv;
 use function sprintf;
@@ -57,33 +57,18 @@ abstract class BaseRunner
      */
     protected $coverage = null;
 
-    /**
-     * @param array<string, string|bool|int> $opts
-     */
-    public function __construct(array $opts = [])
+    /** @var OutputInterface */
+    protected $output;
+
+    public function __construct(Options $opts, OutputInterface $output)
     {
-        $this->options     = new Options($opts);
+        $this->options     = $opts;
         $this->interpreter = new LogInterpreter();
-        $this->printer     = new ResultPrinter($this->interpreter);
+        $this->printer     = new ResultPrinter($this->interpreter, $output);
+        $this->output      = $output;
     }
 
     abstract public function run(): void;
-
-    /**
-     * Ensures a valid configuration was supplied. If not
-     * causes ParaTest to print the error message and exit immediately
-     * with an exit code of 1.
-     */
-    private function verifyConfiguration(): void
-    {
-        if (
-            isset($this->options->filtered['configuration']) &&
-            ! file_exists($path = $this->options->filtered['configuration']->getPath())
-        ) {
-            $this->printer->println(sprintf('Could not read "%s".', $path));
-            exit(1);
-        }
-    }
 
     /**
      * Builds the collection of pending ExecutableTest objects
@@ -153,7 +138,7 @@ abstract class BaseRunner
         }
 
         if (isset($filteredOptions['coverage-text'])) {
-            $reporter->text();
+            $this->output->write($reporter->text());
         }
 
         if (isset($filteredOptions['coverage-xml'])) {
@@ -207,7 +192,6 @@ abstract class BaseRunner
 
     final protected function initialize(): void
     {
-        $this->verifyConfiguration();
         $this->overrideEnvironmentVariables();
         $this->initCoverage();
         $this->load(new SuiteLoader($this->options));

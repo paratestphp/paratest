@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Tests\TestBase;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 use function count;
 use function file_exists;
@@ -19,22 +21,28 @@ use function unlink;
 final class RunnerIntegrationTest extends TestBase
 {
     /** @var Runner $runner */
-    protected $runner;
+    private $runner;
+    /** @var BufferedOutput */
+    private $output;
     /** @var array<string, string> */
-    protected $options;
+    private $bareOptions;
+    /** @var Options */
+    private $options;
 
     protected function setUp(): void
     {
         static::skipIfCodeCoverageNotEnabled();
 
-        $this->options = [
+        $this->bareOptions = [
             'path' => FIXTURES . DS . 'failing-tests',
             'phpunit' => PHPUNIT,
             'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
             'bootstrap' => BOOTSTRAP,
             'whitelist' => FIXTURES . DS . 'failing-tests',
         ];
-        $this->runner  = new Runner($this->options);
+        $this->options     = new Options($this->bareOptions);
+        $this->output      = new BufferedOutput();
+        $this->runner      = new Runner($this->options, $this->output);
     }
 
     protected function tearDown(): void
@@ -81,9 +89,9 @@ final class RunnerIntegrationTest extends TestBase
 
     public function testLogJUnitCreatesXmlFile(): void
     {
-        $outputPath                 = FIXTURES . DS . 'logs' . DS . 'test-output.xml';
-        $this->options['log-junit'] = $outputPath;
-        $runner                     = new Runner($this->options);
+        $outputPath                     = FIXTURES . DS . 'logs' . DS . 'test-output.xml';
+        $this->bareOptions['log-junit'] = $outputPath;
+        $runner                         = new Runner(new Options($this->bareOptions), $this->output);
 
         ob_start();
         $runner->run();
