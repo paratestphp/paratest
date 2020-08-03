@@ -16,7 +16,6 @@ use function function_exists;
 use function ini_get;
 use function is_array;
 use function unlink;
-use function unserialize;
 
 use const PHP_SAPI;
 
@@ -50,14 +49,7 @@ final class CoverageMerger
      */
     private function getCoverageObject(SplFileObject $coverageFile): CodeCoverage
     {
-        if ($coverageFile->fread(5) === '<?php') {
-            return include $coverageFile->getRealPath();
-        }
-
-        $coverageFile->fseek(0);
-
-        // the PHPUnit 3.x and below
-        return unserialize($coverageFile->fread($coverageFile->getSize()));
+        return include $coverageFile->getRealPath();
     }
 
     /**
