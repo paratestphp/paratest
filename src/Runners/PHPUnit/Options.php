@@ -12,6 +12,7 @@ use function array_shift;
 use function assert;
 use function count;
 use function dirname;
+use function escapeshellarg;
 use function explode;
 use function fgets;
 use function file_exists;
@@ -456,7 +457,12 @@ final class Options
         }
 
         $stringToArgumentProcess = Process::fromShellCommandline(
-            sprintf('%s -r "echo serialize(\\$argv);" -- %s', PHP_BINARY, $param)
+            sprintf(
+                '%s -r %s -- %s',
+                escapeshellarg(PHP_BINARY),
+                escapeshellarg('echo serialize($argv);'),
+                $param
+            )
         );
         $stringToArgumentProcess->mustRun();
 

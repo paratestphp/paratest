@@ -8,6 +8,7 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
 
 use function chdir;
+use function defined;
 use function file_put_contents;
 use function getcwd;
 use function glob;
@@ -33,6 +34,7 @@ final class OptionsTest extends TestBase
             'phpunit' => 'phpunit',
             'functional' => true,
             'group' => 'group1',
+            'exclude-group' => 'group2',
             'bootstrap' => '/path/to/bootstrap',
         ];
         $this->options    = new Options($this->unfiltered);
@@ -129,6 +131,30 @@ final class OptionsTest extends TestBase
         $this->unfiltered['path'] = getcwd();
         $options                  = new Options($this->unfiltered);
         static::assertArrayNotHasKey('configuration', $options->filtered);
+    }
+
+    public function testPassthru(): void
+    {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $options = new Options([
+                'passthru' => '"--prepend" "xdebug-filter.php"',
+                'passthru-php' => '"-d" "zend_extension=xdebug.so"',
+            ]);
+        } else {
+            $options = new Options([
+                'passthru' => "'--prepend' 'xdebug-filter.php'",
+                'passthru-php' => "'-d' 'zend_extension=xdebug.so'",
+            ]);
+        }
+
+        $expectedPassthru    = ['--prepend', 'xdebug-filter.php'];
+        $expectedPassthruPhp = ['-d', 'zend_extension=xdebug.so'];
+
+        static::assertSame($expectedPassthru, $options->passthru);
+        static::assertSame($expectedPassthruPhp, $options->passthruPhp);
+
+        $emptyOptions = new Options(['passthru' => '']);
+        static::assertNull($emptyOptions->passthru);
     }
 
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists(): void
