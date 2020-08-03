@@ -14,32 +14,21 @@ final class OutputTest extends FunctionalTestBase
     public function setUp(): void
     {
         parent::setUp();
-        $this->paratest = new ParaTestInvoker(
-            $this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'),
-            BOOTSTRAP
-        );
+        $this->paratest = new ParaTestInvoker($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
     }
 
     public function testDefaultMessagesDisplayed(): void
     {
-        $output = $this->paratest->execute(['p' => 5])->getOutput();
+        $output = $this->paratest->execute(['processes' => 5])->getOutput();
         static::assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
         static::assertStringContainsString('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
         static::assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
-    public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
-    {
-        $output = $this->paratest
-            ->execute(['configuration' => 'nope.xml'])
-            ->getOutput();
-        static::assertStringContainsString('Could not read "nope.xml"', $output);
-    }
-
     public function testMessagePrintedWhenFunctionalModeIsOn(): void
     {
         $output = $this->paratest
-            ->execute(['functional', 'p' => 5])
+            ->execute(['functional' => true, 'processes' => 5])
             ->getOutput();
         static::assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
         static::assertStringContainsString('Functional mode is ON.', $output);
@@ -48,7 +37,7 @@ final class OutputTest extends FunctionalTestBase
 
     public function testProcCountIsReportedWithProcOption(): void
     {
-        $output = $this->paratest->execute(['p' => 1])
+        $output = $this->paratest->execute(['processes' => 1])
             ->getOutput();
         static::assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
         static::assertMatchesRegularExpression('/[.F]{4}/', $output);

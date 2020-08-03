@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
+use function basename;
 use function file_put_contents;
 use function is_dir;
 use function mkdir;
+use function sprintf;
 use function uniqid;
 
 final class TestGenerator
@@ -39,7 +41,9 @@ final class TestGenerator
 
     private function generateTestString(string $testName, int $methods = 1): string
     {
-        $php = '<' . "?php\n\nclass $testName extends PHPUnit\\Framework\\TestCase\n{\n";
+        $namespace = sprintf('Generated%s', basename($this->path));
+        $php       = '<'
+            . "?php\n\nnamespace $namespace;\n\nclass $testName extends \\PHPUnit\\Framework\\TestCase\n{\n";
 
         for ($i = 0; $i < $methods; ++$i) {
             $php .= "\tpublic function testMethod{$i}(): void{";

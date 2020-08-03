@@ -106,7 +106,9 @@ final class PHPUnit extends Tester
         }
 
         $bareOptions = $this->getRunnerOptions($input);
-        $options     = new Options($bareOptions);
+        $this->requireBootstrap($this->getBootstrapFile($input, $bareOptions));
+
+        $options = new Options($bareOptions);
         if (
             isset($options->filtered['configuration']) &&
             ! file_exists($path = $options->filtered['configuration']->getPath())
@@ -183,10 +185,8 @@ final class PHPUnit extends Tester
      */
     public function getRunnerOptions(InputInterface $input): array
     {
-        $path      = $input->getArgument('path');
-        $options   = $this->getOptions($input);
-        $bootstrap = $this->getBootstrapFile($input, $options);
-        $this->requireBootstrap($bootstrap);
+        $path    = $input->getArgument('path');
+        $options = $this->getOptions($input);
 
         if ($this->hasCoverage($options)) {
             $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');

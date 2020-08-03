@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Functional;
 
 use Exception;
+use ParaTest\Runners\PHPUnit\BaseRunner;
 use PHPUnit;
-use Symfony\Component\Process\Process;
 
 use function extension_loaded;
 use function file_exists;
@@ -23,11 +23,8 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
         return $fixture;
     }
 
-    /**
-     * @param Process<string> $proc
-     */
     final protected function assertTestsPassed(
-        Process $proc,
+        RunnerResult $proc,
         string $testPattern = '\d+',
         string $assertionPattern = '\d+'
     ): void {
@@ -39,15 +36,17 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param array<int|string, string|int|null> $options
-     *
-     * @return Process<string>
+     * @param array<string, string|int|true> $options
+     * @param class-string<BaseRunner>|null  $runnerClass
      */
-    final protected function invokeParatest(string $path, array $options = [], ?callable $callback = null): Process
-    {
-        $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
+    final protected function invokeParatest(
+        string $path,
+        array $options = [],
+        ?string $runnerClass = null
+    ): RunnerResult {
+        $invoker = new ParaTestInvoker($this->fixture($path));
 
-        return $invoker->execute($options, $callback);
+        return $invoker->execute($options, $runnerClass);
     }
 
     /**
