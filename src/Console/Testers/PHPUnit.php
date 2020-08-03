@@ -20,10 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_key_exists;
 use function array_merge;
+use function assert;
 use function chdir;
 use function class_exists;
 use function file_exists;
 use function getcwd;
+use function is_string;
 use function sprintf;
 use function sys_get_temp_dir;
 use function tempnam;
@@ -259,11 +261,13 @@ final class PHPUnit extends Tester
     /**
      * Fetch the path to the bootstrap file.
      *
-     * @param array<string, string> $options
+     * @param array<string, string|string[]> $options
      */
     private function getBootstrapFile(InputInterface $input, array $options): string
     {
         if (isset($options['bootstrap'])) {
+            assert(is_string($options['bootstrap']));
+
             return $options['bootstrap'];
         }
 

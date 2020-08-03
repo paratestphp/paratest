@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
+use InvalidArgumentException;
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Runners\PHPUnit\BaseRunner;
@@ -30,6 +31,10 @@ final class ParaTestInvoker
      */
     public function execute(array $options = [], ?string $runnerClass = null): RunnerResult
     {
+        if (isset($options['runner'])) {
+            throw new InvalidArgumentException('Specify the runner as a parameter instead of an option');
+        }
+
         if ($runnerClass === null) {
             $runnerClass = Runner::class;
         }

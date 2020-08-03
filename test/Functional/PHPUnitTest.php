@@ -37,20 +37,22 @@ final class PHPUnitTest extends FunctionalTestBase
      */
     public function testWithWrapperRunner(): void
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests', [
-            'configuration' => PHPUNIT_CONFIGURATION,
-            'runner' => 'WrapperRunner',
-        ]));
+        $this->assertTestsPassed($this->invokeParatest(
+            'passing-tests',
+            ['configuration' => PHPUNIT_CONFIGURATION],
+            WrapperRunner::class
+        ));
     }
 
     public function testWithSqliteRunner(): void
     {
         $this->guardSqliteExtensionLoaded();
 
-        $this->assertTestsPassed($this->invokeParatest('passing-tests', [
-            'configuration' => PHPUNIT_CONFIGURATION,
-            'runner' => 'SqliteRunner',
-        ]));
+        $this->assertTestsPassed($this->invokeParatest(
+            'passing-tests',
+            ['configuration' => PHPUNIT_CONFIGURATION],
+            SqliteRunner::class
+        ));
     }
 
     public function testWithCustomRunner(): void
@@ -102,7 +104,8 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $this->assertTestsPassed($this->invokeParatest(
             'paratest-only-tests/EnvironmentTest.php',
-            ['runner' => 'WrapperRunner']
+            [],
+            WrapperRunner::class
         ));
     }
 
