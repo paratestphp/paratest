@@ -15,7 +15,7 @@ use function getenv;
 use function putenv;
 use function sprintf;
 
-abstract class BaseRunner
+abstract class BaseRunner implements RunnerInterface
 {
     /** @var Options */
     protected $options;
@@ -67,8 +67,6 @@ abstract class BaseRunner
         $this->printer     = new ResultPrinter($this->interpreter, $output);
         $this->output      = $output;
     }
-
-    abstract public function run(): void;
 
     /**
      * Builds the collection of pending ExecutableTest objects

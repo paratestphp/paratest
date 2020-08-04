@@ -62,7 +62,7 @@ final class PHPUnitTest extends FunctionalTestBase
             ['configuration' => PHPUNIT_CONFIGURATION],
             EmptyRunnerStub::class
         );
-        static::assertEquals('EXECUTED', $runnerResult->getOutput());
+        static::assertStringContainsString(EmptyRunnerStub::OUTPUT, $runnerResult->getOutput());
     }
 
     public function testWithColorsGreenBar(): void

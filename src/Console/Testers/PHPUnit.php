@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace ParaTest\Console\Testers;
 
 use InvalidArgumentException;
-use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Util\Str;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
@@ -26,6 +26,7 @@ use function class_exists;
 use function file_exists;
 use function getcwd;
 use function is_string;
+use function is_subclass_of;
 use function sprintf;
 use function sys_get_temp_dir;
 use function tempnam;
@@ -282,22 +283,25 @@ final class PHPUnit extends Tester
     }
 
     /**
-     * @return class-string<BaseRunner>
+     * @return class-string<RunnerInterface>
      */
     private function getRunnerClass(InputInterface $input): string
     {
-        $runner = $input->getOption('runner');
+        $runnerClass = Runner::class;
+        $runner      = $input->getOption('runner');
         if ($runner !== null) {
             $runnerClass = $runner;
             $runnerClass = class_exists($runnerClass)
                 ? $runnerClass
                 : '\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass;
-        } else {
-            $runnerClass = Runner::class;
         }
 
-        if (! class_exists($runnerClass)) {
-            throw new InvalidArgumentException('Selected runner does not exist.');
+        if (! class_exists($runnerClass) || ! is_subclass_of($runnerClass, RunnerInterface::class)) {
+            throw new InvalidArgumentException(sprintf(
+                'Selected runner class "%s" does not exist or does not implement %s',
+                $runnerClass,
+                RunnerInterface::class
+            ));
         }
 
         return $runnerClass;
