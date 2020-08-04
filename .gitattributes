@@ -3,6 +3,7 @@
 /.travis.yml export-ignore
 /composer-require-checker.json export-ignore
 /box.json.dist export-ignore
+/Makefile export-ignore
 /phpcs.xml.dist export-ignore
 /phpstan.neon.dist export-ignore
 /phpunit.xml.dist export-ignore

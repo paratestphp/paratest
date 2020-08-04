@@ -199,7 +199,6 @@ The following phpunit config file is used for ParaTest's test cases.
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
         >
     <testsuites>
         <testsuite name="ParaTest Fixtures">
@@ -225,43 +224,8 @@ if (getenv('TEST_TOKEN') !== false) {  // Using paratest
 
 # For Contributors: Testing paratest itself
 
-ParaTest's test suite depends on PHPUnit being installed via composer. Make sure you run `composer install` after cloning.
-
 **Note that The `display_errors` php.ini directive must be set to `stderr` to run the test suite.**
 
-You can use composer scripts for convenient access to style checks and tests. Run `compose run-script -l` to list the
-available commands:
-
-````
-composer run-script -l
-scripts:
-  style            Run style checks (only dry run - no fixing!)
-  style-fix        Run style checks and fix violations
-  static-analysis  Run static analysis
-  test             Run all tests
-  test-unit        Run only unit tests
-  test-functional  Run only functional tests
-  test-paratest    Run all tests with paratest itself
-````
-
-To run unit tests:
-`composer test-unit` OR `vendor/bin/phpunit test/unit`
-
-To run functional tests:
-`composer test-functional` OR `vendor/bin/phpunit test/functional`
-
-You can run all tests at once by running phpunit from the project directory:
-`composer test` OR `vendor/bin/phpunit`
-
-ParaTest can run its own test suite by running it from the `bin` directory:
-`composer test` OR `bin/paratest`
-
-Analyse the code statically:
-`composer static-analysis`
-
-Before creating a Pull Request be sure to run the style checks and commit the eventual changes:
-`composer style-fix`
-
-Use `composer style` to only show violations without fixing.
+Before creating a Pull Request be sure to run all the necessary checks with `make` command.
 
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).
