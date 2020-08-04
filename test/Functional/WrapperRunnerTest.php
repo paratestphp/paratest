@@ -6,6 +6,12 @@ namespace ParaTest\Tests\Functional;
 
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 
+use function glob;
+use function is_dir;
+use function mkdir;
+use function sys_get_temp_dir;
+use function unlink;
+
 /**
  * @requires OSFAMILY Linux
  */
@@ -84,5 +90,29 @@ final class WrapperRunnerTest extends FunctionalTestBase
         static::assertStringContainsString('Failures: 1', $output);
         static::assertStringContainsString('Errors: 1', $output);
         static::assertEquals(2, $proc->getExitCode()); // There is at least one error so the exit code must be 2
+    }
+
+    public function testParallelSuiteOption(): void
+    {
+        $testDir = sys_get_temp_dir() . DS . 'parallel-suite';
+        if (! is_dir($testDir)) {
+            mkdir($testDir);
+        }
+
+        foreach (glob($testDir . DS . '*') as $file) {
+            unlink($file);
+        }
+
+        $proc = $this->invokeParatest(
+            null,
+            [
+                'configuration' => $this->fixture('phpunit-parallel-suite.xml'),
+                'parallel-suite' => true,
+                'processes' => 2,
+            ],
+            WrapperRunner::class
+        );
+
+        $this->assertTestsPassed($proc);
     }
 }

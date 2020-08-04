@@ -40,11 +40,15 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
      * @param class-string<BaseRunner>|null  $runnerClass
      */
     final protected function invokeParatest(
-        string $path,
+        ?string $path,
         array $options = [],
         ?string $runnerClass = null
     ): RunnerResult {
-        $invoker = new ParaTestInvoker($this->fixture($path));
+        if ($path !== null) {
+            $path = $this->fixture($path);
+        }
+
+        $invoker = new ParaTestInvoker($path);
 
         return $invoker->execute($options, $runnerClass);
     }
