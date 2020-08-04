@@ -252,12 +252,12 @@ class SuiteLoader
             $result = [];
 
             $testClassReflection = new \ReflectionClass($testFullClassName);
-            $dataProviderMethod = $testClassReflection->getMethod($methodName);
+            $dataProviderMethod = $testClassReflection->getMethod($method->getName());
 
             if ($dataProviderMethod->getNumberOfParameters() === 0) {
                 $data = $dataProviderMethod->invoke($testClass);
             } else {
-                $data = $dataProviderMethod->invoke($testClass, $methodName);
+                $data = $dataProviderMethod->invoke($testClass, $method->getName());
             }
 
             foreach ($data as $key => $value) {
