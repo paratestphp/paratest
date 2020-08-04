@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace ParaTest\Console\Testers;
 
 use InvalidArgumentException;
-use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Util\Str;
+use PHPUnit\TextUI\Configuration\Configuration;
+use PHPUnit\TextUI\Configuration\Registry;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -27,11 +28,10 @@ use function file_exists;
 use function getcwd;
 use function is_string;
 use function is_subclass_of;
+use function realpath;
 use function sprintf;
 use function sys_get_temp_dir;
 use function tempnam;
-
-use const DIRECTORY_SEPARATOR;
 
 /**
  * Creates the interface for PHPUnit testing
@@ -111,16 +111,7 @@ final class PHPUnit extends Tester
         $bareOptions = $this->getRunnerOptions($input);
         $this->requireBootstrap($this->getBootstrapFile($input, $bareOptions));
 
-        $options = new Options($bareOptions);
-        if (
-            isset($options->filtered['configuration']) &&
-            ! file_exists($path = $options->filtered['configuration']->getPath())
-        ) {
-            $output->writeln(sprintf('Could not read "%s".', $path));
-
-            return 1;
-        }
-
+        $options     = new Options($bareOptions);
         $runnerClass = $this->getRunnerClass($input);
 
         $runner = new $runnerClass($options, $output);
@@ -147,27 +138,22 @@ final class PHPUnit extends Tester
      */
     private function hasConfig(InputInterface $input): bool
     {
-        return $this->getConfig($input) !== false;
+        return $this->getConfig($input) !== null;
     }
 
-    /**
-     * @return Configuration|bool
-     */
-    private function getConfig(InputInterface $input)
+    private function getConfig(InputInterface $input): ?Configuration
     {
-        $cwd = getcwd() . DIRECTORY_SEPARATOR;
-
-        if ($input->getOption('configuration')) {
-            $configFilename = $input->getOption('configuration');
-        } elseif (file_exists($cwd . 'phpunit.xml.dist')) {
-            $configFilename = $cwd . 'phpunit.xml.dist';
-        } elseif (file_exists($cwd . 'phpunit.xml')) {
-            $configFilename = $cwd . 'phpunit.xml';
+        if (is_string($path = $input->getOption('configuration')) && file_exists($path)) {
+            $configFilename = $path;
+        } elseif (file_exists($path = 'phpunit.xml')) {
+            $configFilename = $path;
+        } elseif (file_exists($path = 'phpunit.xml.dist')) {
+            $configFilename = $path;
         } else {
-            return false;
+            return null;
         }
 
-        return new Configuration($configFilename);
+        return Registry::getInstance()->get(realpath($configFilename));
     }
 
     /**
@@ -272,14 +258,17 @@ final class PHPUnit extends Tester
             return $options['bootstrap'];
         }
 
-        if (! $this->hasConfig($input)) {
+        $config = $this->getConfig($input);
+        if ($config === null) {
             return '';
         }
 
-        $config    = $this->getConfig($input);
-        $bootstrap = $config->getBootstrap();
+        $phpunitConfig = $config->phpunit();
+        if (! $phpunitConfig->hasBootstrap()) {
+            return '';
+        }
 
-        return $bootstrap !== '' ? $config->getConfigDir() . $bootstrap : '';
+        return $phpunitConfig->bootstrap();
     }
 
     /**

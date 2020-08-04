@@ -174,17 +174,17 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $variables = $this->options->filtered['configuration']->getEnvironmentVariables();
+        $variables = $this->options->filtered['configuration']->php()->envVariables();
 
-        foreach ($variables as $key => $value) {
-            $localEnvValue = getenv($key, true);
+        foreach ($variables as $variable) {
+            $localEnvValue = getenv($variable->name(), true);
             if ($localEnvValue === false) {
-                $localEnvValue = $value;
+                $localEnvValue = $variable->value();
             }
 
-            putenv(sprintf('%s=%s', $key, $localEnvValue));
+            putenv(sprintf('%s=%s', $variable->name(), $localEnvValue));
 
-            $_ENV[$key] = $localEnvValue;
+            $_ENV[$variable->name()] = $localEnvValue;
         }
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -237,6 +238,10 @@ abstract class ExecutableTest
             $arguments[] = "--$key";
             if ($value === null) {
                 continue;
+            }
+
+            if ($value instanceof Configuration) {
+                $value = $value->filename();
             }
 
             $arguments[] = $value;

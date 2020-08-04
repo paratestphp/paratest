@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use PHPUnit\TextUI\Configuration\Configuration;
+use PHPUnit\TextUI\Configuration\Registry;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 
@@ -47,7 +49,7 @@ use const PHP_BINARY;
  * @property-read string $runner
  * @property-read bool $noTestTokens
  * @property-read bool $colors
- * @property-read string|string[] $testsuite
+ * @property-read string[] $testsuite
  * @property-read int|null $maxBatchSize
  * @property-read string $filter
  * @property-read string[] $groups
@@ -119,7 +121,7 @@ final class Options
     /**
      * Filters which tests to run.
      *
-     * @var string|string[]
+     * @var string[]
      */
     private $testsuite;
 
@@ -258,7 +260,7 @@ final class Options
      * Returns a collection of ParaTest's default
      * option values.
      *
-     * @return array<string, string|bool|int|null>
+     * @return array<string, string|string[]|bool|int|null>
      */
     private static function defaults(): array
     {
@@ -271,7 +273,7 @@ final class Options
             'runner' => 'Runner',
             'no-test-tokens' => false,
             'colors' => false,
-            'testsuite' => '',
+            'testsuite' => [],
             'max-batch-size' => 0,
             'filter' => null,
             'parallel-suite' => false,
@@ -348,7 +350,7 @@ final class Options
             'coverage-test-limit' => $this->coverageTestLimit,
         ]);
         if (($configuration = $this->getConfigurationPath($filtered)) !== null) {
-            $filtered['configuration'] = new Configuration($configuration);
+            $filtered['configuration'] = Registry::getInstance()->get($configuration);
         }
 
         return $filtered;

@@ -141,7 +141,7 @@ final class ResultPrinter
         if (isset($options->filtered['configuration'])) {
             $this->output->write(sprintf(
                 "Configuration read from %s\n\n",
-                $options->filtered['configuration']->getPath()
+                $options->filtered['configuration']->filename()
             ));
         }
 

@@ -8,20 +8,28 @@ use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
+use PHPUnit\TextUI\Configuration\Configuration;
+use PHPUnit\TextUI\Configuration\TestSuite;
 use ReflectionClass;
 use RuntimeException;
+use SebastianBergmann\FileIterator\Facade;
 
 use function array_intersect;
+use function array_map;
 use function array_merge;
 use function array_unique;
 use function assert;
 use function count;
+use function in_array;
 use function is_array;
 use function is_int;
 use function preg_match;
 use function preg_match_all;
 use function sprintf;
 use function substr;
+use function version_compare;
+
+use const PHP_VERSION;
 
 final class SuiteLoader
 {
@@ -56,7 +64,11 @@ final class SuiteLoader
     {
         $this->options = $options;
 
-        $this->configuration = $this->options->filtered['configuration'] ?? new Configuration('');
+        if (! isset($this->options->filtered['configuration'])) {
+            return;
+        }
+
+        $this->configuration = $this->options->filtered['configuration'];
     }
 
     /**
@@ -104,26 +116,38 @@ final class SuiteLoader
         } elseif (
             isset($this->options->parallelSuite)
             && $this->options->parallelSuite
+            && $this->configuration !== null
+            && ! $this->configuration->testSuite()->isEmpty()
         ) {
-            $this->suitesName = $this->configuration->getSuitesName();
-        } elseif ($this->configuration->hasSuites()) {
-            if (is_array($this->options->testsuite) && count($this->options->testsuite) > 0) {
-                $suites = [];
-                foreach ($this->options->testsuite as $testsuite) {
-                    $suites = array_merge($suites, $this->configuration->getSuiteByName($testsuite));
+            $this->suitesName = array_map(static function (TestSuite $testSuite): string {
+                return $testSuite->name();
+            }, $this->configuration->testSuite()->asArray());
+        } elseif (
+            $this->configuration !== null
+            && ! $this->configuration->testSuite()->isEmpty()
+        ) {
+            $testSuiteCollection = $this->configuration->testSuite()->asArray();
+            if (count($this->options->testsuite) > 0) {
+                $suitesName = array_map(static function (TestSuite $testSuite): string {
+                    return $testSuite->name();
+                }, $testSuiteCollection);
+                foreach ($this->options->testsuite as $testSuiteName) {
+                    if (! in_array($testSuiteName, $suitesName, true)) {
+                        throw new RuntimeException("Suite path $testSuiteName could not be found");
+                    }
                 }
-            } else {
-                $suites = $this->configuration->getSuites();
+
+                foreach ($testSuiteCollection as $index => $testSuite) {
+                    if (in_array($testSuite->name(), $this->options->testsuite, true)) {
+                        continue;
+                    }
+
+                    unset($testSuiteCollection[$index]);
+                }
             }
 
-            foreach ($suites as $suite) {
-                foreach ($suite as $suitePath) {
-                    $testFileLoader = new TestFileLoader($this->options);
-                    $this->files    = array_merge(
-                        $this->files,
-                        $testFileLoader->loadSuitePath($suitePath)
-                    );
-                }
+            foreach ($testSuiteCollection as $testSuite) {
+                $this->loadFilesFromTestSuite($testSuite);
             }
         }
 
@@ -144,7 +168,7 @@ final class SuiteLoader
     {
         if (is_array($this->suitesName)) {
             foreach ($this->suitesName as $suiteName) {
-                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->getPath());
+                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->filename());
             }
         } else {
             foreach ($this->files as $path) {
@@ -403,5 +427,50 @@ final class SuiteLoader
     private function createFullSuite(string $suiteName, string $configPath): FullSuite
     {
         return new FullSuite($suiteName, $configPath);
+    }
+
+    /**
+     * @see \PHPUnit\TextUI\Configuration\TestSuiteMapper::map
+     */
+    private function loadFilesFromTestSuite(TestSuite $testSuiteCollection): void
+    {
+        foreach ($testSuiteCollection->directories() as $directory) {
+            if (
+                ! version_compare(
+                    PHP_VERSION,
+                    $directory->phpVersion(),
+                    $directory->phpVersionOperator()->asString()
+                )
+            ) {
+                continue;
+            }
+
+            $exclude = [];
+
+            foreach ($testSuiteCollection->exclude()->asArray() as $file) {
+                $exclude[] = $file->path();
+            }
+
+            $this->files = array_merge($this->files, (new Facade())->getFilesAsArray(
+                $directory->path(),
+                $directory->suffix(),
+                $directory->prefix(),
+                $exclude
+            ));
+        }
+
+        foreach ($testSuiteCollection->files() as $file) {
+            if (
+                ! version_compare(
+                    PHP_VERSION,
+                    $file->phpVersion(),
+                    $file->phpVersionOperator()->asString()
+                )
+            ) {
+                continue;
+            }
+
+            $this->files[] = $file->path();
+        }
     }
 }
