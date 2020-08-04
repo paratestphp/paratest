@@ -13,9 +13,14 @@ use ParseError;
 use Symfony\Component\Console\Input\ArrayInput;
 
 use function array_key_exists;
+use function basename;
 use function chdir;
 use function dirname;
 use function file_exists;
+use function glob;
+use function is_dir;
+use function is_string;
+use function sprintf;
 use function sys_get_temp_dir;
 use function tempnam;
 use function unlink;
@@ -30,6 +35,38 @@ final class PHPUnitTest extends FunctionalTestBase
     public function testWithJustConfiguration(): void
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests', ['configuration' => PHPUNIT_CONFIGURATION]));
+    }
+
+    /**
+     * @dataProvider provideGithubIssues
+     */
+    public function testGithubIssues(string $directory): void
+    {
+        $this->assertTestsPassed($this->invokeParatest(
+            null,
+            [
+                'configuration' => sprintf('%s%sphpunit%s.xml', $directory, DS, basename($directory)),
+            ],
+            SqliteRunner::class
+        ));
+    }
+
+    /**
+     * @return array<string, string[]>
+     */
+    public function provideGithubIssues(): array
+    {
+        $directory = $this->fixture('github');
+        $cases     = [];
+        foreach (glob($directory . DS . '*') as $path) {
+            if (! is_string($path) || ! is_dir($path)) {
+                continue;
+            }
+
+            $cases['issue-' . basename($path)] = [$path];
+        }
+
+        return $cases;
     }
 
     /**

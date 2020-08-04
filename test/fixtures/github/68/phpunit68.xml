@@ -1,0 +1,12 @@
+<phpunit
+        bootstrap="./bootstrap68.php"
+>
+    <testsuites>
+        <testsuite name="Github issue 68">
+            <file>Issue68Test.php</file>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="loadedFromConfig" value="1"/>
+    </php>
+</phpunit>
