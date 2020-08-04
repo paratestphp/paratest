@@ -4,21 +4,41 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Console\Testers;
 
+use InvalidArgumentException;
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
+use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Tests\TestBase;
 use RuntimeException;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+use function chdir;
 use function getcwd;
 use function uniqid;
 
 final class PHPUnitTest extends TestBase
 {
+    /** @var string */
+    private $cwd;
+
+    protected function setUp(): void
+    {
+        $cwd = getcwd();
+        static::assertIsString($cwd);
+        $this->cwd = $cwd;
+    }
+
+    protected function tearDown(): void
+    {
+        chdir($this->cwd);
+    }
+
     public function testConfigureAddsOptionsAndArgumentsToCommand(): void
     {
         $testCommand = new TestCommand();
@@ -112,5 +132,66 @@ final class PHPUnitTest extends TestBase
         $tester->execute($input, $output);
 
         static::assertStringContainsString('Could not read "nope.xml"', $output->fetch());
+    }
+
+    public function testDisplayHelpWithoutConfigNorPath(): void
+    {
+        chdir(__DIR__);
+
+        $tester      = new PHPUnit();
+        $command     = new ParaTestCommand($tester);
+        $application = new Application();
+        $application->add($command);
+        $application->add(new HelpCommand());
+
+        $input  = new ArgvInput([], $command->getDefinition());
+        $output = new BufferedOutput();
+
+        $tester->execute($input, $output);
+
+        static::assertStringContainsString('Usage:', $output->fetch());
+    }
+
+    public function testCustomRunnerMustBeAValidRunner(): void
+    {
+        $tester  = new PHPUnit();
+        $command = new ParaTestCommand($tester);
+
+        $input = new ArgvInput([], $command->getDefinition());
+        $input->setOption('runner', 'stdClass');
+        $output = new BufferedOutput();
+
+        static::expectException(InvalidArgumentException::class);
+
+        $tester->execute($input, $output);
+    }
+
+    /**
+     * @dataProvider provideConfigurationDirectories
+     */
+    public function testGetPhpunitConfigFromDefaults(string $directory): void
+    {
+        chdir($directory);
+        $tester  = new PHPUnit();
+        $command = new ParaTestCommand($tester);
+
+        $input = new ArgvInput([], $command->getDefinition());
+        $input->setOption('runner', EmptyRunnerStub::class);
+        $output = new BufferedOutput();
+
+        $tester->execute($input, $output);
+
+        static::assertStringContainsString($directory, $output->fetch());
+    }
+
+    /**
+     * @return array<string, string[]>
+     */
+    public function provideConfigurationDirectories(): array
+    {
+        return [
+            'config-from-phpunit.xml' => [FIXTURES . DS . 'config-from-phpunit.xml'],
+            'config-from-phpunit.xml.dist' => [FIXTURES . DS . 'config-from-phpunit.xml.dist'],
+        ];
     }
 }
