@@ -2,21 +2,23 @@
 
 declare(strict_types=1);
 
-class DataProviderParameterTest extends PHPUnit\Framework\TestCase
+final class DataProviderParameterTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider dataProviderWithParameter
      */
-    public function testWithDataProvider(): void
+    public function testWithDataProvider($expected): void
     {
+        $this->assertTrue($expected);
     }
 
     public function dataProviderWithParameter($testName)
     {
-        self::assertEquals($testName, 'testWithDataProvider');
+        $this->assertEquals($testName, 'testWithDataProvider');
 
         return [
             [
+                'expected' => true
             ]
         ];
     }
