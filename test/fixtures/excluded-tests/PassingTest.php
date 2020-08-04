@@ -1,8 +1,10 @@
 <?php
 
-class PassingTest extends PHPUnit\FrameWork\TestCase
+declare(strict_types=1);
+
+final class PassingTest extends PHPUnit\Framework\TestCase
 {
-    public function testTruth()
+    public function testTruth(): void
     {
         $this->assertTrue(true);
     }

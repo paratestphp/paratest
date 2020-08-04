@@ -1,5 +1,5 @@
 # Logging WrapperRunner output
-The `--runner WrapperRunner` option will start the script in `bin/phpunit-wrapper` as a long running process
+The `--runner WrapperRunner` option will start the script in `bin/phpunit-wrapper.php` as a long running process
 and send individual tests in via stdin/pipes. In order to make the execution of the process easier to understand,
 you can set the environment variable `PT_LOGGING_ENABLE` to true.
 
@@ -24,7 +24,7 @@ $testToken = getenv("TEST_TOKEN") ?: "no_test_token";
 $filename = "paratest_t-{$testToken}_ut-{$uniqueTestToken}_r-{$rand}.log";
 $path = sys_get_temp_dir()."/".$filename;
 ````
-If in doubt just check the contents of `bin/phpunit-wrapper`. 
+If in doubt just check the contents of `bin/phpunit-wrapper.php`. 
 
 The resulting file names look like this:
 ````

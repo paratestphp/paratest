@@ -1,8 +1,10 @@
 <?php
 
-class ExcludedFailingTest extends PHPUnit\FrameWork\TestCase
+declare(strict_types=1);
+
+final class ExcludedFailingTest extends PHPUnit\Framework\TestCase
 {
-    public function testFail()
+    public function testFail(): void
     {
         $this->assertTrue(false);
     }

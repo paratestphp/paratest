@@ -1,8 +1,10 @@
 <?php
 
-class SecondSampleTest extends PHPUnit\FrameWork\TestCase
+declare(strict_types=1);
+
+final class SecondSampleTest extends PHPUnit\Framework\TestCase
 {
-    public function testCase()
+    public function testCase(): void
     {
     }
 }

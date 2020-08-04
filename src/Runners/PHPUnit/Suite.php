@@ -4,32 +4,37 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Parser\ParsedFunction;
+
+use function count;
+
 /**
- * Class Suite.
- *
  * A suite represents an entire PHPUnit Test Suite
  * object - this class is essentially used for running
  * entire test classes in parallel
  */
-class Suite extends ExecutableTest
+final class Suite extends ExecutableTest
 {
     /**
      * A collection of test methods.
      *
-     * @var array
+     * @var array<int, ParsedFunction|TestMethod>
      */
     private $functions;
 
-    public function __construct(string $path, array $functions, string $fullyQualifiedClassName = null)
+    /**
+     * @param array<int, ParsedFunction|TestMethod> $functions
+     */
+    public function __construct(string $path, array $functions)
     {
-        parent::__construct($path, $fullyQualifiedClassName);
+        parent::__construct($path);
         $this->functions = $functions;
     }
 
     /**
      * Return the collection of test methods.
      *
-     * @return array
+     * @return array<int, ParsedFunction|TestMethod>
      */
     public function getFunctions(): array
     {
@@ -38,11 +43,17 @@ class Suite extends ExecutableTest
 
     /**
      * Get the expected count of tests to be executed.
-     *
-     * @return int
      */
     public function getTestCount(): int
     {
-        return \count($this->functions);
+        return count($this->functions);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function prepareOptions(array $options): array
+    {
+        return $options;
     }
 }

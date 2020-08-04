@@ -4,65 +4,57 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use Habitat\Habitat;
-use Symfony\Component\Process\Process;
+use InvalidArgumentException;
+use ParaTest\Console\Commands\ParaTestCommand;
+use ParaTest\Console\Testers\PHPUnit;
+use ParaTest\Runners\PHPUnit\BaseRunner;
+use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\Runner;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
-class ParaTestInvoker
+final class ParaTestInvoker
 {
-    public $path;
-    public $bootstrap;
+    /** @var string  */
+    private $path;
 
-    public function __construct($path, $bootstrap)
+    public function __construct(string $path)
     {
         $this->path = $path;
-        $this->bootstrap = $bootstrap;
     }
 
     /**
      * Runs the command, returns the proc after it's done.
      *
-     * @param array $options
-     * @param callable $callback
-     *
-     * @return Process
+     * @param array<string, string|int|true> $options
+     * @param class-string<BaseRunner>|null  $runnerClass
      */
-    public function execute($options = [], $callback = null)
+    public function execute(array $options = [], ?string $runnerClass = null): RunnerResult
     {
-        $cmd = $this->buildCommand($options);
-        $env = defined('PHP_WINDOWS_VERSION_BUILD') ? Habitat::getAll() : null;
-        $proc = method_exists(Process::class, 'fromShellCommandline') ?
-            Process::fromShellCommandline($cmd, null, $env, null, $timeout = 600) :
-            new Process($cmd, null, $env, null, $timeout = 600);
-        if (method_exists($proc, 'inheritEnvironmentVariables')) {
-            $proc->inheritEnvironmentVariables();  // no such method in 3.0, but emits warning if this isn't done in 3.3
+        if (isset($options['runner'])) {
+            throw new InvalidArgumentException('Specify the runner as a parameter instead of an option');
         }
 
-        if (!is_callable($callback)) {
-            $proc->run();
-        } else {
-            $proc->run($callback);
+        if ($runnerClass === null) {
+            $runnerClass = Runner::class;
         }
 
-        return $proc;
-    }
-
-    private function buildCommand($options = [])
-    {
-        $cmd = sprintf('%s %s --bootstrap %s --phpunit %s', PHP_BINARY, PARA_BINARY, $this->bootstrap, PHPUNIT);
-        foreach ($options as $switch => $value) {
-            if (is_numeric($switch)) {
-                $switch = $value;
-                $value = null;
-            }
-            if (strlen($switch) > 1) {
-                $switch = '--' . $switch;
-            } else {
-                $switch = '-' . $switch;
-            }
-            $cmd .= sprintf(' %s', $value ? $switch . ' ' . $value : $switch);
+        $options['phpunit'] = PHPUNIT;
+        $phpunitTester      = new PHPUnit();
+        $paraTestCommand    = new ParaTestCommand($phpunitTester);
+        $input              = new ArrayInput([], $paraTestCommand->getDefinition());
+        foreach ($options as $key => $value) {
+            $input->setOption($key, $value);
         }
-        $cmd .= sprintf(' %s', $this->path);
 
-        return $cmd;
+        $input->setArgument('path', $this->path);
+        $options = $phpunitTester->getRunnerOptions($input);
+
+        $output = new BufferedOutput();
+
+        $runner = new $runnerClass(new Options($options), $output);
+        $runner->run();
+
+        return new RunnerResult($runner, $output);
     }
 }

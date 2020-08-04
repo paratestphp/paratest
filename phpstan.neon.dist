@@ -1,0 +1,142 @@
+includes:
+    - phar://phpstan.phar/conf/config.level6.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/ekino/phpstan-banned-code/extension.neon
+    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
+
+rules:
+    - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
+    - Ergebnis\PHPStan\Rules\Methods\FinalInAbstractClassRule
+    - Ergebnis\PHPStan\Rules\Methods\PrivateInFinalClassRule
+
+services:
+    -
+        class: Ergebnis\PHPStan\Rules\Classes\FinalRule
+        arguments:
+            allowAbstractClasses: true
+            classesNotRequiredToBeAbstractOrFinal: []
+        tags:
+            - phpstan.rules.rule
+    -
+        class: Ergebnis\PHPStan\Rules\Classes\PHPUnit\Framework\TestCaseWithSuffixRule
+        tags:
+            - phpstan.rules.rule
+
+parameters:
+    tipsOfTheDay: false
+    bootstrapFiles:
+        - test/constants.php
+    paths:
+        - bin/
+        - bin/paratest
+        - src/
+        - test/
+    excludes_analyse:
+        - test/fixtures/*
+    ignoreErrors:
+        # Allowed forbidden calls
+        -
+            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
+            count: 2
+            path: bin/paratest
+
+        -
+            message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
+            count: 1
+            path: bin/paratest
+
+        -
+            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
+            count: 1
+            path: bin/phpunit-sqlite-wrapper.php
+
+        -
+            message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
+            count: 4
+            path: bin/phpunit-wrapper.php
+
+        -
+            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
+            count: 3
+            path: bin/phpunit-wrapper.php
+
+        -
+            message: "#^Should not use function \"proc_open\", please change the code\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/Worker/BaseWorker.php
+
+        -
+            message: "#^Should not use function \"proc_open\", please change the code\\.$#"
+            count: 1
+            path: test/Functional/Runners/PHPUnit/WorkerTest.php
+    
+        # Known errors
+        - "#^Variable property access on .+$#"
+        - "#^Variable method call on .+$#"
+        -
+            message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
+            count: 2
+            path: bin/phpunit-wrapper.php
+        -
+            message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+            count: 1
+            path: src/Console/Testers/Tester.php
+        -
+            message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
+            count: 1
+            path: src/Logging/JUnit/Writer.php
+        -
+            message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\ExecutableTest\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/ExecutableTest.php
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/excluded-tests/excluded/ExcludedFailingTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/failing-tests/FailingTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/failing-tests/FailingTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/failing-tests/StopOnFailureTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/failing-tests/StopOnFailureTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php
+
+        -
+            message: "#^Unreachable statement \\- code above always terminates\\.$#"
+            count: 1
+            path: test/fixtures/failing-tests/UnitTestWithErrorTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/slow-tests/LongRunningTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+            count: 1
+            path: test/fixtures/wrapper-runner-exit-code-tests/FailureTest.php

@@ -1,11 +1,13 @@
 <?php
 
-class TestOfUnits extends PHPUnit\Framework\TestCase
+declare(strict_types=1);
+
+final class TestOfUnits extends PHPUnit\Framework\TestCase
 {
     /**
      * @group fixtures
      */
-    public function testTruth()
+    public function testTruth(): void
     {
         $this->assertTrue(true);
     }
@@ -13,9 +15,9 @@ class TestOfUnits extends PHPUnit\Framework\TestCase
     /**
      * @group fixtures
      */
-    public function testArrayLength()
+    public function testArrayLength(): void
     {
-        $elems = [1,2,3,4,5];
+        $elems = [1, 2, 3, 4, 5];
         $this->assertEquals(5, sizeof($elems));
     }
 }

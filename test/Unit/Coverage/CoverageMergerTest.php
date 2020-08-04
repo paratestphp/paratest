@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Coverage;
 
 use ParaTest\Coverage\CoverageMerger;
+use ParaTest\Tests\TestBase;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Filter;
 
-class CoverageMergerTest extends \ParaTest\Tests\TestBase
+final class CoverageMergerTest extends TestBase
 {
     protected function setUp(): void
     {
-        $this->skipIfCodeCoverageNotEnabled();
+        static::skipIfCodeCoverageNotEnabled();
     }
 
     /**
@@ -20,15 +21,15 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
      *
      * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
      */
-    public function testSimpleMerge()
+    public function testSimpleMerge(): void
     {
-        $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
+        $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine = 39;
-        $secondFileFirstLine = 39;
+        $firstFileFirstLine  = 45;
+        $secondFileFirstLine = 53;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -52,19 +53,17 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
         $this->call($merger, 'addCoverage', $coverage1);
         $this->call($merger, 'addCoverage', $coverage2);
 
-        /** @var CodeCoverage $coverage */
         $coverage = $this->getObjectValue($merger, 'coverage');
-
-        $this->assertInstanceOf(CodeCoverage::class, $coverage);
+        static::assertInstanceOf(CodeCoverage::class, $coverage);
 
         $data = $coverage->getData();
 
-        $this->assertCount(2, $data[$firstFile][$firstFileFirstLine]);
-        $this->assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
-        $this->assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);
+        static::assertCount(2, $data[$firstFile][$firstFileFirstLine]);
+        static::assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
+        static::assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);
 
-        $this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
-        $this->assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);
+        static::assertCount(1, $data[$secondFile][$secondFileFirstLine]);
+        static::assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);
     }
 
     /**
@@ -72,15 +71,15 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
      *
      * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
      */
-    public function testSimpleMergeLimited()
+    public function testSimpleMergeLimited(): void
     {
-        $firstFile = PARATEST_ROOT . '/src/Logging/LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . '/src/Logging/MetaProvider.php';
+        $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
+        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine = 39;
-        $secondFileFirstLine = 39;
+        $firstFileFirstLine  = 45;
+        $secondFileFirstLine = 53;
 
         $filter = new Filter();
         $filter->addFilesToWhitelist([$firstFile, $secondFile]);
@@ -104,13 +103,11 @@ class CoverageMergerTest extends \ParaTest\Tests\TestBase
         $this->call($merger, 'addCoverage', $coverage1);
         $this->call($merger, 'addCoverage', $coverage2);
 
-        /** @var CodeCoverage $coverage */
         $coverage = $this->getObjectValue($merger, 'coverage');
-
-        $this->assertInstanceOf(CodeCoverage::class, $coverage);
+        static::assertInstanceOf(CodeCoverage::class, $coverage);
         $data = $coverage->getData();
 
-        $this->assertCount(1, $data[$firstFile][$firstFileFirstLine]);
-        $this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
+        static::assertCount(1, $data[$firstFile][$firstFileFirstLine]);
+        static::assertCount(1, $data[$secondFile][$secondFileFirstLine]);
     }
 }

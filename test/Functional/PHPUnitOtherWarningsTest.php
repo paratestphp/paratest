@@ -11,9 +11,9 @@ namespace ParaTest\Tests\Functional;
  * slightly different. Now the paratest doesn't parse the output directly but relies on the JUnit XML logs.
  * This test checks whether the parates recognizes those warnings.
  */
-class PHPUnitOtherWarningsTest extends FunctionalTestBase
+final class PHPUnitOtherWarningsTest extends FunctionalTestBase
 {
-    public function testTestsWithWarningsResultInFailure()
+    public function testTestsWithWarningsResultInFailure(): void
     {
         $proc = $this->invokeParatest(
             'warning-tests/HasOtherWarningsTest.php',
@@ -25,7 +25,7 @@ class PHPUnitOtherWarningsTest extends FunctionalTestBase
 
         $output = $proc->getOutput();
 
-        $this->assertStringContainsString('Warnings', $output, 'Test should output warnings');
-        $this->assertEquals(1, $proc->getExitCode(), 'Test suite should fail with 1');
+        static::assertStringContainsString('Warnings', $output, 'Test should output warnings');
+        static::assertEquals(1, $proc->getExitCode(), 'Test suite should fail with 1');
     }
 }

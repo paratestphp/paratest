@@ -4,46 +4,61 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use Exception;
+use InvalidArgumentException;
+use ParaTest\Runners\PHPUnit\BaseRunner;
 use PHPUnit;
-use Symfony\Component\Process\Process;
 
-class FunctionalTestBase extends PHPUnit\Framework\TestCase
+use function extension_loaded;
+use function file_exists;
+
+abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
 {
-    protected function fixture($fixture)
+    final protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
-        if (!file_exists($fixture)) {
-            throw new Exception("Fixture $fixture not found");
+        if (! file_exists($fixture)) {
+            throw new InvalidArgumentException("Fixture $fixture not found");
         }
 
         return $fixture;
     }
 
-    protected function invokeParatest($path, $options = [], $callback = null)
-    {
-        $invoker = new ParaTestInvoker($this->fixture($path), BOOTSTRAP);
-
-        return $invoker->execute($options, $callback);
+    final protected function assertTestsPassed(
+        RunnerResult $proc,
+        string $testPattern = '\d+',
+        string $assertionPattern = '\d+'
+    ): void {
+        static::assertMatchesRegularExpression(
+            "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
+            $proc->getOutput(),
+        );
+        static::assertEquals(0, $proc->getExitCode());
     }
 
-    protected function assertTestsPassed(Process $proc, $testPattern = '\d+', $assertionPattern = '\d+')
-    {
-        $this->assertRegExp(
-            "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
-            $proc->getOutput()
-        );
-        $this->assertEquals(0, $proc->getExitCode());
+    /**
+     * @param array<string, string|int|true> $options
+     * @param class-string<BaseRunner>|null  $runnerClass
+     */
+    final protected function invokeParatest(
+        string $path,
+        array $options = [],
+        ?string $runnerClass = null
+    ): RunnerResult {
+        $invoker = new ParaTestInvoker($this->fixture($path));
+
+        return $invoker->execute($options, $runnerClass);
     }
 
     /**
      * Checks if the sqlite extension is loaded and skips the test if not.
      */
-    protected function guardSqliteExtensionLoaded()
+    final protected function guardSqliteExtensionLoaded(): void
     {
         $sqliteExtension = 'pdo_sqlite';
-        if (!extension_loaded($sqliteExtension)) {
-            $this->markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
+        if (extension_loaded($sqliteExtension)) {
+            return;
         }
+
+        static::markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
     }
 }

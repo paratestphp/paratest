@@ -4,11 +4,24 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging;
 
+use RuntimeException;
+
+use function preg_match;
+use function strtolower;
+
 /**
- * Class MetaProvider.
- *
  * Adds __call behavior to a logging object
  * for aggregating totals and messages
+ *
+ * @method int getTotalTests()
+ * @method int getTotalAssertions()
+ * @method int getTotalFailures()
+ * @method int getTotalErrors()
+ * @method int getTotalWarning()
+ * @method int getTotalTime()
+ * @method string[] getFailures()
+ * @method string[] getErrors()
+ * @method string[] getWarnings()
  */
 abstract class MetaProvider
 {
@@ -31,54 +44,35 @@ abstract class MetaProvider
     /**
      * Simplify aggregation of totals or messages.
      *
-     * @param mixed $method
-     * @param mixed $args
+     * @param mixed[] $args
+     *
+     * @return float|int|string[]
      */
-    public function __call(string $method, array $args)
+    final public function __call(string $method, array $args)
     {
-        if (\preg_match(self::$totalMethod, $method, $matches) && $property = \strtolower($matches[1])) {
+        if (preg_match(self::$totalMethod, $method, $matches) && ($property = strtolower($matches[1])) !== '') {
             return $this->getNumericValue($property);
         }
-        if (\preg_match(self::$messageMethod, $method, $matches) && $type = \strtolower($matches[1])) {
+
+        if (preg_match(self::$messageMethod, $method, $matches) && ($type = strtolower($matches[1])) !== '') {
             return $this->getMessages($type);
         }
+
+        throw new RuntimeException("Method $method uknown");
     }
 
     /**
-     * Return a value as a float or integer.
-     *
-     * @param $property
+     * Returns a value as either a float or int.
      *
      * @return float|int
      */
-    protected function getNumericValue(string $property)
-    {
-        return ($property === 'time')
-            ? (float) $this->suites[0]->$property
-            : (int) $this->suites[0]->$property;
-    }
+    abstract protected function getNumericValue(string $property);
 
     /**
-     * Return messages for a given type.
+     * Gets messages of a given type and
+     * merges them into a single collection.
      *
-     * @param $type
-     *
-     * @return array
+     * @return string[]
      */
-    protected function getMessages(string $type): array
-    {
-        $messages = [];
-        $suites = $this->isSingle ? $this->suites : $this->suites[0]->suites;
-        foreach ($suites as $suite) {
-            $messages = \array_merge($messages, \array_reduce($suite->cases, function ($result, $case) use ($type) {
-                return \array_merge($result, \array_reduce($case->$type, function ($msgs, $msg) {
-                    $msgs[] = $msg['text'];
-
-                    return $msgs;
-                }, []));
-            }, []));
-        }
-
-        return $messages;
-    }
+    abstract protected function getMessages(string $type): array;
 }

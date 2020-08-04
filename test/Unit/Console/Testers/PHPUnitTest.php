@@ -4,17 +4,25 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Console\Testers;
 
+use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
+use ParaTest\Tests\TestBase;
+use RuntimeException;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\BufferedOutput;
 
-class PHPUnitTest extends \ParaTest\Tests\TestBase
+use function getcwd;
+use function uniqid;
+
+final class PHPUnitTest extends TestBase
 {
-    public function testConfigureAddsOptionsAndArgumentsToCommand()
+    public function testConfigureAddsOptionsAndArgumentsToCommand(): void
     {
         $testCommand = new TestCommand();
-        $definition = new InputDefinition([
+        $definition  = new InputDefinition([
             new InputOption(
                 'phpunit',
                 null,
@@ -67,18 +75,42 @@ class PHPUnitTest extends \ParaTest\Tests\TestBase
             new InputOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.'),
             new InputOption('testsuite', null, InputOption::VALUE_OPTIONAL, 'Filter which testsuite to run'),
         ]);
-        $tester = new PHPUnit();
+        $tester      = new PHPUnit();
         $tester->configure($testCommand);
-        $this->assertEquals($definition, $testCommand->getDefinition());
+        static::assertEquals($definition, $testCommand->getDefinition());
     }
 
-    public function testRequireBootstrapIsChdirResistent()
+    public function testRequireBootstrapIsChdirResistent(): void
     {
-        $file = __DIR__ . '/../../../fixtures/chdirBootstrap.php';
+        $file   = __DIR__ . '/../../../fixtures/chdirBootstrap.php';
         $tester = new PHPUnit();
-        $cwd = getcwd();
+        $cwd    = getcwd();
 
         $tester->requireBootstrap($file);
-        $this->assertEquals($cwd, getcwd());
+        static::assertEquals($cwd, getcwd());
+    }
+
+    public function testWithBootstrapThatDoesNotExist(): void
+    {
+        $file   = __DIR__ . '/' . uniqid('bootstrap_');
+        $tester = new PHPUnit();
+
+        self::expectException(RuntimeException::class);
+        self::expectDeprecationMessageMatches('/Bootstrap specified but could not be found/');
+
+        $tester->requireBootstrap($file);
+    }
+
+    public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
+    {
+        $tester  = new PHPUnit();
+        $command = new ParaTestCommand($tester);
+        $input   = new ArgvInput([], $command->getDefinition());
+        $input->setOption('configuration', 'nope.xml');
+        $output = new BufferedOutput();
+
+        $tester->execute($input, $output);
+
+        static::assertStringContainsString('Could not read "nope.xml"', $output->fetch());
     }
 }

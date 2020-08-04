@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-class EmptyRunnerStub extends BaseRunner
+final class EmptyRunnerStub extends BaseRunner
 {
-    public function run()
+    public function run(): void
     {
-        echo 'EXECUTED';
+        $this->output->write('EXECUTED');
+    }
+
+    protected function beforeLoadChecks(): void
+    {
     }
 }

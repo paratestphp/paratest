@@ -4,8 +4,18 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use RuntimeException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
+
+use function array_map;
+use function array_merge;
+use function strlen;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
+
+use const DIRECTORY_SEPARATOR;
 
 abstract class ExecutableTest
 {
@@ -23,8 +33,6 @@ abstract class ExecutableTest
      * @var string
      */
     protected $temp;
-    protected $fullyQualifiedClassName;
-    protected $pipes = [];
 
     /**
      * Path where the coveragereport is stored.
@@ -33,9 +41,7 @@ abstract class ExecutableTest
      */
     protected $coverageFileName;
 
-    /**
-     * @var Process
-     */
+    /** @var Process */
     protected $process;
 
     /**
@@ -53,25 +59,20 @@ abstract class ExecutableTest
      */
     protected $lastCommand = '';
 
-    public function __construct(string $path, ?string $fullyQualifiedClassName = null)
+    public function __construct(string $path)
     {
         $this->path = $path;
-        $this->fullyQualifiedClassName = $fullyQualifiedClassName;
     }
 
     /**
      * Get the expected count of tests to be executed.
-     *
-     * @return int
      */
     abstract public function getTestCount(): int;
 
     /**
      * Get the path to the test being executed.
-     *
-     * @return string
      */
-    public function getPath(): string
+    final public function getPath(): string
     {
         return $this->path;
     }
@@ -80,13 +81,11 @@ abstract class ExecutableTest
      * Returns the path to this test's temp file.
      * If the temp file does not exist, it will be
      * created.
-     *
-     * @return string
      */
-    public function getTempFile(): string
+    final public function getTempFile(): string
     {
-        if (null === $this->temp) {
-            $this->temp = \tempnam(\sys_get_temp_dir(), 'PT_');
+        if ($this->temp === null) {
+            $this->temp = tempnam(sys_get_temp_dir(), 'PT_');
         }
 
         return $this->temp;
@@ -94,10 +93,8 @@ abstract class ExecutableTest
 
     /**
      * Return the test process' stderr contents.
-     *
-     * @return string
      */
-    public function getStderr(): string
+    final public function getStderr(): string
     {
         return $this->process->getErrorOutput();
     }
@@ -105,10 +102,8 @@ abstract class ExecutableTest
     /**
      * Stop the process and return it's
      * exit code.
-     *
-     * @return int
      */
-    public function stop(): int
+    final public function stop(): ?int
     {
         return $this->process->stop();
     }
@@ -116,48 +111,40 @@ abstract class ExecutableTest
     /**
      * Removes the test file.
      */
-    public function deleteFile()
+    final public function deleteFile(): void
     {
         $outputFile = $this->getTempFile();
-        \unlink($outputFile);
+        unlink($outputFile);
     }
 
     /**
      * Check if the process has terminated.
-     *
-     * @return bool
      */
-    public function isDoneRunning(): bool
+    final public function isDoneRunning(): bool
     {
         return $this->process->isTerminated();
     }
 
     /**
      * Return the exit code of the process.
-     *
-     * @return int
      */
-    public function getExitCode(): int
+    final public function getExitCode(): ?int
     {
         return $this->process->getExitCode();
     }
 
     /**
      * Return the last process command.
-     *
-     * @return string
      */
-    public function getLastCommand(): string
+    final public function getLastCommand(): string
     {
         return $this->lastCommand;
     }
 
     /**
      * Set the last process command.
-     *
-     * @param string $command
      */
-    public function setLastCommand(string $command)
+    final public function setLastCommand(string $command): void
     {
         $this->lastCommand = $command;
     }
@@ -165,20 +152,19 @@ abstract class ExecutableTest
     /**
      * Executes the test by creating a separate process.
      *
-     * @param string      $binary
-     * @param array       $options
-     * @param array       $environmentVariables
-     * @param string|null $passthru
-     * @param string|null $passthruPhp
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param array<string, string|int>                                    $environmentVariables
+     * @param string[]|null                                                $passthru
+     * @param string[]|null                                                $passthruPhp
      *
      * @return $this
      */
-    public function run(
+    final public function run(
         string $binary,
         array $options = [],
         array $environmentVariables = [],
-        ?string $passthru = null,
-        ?string $passthruPhp = null
+        ?array $passthru = null,
+        ?array $passthruPhp = null
     ) {
         $environmentVariables['PARATEST'] = 1;
         $this->handleEnvironmentVariables($environmentVariables);
@@ -188,14 +174,7 @@ abstract class ExecutableTest
         $this->assertValidCommandLineLength($command);
         $this->setLastCommand($command);
 
-        $this->process = \method_exists(Process::class, 'fromShellCommandline') ?
-            Process::fromShellCommandline($command, null, $environmentVariables) :
-            new Process($command, null, $environmentVariables);
-
-        if (\method_exists($this->process, 'inheritEnvironmentVariables')) {
-            // no such method in 3.0, but emits warning if this isn't done in 3.3
-            $this->process->inheritEnvironmentVariables();
-        }
+        $this->process = Process::fromShellCommandline($command, null, $environmentVariables);
         $this->process->start();
 
         return $this;
@@ -205,71 +184,91 @@ abstract class ExecutableTest
      * Build the full executable as we would do on the command line, e.g.
      * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
-     * @param $binary
-     * @param $options
-     * @param string|null $passthru
-     * @param string|null $passthruPhp
-     *
-     * @return string
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param string[]|null                                                $passthru
+     * @param string[]|null                                                $passthruPhp
      */
-    protected function getFullCommandlineString(
-        $binary,
-        $options,
-        ?string $passthru = null,
-        ?string $passthruPhp = null
-    ) {
+    final protected function getFullCommandlineString(
+        string $binary,
+        array $options,
+        ?array $passthru = null,
+        ?array $passthruPhp = null
+    ): string {
         $finder = new PhpExecutableFinder();
-        $args = [];
 
-        $args['php'] = $finder->find();
-        if (!empty($passthruPhp)) {
-            $args['phpOptions'] = $passthruPhp;
+        $args = [$finder->find()];
+        if ($passthruPhp !== null) {
+            $args = array_merge($args, $passthruPhp);
         }
-        $args['phpunit'] = $this->command($binary, $options, $passthru);
 
-        $command = \implode(' ', $args);
+        $args = array_merge($args, $this->commandArguments($binary, $options, $passthru));
 
-        return $command;
+        return (new Process($args))->getCommandLine();
     }
 
     /**
      * Returns the unique token for this test process.
-     *
-     * @return int
      */
-    public function getToken(): int
+    final public function getToken(): int
     {
         return $this->token;
     }
 
     /**
+     * Generate command line arguments with passed options suitable to handle through paratest.
+     *
+     * @param string                                                       $binary   executable binary name
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options  command line options
+     * @param string[]|null                                                $passthru
+     *
+     * @return string[] command line arguments
+     */
+    final public function commandArguments(string $binary, array $options = [], ?array $passthru = null): array
+    {
+        $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
+        $options = $this->redirectCoverageOption($options);
+
+        $arguments = [$binary];
+        if ($passthru !== null) {
+            $arguments = array_merge($arguments, $passthru);
+        }
+
+        foreach ($options as $key => $value) {
+            $arguments[] = "--$key";
+            if ($value === null) {
+                continue;
+            }
+
+            $arguments[] = $value;
+        }
+
+        $arguments[] = $this->getPath();
+        $arguments   = array_map('strval', $arguments);
+
+        return $arguments;
+    }
+
+    /**
      * Generate command line with passed options suitable to handle through paratest.
      *
-     * @param string      $binary   executable binary name
-     * @param array       $options  command line options
-     * @param string|null $passthru
+     * @param string                $binary   executable binary name
+     * @param array<string, string> $options  command line options
+     * @param string[]|null         $passthru
      *
      * @return string command line
      */
-    public function command(string $binary, array $options = [], ?string $passthru = null): string
+    final public function command(string $binary, array $options = [], ?array $passthru = null): string
     {
-        $options = \array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
-        $options = $this->redirectCoverageOption($options);
-
-        $cmd = $this->getCommandString($binary, $options, $passthru);
-
-        return $cmd;
+        return (new Process($this->commandArguments($binary, $options, $passthru)))->getCommandLine();
     }
 
     /**
      * Get coverage filename.
-     *
-     * @return string
      */
-    public function getCoverageFileName(): string
+    final public function getCoverageFileName(): string
     {
         if ($this->coverageFileName === null) {
-            $this->coverageFileName = \tempnam(\sys_get_temp_dir(), 'CV_');
+            $this->coverageFileName = tempnam(sys_get_temp_dir(), 'CV_');
         }
 
         return $this->coverageFileName;
@@ -277,20 +276,16 @@ abstract class ExecutableTest
 
     /**
      * Get process stdout content.
-     *
-     * @return string
      */
-    public function getStdout(): string
+    final public function getStdout(): string
     {
         return $this->process->getOutput();
     }
 
     /**
      * Set process temporary filename.
-     *
-     * @param string $temp
      */
-    public function setTempFile(string $temp)
+    final public function setTempFile(string $temp): void
     {
         $this->temp = $temp;
     }
@@ -304,17 +299,18 @@ abstract class ExecutableTest
      *
      * @param string $cmd Command line
      *
-     * @throws \RuntimeException on too long command line
+     * @throws RuntimeException on too long command line.
      */
-    protected function assertValidCommandLineLength(string $cmd)
+    private function assertValidCommandLineLength(string $cmd): void
     {
-        if (\DIRECTORY_SEPARATOR === '\\') { // windows
+        if (DIRECTORY_SEPARATOR === '\\') { // windows
             // symfony's process wrapper
             $cmd = 'cmd /V:ON /E:ON /C "(' . $cmd . ')';
-            if (\strlen($cmd) > 32767) {
-                throw new \RuntimeException('Command line is too long, try to decrease max batch size');
+            if (strlen($cmd) > 32767) {
+                throw new RuntimeException('Command line is too long, try to decrease max batch size');
             }
         }
+
         /*
          * @todo Implement command line length validation for linux/osx/freebsd.
          *       Please note that on unix environment variables also became part of command line:
@@ -326,87 +322,47 @@ abstract class ExecutableTest
     /**
      * A template method that can be overridden to add necessary options for a test.
      *
-     * @param array $options the options that are passed to the run method
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
      *
-     * @return array $options the prepared options
+     * @return array<string, (string|bool|int|Configuration|string[]|null)>
      */
-    protected function prepareOptions(array $options): array
-    {
-        return $options;
-    }
-
-    /**
-     * Returns the command string that will be executed
-     * by proc_open.
-     *
-     * @param string      $binary
-     * @param array       $options
-     * @param string|null $passthru
-     *
-     * @return mixed
-     */
-    protected function getCommandString(string $binary, array $options = [], ?string $passthru = null)
-    {
-        // The order we add stuff into $arguments is important
-        $arguments = [$binary];
-        // Note:
-        // the arguments MUST come last and we need to "somehow"
-        // merge the passthru string in there.
-        // Thus, we "split" the command creation here.
-        // For a clean solution, we would need to manually parse and verify
-        // the passthru. I'll leave that as a
-        // TODO
-        // @see https://stackoverflow.com/a/34871367/413531
-        // @see https://github.com/symfony/console/blob/68001d4b65139ef4f22da581a8da7be714218aec/Input/StringInput.php
-        $cmd = (new Process($arguments))->getCommandLine();
-        if (!empty($passthru)) {
-            $cmd .= ' ' . $passthru;
-        }
-
-        $arguments = [];
-        foreach ($options as $key => $value) {
-            $arguments[] = "--$key";
-            if ($value !== null) {
-                $arguments[] = $value;
-            }
-        }
-
-        $arguments[] = $this->fullyQualifiedClassName ?? '';
-        $arguments[] = $this->getPath();
-
-        $args = (new Process($arguments))->getCommandLine();
-
-        return $cmd . ' ' . $args;
-    }
+    abstract protected function prepareOptions(array $options): array;
 
     /**
      * Checks environment variables for the presence of a TEST_TOKEN
      * variable and sets $this->token based on its value.
      *
-     * @param $environmentVariables
+     * @param array<string, string|int> $environmentVariables
      */
-    protected function handleEnvironmentVariables(array $environmentVariables)
+    private function handleEnvironmentVariables(array $environmentVariables): void
     {
-        if (isset($environmentVariables['TEST_TOKEN'])) {
-            $this->token = $environmentVariables['TEST_TOKEN'];
+        if (! isset($environmentVariables['TEST_TOKEN'])) {
+            return;
         }
+
+        $this->token = $environmentVariables['TEST_TOKEN'];
     }
 
     /**
      * Checks if the coverage-php option is set and redirects it to a unique temp file.
      * This will ensure, that multiple tests write to separate coverage-files.
      *
-     * @param array $options
+     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
      *
-     * @return array $options
+     * @return array<string, (string|bool|int|Configuration|string[]|null)> $options
      */
-    protected function redirectCoverageOption(array $options): array
+    private function redirectCoverageOption(array $options): array
     {
         if (isset($options['coverage-php'])) {
             $options['coverage-php'] = $this->getCoverageFileName();
         }
 
-        unset($options['coverage-html'], $options['coverage-clover'], $options['coverage-text']);
+        unset(
+            $options['coverage-html'],
+            $options['coverage-clover'],
+            $options['coverage-text'],
+            $options['coverage-crap4j']
+        );
 
         return $options;
     }

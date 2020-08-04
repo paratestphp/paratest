@@ -4,41 +4,38 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use function preg_quote;
+
 /**
  * Representation of test suite paths found in phpunit.xml.
  */
-class SuitePath
+final class SuitePath
 {
     private const DEFAULT_SUFFIX = 'Test.php';
 
-    /**
-     * @var string
-     */
-    protected $path;
+    /** @var string */
+    private $path;
+
+    /** @var string */
+    private $suffix;
+
+    /** @var string[] */
+    private $excludedPaths;
 
     /**
-     * @var string
+     * @param string[] $excludedPaths
      */
-    protected $suffix;
-
-    /**
-     * @var string[]s
-     */
-    protected $excludedPaths;
-
     public function __construct(string $path, array $excludedPaths, string $suffix)
     {
-        if (empty($suffix)) {
+        if ($suffix === '') {
             $suffix = self::DEFAULT_SUFFIX;
         }
-        $this->path = $path;
+
+        $this->path          = $path;
         $this->excludedPaths = $excludedPaths;
-        $this->suffix = $suffix;
+        $this->suffix        = $suffix;
     }
 
-    /**
-     * @return string
-     */
     public function getPath(): string
     {
         return $this->path;
@@ -52,19 +49,13 @@ class SuitePath
         return $this->excludedPaths;
     }
 
-    /**
-     * @return string
-     */
     public function getSuffix(): string
     {
         return $this->suffix;
     }
 
-    /**
-     * @return string
-     */
     public function getPattern(): string
     {
-        return '|' . \preg_quote($this->getSuffix()) . '$|';
+        return '|' . preg_quote($this->getSuffix()) . '$|';
     }
 }

@@ -5,41 +5,66 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Functional\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
+use ParaTest\Tests\TestBase;
+use ReflectionProperty;
 use SimpleXMLElement;
+use Symfony\Component\Console\Output\BufferedOutput;
 
-class WorkerTest extends \ParaTest\Tests\TestBase
+use function count;
+use function file_exists;
+use function file_get_contents;
+use function get_class;
+use function proc_get_status;
+use function proc_open;
+use function sys_get_temp_dir;
+use function unlink;
+
+final class WorkerTest extends TestBase
 {
+    /** @var string[][]  */
     protected static $descriptorspec = [
-       0 => ['pipe', 'r'],
-       1 => ['pipe', 'w'],
-       2 => ['pipe', 'w'],
+        0 => ['pipe', 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w'],
     ];
+    /** @var string */
+    protected $bootstrap;
+    /** @var string */
+    private $phpunitWrapper;
+    /** @var BufferedOutput */
+    private $output;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->bootstrap = PARATEST_ROOT . '/test/bootstrap.php';
-        $this->phpunitWrapper = PARATEST_ROOT . '/bin/phpunit-wrapper';
+        $this->bootstrap      = PARATEST_ROOT . DS . 'test' . DS . 'bootstrap.php';
+        $this->phpunitWrapper = PARATEST_ROOT . DS . 'bin' . DS . 'phpunit-wrapper.php';
+        $this->output         = new BufferedOutput();
     }
 
     public function tearDown(): void
     {
-        $this->deleteIfExists('/tmp/test.xml');
-        $this->deleteIfExists('/tmp/test2.xml');
+        $this->deleteIfExists(sys_get_temp_dir() . DS . 'test.xml');
+        $this->deleteIfExists(sys_get_temp_dir() . DS . 'test2.xml');
     }
 
-    private function deleteIfExists($file)
+    private function deleteIfExists(string $file): void
     {
-        if (file_exists($file)) {
-            unlink($file);
+        if (! file_exists($file)) {
+            return;
         }
+
+        unlink($file);
     }
 
-    public function testReadsAPHPUnitCommandFromStdInAndExecutesItItsOwnProcess()
+    /**
+     * @requires OSFAMILY Linux
+     */
+    public function testReadsAPHPUnitCommandFromStdInAndExecutesItItsOwnProcess(): void
     {
-        $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
-        $worker = new WrapperWorker();
+        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
+        $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
 
@@ -49,11 +74,14 @@ class WorkerTest extends \ParaTest\Tests\TestBase
         $this->assertJUnitLogIsValid($testLog);
     }
 
-    public function testKnowsWhenAJobIsFinished()
+    /**
+     * @requires OSFAMILY Linux
+     */
+    public function testKnowsWhenAJobIsFinished(): void
     {
-        $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
-        $worker = new WrapperWorker();
+        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
+        $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
         $worker->execute($testCmd);
         $worker->waitForFinishedJob();
@@ -61,43 +89,55 @@ class WorkerTest extends \ParaTest\Tests\TestBase
         $this->assertJUnitLogIsValid($testLog);
     }
 
-    public function testTellsWhenItsFree()
+    /**
+     * @requires OSFAMILY Linux
+     */
+    public function testTellsWhenItsFree(): void
     {
-        $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
-        $worker = new WrapperWorker();
+        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
+        $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
-        $this->assertTrue($worker->isFree());
+        static::assertTrue($worker->isFree());
 
         $worker->execute($testCmd);
-        $this->assertFalse($worker->isFree());
+        static::assertFalse($worker->isFree());
 
         $worker->waitForFinishedJob();
-        $this->assertTrue($worker->isFree());
+        static::assertTrue($worker->isFree());
     }
 
-    public function testTellsWhenItsStopped()
+    /**
+     * @requires OSFAMILY Linux
+     */
+    public function testTellsWhenItsStopped(): void
     {
-        $worker = new WrapperWorker();
-        $this->assertFalse($worker->isRunning());
+        $worker = new WrapperWorker($this->output);
+        static::assertFalse($worker->isRunning());
 
         $worker->start($this->phpunitWrapper);
-        $this->assertTrue($worker->isRunning());
+        static::assertTrue($worker->isRunning());
 
         $worker->stop();
         $worker->waitForStop();
-        $this->assertFalse($worker->isRunning());
+        static::assertFalse($worker->isRunning());
     }
 
-    public function testProcessIsMarkedAsCrashedWhenItFinishesWithNonZeroExitCode()
+    /**
+     * @requires OSFAMILY Linux
+     */
+    public function testProcessIsMarkedAsCrashedWhenItFinishesWithNonZeroExitCode(): void
     {
         // fake state: process has already exited (with non-zero exit code) but worker did not yet notice
-        $worker = new WrapperWorker();
+        $worker = new WrapperWorker($this->output);
         $this->setPerReflection($worker, 'proc', $this->createSomeClosedProcess());
         $this->setPerReflection($worker, 'pipes', [0 => true]);
-        $this->assertTrue($worker->isCrashed());
+        static::assertTrue($worker->isCrashed());
     }
 
+    /**
+     * @return resource
+     */
     private function createSomeClosedProcess()
     {
         $descriptorspec = [
@@ -106,36 +146,39 @@ class WorkerTest extends \ParaTest\Tests\TestBase
             2 => ['pipe', 'w'],
         ];
 
-        $proc = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
+        $proc    = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
         $running = true;
         while ($running) {
-            $status = proc_get_status($proc);
+            $status  = proc_get_status($proc);
             $running = $status['running'];
         }
 
         return $proc;
     }
 
-    private function setPerReflection($instance, $property, $value)
+    /**
+     * @param mixed $value
+     */
+    private function setPerReflection(object $instance, string $property, $value): void
     {
-        $reflectionProperty = new \ReflectionProperty(\get_class($instance), $property);
+        $reflectionProperty = new ReflectionProperty(get_class($instance), $property);
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($instance, $value);
     }
 
-    public function testCanExecuteMultiplePHPUnitCommands()
+    public function testCanExecuteMultiplePHPUnitCommands(): void
     {
-        $bin = 'bin/phpunit-wrapper';
+        $bin = 'bin/phpunit-wrapper.php';
 
-        $worker = new WrapperWorker();
+        $worker = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
 
-        $testLog = '/tmp/test.xml';
-        $testCmd = $this->getCommand('passing-tests/TestOfUnits.php', $testLog);
+        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker->execute($testCmd);
 
-        $testLog2 = '/tmp/test2.xml';
-        $testCmd2 = $this->getCommand('failing-tests/UnitTestWithErrorTest.php', $testLog2);
+        $testLog2 = sys_get_temp_dir() . DS . 'test2.xml';
+        $testCmd2 = $this->getCommand('failing-tests' . DS . 'UnitTestWithErrorTest.php', $testLog2);
         $worker->execute($testCmd2);
 
         $worker->stop();
@@ -145,22 +188,26 @@ class WorkerTest extends \ParaTest\Tests\TestBase
         $this->assertJUnitLogIsValid($testLog2);
     }
 
-    private function getCommand($testFile, $logFile)
+    /**
+     * @return string[]
+     */
+    private function getCommand(string $testFile, string $logFile): array
     {
-        return sprintf(
-            "'%s' '--bootstrap' '%s' '--log-junit' '%s' '%s'",
-            'vendor/bin/phpunit',
+        return [
+            PHPUNIT,
+            '--bootstrap',
             $this->bootstrap,
+            '--log-junit',
             $logFile,
-            $this->fixture($testFile)
-        );
+            $this->fixture($testFile),
+        ];
     }
 
-    private function assertJUnitLogIsValid($logFile)
+    private function assertJUnitLogIsValid(string $logFile): void
     {
-        $this->assertFileExists($logFile, "Failed asserting that $logFile exists.");
-        $log = new SimpleXMLElement(file_get_contents($logFile));
-        $count = \count($log->testsuite->testcase);
-        $this->assertGreaterThan(1, $count, 'Not even a test has been executed');
+        static::assertFileExists($logFile);
+        $log   = new SimpleXMLElement(file_get_contents($logFile));
+        $count = count($log->testsuite->testcase);
+        static::assertGreaterThan(1, $count, 'Not even a test has been executed');
     }
 }

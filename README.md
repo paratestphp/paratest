@@ -1,8 +1,11 @@
 ParaTest
 ========
 
-[![Build Status](https://travis-ci.org/paratestphp/paratest.svg?branch=master)](https://travis-ci.org/paratestphp/paratest)
-[![Packagist](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
+[![Latest Stable Version](https://img.shields.io/packagist/v/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
+[![Downloads](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
+[![Integrate](https://github.com/paratestphp/paratest/workflows/Integrate/badge.svg?branch=master)](https://github.com/paratestphp/paratest/actions)
+[![Code Coverage](https://codecov.io/gh/paratestphp/paratest/coverage.svg?branch=master)](https://codecov.io/gh/paratestphp/paratest?branch=master)
+[![Type Coverage](https://shepherd.dev/github/paratestphp/paratest/coverage.svg)](https://shepherd.dev/github/paratestphp/paratest)
 
 The objective of ParaTest is to support parallel testing in PHPUnit. Provided you have well-written PHPUnit tests, you can drop `paratest` in your project and
 start using it with no additional bootstrap or configurations!
@@ -28,6 +31,7 @@ To install with composer run the following command:
 | <= 6.* | 1.* |
 | 7.* | 2.* |
 | 8.* | 3.* |
+| 9.* | 4.* |
 
 # Usage
 
@@ -35,7 +39,7 @@ After installation, the binary can be found at `vendor/bin/paratest`. Usage is a
 
 ```
 Usage:
- paratest [-p|--processes PROCESSES] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover COVERAGE-CLOVER] [--coverage-html COVERAGE-HTML] [--coverage-php COVERAGE-PHP] [--coverage-text] [--coverage-xml COVERAGE-XML] [-m|--max-batch-size MAX-BATCH-SIZE] [--filter FILTER] [--parallel-suite] [--passthru PASSTHRU] [--passthru-php PASSTHRU-PHP] [-v|--verbose VERBOSE] [--whitelist WHITELIST] [--phpunit PHPUNIT] [--runner RUNNER] [--bootstrap BOOTSTRAP] [-c|--configuration CONFIGURATION] [-g|--group GROUP] [--exclude-group EXCLUDE-GROUP] [--stop-on-failure] [--log-junit LOG-JUNIT] [--colors] [--testsuite [TESTSUITE]] [--path PATH] [--] [<path>]
+ paratest [-p|--processes PROCESSES] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover COVERAGE-CLOVER] [--coverage-crap4j COVERAGE-CRAP4J] [--coverage-html COVERAGE-HTML] [--coverage-php COVERAGE-PHP] [--coverage-text] [--coverage-xml COVERAGE-XML] [-m|--max-batch-size MAX-BATCH-SIZE] [--filter FILTER] [--parallel-suite] [--passthru PASSTHRU] [--passthru-php PASSTHRU-PHP] [-v|--verbose VERBOSE] [--whitelist WHITELIST] [--phpunit PHPUNIT] [--runner RUNNER] [--bootstrap BOOTSTRAP] [-c|--configuration CONFIGURATION] [-g|--group GROUP] [--exclude-group EXCLUDE-GROUP] [--stop-on-failure] [--log-junit LOG-JUNIT] [--colors] [--testsuite [TESTSUITE]] [--path PATH] [--] [<path>]
 
 Arguments:
  path                        The path to a directory or file containing tests. (default: current directory)
@@ -50,6 +54,7 @@ Options:
  --no-test-tokens            Disable TEST_TOKEN environment variables. (Default: Variable is set)
  --help (-h)                 Display this help message.
  --coverage-clover           Generate code coverage report in Clover XML format.
+ --coverage-crap4j           Generate code coverage report in Crap4J XML format.
  --coverage-html             Generate code coverage report in HTML format.
  --coverage-php              Serialize PHP_CodeCoverage object to file.
  --coverage-text             Generate code coverage report in text format.
@@ -232,6 +237,7 @@ composer run-script -l
 scripts:
   style            Run style checks (only dry run - no fixing!)
   style-fix        Run style checks and fix violations
+  static-analysis  Run static analysis
   test             Run all tests
   test-unit        Run only unit tests
   test-functional  Run only functional tests
@@ -250,8 +256,11 @@ You can run all tests at once by running phpunit from the project directory:
 ParaTest can run its own test suite by running it from the `bin` directory:
 `composer test` OR `bin/paratest`
 
+Analyse the code statically:
+`composer static-analysis`
+
 Before creating a Pull Request be sure to run the style checks and commit the eventual changes:
-`composer style-fix` OR `vendor/bin/php-cs-fixer fix`
+`composer style-fix`
 
 Use `composer style` to only show violations without fixing.
 

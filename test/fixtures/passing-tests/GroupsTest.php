@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @group group4
  */
-class GroupsTest extends PHPUnit\FrameWork\TestCase
+final class GroupsTest extends PHPUnit\Framework\TestCase
 {
     /**
      * @group group1
      */
-    public function testTruth()
+    public function testTruth(): void
     {
         $this->assertTrue(true);
     }
@@ -16,7 +18,7 @@ class GroupsTest extends PHPUnit\FrameWork\TestCase
     /**
      * @group group1
      */
-    public function testFalsehood()
+    public function testFalsehood(): void
     {
         $this->assertFalse(false);
     }
@@ -24,7 +26,7 @@ class GroupsTest extends PHPUnit\FrameWork\TestCase
     /**
      * @group group2
      */
-    public function testArrayLength()
+    public function testArrayLength(): void
     {
         $values = [1, 3, 4, 7];
         $this->assertEquals(4, count($values));
@@ -34,13 +36,13 @@ class GroupsTest extends PHPUnit\FrameWork\TestCase
      * @group group2
      * @group group3
      */
-    public function testStringLength()
+    public function testStringLength(): void
     {
         $string = 'hello';
         $this->assertEquals(5, strlen($string));
     }
 
-    public function testAddition()
+    public function testAddition(): void
     {
         $vals = 1 + 1;
         $this->assertEquals(2, $vals);

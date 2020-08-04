@@ -2,9 +2,9 @@
 <?php
 
 $files = array(
-    __DIR__ . '/../../vendor/autoload.php',
-    __DIR__ . '/../../../autoload.php',
-    dirname(__DIR__) . '/vendor/autoload.php'
+    dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
+    dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+    dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php'
 );
 
 $found = false;
@@ -31,11 +31,7 @@ if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
     exit(1);
 }
 
-#use ParaTest\UI\Text\PHPUnitTextUI;
+use ParaTest\Console\Commands\ParaTestCommand;
+use ParaTest\Console\Testers\PHPUnit;
 
-#PHPUnitTextUI::main();
-
-use ParaTest\Console\ParaTestApplication;
-
-$app = new ParaTestApplication();
-$app->run();
+ParaTestCommand::applicationFactory(new PHPUnit())->run();

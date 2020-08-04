@@ -7,20 +7,35 @@ namespace ParaTest\Console\Testers;
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Configuration;
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Util\Str;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function array_key_exists;
+use function array_merge;
+use function assert;
+use function chdir;
+use function class_exists;
+use function file_exists;
+use function getcwd;
+use function is_string;
+use function sprintf;
+use function sys_get_temp_dir;
+use function tempnam;
+
+use const DIRECTORY_SEPARATOR;
+
 /**
- * Class PHPUnit.
- *
  * Creates the interface for PHPUnit testing
  */
-class PHPUnit extends Tester
+final class PHPUnit extends Tester
 {
     /**
      * @see \PHPUnit\Util\Configuration
@@ -28,18 +43,14 @@ class PHPUnit extends Tester
      */
     private const TEST_SUITE_FILTER_SEPARATOR = ',';
 
-    /**
-     * @var \ParaTest\Console\Commands\ParaTestCommand
-     */
-    protected $command;
+    /** @var Command */
+    private $command;
 
     /**
      * Configures the ParaTestCommand with PHPUnit specific
      * definitions.
-     *
-     * @param Command $command
      */
-    public function configure(Command $command)
+    public function configure(Command $command): void
     {
         $command
             ->addOption(
@@ -82,28 +93,36 @@ class PHPUnit extends Tester
                 InputArgument::OPTIONAL,
                 'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
             )
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.')
-        ;
+            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'An alias for the path argument.');
         $this->command = $command;
     }
 
     /**
      * Executes the PHPUnit Runner. Will Display help if no config and no path
      * supplied.
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|mixed
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!$this->hasConfig($input) && !$this->hasPath($input)) {
-            $this->displayHelp($input, $output);
+        if (! $this->hasConfig($input) && ! $this->hasPath($input)) {
+            return $this->displayHelp($input, $output);
         }
 
-        $runner = $this->initializeRunner($input);
+        $bareOptions = $this->getRunnerOptions($input);
+        $this->requireBootstrap($this->getBootstrapFile($input, $bareOptions));
 
+        $options = new Options($bareOptions);
+        if (
+            isset($options->filtered['configuration']) &&
+            ! file_exists($path = $options->filtered['configuration']->getPath())
+        ) {
+            $output->writeln(sprintf('Could not read "%s".', $path));
+
+            return 1;
+        }
+
+        $runnerClass = $this->getRunnerClass($input);
+
+        $runner = new $runnerClass($options, $output);
         $runner->run();
 
         return $runner->getExitCode();
@@ -112,45 +131,36 @@ class PHPUnit extends Tester
     /**
      * Returns whether or not a test path has been supplied
      * via option or regular input.
-     *
-     * @param InputInterface $input
-     *
-     * @return bool
      */
-    protected function hasPath(InputInterface $input)
+    private function hasPath(InputInterface $input): bool
     {
         $argument = $input->getArgument('path');
-        $option = $input->getOption('path');
+        $option   = $input->getOption('path');
 
-        return $argument || $option;
+        return ($argument !== null && $argument !== '')
+            || ($option !== null && $option !== '');
     }
 
     /**
      * Is there a PHPUnit xml configuration present.
-     *
-     * @param InputInterface $input
-     *
-     * @return bool
      */
-    protected function hasConfig(InputInterface $input): bool
+    private function hasConfig(InputInterface $input): bool
     {
-        return false !== $this->getConfig($input);
+        return $this->getConfig($input) !== false;
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     *
-     * @return \ParaTest\Runners\PHPUnit\Configuration|bool
+     * @return Configuration|bool
      */
-    protected function getConfig(InputInterface $input)
+    private function getConfig(InputInterface $input)
     {
-        $cwd = \getcwd() . \DIRECTORY_SEPARATOR;
+        $cwd = getcwd() . DIRECTORY_SEPARATOR;
 
         if ($input->getOption('configuration')) {
             $configFilename = $input->getOption('configuration');
-        } elseif (\file_exists($cwd . 'phpunit.xml.dist')) {
+        } elseif (file_exists($cwd . 'phpunit.xml.dist')) {
             $configFilename = $cwd . 'phpunit.xml.dist';
-        } elseif (\file_exists($cwd . 'phpunit.xml')) {
+        } elseif (file_exists($cwd . 'phpunit.xml')) {
             $configFilename = $cwd . 'phpunit.xml';
         } else {
             return false;
@@ -160,28 +170,35 @@ class PHPUnit extends Tester
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * Displays help for the ParaTestCommand.
+     */
+    private function displayHelp(InputInterface $input, OutputInterface $output): int
+    {
+        $help  = $this->command->getApplication()->find('help');
+        $input = new ArrayInput(['command_name' => 'paratest']);
+
+        return $help->run($input, $output);
+    }
+
+    /**
+     * @return array<string, string|string[]>
      *
-     * @throws \RuntimeException
-     *
-     * @return array
+     * @throws RuntimeException
      */
     public function getRunnerOptions(InputInterface $input): array
     {
-        $path = $input->getArgument('path');
+        $path    = $input->getArgument('path');
         $options = $this->getOptions($input);
-        $bootstrap = $this->getBootstrapFile($input, $options);
-        $this->requireBootstrap($bootstrap);
 
         if ($this->hasCoverage($options)) {
-            $options['coverage-php'] = \tempnam(\sys_get_temp_dir(), 'paratest_');
+            $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');
         }
 
-        if ($path) {
-            $options = \array_merge(['path' => $path], $options);
+        if ($path !== null && $path !== '') {
+            $options = array_merge(['path' => $path], $options);
         }
 
-        if (\array_key_exists('testsuite', $options)) {
+        if (array_key_exists('testsuite', $options)) {
             $options['testsuite'] = Str::explodeWithCleanup(
                 self::TEST_SUITE_FILTER_SEPARATOR,
                 $options['testsuite']
@@ -195,19 +212,18 @@ class PHPUnit extends Tester
      * Require the bootstrap. If the file is specified, but does not exist
      * then an exception will be raised.
      *
-     * @param $file
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function requireBootstrap(string $file)
+    public function requireBootstrap(string $file): void
     {
-        if (!$file) {
+        if ($file === '') {
             return;
         }
 
-        if (!\file_exists($file)) {
-            $message = \sprintf('Bootstrap specified but could not be found (%s)', $file);
-            throw new \RuntimeException($message);
+        if (! file_exists($file)) {
+            $message = sprintf('Bootstrap specified but could not be found (%s)', $file);
+
+            throw new RuntimeException($message);
         }
 
         $this->scopedRequire($file);
@@ -217,72 +233,73 @@ class PHPUnit extends Tester
      * This function limits the scope of a required file
      * so that variables defined in it do not break
      * this object's configuration.
-     *
-     * @param mixed $file
      */
-    protected function scopedRequire(string $file)
+    private function scopedRequire(string $file): void
     {
-        $cwd = \getcwd();
+        $cwd = getcwd();
         require_once $file;
-        \chdir($cwd);
+        chdir($cwd);
     }
 
     /**
      * Return whether or not code coverage information should be collected.
      *
-     * @param $options
-     *
-     * @return bool
+     * @param array<string, string> $options
      */
-    protected function hasCoverage(array $options): bool
+    private function hasCoverage(array $options): bool
     {
         $isFileFormat = isset($options['coverage-html'])
             || isset($options['coverage-clover'])
+            || isset($options['coverage-crap4j'])
             || isset($options['coverage-xml']);
         $isTextFormat = isset($options['coverage-text']);
-        $isPHP = isset($options['coverage-php']);
+        $isPHP        = isset($options['coverage-php']);
 
-        return $isTextFormat || $isFileFormat && !$isPHP;
+        return $isTextFormat || $isFileFormat && ! $isPHP;
     }
 
     /**
      * Fetch the path to the bootstrap file.
      *
-     * @param InputInterface $input
-     * @param array          $options
-     *
-     * @return string
+     * @param array<string, string|string[]> $options
      */
-    protected function getBootstrapFile(InputInterface $input, array $options): string
+    private function getBootstrapFile(InputInterface $input, array $options): string
     {
         if (isset($options['bootstrap'])) {
+            assert(is_string($options['bootstrap']));
+
             return $options['bootstrap'];
         }
 
-        if (!$this->hasConfig($input)) {
+        if (! $this->hasConfig($input)) {
             return '';
         }
 
-        $config = $this->getConfig($input);
+        $config    = $this->getConfig($input);
         $bootstrap = $config->getBootstrap();
 
-        return $bootstrap ? $config->getConfigDir() . $bootstrap : '';
+        return $bootstrap !== '' ? $config->getConfigDir() . $bootstrap : '';
     }
 
-    private function initializeRunner(InputInterface $input): BaseRunner
+    /**
+     * @return class-string<BaseRunner>
+     */
+    private function getRunnerClass(InputInterface $input): string
     {
-        if ($input->getOption('runner')) {
-            $runnerClass = $input->getOption('runner') ?: '';
-            $runnerClass = \class_exists($runnerClass) ?
-                $runnerClass : ('\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass);
+        $runner = $input->getOption('runner');
+        if ($runner !== null) {
+            $runnerClass = $runner;
+            $runnerClass = class_exists($runnerClass)
+                ? $runnerClass
+                : '\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass;
         } else {
             $runnerClass = Runner::class;
         }
 
-        if (!\class_exists($runnerClass)) {
+        if (! class_exists($runnerClass)) {
             throw new InvalidArgumentException('Selected runner does not exist.');
         }
 
-        return new $runnerClass($this->getRunnerOptions($input));
+        return $runnerClass;
     }
 }

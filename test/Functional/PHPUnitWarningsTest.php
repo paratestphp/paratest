@@ -7,9 +7,9 @@ namespace ParaTest\Tests\Functional;
 /**
  * Specifically tests warnings in PHPUnit.
  */
-class PHPUnitWarningsTest extends FunctionalTestBase
+final class PHPUnitWarningsTest extends FunctionalTestBase
 {
-    public function testTestsWithWarningsResultInFailure()
+    public function testTestsWithWarningsResultInFailure(): void
     {
         $proc = $this->invokeParatest(
             'warning-tests/HasWarningsTest.php',
@@ -21,7 +21,7 @@ class PHPUnitWarningsTest extends FunctionalTestBase
 
         $output = $proc->getOutput();
 
-        $this->assertStringContainsString('Warnings', $output, 'Test should output warnings');
-        $this->assertEquals(1, $proc->getExitCode(), 'Test suite should fail with 1');
+        static::assertStringContainsString('Warnings', $output, 'Test should output warnings');
+        static::assertEquals(1, $proc->getExitCode(), 'Test suite should fail with 1');
     }
 }

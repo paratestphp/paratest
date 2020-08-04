@@ -7,8 +7,15 @@ namespace ParaTest\Tests\Functional\Coverage;
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Coverage\CoverageReporter;
 use ParaTest\Tests\TestBase;
+use PHPUnit\Util\Xml;
 
-class CoverageReporterTest extends TestBase
+use function defined;
+use function mkdir;
+use function str_replace;
+use function sys_get_temp_dir;
+use function uniqid;
+
+final class CoverageReporterTest extends TestBase
 {
     /**
      * Target directory for reports.
@@ -17,23 +24,17 @@ class CoverageReporterTest extends TestBase
      */
     private $targetDir;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         parent::setUp();
 
         static::skipIfCodeCoverageNotEnabled();
 
-        $this->targetDir = str_replace('.', '_', uniqid('/tmp/report-', true));
+        $this->targetDir = str_replace('.', '_', sys_get_temp_dir() . DS . uniqid('paratest-', true));
         $this->removeDirectory($this->targetDir);
         mkdir($this->targetDir);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function tearDown(): void
     {
         $this->removeDirectory($this->targetDir);
@@ -42,12 +43,12 @@ class CoverageReporterTest extends TestBase
     }
 
     /**
-     * @dataProvider getReporterProvider
+     * @param string[]     $coverageFiles
+     * @param class-string $expectedReportClass
      *
-     * @param string[] $coverageFiles
-     * @param string $expectedReportClass
+     * @dataProvider getReporterProvider
      */
-    public function testGetReporter(array $coverageFiles, $expectedReportClass)
+    public function testGetReporter(array $coverageFiles, string $expectedReportClass): void
     {
         $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
         $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
@@ -62,11 +63,11 @@ class CoverageReporterTest extends TestBase
     }
 
     /**
-     * @dataProvider getReporterProvider
-     *
      * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
      */
-    public function testGeneratePhp(array $coverageFiles)
+    public function testGeneratePhp(array $coverageFiles): void
     {
         $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
         $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
@@ -75,9 +76,9 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir . '/coverage.php';
+        $target = $this->targetDir . DS . 'coverage.php';
 
-        static::assertFileNotExists($target);
+        static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->php($target);
 
@@ -85,11 +86,11 @@ class CoverageReporterTest extends TestBase
     }
 
     /**
-     * @dataProvider getReporterProvider
-     *
      * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
      */
-    public function testGenerateClover(array $coverageFiles)
+    public function testGenerateClover(array $coverageFiles): void
     {
         $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
         $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
@@ -98,24 +99,24 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir . '/coverage.xml';
+        $target = $this->targetDir . DS . 'coverage.xml';
 
-        static::assertFileNotExists($target);
+        static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->clover($target);
 
         static::assertFileExists($target);
 
-        $reportXml = \PHPUnit\Util\XML::loadFile($target);
-        static::assertInstanceOf('DomDocument', $reportXml, 'Incorrect clover report xml was generated');
+        $reportXml = Xml::loadFile($target);
+        static::assertTrue($reportXml->hasChildNodes(), 'Incorrect clover report xml was generated');
     }
 
     /**
-     * @dataProvider getReporterProvider
-     *
      * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
      */
-    public function testGenerateHtml(array $coverageFiles)
+    public function testGenerateCrap4J(array $coverageFiles): void
     {
         $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
         $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
@@ -124,25 +125,99 @@ class CoverageReporterTest extends TestBase
         $coverageMerger->addCoverageFromFile($filename1);
         $coverageMerger->addCoverageFromFile($filename2);
 
-        $target = $this->targetDir . '/coverage';
+        $target = $this->targetDir . DS . 'coverage.xml';
 
-        static::assertFileNotExists($target);
+        static::assertFileDoesNotExist($target);
+
+        $coverageMerger->getReporter()->crap4j($target);
+
+        static::assertFileExists($target);
+
+        $reportXml = Xml::loadFile($target);
+        static::assertTrue($reportXml->hasChildNodes(), 'Incorrect crap4j report xml was generated');
+        static::assertEquals('crap_result', $reportXml->documentElement->tagName);
+    }
+
+    /**
+     * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
+     */
+    public function testGenerateHtml(array $coverageFiles): void
+    {
+        $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
+        $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
+
+        $coverageMerger = new CoverageMerger();
+        $coverageMerger->addCoverageFromFile($filename1);
+        $coverageMerger->addCoverageFromFile($filename2);
+
+        $target = $this->targetDir . DS . 'coverage';
+
+        static::assertFileDoesNotExist($target);
 
         $coverageMerger->getReporter()->html($target);
 
         static::assertFileExists($target);
-        static::assertFileExists($target . '/index.html', 'Index html file was not generated');
+        static::assertFileExists($target . DS . 'index.html', 'Index html file was not generated');
     }
 
     /**
-     * @return array
+     * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
      */
-    public static function getReporterProvider()
+    public function testGenerateText(array $coverageFiles): void
     {
-        $version = 'CodeCoverage >4.0';
-        $filenames = [
-            'coverage-tests/runner_test.cov',
-            'coverage-tests/result_printer_test.cov',
+        $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
+        $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
+
+        $coverageMerger = new CoverageMerger();
+        $coverageMerger->addCoverageFromFile($filename1);
+        $coverageMerger->addCoverageFromFile($filename2);
+
+        $output = $coverageMerger->getReporter()->text();
+
+        static::assertStringContainsString('Code Coverage Report:', $output);
+    }
+
+    /**
+     * @param string[] $coverageFiles
+     *
+     * @dataProvider getReporterProvider
+     */
+    public function testGenerateXml(array $coverageFiles): void
+    {
+        $filename1 = $this->copyCoverageFile($coverageFiles[0], $this->targetDir);
+        $filename2 = $this->copyCoverageFile($coverageFiles[1], $this->targetDir);
+
+        $coverageMerger = new CoverageMerger();
+        $coverageMerger->addCoverageFromFile($filename1);
+        $coverageMerger->addCoverageFromFile($filename2);
+
+        $target = $this->targetDir . DS . 'coverage.xml';
+
+        static::assertFileDoesNotExist($target);
+
+        $coverageMerger->getReporter()->xml($target);
+
+        static::assertFileExists($target);
+        static::assertFileExists($target . DS . 'index.xml', 'Index xml file was not generated');
+
+        $reportXml = Xml::loadFile($target . DS . 'index.xml');
+        static::assertTrue($reportXml->hasChildNodes(), 'Incorrect xml was generated');
+    }
+
+    /**
+     * @return array<string, array<string, string[]|class-string>>
+     */
+    public static function getReporterProvider(): array
+    {
+        $version       = 'CodeCoverage >4.0';
+        $windowsExt    = defined('PHP_WINDOWS_VERSION_BUILD') ? '-windows' : '';
+        $filenames     = [
+            'coverage-tests' . DS . 'runner_test' . $windowsExt . '.cov',
+            'coverage-tests' . DS . 'result_printer_test' . $windowsExt . '.cov',
         ];
         $reporterClass = CoverageReporter::class;
 

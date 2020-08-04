@@ -6,53 +6,61 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Runners\PHPUnit\Configuration;
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Tests\TestBase;
+use Symfony\Component\Console\Output\BufferedOutput;
 
-class RunnerTest extends \ParaTest\Tests\TestBase
+use function getcwd;
+use function uniqid;
+
+final class RunnerTest extends TestBase
 {
-    protected $runner;
-    protected $files;
-    protected $testDir;
+    /** @var Runner  */
+    private $runner;
+    /** @var BufferedOutput  */
+    private $output;
 
     public function setUp(): void
     {
-        $this->runner = new Runner();
+        $this->output = new BufferedOutput();
+        $this->runner = new Runner(new Options([]), $this->output);
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner($opts);
+        $opts    = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $runner  = new Runner(new Options($opts), $this->output);
         $options = $this->getObjectValue($runner, 'options');
 
-        $this->assertEquals(4, $options->processes);
-        $this->assertEquals(FIXTURES . DS . 'tests', $options->path);
-        $this->assertEquals([], $this->getObjectValue($runner, 'pending'));
-        $this->assertEquals([], $this->getObjectValue($runner, 'running'));
-        $this->assertEquals(-1, $this->getObjectValue($runner, 'exitcode'));
-        $this->assertTrue($options->functional);
+        static::assertEquals(4, $options->processes);
+        static::assertEquals(FIXTURES . DS . 'tests', $options->path);
+        static::assertEquals([], $this->getObjectValue($runner, 'pending'));
+        static::assertEquals([], $this->getObjectValue($runner, 'running'));
+        static::assertEquals(-1, $this->getObjectValue($runner, 'exitcode'));
+        static::assertTrue($options->functional);
         //filter out processes and path and phpunit
         $config = new Configuration(getcwd() . DS . 'phpunit.xml.dist');
-        $this->assertEquals(['bootstrap' => 'hello', 'configuration' => $config], $options->filtered);
-        $this->assertInstanceOf(LogInterpreter::class, $this->getObjectValue($runner, 'interpreter'));
-        $this->assertInstanceOf(ResultPrinter::class, $this->getObjectValue($runner, 'printer'));
+        static::assertEquals(['bootstrap' => 'hello', 'configuration' => $config], $options->filtered);
+        static::assertInstanceOf(LogInterpreter::class, $this->getObjectValue($runner, 'interpreter'));
+        static::assertInstanceOf(ResultPrinter::class, $this->getObjectValue($runner, 'printer'));
     }
 
-    public function testGetExitCode()
+    public function testGetExitCode(): void
     {
-        $this->assertEquals(-1, $this->runner->getExitCode());
+        static::assertEquals(-1, $this->runner->getExitCode());
     }
 
-    public function testConstructorAssignsTokens()
+    public function testConstructorAssignsTokens(): void
     {
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner($opts);
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $runner = new Runner(new Options($opts), $this->output);
         $tokens = $this->getObjectValue($runner, 'tokens');
-        $this->assertCount(4, $tokens);
+        static::assertCount(4, $tokens);
     }
 
-    public function testGetsNextAvailableTokenReturnsTokenIdentifier()
+    public function testGetsNextAvailableTokenReturnsTokenIdentifier(): void
     {
         $tokens = [
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
@@ -60,15 +68,15 @@ class RunnerTest extends \ParaTest\Tests\TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => true],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner($opts);
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $runner = new Runner(new Options($opts), $this->output);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
         $tokenData = $this->call($runner, 'getNextAvailableToken');
-        $this->assertEquals(2, $tokenData['token']);
+        static::assertEquals(2, $tokenData['token']);
     }
 
-    public function testGetNextAvailableTokenReturnsFalseWhenNoTokensAreAvailable()
+    public function testGetNextAvailableTokenReturnsFalseWhenNoTokensAreAvailable(): void
     {
         $tokens = [
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
@@ -76,15 +84,15 @@ class RunnerTest extends \ParaTest\Tests\TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner($opts);
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $runner = new Runner(new Options($opts), $this->output);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
         $tokenData = $this->call($runner, 'getNextAvailableToken');
-        $this->assertFalse($tokenData);
+        static::assertFalse($tokenData);
     }
 
-    public function testReleaseTokenMakesTokenAvailable()
+    public function testReleaseTokenMakesTokenAvailable(): void
     {
         $tokens = [
             0 => ['token' => 0, 'unique' => uniqid(), 'available' => false],
@@ -92,13 +100,13 @@ class RunnerTest extends \ParaTest\Tests\TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner($opts);
+        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
+        $runner = new Runner(new Options($opts), $this->output);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
-        $this->assertFalse($tokens[1]['available']);
+        static::assertFalse($tokens[1]['available']);
         $this->call($runner, 'releaseToken', 1);
         $tokens = $this->getObjectValue($runner, 'tokens');
-        $this->assertTrue($tokens[1]['available']);
+        static::assertTrue($tokens[1]['available']);
     }
 }

@@ -4,67 +4,93 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests;
 
-use Exception;
+use InvalidArgumentException;
 use PHPUnit;
+use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Runner\Version;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
+use ReflectionObject;
+use ReflectionProperty;
+use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
+use SplFileObject;
 
-class TestBase extends PHPUnit\Framework\TestCase
+use function copy;
+use function file_exists;
+use function get_class;
+use function is_dir;
+use function is_object;
+use function is_string;
+use function preg_match;
+use function rmdir;
+use function str_replace;
+use function uniqid;
+use function unlink;
+
+abstract class TestBase extends PHPUnit\Framework\TestCase
 {
     /**
      * Get PHPUnit version.
-     *
-     * @return string
      */
-    protected static function getPhpUnitVersion()
+    final protected static function getPhpUnitVersion(): string
     {
         return Version::id();
     }
 
-    protected function fixture($fixture)
+    final protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
-        if (!file_exists($fixture)) {
-            throw new Exception("Fixture $fixture not found");
+        if (! file_exists($fixture)) {
+            throw new InvalidArgumentException("Fixture $fixture not found");
         }
 
         return $fixture;
     }
 
-    protected function findTests($dir)
+    /**
+     * @return string[]
+     */
+    final protected function findTests(string $dir): array
     {
-        $it = new \RecursiveDirectoryIterator($dir, \RecursiveIteratorIterator::SELF_FIRST);
-        $it = new \RecursiveIteratorIterator($it);
+        $it    = new RecursiveDirectoryIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
+        $it    = new RecursiveIteratorIterator($it);
         $files = [];
         foreach ($it as $file) {
-            if (preg_match('/Test\.php$/', $file->getPathname())) {
-                $files[] = (string)$file;
+            if (! preg_match('/Test\.php$/', $file->getPathname())) {
+                continue;
             }
+
+            $files[] = $file->getPathname();
         }
 
         return $files;
     }
 
-    protected function getObjectValue($object, $property)
+    /**
+     * @return mixed
+     */
+    final protected function getObjectValue(object $object, string $property)
     {
         $prop = $this->getAccessibleProperty($object, $property);
 
         return $prop->getValue($object);
     }
 
-    protected function setObjectValue($object, $property, $value)
+    /**
+     * @param mixed $value
+     */
+    final protected function setObjectValue(object $object, string $property, $value): void
     {
         $prop = $this->getAccessibleProperty($object, $property);
 
-        return $prop->setValue($object, $value);
+        $prop->setValue($object, $value);
     }
 
-    private function getAccessibleProperty($object, $property)
+    private function getAccessibleProperty(object $object, string $property): ReflectionProperty
     {
-        $refl = new \ReflectionObject($object);
+        $refl = new ReflectionObject($object);
         $prop = $refl->getProperty($property);
         $prop->setAccessible(true);
 
@@ -74,13 +100,13 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * Calls an object method even if it is protected or private.
      *
-     * @param object $object the object to call a method on
+     * @param object $object     the object to call a method on
      * @param string $methodName the method name to be called
-     * @param mixed $args 0 or more arguments passed in the function
+     * @param mixed  $args       0 or more arguments passed in the function
      *
      * @return mixed returns what the object's method call will return
      */
-    public function call($object, $methodName, ...$args)
+    final public function call(object $object, string $methodName, ...$args)
     {
         return self::callMethod($object, $methodName, $args);
     }
@@ -88,69 +114,75 @@ class TestBase extends PHPUnit\Framework\TestCase
     /**
      * Calls a class method even if it is protected or private.
      *
-     * @param string $class the class to call a method on
+     * @param string $class      the class to call a method on
      * @param string $methodName the method name to be called
-     * @param mixed $args 0 or more arguments passed in the function
+     * @param mixed  $args       0 or more arguments passed in the function
      *
      * @return mixed returns what the object's method call will return
      */
-    public function callStatic($class, $methodName, ...$args)
+    final public function callStatic(string $class, string $methodName, ...$args)
     {
         return self::callMethod($class, $methodName, $args);
     }
 
-    protected static function callMethod($objectOrClassName, $methodName, $args = null)
+    /**
+     * @param string|object $objectOrClassName
+     * @param mixed[]|null  $args
+     *
+     * @return mixed
+     */
+    final protected static function callMethod($objectOrClassName, string $methodName, ?array $args = null)
     {
         $isStatic = is_string($objectOrClassName);
 
-        if (!$isStatic) {
-            if (!is_object($objectOrClassName)) {
-                throw new Exception('Method call on non existent object or class');
+        if (! $isStatic) {
+            if (! is_object($objectOrClassName)) {
+                throw new RuntimeException('Method call on non existent object or class');
             }
         }
 
-        $class = $isStatic ? $objectOrClassName : get_class($objectOrClassName);
+        $class  = $isStatic ? $objectOrClassName : get_class($objectOrClassName);
         $object = $isStatic ? null : $objectOrClassName;
 
         $reflectionClass = new ReflectionClass($class);
-        $method = $reflectionClass->getMethod($methodName);
+        $method          = $reflectionClass->getMethod($methodName);
         $method->setAccessible(true);
 
         return $method->invokeArgs($object, $args);
     }
 
     /**
-     * @throws \PHPUnit\Framework\SkippedTestError When code coverage library is not found
+     * @throws SkippedTestError When code coverage library is not found.
      */
-    protected static function skipIfCodeCoverageNotEnabled()
+    final protected static function skipIfCodeCoverageNotEnabled(): void
     {
         static $runtime;
-        if (null === $runtime) {
+        if ($runtime === null) {
             $runtime = new Runtime();
         }
 
-        if (!$runtime->canCollectCodeCoverage()) {
-            static::markTestSkipped('No code coverage driver available');
+        if ($runtime->canCollectCodeCoverage()) {
+            return;
         }
+
+        static::markTestSkipped('No code coverage driver available');
     }
 
     /**
      * Remove dir and its files.
-     *
-     * @param string $dirname
      */
-    protected function removeDirectory($dirname)
+    final protected function removeDirectory(string $dirname): void
     {
-        if (!file_exists($dirname) || !is_dir($dirname)) {
+        if (! file_exists($dirname) || ! is_dir($dirname)) {
             return;
         }
 
-        $directory = new \RecursiveDirectoryIterator(
+        $directory = new RecursiveDirectoryIterator(
             $dirname,
             RecursiveDirectoryIterator::SKIP_DOTS
         );
-        /** @var \SplFileObject[] $iterator */
-        $iterator = new \RecursiveIteratorIterator(
+        /** @var SplFileObject[] $iterator */
+        $iterator = new RecursiveIteratorIterator(
             $directory,
             RecursiveIteratorIterator::CHILD_FIRST
         );
@@ -161,6 +193,7 @@ class TestBase extends PHPUnit\Framework\TestCase
                 unlink($file->getRealPath());
             }
         }
+
         rmdir($dirname);
     }
 
@@ -168,14 +201,13 @@ class TestBase extends PHPUnit\Framework\TestCase
      * Copy fixture file to tmp folder, cause coverage file will be deleted by merger.
      *
      * @param string $fixture Fixture coverage file name
-     * @param string $directory
      *
      * @return string Copied coverage file
      */
-    protected function copyCoverageFile($fixture, $directory = '/tmp')
+    final protected function copyCoverageFile(string $fixture, string $directory): string
     {
         $fixturePath = $this->fixture($fixture);
-        $filename = str_replace('.', '_', uniqid($directory . '/cov-', true));
+        $filename    = str_replace('.', '_', $directory . DS . uniqid('cov-', true));
         copy($fixturePath, $filename);
 
         return $filename;

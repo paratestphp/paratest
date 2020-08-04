@@ -7,36 +7,70 @@ namespace ParaTest\Tests\Unit\Console\Commands;
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Console\Testers\Tester;
+use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ParaTestCommandTest extends \ParaTest\Tests\TestBase
+final class ParaTestCommandTest extends TestBase
 {
+    /** @var PHPUnit  */
     protected $tester;
+    /** @var ParaTestCommand  */
     protected $command;
 
     public function setUp(): void
     {
-        $this->tester = new PHPUnit();
+        $this->tester  = new PHPUnit();
         $this->command = new ParaTestCommand($this->tester);
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
-        $this->assertEquals('paratest', $this->command->getName());
-        $this->assertSame($this->tester, $this->getObjectValue($this->command, 'tester'));
+        static::assertEquals('paratest', $this->command->getName());
+        static::assertSame($this->tester, $this->getObjectValue($this->command, 'tester'));
+    }
+
+    public function testApplicationFactory(): void
+    {
+        $application = ParaTestCommand::applicationFactory($this->tester);
+        $commands    = $application->all();
+
+        static::assertArrayHasKey($this->command->getName(), $commands);
+        static::assertInstanceOf(ParaTestCommand::class, $commands[$this->command->getName()]);
     }
 
     /**
      * Should be configured from the ParaTest command
      * as well as the Tester it is composed of.
      */
-    public function testConfiguredDefinitionWithPHPUnitTester()
+    public function testConfiguredDefinitionWithPHPUnitTester(): void
     {
-        $options = [
+        $options  = [
+            // Arguments
+            new InputArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
+            ),
+
+            // Default Symfony options
+            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message'),
+            new InputOption('--quiet', '-q', InputOption::VALUE_NONE, 'Do not output any message'),
+            new InputOption(
+                '--verbose',
+                '-v|vv|vvv',
+                InputOption::VALUE_NONE,
+                'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
+            ),
+            new InputOption('--version', '-V', InputOption::VALUE_NONE, 'Display this application version'),
+            new InputOption('--ansi', '', InputOption::VALUE_NONE, 'Force ANSI output'),
+            new InputOption('--no-ansi', '', InputOption::VALUE_NONE, 'Disable ANSI output'),
+            new InputOption('--no-interaction', '-n', InputOption::VALUE_NONE, 'Do not ask any interactive question'),
+
+            // Custom options
             new InputOption(
                 'processes',
                 'p',
@@ -50,7 +84,6 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
                 InputOption::VALUE_NONE,
                 'Run test methods instead of classes in separate processes.'
             ),
-            new InputOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.'),
             new InputOption(
                 'phpunit',
                 null,
@@ -95,11 +128,6 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
                 'Log test execution in JUnit XML format to file.'
             ),
             new InputOption('colors', null, InputOption::VALUE_NONE, 'Displays a colored bar as a test result.'),
-            new InputArgument(
-                'path',
-                InputArgument::OPTIONAL,
-                'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
-            ),
             new InputOption(
                 'no-test-tokens',
                 null,
@@ -112,6 +140,12 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Generate code coverage report in Clover XML format.'
+            ),
+            new InputOption(
+                'coverage-crap4j',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in Crap4J XML format.'
             ),
             new InputOption(
                 'coverage-html',
@@ -174,12 +208,6 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
                     'Example: --passthru-php="\'-d\' \'zend_extension=xdebug.so\'"'
             ),
             new InputOption(
-                'verbose',
-                'v',
-                InputOption::VALUE_REQUIRED,
-                'If given, debug output is printed. Example: --verbose=1'
-            ),
-            new InputOption(
                 'whitelist',
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -187,23 +215,27 @@ class ParaTestCommandTest extends \ParaTest\Tests\TestBase
             ),
         ];
         $expected = new InputDefinition($options);
-        $definition = $this->command->getDefinition();
-        $this->assertEquals($expected, $definition);
+
+        $application = ParaTestCommand::applicationFactory($this->tester);
+        $command     = $application->get($this->command->getName());
+        $command->mergeApplicationDefinition();
+        $definition = $command->getDefinition();
+
+        static::assertEquals($expected, $definition);
     }
 
-    public function testExecuteInvokesTestersExecuteMethod()
+    public function testExecuteInvokesTestersExecuteMethod(): void
     {
-        $input = $this->getMockBuilder(InputInterface::class)->getMock();
+        $input  = $this->getMockBuilder(InputInterface::class)->getMock();
         $output = $this->getMockBuilder(OutputInterface::class)->getMock();
         $tester = $this->getMockBuilder(Tester::class)->getMock();
         $tester
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('execute')
             ->with(
-                $this->equalTo($input),
-                $this->equalTo($output)
-            )
-        ;
+                static::equalTo($input),
+                static::equalTo($output)
+            );
         $command = new ParaTestCommand($tester);
         $command->execute($input, $output);
     }

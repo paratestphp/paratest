@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace ParaTest\Console\Commands;
 
 use ParaTest\Console\Testers\Tester;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ParaTestCommand extends Command
+final class ParaTestCommand extends Command
 {
-    /**
-     * @var \ParaTest\Console\Testers\Tester
-     */
+    /** @var Tester */
     protected $tester;
 
     public function __construct(Tester $tester)
@@ -24,10 +23,21 @@ class ParaTestCommand extends Command
         $this->tester->configure($this);
     }
 
+    public static function applicationFactory(Tester $tester): Application
+    {
+        $application = new Application('ParaTest');
+        $command     = new ParaTestCommand($tester);
+
+        $application->add($command);
+        $application->setDefaultCommand($command->getName(), true);
+
+        return $application;
+    }
+
     /**
      * Ubiquitous configuration options for ParaTest.
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 'auto')
@@ -49,6 +59,12 @@ class ParaTestCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Generate code coverage report in Clover XML format.'
+            )
+            ->addOption(
+                'coverage-crap4j',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in Crap4J XML format.'
             )
             ->addOption(
                 'coverage-html',
@@ -94,24 +110,13 @@ class ParaTestCommand extends Command
                 'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' ' .
                     '\'zend_extension=xdebug.so\'"'
             )
-            ->addOption(
-                'verbose',
-                'v',
-                InputOption::VALUE_REQUIRED,
-                'If given, debug output is printed. Example: --verbose=1'
-            )
             ->addOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
     }
 
     /**
      * Executes the specified tester.
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|mixed|null
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         return $this->tester->execute($input, $output);
     }

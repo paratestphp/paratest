@@ -4,18 +4,69 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use RuntimeException;
+use Symfony\Component\Process\Process;
+
+use function array_diff_key;
+use function array_shift;
+use function assert;
+use function count;
+use function dirname;
+use function escapeshellarg;
+use function explode;
+use function fgets;
+use function file_exists;
+use function file_get_contents;
+use function in_array;
+use function intdiv;
+use function is_dir;
+use function is_file;
+use function is_string;
+use function pclose;
+use function popen;
+use function preg_match_all;
+use function realpath;
+use function rtrim;
+use function sprintf;
+use function strlen;
+use function unserialize;
+
+use const DIRECTORY_SEPARATOR;
+use const PHP_BINARY;
+
 /**
  * An object containing all configurable information used
  * to run PHPUnit via ParaTest.
+ *
+ * @property-read int $processes
+ * @property-read string $path
+ * @property-read string $phpunit
+ * @property-read bool $functional
+ * @property-read bool $stopOnFailure
+ * @property-read array<string, (string|bool|int|Configuration|string[]|null)> $filtered
+ * @property-read string $runner
+ * @property-read bool $noTestTokens
+ * @property-read bool $colors
+ * @property-read string|string[] $testsuite
+ * @property-read int|null $maxBatchSize
+ * @property-read string $filter
+ * @property-read string[] $groups
+ * @property-read string[] $excludeGroups
+ * @property-read array<string, string> $annotations
+ * @property-read bool $parallelSuite
+ * @property-read string[]|null $passthru
+ * @property-read string[]|null $passthruPhp
+ * @property-read int $verbose
+ * @property-read int $coverageTestLimit
  */
-class Options
+final class Options
 {
     /**
      * The number of processes to run at a time.
      *
      * @var int
      */
-    protected $processes;
+    private $processes;
 
     /**
      * The test path pointing to tests that will
@@ -23,116 +74,106 @@ class Options
      *
      * @var string
      */
-    protected $path;
+    private $path;
 
     /**
      * The path to the PHPUnit binary that will be run.
      *
      * @var string
      */
-    protected $phpunit;
+    private $phpunit;
 
     /**
      * Determines whether or not ParaTest runs in
      * functional mode. If enabled, ParaTest will run
      * every test method in a separate process.
      *
-     * @var string
+     * @var bool
      */
-    protected $functional;
+    private $functional;
 
     /**
      * Prevents starting new tests after a test has failed.
      *
      * @var bool
      */
-    protected $stopOnFailure;
+    private $stopOnFailure;
 
     /**
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options.
      *
-     * @var array
+     * @var array<string, (string|bool|int|Configuration|string[]|null)>
      */
-    protected $filtered;
+    private $filtered;
 
-    /**
-     * @var string
-     */
-    protected $runner;
+    /** @var string */
+    private $runner;
 
-    /**
-     * @var bool
-     */
-    protected $noTestTokens;
+    /** @var bool */
+    private $noTestTokens;
 
-    /**
-     * @var bool
-     */
-    protected $colors;
+    /** @var bool */
+    private $colors;
 
     /**
      * Filters which tests to run.
      *
-     * @var string[]
+     * @var string|string[]
      */
-    protected $testsuite;
+    private $testsuite;
 
-    /**
-     * @var int|null
-     */
-    protected $maxBatchSize;
+    /** @var int|null */
+    private $maxBatchSize;
 
-    /**
-     * @var string
-     */
-    protected $filter;
+    /** @var string */
+    private $filter;
 
-    /**
-     * @var string[]
-     */
-    protected $groups;
+    // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
 
-    /**
-     * @var string[]
-     */
-    protected $excludeGroups;
+    /** @var string[] */
+    private $groups;
+
+    /** @var string[] */
+    private $excludeGroups;
+
+    // phpcs:enable
 
     /**
      * A collection of option values directly corresponding
      * to certain annotations - i.e group.
      *
-     * @var array
+     * @var array<string, string>
      */
-    protected $annotations = [];
+    private $annotations = [];
 
     /**
      * Running the suite defined in the config in parallel.
      *
      * @var bool
      */
-    protected $parallelSuite;
+    private $parallelSuite;
 
     /**
      * Strings that gets passed verbatim to the underlying phpunit command.
      *
-     * @var string|null
+     * @var string[]|null
      */
-    protected $passthru;
+    private $passthru;
 
     /**
      * Strings that gets passed verbatim to the underlying php process.
      *
-     * @var string|null
+     * @var string[]|null
      */
-    protected $passthruPhp;
+    private $passthruPhp;
 
     /**
      * Verbosity. If true, debug output will be printed.
      *
      * @var int
      */
-    protected $verbose;
+    private $verbose;
 
     /**
      * Limit the number of tests recorded in coverage reports
@@ -140,8 +181,11 @@ class Options
      *
      * @var int
      */
-    protected $coverageTestLimit;
+    private $coverageTestLimit;
 
+    /**
+     * @param array<string, string|bool|int|string[]> $opts
+     */
     public function __construct(array $opts = [])
     {
         foreach (self::defaults() as $opt => $value) {
@@ -151,24 +195,24 @@ class Options
         if ($opts['processes'] === 'auto') {
             $opts['processes'] = self::getNumberOfCPUCores();
         } elseif ($opts['processes'] === 'half') {
-            $opts['processes'] = \intdiv(self::getNumberOfCPUCores(), 2);
+            $opts['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
         }
 
-        $this->processes = $opts['processes'];
-        $this->path = $opts['path'];
-        $this->phpunit = $opts['phpunit'];
-        $this->functional = $opts['functional'];
-        $this->stopOnFailure = $opts['stop-on-failure'];
-        $this->runner = $opts['runner'];
-        $this->noTestTokens = $opts['no-test-tokens'];
-        $this->colors = $opts['colors'];
-        $this->testsuite = $opts['testsuite'];
-        $this->maxBatchSize = (int) $opts['max-batch-size'];
-        $this->filter = $opts['filter'];
-        $this->parallelSuite = $opts['parallel-suite'];
-        $this->passthru = $opts['passthru'] ?? null;
-        $this->passthruPhp = $opts['passthru-php'] ?? null;
-        $this->verbose = $opts['verbose'] ?? 0;
+        $this->processes         = $opts['processes'];
+        $this->path              = $opts['path'];
+        $this->phpunit           = $opts['phpunit'];
+        $this->functional        = $opts['functional'];
+        $this->stopOnFailure     = $opts['stop-on-failure'];
+        $this->runner            = $opts['runner'];
+        $this->noTestTokens      = $opts['no-test-tokens'];
+        $this->colors            = $opts['colors'];
+        $this->testsuite         = $opts['testsuite'];
+        $this->maxBatchSize      = (int) $opts['max-batch-size'];
+        $this->filter            = $opts['filter'];
+        $this->parallelSuite     = $opts['parallel-suite'];
+        $this->passthru          = $this->parsePassthru($opts['passthru'] ?? null);
+        $this->passthruPhp       = $this->parsePassthru($opts['passthru-php'] ?? null);
+        $this->verbose           = $opts['verbose'] ?? 0;
         $this->coverageTestLimit = $opts['coverage-test-limit'] ?? 0;
 
         // we need to register that options if they are blank but do not get them as
@@ -176,15 +220,15 @@ class Options
         // phpunit command line generation (it will add them in command line with no value
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
-        $this->groups = isset($opts['group']) && $opts['group'] !== ''
-            ? \explode(',', $opts['group'])
+        $this->groups        = isset($opts['group']) && $opts['group'] !== ''
+            ? explode(',', $opts['group'])
             : [];
         $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ''
-            ? \explode(',', $opts['exclude-group'])
+            ? explode(',', $opts['exclude-group'])
             : [];
 
-        if (isset($opts['filter']) && \strlen($opts['filter']) > 0 && !$this->functional) {
-            throw new \RuntimeException('Option --filter is not implemented for non functional mode');
+        if (isset($opts['filter']) && strlen($opts['filter']) > 0 && ! $this->functional) {
+            throw new RuntimeException('Option --filter is not implemented for non functional mode');
         }
 
         $this->filtered = $this->filterOptions($opts);
@@ -193,8 +237,6 @@ class Options
 
     /**
      * Public read accessibility.
-     *
-     * @param string $var
      *
      * @return mixed
      */
@@ -206,10 +248,6 @@ class Options
     /**
      * Public read accessibility
      * (e.g. to make empty($options->property) work as expected).
-     *
-     * @param string $var
-     *
-     * @return mixed
      */
     public function __isset(string $var): bool
     {
@@ -220,9 +258,9 @@ class Options
      * Returns a collection of ParaTest's default
      * option values.
      *
-     * @return array
+     * @return array<string, string|bool|int|null>
      */
-    protected static function defaults(): array
+    private static function defaults(): array
     {
         return [
             'processes' => 'auto',
@@ -240,7 +278,7 @@ class Options
             'passthru' => null,
             'passthru-php' => null,
             'verbose' => 0,
-            'coverage-test-limit' => 0
+            'coverage-test-limit' => 0,
         ];
     }
 
@@ -253,13 +291,13 @@ class Options
      *
      * @return string $phpunit the path to phpunit
      */
-    protected static function phpunit(): string
+    private static function phpunit(): string
     {
         $vendor = static::vendorDir();
 
-        $phpunit = $vendor . \DIRECTORY_SEPARATOR . 'phpunit' . \DIRECTORY_SEPARATOR . 'phpunit' .
-            \DIRECTORY_SEPARATOR . 'phpunit';
-        if (\file_exists($phpunit)) {
+        $phpunit = $vendor . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'phpunit' .
+            DIRECTORY_SEPARATOR . 'phpunit';
+        if (file_exists($phpunit)) {
             return $phpunit;
         }
 
@@ -271,11 +309,11 @@ class Options
      * First assumes vendor directory is accessible from src (i.e development)
      * Second assumes vendor directory is accessible within src.
      */
-    protected static function vendorDir(): string
+    private static function vendorDir(): string
     {
-        $vendor = \dirname(\dirname(\dirname(__DIR__))) . \DIRECTORY_SEPARATOR . 'vendor';
-        if (!\file_exists($vendor)) {
-            $vendor = \dirname(\dirname(\dirname(\dirname(\dirname(__DIR__)))));
+        $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
+        if (! file_exists($vendor)) {
+            $vendor = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
         }
 
         return $vendor;
@@ -284,10 +322,14 @@ class Options
     /**
      * Filter options to distinguish between paratest
      * internal options and any other options.
+     *
+     * @param array<string, (string|bool|int|string[]|null)> $options
+     *
+     * @return array<string, (string|bool|int|Configuration|string[]|null)>
      */
-    protected function filterOptions(array $options): array
+    private function filterOptions(array $options): array
     {
-        $filtered = \array_diff_key($options, [
+        $filtered = array_diff_key($options, [
             'processes' => $this->processes,
             'path' => $this->path,
             'phpunit' => $this->phpunit,
@@ -303,9 +345,9 @@ class Options
             'passthru' => $this->passthru,
             'passthru-php' => $this->passthruPhp,
             'verbose' => $this->verbose,
-            'coverage-test-limit' => $this->coverageTestLimit
+            'coverage-test-limit' => $this->coverageTestLimit,
         ]);
-        if ($configuration = $this->getConfigurationPath($filtered)) {
+        if (($configuration = $this->getConfigurationPath($filtered)) !== null) {
             $filtered['configuration'] = new Configuration($configuration);
         }
 
@@ -316,11 +358,9 @@ class Options
      * Take an array of filtered options and return a
      * configuration path.
      *
-     * @param $filtered
-     *
-     * @return string|null
+     * @param array<string, (string|bool|int|string[]|null)> $filtered
      */
-    protected function getConfigurationPath(array $filtered)
+    private function getConfigurationPath(array $filtered): ?string
     {
         if (isset($filtered['configuration'])) {
             return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
@@ -335,21 +375,19 @@ class Options
      *
      * @param string $path    The path to search into
      * @param string $default The default value to give back
-     *
-     * @return string|null
      */
-    private function getDefaultConfigurationForPath(string $path = '.', string $default = null)
+    private function getDefaultConfigurationForPath(string $path = '.', ?string $default = null): ?string
     {
         if ($this->isFile($path)) {
-            return \realpath($path);
+            return realpath($path);
         }
 
-        $path = \rtrim($path, \DIRECTORY_SEPARATOR) . \DIRECTORY_SEPARATOR;
+        $path     = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
             if ($this->isFile($path . $suffix)) {
-                return \realpath($path . $suffix);
+                return realpath($path . $suffix);
             }
         }
 
@@ -360,24 +398,22 @@ class Options
      * Load options that are represented by annotations
      * inside of tests i.e @group group1 = --group group1.
      */
-    protected function initAnnotations()
+    private function initAnnotations(): void
     {
         $annotatedOptions = ['group'];
         foreach ($this->filtered as $key => $value) {
-            if (\in_array($key, $annotatedOptions, true)) {
-                $this->annotations[$key] = $value;
+            if (! in_array($key, $annotatedOptions, true)) {
+                continue;
             }
+
+            assert(is_string($value));
+            $this->annotations[$key] = $value;
         }
     }
 
-    /**
-     * @param $file
-     *
-     * @return bool
-     */
     private function isFile(string $file): bool
     {
-        return \file_exists($file) && !\is_dir($file);
+        return file_exists($file) && ! is_dir($file);
     }
 
     /**
@@ -390,24 +426,53 @@ class Options
     public static function getNumberOfCPUCores(): int
     {
         $cores = 2;
-        if (\is_file('/proc/cpuinfo')) {
+        if (is_file('/proc/cpuinfo')) {
             // Linux (and potentially Windows with linux sub systems)
-            $cpuinfo = \file_get_contents('/proc/cpuinfo');
-            \preg_match_all('/^processor/m', $cpuinfo, $matches);
-            $cores = \count($matches[0]);
-        } elseif (\DIRECTORY_SEPARATOR === '\\') {
+            $cpuinfo = file_get_contents('/proc/cpuinfo');
+            preg_match_all('/^processor/m', $cpuinfo, $matches);
+            $cores = count($matches[0]);
+        } elseif (DIRECTORY_SEPARATOR === '\\') {
             // Windows
-            if (($process = @\popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
-                \fgets($process);
-                $cores = (int) \fgets($process);
-                \pclose($process);
+            if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
+                fgets($process);
+                $cores = (int) fgets($process);
+                pclose($process);
             }
-        } elseif (($process = @\popen('sysctl -n hw.ncpu', 'rb')) !== false) {
+        } elseif (($process = @popen('sysctl -n hw.ncpu', 'rb')) !== false) {
             // *nix (Linux, BSD and Mac)
-            $cores = (int) \fgets($process);
-            \pclose($process);
+            $cores = (int) fgets($process);
+            pclose($process);
         }
 
         return $cores;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    private function parsePassthru(?string $param): ?array
+    {
+        if ($param === null) {
+            return null;
+        }
+
+        $stringToArgumentProcess = Process::fromShellCommandline(
+            sprintf(
+                '%s -r %s -- %s',
+                escapeshellarg(PHP_BINARY),
+                escapeshellarg('echo serialize($argv);'),
+                $param
+            )
+        );
+        $stringToArgumentProcess->mustRun();
+
+        $passthruAsArguments = unserialize($stringToArgumentProcess->getOutput());
+        array_shift($passthruAsArguments);
+
+        if (count($passthruAsArguments) === 0) {
+            return null;
+        }
+
+        return $passthruAsArguments;
     }
 }

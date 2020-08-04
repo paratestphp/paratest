@@ -4,53 +4,42 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-class OutputTest extends FunctionalTestBase
+use function getcwd;
+
+final class OutputTest extends FunctionalTestBase
 {
-    /**
-     * @var ParaTestInvoker
-     */
+    /** @var ParaTestInvoker */
     protected $paratest;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->paratest = new ParaTestInvoker(
-            $this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'),
-            BOOTSTRAP
-        );
+        $this->paratest = new ParaTestInvoker($this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php'));
     }
 
-    public function testDefaultMessagesDisplayed()
+    public function testDefaultMessagesDisplayed(): void
     {
-        $output = $this->paratest->execute(['p' => 5])->getOutput();
-        $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
-        $this->assertStringContainsString('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
-        $this->assertRegExp('/[.F]{4}/', $output);
+        $output = $this->paratest->execute(['processes' => 5])->getOutput();
+        static::assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        static::assertStringContainsString('Configuration read from ' . getcwd() . DS . 'phpunit.xml.dist', $output);
+        static::assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
-    public function testMessagePrintedWhenInvalidConfigFileSupplied()
+    public function testMessagePrintedWhenFunctionalModeIsOn(): void
     {
         $output = $this->paratest
-            ->execute(['configuration' => 'nope.xml'])
+            ->execute(['functional' => true, 'processes' => 5])
             ->getOutput();
-        $this->assertStringContainsString('Could not read "nope.xml"', $output);
+        static::assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
+        static::assertStringContainsString('Functional mode is ON.', $output);
+        static::assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 
-    public function testMessagePrintedWhenFunctionalModeIsOn()
+    public function testProcCountIsReportedWithProcOption(): void
     {
-        $output = $this->paratest
-            ->execute(['functional', 'p' => 5])
+        $output = $this->paratest->execute(['processes' => 1])
             ->getOutput();
-        $this->assertStringContainsString('Running phpunit in 5 processes with ' . PHPUNIT, $output);
-        $this->assertStringContainsString('Functional mode is ON.', $output);
-        $this->assertRegExp('/[.F]{4}/', $output);
-    }
-
-    public function testProcCountIsReportedWithProcOption()
-    {
-        $output = $this->paratest->execute(['p' => 1])
-            ->getOutput();
-        $this->assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
-        $this->assertRegExp('/[.F]{4}/', $output);
+        static::assertStringContainsString('Running phpunit in 1 process with ' . PHPUNIT, $output);
+        static::assertMatchesRegularExpression('/[.F]{4}/', $output);
     }
 }

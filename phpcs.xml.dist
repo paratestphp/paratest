@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<ruleset
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd"
+    name="laminas/automatic-releases CS rules"
+>
+    <arg value="p"/>
+    <arg value="s"/>
+    <arg name="colors"/>
+
+    <file>src</file>
+    <file>test</file>
+    <exclude-pattern>*/test/fixtures/*</exclude-pattern>
+
+    <config name="php_version" value="70300"/>
+
+    <rule ref="Doctrine"/>
+
+    <rule ref="SlevomatCodingStandard.ControlStructures.AssignmentInCondition.AssignmentInCondition">
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix">
+        <severity>0</severity>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming.SuperfluousSuffix">
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <severity>0</severity>
+    </rule>
+</ruleset>

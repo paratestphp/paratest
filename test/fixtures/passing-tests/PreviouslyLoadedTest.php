@@ -1,7 +1,10 @@
 <?php
-class PreviouslyLoadedTest extends PHPUnit\Framework\TestCase
+
+declare(strict_types=1);
+
+final class PreviouslyLoadedTest extends PHPUnit\Framework\TestCase
 {
-    public function testRuns()
+    public function testRuns(): void
     {
         $this->assertTrue(true);
     }

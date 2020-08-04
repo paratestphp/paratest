@@ -4,40 +4,35 @@ declare(strict_types=1);
 
 namespace ParaTest\Parser;
 
+use function preg_match;
+use function sprintf;
+
 abstract class ParsedObject
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $docBlock;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $name;
 
     public function __construct(string $doc, string $name)
     {
         $this->docBlock = $doc;
-        $this->name = $name;
+        $this->name     = $name;
     }
 
     /**
      * Get the name of a parsed object.
-     *
-     * @return string
      */
-    public function getName(): string
+    final public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * Get the doc block comments of a parsed object.
-     *
-     * @return string
      */
-    public function getDocBlock()
+    final public function getDocBlock(): string
     {
         return $this->docBlock;
     }
@@ -46,20 +41,15 @@ abstract class ParsedObject
      * Returns whether or not the parsed object
      * has an annotation matching the name and value
      * if provided.
-     *
-     * @param string $anno
-     * @param mixed  $value
-     *
-     * @return bool
      */
-    public function hasAnnotation(string $annotation, string $value = null): bool
+    final public function hasAnnotation(string $annotation, ?string $value = null): bool
     {
-        $pattern = \sprintf(
+        $pattern = sprintf(
             '/@%s%s/',
             $annotation,
-            null !== $value ? "[\s]+$value" : '\b'
+            $value !== null ? "[\s]+$value" : '\b'
         );
 
-        return 1 === \preg_match($pattern, $this->docBlock);
+        return preg_match($pattern, $this->docBlock) === 1;
     }
 }

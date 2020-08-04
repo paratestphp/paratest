@@ -5,57 +5,117 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\Options;
+use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
+
+use function array_map;
+use function count;
+use function end;
+use function escapeshellarg;
+use function explode;
+use function fclose;
+use function fread;
+use function getenv;
+use function implode;
+use function is_numeric;
+use function is_resource;
+use function proc_get_status;
+use function proc_open;
+use function sprintf;
+use function stream_get_contents;
+use function stream_set_blocking;
+use function strstr;
+
+use const DIRECTORY_SEPARATOR;
+use const PHP_EOL;
 
 abstract class BaseWorker
 {
+    /** @var string[][] */
     protected static $descriptorspec = [
         0 => ['pipe', 'r'],
         1 => ['pipe', 'w'],
         2 => ['pipe', 'w'],
     ];
+    /** @var resource|null */
     protected $proc;
+    /** @var resource[] */
     protected $pipes;
+    /** @var int */
     protected $inExecution = 0;
+    /** @var OutputInterface */
+    protected $output;
+
+    /** @var int|null */
     private $exitCode = null;
+    /** @var string */
     private $chunks = '';
+    /** @var string */
     private $alreadyReadOutput = '';
 
-    public function start(
+    public function __construct(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
+
+    /**
+     * @param string[] $parameters
+     */
+    final public function start(
         string $wrapperBinary,
-        $token = 1,
-        $uniqueToken = null,
+        ?int $token = 1,
+        ?string $uniqueToken = null,
         array $parameters = [],
         ?Options $options = null
-    ) {
-        $bin = 'PARATEST=1 ';
-        if (\is_numeric($token)) {
-            $bin .= 'XDEBUG_CONFIG="true" ';
-            $bin .= "TEST_TOKEN=$token ";
+    ): void {
+        $env             = getenv();
+        $env['PARATEST'] = 1;
+        if (is_numeric($token)) {
+            $env['XDEBUG_CONFIG'] = 'true';
+            $env['TEST_TOKEN']    = $token;
         }
-        if ($uniqueToken) {
-            $bin .= "UNIQUE_TEST_TOKEN=$uniqueToken ";
+
+        if ($uniqueToken !== null) {
+            $env['UNIQUE_TEST_TOKEN'] = $uniqueToken;
         }
-        $finder = new PhpExecutableFinder();
+
+        $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
-        $bin .= "$phpExecutable ";
-        if ($options && $options->passthruPhp) {
-            $bin .= $options->passthruPhp . ' ';
+        $bin           = escapeshellarg($phpExecutable);
+        if ($options !== null && $options->passthruPhp !== null) {
+            $bin .= ' ' . implode(' ', $options->passthruPhp) . ' ';
         }
-        $bin .= " \"$wrapperBinary\"";
-        if ($parameters) {
-            $bin .= ' ' . \implode(' ', \array_map('escapeshellarg', $parameters));
+
+        $bin .= ' ' . escapeshellarg($wrapperBinary);
+
+        $this->configureParameters($parameters);
+        if (count($parameters) > 0) {
+            $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
+
         $pipes = [];
-        if ($options && $options->verbose) {
-            echo "Starting WrapperWorker via: $bin\n";
+        if ($options !== null && $options->verbose > 0) {
+            $this->output->writeln("Starting WrapperWorker via: $bin");
         }
-        $process = \proc_open($bin, self::$descriptorspec, $pipes);
-        $this->proc = \is_resource($process) ? $process : null;
+
+        // Taken from \Symfony\Component\Process\Process::prepareWindowsCommandLine
+        // Needed to handle spaces in the binary path, boring to test in CI
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin);
+        }
+
+        $process     = proc_open($bin, self::$descriptorspec, $pipes, null, $env);
+        $this->proc  = is_resource($process) ? $process : null;
         $this->pipes = $pipes;
     }
 
-    public function isFree(): bool
+    /**
+     * @param string[] $parameters
+     */
+    abstract protected function configureParameters(array &$parameters): void;
+
+    final public function isFree(): bool
     {
         $this->checkNotCrashed();
         $this->updateStateFromAvailableOutput();
@@ -63,28 +123,29 @@ abstract class BaseWorker
         return $this->inExecution === 0;
     }
 
-    public function isRunning(): bool
+    final public function isRunning(): bool
     {
         if ($this->proc === null) {
             return false;
         }
 
-        $status = \proc_get_status($this->proc);
+        $status = proc_get_status($this->proc);
 
-        return $status ? $status['running'] : false;
+        return $status !== false ? $status['running'] : false;
     }
 
-    public function isStarted(): bool
+    final public function isStarted(): bool
     {
         return $this->proc !== null && $this->pipes !== null;
     }
 
-    public function isCrashed(): bool
+    final public function isCrashed(): bool
     {
-        if (!$this->isStarted()) {
+        if (! $this->isStarted()) {
             return false;
         }
-        $status = \proc_get_status($this->proc);
+
+        $status = proc_get_status($this->proc);
 
         $this->updateStateFromAvailableOutput();
 
@@ -96,16 +157,16 @@ abstract class BaseWorker
         return $this->exitCode !== 0;
     }
 
-    public function checkNotCrashed()
+    final public function checkNotCrashed(): void
     {
         if ($this->isCrashed()) {
-            throw new \RuntimeException($this->getCrashReport());
+            throw new RuntimeException($this->getCrashReport());
         }
     }
 
-    public function getCrashReport()
+    final public function getCrashReport(): string
     {
-        $lastCommand = isset($this->commands) ? ' Last executed command: ' . \end($this->commands) : '';
+        $lastCommand = isset($this->commands) ? ' Last executed command: ' . end($this->commands) : '';
 
         return 'This worker has crashed.' . $lastCommand . PHP_EOL
             . 'Output:' . PHP_EOL
@@ -115,23 +176,33 @@ abstract class BaseWorker
             . $this->readAllStderr();
     }
 
-    public function stop()
+    final public function stop(): void
     {
-        \fclose($this->pipes[0]);
+        $this->doStop();
+        fclose($this->pipes[0]);
     }
 
-    protected function setExitCode(array $status)
+    abstract protected function doStop(): void;
+
+    /**
+     * @param array<string, bool|int|string> $status
+     */
+    final protected function setExitCode(array $status): void
     {
-        if (!$status['running']) {
-            if ($this->exitCode === null) {
-                $this->exitCode = $status['exitcode'];
-            }
+        if ($status['running']) {
+            return;
         }
+
+        if ($this->exitCode !== null) {
+            return;
+        }
+
+        $this->exitCode = $status['exitcode'];
     }
 
-    private function readAllStderr()
+    private function readAllStderr(): string
     {
-        return \stream_get_contents($this->pipes[2]);
+        return stream_get_contents($this->pipes[2]);
     }
 
     /**
@@ -139,27 +210,33 @@ abstract class BaseWorker
      * Otherwise it would continue to non-block because there are bytes to be read,
      * but fgets() won't pick them up.
      */
-    private function updateStateFromAvailableOutput()
+    private function updateStateFromAvailableOutput(): void
     {
-        if (isset($this->pipes[1])) {
-            \stream_set_blocking($this->pipes[1], false);
-            while ($chunk = \fread($this->pipes[1], 4096)) {
-                $this->chunks .= $chunk;
-                $this->alreadyReadOutput .= $chunk;
-            }
-            $lines = \explode("\n", $this->chunks);
-            // last element is not a complete line,
-            // becomes part of a line completed later
-            $this->chunks = $lines[\count($lines) - 1];
-            unset($lines[\count($lines) - 1]);
-            // delivering complete lines to this Worker
-            foreach ($lines as $line) {
-                $line .= "\n";
-                if (\strstr($line, "FINISHED\n")) {
-                    --$this->inExecution;
-                }
-            }
-            \stream_set_blocking($this->pipes[1], true);
+        if (! isset($this->pipes[1])) {
+            return;
         }
+
+        stream_set_blocking($this->pipes[1], false);
+        while ($chunk = fread($this->pipes[1], 4096)) {
+            $this->chunks            .= $chunk;
+            $this->alreadyReadOutput .= $chunk;
+        }
+
+        $lines = explode("\n", $this->chunks);
+        // last element is not a complete line,
+        // becomes part of a line completed later
+        $this->chunks = $lines[count($lines) - 1];
+        unset($lines[count($lines) - 1]);
+        // delivering complete lines to this Worker
+        foreach ($lines as $line) {
+            $line .= "\n";
+            if (! strstr($line, "FINISHED\n")) {
+                continue;
+            }
+
+            --$this->inExecution;
+        }
+
+        stream_set_blocking($this->pipes[1], true);
     }
 }

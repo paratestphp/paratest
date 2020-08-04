@@ -4,27 +4,28 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit\Worker;
 
-use ParaTest\Runners\PHPUnit\Options;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class SqliteWorker extends BaseWorker
+final class SqliteWorker extends BaseWorker
 {
     /** @var string */
     private $dbFileName;
 
-    public function __construct(string $dbFileName)
+    public function __construct(OutputInterface $output, string $dbFileName)
     {
+        parent::__construct($output);
         $this->dbFileName = $dbFileName;
     }
 
-    public function start(
-        string $wrapperBinary,
-        $token = 1,
-        $uniqueToken = null,
-        array $parameters = [],
-        ?Options $options = null
-    ) {
+    /**
+     * {@inheritDoc}
+     */
+    protected function configureParameters(array &$parameters): void
+    {
         $parameters[] = $this->dbFileName;
+    }
 
-        parent::start($wrapperBinary, $token, $uniqueToken, $parameters, $options);
+    protected function doStop(): void
+    {
     }
 }
