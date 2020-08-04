@@ -8,6 +8,7 @@ use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
+use ReflectionClass;
 use RuntimeException;
 
 use function array_intersect;
@@ -264,8 +265,8 @@ final class SuiteLoader
             $testClass         = new $testFullClassName();
             $result            = [];
 
-            $testClassReflection = new \ReflectionClass($testFullClassName);
-            $dataProviderMethod = $testClassReflection->getMethod($dataProvider);
+            $testClassReflection = new ReflectionClass($testFullClassName);
+            $dataProviderMethod  = $testClassReflection->getMethod($dataProvider);
 
             if ($dataProviderMethod->getNumberOfParameters() === 0) {
                 $data = $dataProviderMethod->invoke($testClass);
