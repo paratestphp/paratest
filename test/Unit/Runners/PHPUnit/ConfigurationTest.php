@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use Exception;
 use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\SuitePath;
 use ParaTest\Tests\TestBase;
-use Throwable;
 
 use function getcwd;
 use function getenv;
@@ -115,20 +113,14 @@ final class ConfigurationTest extends TestBase
     public function testLoadConfigEvenIfLibXmlEntityLoaderIsDisabled(): void
     {
         $before = libxml_disable_entity_loader();
-        $e      = null;
 
         try {
             $this->config = new Configuration($this->path);
-        } catch (Throwable $exc) {
-            $e = $exc;
+        } finally {
+            libxml_disable_entity_loader($before);
         }
 
-        libxml_disable_entity_loader($before);
-
-        static::assertNull(
-            $e,
-            'Could not instantiate Configuration: ' . ($e instanceof Exception ? $e->getMessage() : 'no error given')
-        );
+        self::assertSame($this->path, $this->config->getPath());
     }
 
     public function testLoadedEnvironmentVariablesWillNotBeOverwritten(): void

@@ -62,9 +62,11 @@ final class Parser
 
         try {
             $this->refl = new ReflectionClass($class);
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException $reflectionException) {
             throw new InvalidArgumentException(
-                'Unable to instantiate ReflectionClass. ' . $class . ' not found in: ' . $srcPath
+                'Unable to instantiate ReflectionClass. ' . $class . ' not found in: ' . $srcPath,
+                0,
+                $reflectionException
             );
         }
     }

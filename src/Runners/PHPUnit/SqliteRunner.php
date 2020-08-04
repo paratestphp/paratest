@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use Exception;
 use ParaTest\Runners\PHPUnit\Worker\SqliteWorker;
 use PDO;
 use RuntimeException;
@@ -110,7 +109,7 @@ final class SqliteRunner extends BaseWrapperRunner
     /**
      * Initialize test queue table.
      *
-     * @throws Exception
+     * @throws RuntimeException
      */
     private function createTable(): void
     {
@@ -123,7 +122,7 @@ final class SqliteRunner extends BaseWrapperRunner
                         )';
 
         if ($this->db->exec($statement) === false) {
-            throw new Exception('Error while creating sqlite database table: ' . $this->db->errorCode());
+            throw new RuntimeException('Error while creating sqlite database table: ' . $this->db->errorCode());
         }
     }
 

@@ -185,15 +185,15 @@ final class ResultPrinter
     {
         try {
             $reader = new Reader($test->getTempFile());
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $invalidArgumentException) {
             throw new RuntimeException(sprintf(
                 "%s\n" .
                 "The process: %s\n" .
                 "This means a PHPUnit process was unable to run \"%s\"\n",
-                $e->getMessage(),
+                $invalidArgumentException->getMessage(),
                 $test->getLastCommand(),
                 $test->getPath()
-            ));
+            ), 0, $invalidArgumentException);
         }
 
         $this->results->addReader($reader);

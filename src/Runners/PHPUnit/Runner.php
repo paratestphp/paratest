@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use Exception;
 use Habitat\Habitat;
+use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -142,7 +143,7 @@ final class Runner extends BaseRunner
                 $errorOutput = $test->getStdout();
             }
 
-            throw new Exception(sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
+            throw new RuntimeException(sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
         }
 
         $this->printer->printFeedback($test);

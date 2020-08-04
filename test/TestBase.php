@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests;
 
-use Exception;
+use InvalidArgumentException;
 use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Runner\Version;
@@ -13,6 +13,7 @@ use RecursiveIteratorIterator;
 use ReflectionClass;
 use ReflectionObject;
 use ReflectionProperty;
+use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
 use SplFileObject;
 
@@ -42,7 +43,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
-            throw new Exception("Fixture $fixture not found");
+            throw new InvalidArgumentException("Fixture $fixture not found");
         }
 
         return $fixture;
@@ -136,7 +137,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
 
         if (! $isStatic) {
             if (! is_object($objectOrClassName)) {
-                throw new Exception('Method call on non existent object or class');
+                throw new RuntimeException('Method call on non existent object or class');
             }
         }
 
