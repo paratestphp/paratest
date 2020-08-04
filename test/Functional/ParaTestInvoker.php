@@ -15,10 +15,10 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 final class ParaTestInvoker
 {
-    /** @var string  */
+    /** @var string|null  */
     private $path;
 
-    public function __construct(string $path)
+    public function __construct(?string $path)
     {
         $this->path = $path;
     }
@@ -47,7 +47,10 @@ final class ParaTestInvoker
             $input->setOption($key, $value);
         }
 
-        $input->setArgument('path', $this->path);
+        if ($this->path !== null) {
+            $input->setArgument('path', $this->path);
+        }
+
         $options = $phpunitTester->getRunnerOptions($input);
 
         $output = new BufferedOutput();
