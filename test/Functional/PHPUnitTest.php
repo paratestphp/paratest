@@ -7,6 +7,7 @@ namespace ParaTest\Tests\Functional;
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
+use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\SqliteRunner;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 use ParseError;
@@ -47,7 +48,7 @@ final class PHPUnitTest extends FunctionalTestBase
             [
                 'configuration' => sprintf('%s%sphpunit%s.xml', $directory, DS, basename($directory)),
             ],
-            SqliteRunner::class
+            Runner::class
         ));
     }
 
