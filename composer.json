@@ -58,37 +58,5 @@
     },
     "bin": [
         "bin/paratest"
-    ],
-    "scripts": {
-        "static-analysis": [
-            "vendor/bin/phpstan analyse"
-        ],
-        "style": [
-            "vendor/bin/phpcs"
-        ],
-        "style-fix": [
-            "vendor/bin/phpcbf"
-        ],
-        "test": [
-            "phpunit"
-        ],
-        "test-functional": [
-            "phpunit test/Functional/"
-        ],
-        "test-paratest": [
-            "bin/paratest"
-        ],
-        "test-unit": [
-            "phpunit test/Unit/"
-        ]
-    },
-    "scripts-descriptions": {
-        "static-analysis": "Run static analysis",
-        "style": "Run style checks (only dry run - no fixing!)",
-        "style-fix": "Run style checks and fix violations",
-        "test": "Run all tests",
-        "test-functional": "Run only functional tests",
-        "test-paratest": "Run all tests with paratest itself",
-        "test-unit": "Run only unit tests"
-    }
+    ]
 }
