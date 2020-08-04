@@ -17,15 +17,15 @@ use function file_put_contents;
 final class ReaderTest extends TestBase
 {
     /** @var string  */
-    protected $mixedPath;
+    private $mixedPath;
     /** @var Reader  */
-    protected $mixed;
+    private $mixed;
     /** @var Reader  */
-    protected $single;
+    private $single;
     /** @var Reader  */
-    protected $empty;
+    private $empty;
     /** @var Reader  */
-    protected $multi_errors;
+    private $multi_errors;
 
     public function setUp(): void
     {
@@ -44,6 +44,13 @@ final class ReaderTest extends TestBase
         $this->expectException(InvalidArgumentException::class);
 
         $reader = new Reader('/path/to/nowhere');
+    }
+
+    public function testFileCannotBeEmpty(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $reader = new Reader(FIXTURES . DS . 'results' . DS . 'empty.xml');
     }
 
     public function testIsSingleSuiteReturnsTrueForSingleSuite(): void
