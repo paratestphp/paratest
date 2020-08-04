@@ -252,7 +252,7 @@ class SuiteLoader
             $result = [];
 
             $testClassReflection = new \ReflectionClass($testFullClassName);
-            $dataProviderMethod = $testClassReflection->getMethod($method->getName());
+            $dataProviderMethod = $testClassReflection->getMethod($dataProvider);
 
             if ($dataProviderMethod->getNumberOfParameters() === 0) {
                 $data = $dataProviderMethod->invoke($testClass);
