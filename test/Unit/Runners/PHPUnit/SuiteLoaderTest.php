@@ -364,12 +364,4 @@ final class SuiteLoaderTest extends TestBase
         $testMethod = $tests[1];
         static::assertEquals($testMethod->getName(), 'testTwoA|testTwoBDependsOnA');
     }
-
-    public function testDataProviderWithParameter(): void
-    {
-        $path   = $this->fixture('passing-tests/DataProviderParameterTest.php');
-        $loader = new SuiteLoader();
-        $loader->load($path);
-        $loader->getTestMethods();
-    }
 }
