@@ -109,8 +109,6 @@ final class ResultPrinter
 
     /**
      * Adds an ExecutableTest to the tracked results.
-     *
-     * @return $this
      */
     public function addTest(ExecutableTest $suite): self
     {

@@ -88,9 +88,9 @@ parameters:
             count: 1
             path: src/Logging/JUnit/Writer.php
         -
-            message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\ExecutableTest\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
+            message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\RunnerWorker\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
             count: 1
-            path: src/Runners/PHPUnit/ExecutableTest.php
+            path: src/Runners/PHPUnit/Worker/RunnerWorker.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
