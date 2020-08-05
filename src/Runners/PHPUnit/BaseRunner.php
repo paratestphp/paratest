@@ -11,9 +11,6 @@ use ParaTest\Parser\ParsedFunction;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
-use function getenv;
-use function putenv;
-use function sprintf;
 
 abstract class BaseRunner implements RunnerInterface
 {
@@ -165,32 +162,8 @@ abstract class BaseRunner implements RunnerInterface
         return $this->coverage;
     }
 
-    /**
-     * Overrides envirenment variables if needed.
-     */
-    private function overrideEnvironmentVariables(): void
-    {
-        if (! isset($this->options->filtered['configuration'])) {
-            return;
-        }
-
-        $variables = $this->options->filtered['configuration']->php()->envVariables();
-
-        foreach ($variables as $variable) {
-            $localEnvValue = getenv($variable->name(), true);
-            if ($localEnvValue === false) {
-                $localEnvValue = $variable->value();
-            }
-
-            putenv(sprintf('%s=%s', $variable->name(), $localEnvValue));
-
-            $_ENV[$variable->name()] = $localEnvValue;
-        }
-    }
-
     final protected function initialize(): void
     {
-        $this->overrideEnvironmentVariables();
         $this->initCoverage();
         $this->load(new SuiteLoader($this->options));
         $this->printer->start($this->options);
