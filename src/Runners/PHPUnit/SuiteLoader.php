@@ -10,7 +10,7 @@ use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
 use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\Configuration\TestSuite;
-use ReflectionClass;
+use PHPUnit\Util\Test;
 use RuntimeException;
 use SebastianBergmann\FileIterator\Facade;
 
@@ -24,7 +24,6 @@ use function in_array;
 use function is_array;
 use function is_int;
 use function preg_match;
-use function preg_match_all;
 use function sprintf;
 use function substr;
 use function version_compare;
@@ -221,8 +220,9 @@ final class SuiteLoader
                 continue;
             }
 
-            if (($dependsOn = $this->methodDependency($method)) !== null) {
-                $this->addDependentTestsToBatchSet($batches, $dependsOn, $tests);
+            $dependencies = Test::getDependencies($class->getName(), $method->getName());
+            if (count($dependencies) !== 0) {
+                $this->addDependentTestsToBatchSet($batches, $dependencies, $tests);
             } else {
                 $this->addTestsToBatchSet($batches, $tests, $maxBatchSize);
             }
@@ -233,13 +233,14 @@ final class SuiteLoader
 
     /**
      * @param string[][] $batches
+     * @param string[]   $dependencies
      * @param string[]   $tests
      */
-    private function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests): void
+    private function addDependentTestsToBatchSet(array &$batches, array $dependencies, array $tests): void
     {
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
-                if ($dependsOn === $methodName) {
+                if (in_array($methodName, $dependencies, true)) {
                     $batches[$key] = array_merge($batches[$key], $tests);
                     continue;
                 }
@@ -281,36 +282,26 @@ final class SuiteLoader
     {
         $result = [];
 
-        $groups = $this->testGroups($class, $method);
+        $groups = Test::getGroups($class->getName(), $method->getName());
+        if (! $this->testMatchGroupOptions($groups)) {
+            return $result;
+        }
 
-        $dataProvider = $this->methodDataProvider($method);
-        if (isset($dataProvider)) {
-            $testFullClassName = '\\' . $class->getName();
-            $testClass         = new $testFullClassName();
-            $result            = [];
-
-            $testClassReflection = new ReflectionClass($testFullClassName);
-            $dataProviderMethod  = $testClassReflection->getMethod($dataProvider);
-
-            if ($dataProviderMethod->getNumberOfParameters() === 0) {
-                $data = $dataProviderMethod->invoke($testClass);
-            } else {
-                $data = $dataProviderMethod->invoke($testClass, $method->getName());
-            }
-
-            foreach ($data as $key => $value) {
+        $providedData = Test::getProvidedData($class->getName(), $method->getName());
+        if ($providedData !== null) {
+            foreach ($providedData as $key => $value) {
                 $test = sprintf(
                     '%s with data set %s',
                     $method->getName(),
                     is_int($key) ? '#' . $key : '"' . $key . '"'
                 );
-                if (! $this->testMatchOptions($class->getName(), $test, $groups)) {
+                if (! $this->testMatchFilterOptions($class->getName(), $test)) {
                     continue;
                 }
 
                 $result[] = $test;
             }
-        } elseif ($this->testMatchOptions($class->getName(), $method->getName(), $groups)) {
+        } elseif ($this->testMatchFilterOptions($class->getName(), $method->getName())) {
             $result = [$method->getName()];
         }
 
@@ -322,14 +313,11 @@ final class SuiteLoader
      */
     private function testMatchGroupOptions(array $groups): bool
     {
-        if (count($groups) === 0 || $this->options === null) {
+        if ($this->options === null || count($this->options->groups) === 0) {
             return true;
         }
 
-        if (
-            count($this->options->groups) > 0
-            && count(array_intersect($groups, $this->options->groups)) === 0
-        ) {
+        if (count($groups) === 0 || count(array_intersect($groups, $this->options->groups)) === 0) {
             return false;
         }
 
@@ -349,68 +337,6 @@ final class SuiteLoader
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;
-    }
-
-    /**
-     * @param string[] $group
-     */
-    private function testMatchOptions(string $className, string $name, array $group): bool
-    {
-        return $this->testMatchGroupOptions($group)
-                && $this->testMatchFilterOptions($className, $name);
-    }
-
-    /**
-     * @return string[]
-     */
-    private function testGroups(ParsedClass $class, ParsedFunction $method): array
-    {
-        return array_merge(
-            $this->classGroups($class),
-            $this->methodGroups($method)
-        );
-    }
-
-    private function methodDataProvider(ParsedFunction $method): ?string
-    {
-        if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return null;
-    }
-
-    private function methodDependency(ParsedFunction $method): ?string
-    {
-        if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return null;
-    }
-
-    /**
-     * @return string[]
-     */
-    private function methodGroups(ParsedFunction $method): array
-    {
-        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return [];
-    }
-
-    /**
-     * @return string[]
-     */
-    private function classGroups(ParsedClass $class): array
-    {
-        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $class->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return [];
     }
 
     private function createSuite(string $path, ParsedClass $class): Suite
