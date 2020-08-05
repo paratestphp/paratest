@@ -190,16 +190,7 @@ The following phpunit config file is used for ParaTest's test cases.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         bootstrap="../bootstrap.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-        >
+<phpunit>
     <testsuites>
         <testsuite name="ParaTest Fixtures">
             <directory>./tests/</directory>

@@ -47,6 +47,7 @@ final class PHPUnitTest extends FunctionalTestBase
     public function testGithubIssues(
         string $directory,
         array $options,
+        ?string $runnerClass = null,
         ?string $testPattern = null,
         ?string $assertionPattern = null
     ): void {
@@ -55,7 +56,7 @@ final class PHPUnitTest extends FunctionalTestBase
             array_merge([
                 'configuration' => sprintf('%s%sphpunit%s.xml', $directory, DS, basename($directory)),
             ], $options),
-            Runner::class
+            $runnerClass ?? Runner::class
         ), $testPattern, $assertionPattern);
     }
 
@@ -74,10 +75,17 @@ final class PHPUnitTest extends FunctionalTestBase
             $cases['issue-' . basename($path)] = [
                 'directory' => $path,
                 'options' => [],
+                'runnerClass' => null,
                 'testPattern' => null,
                 'assertionPattern' => null,
             ];
         }
+
+        $cases['issue-420bis']['options']['bootstrap'] = sprintf(
+            '%s%sbootstrap420bis.php',
+            $cases['issue-420bis']['directory'],
+            DS
+        );
 
         $cases['issue-432']['options']          = ['group' => 'group1'];
         $cases['issue-432']['testPattern']      = '1';
