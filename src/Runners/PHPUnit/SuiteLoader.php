@@ -313,14 +313,11 @@ final class SuiteLoader
      */
     private function testMatchGroupOptions(array $groups): bool
     {
-        if (count($groups) === 0 || $this->options === null) {
+        if ($this->options === null || count($this->options->groups) === 0) {
             return true;
         }
 
-        if (
-            count($this->options->groups) > 0
-            && count(array_intersect($groups, $this->options->groups)) === 0
-        ) {
+        if (count($groups) === 0 || count(array_intersect($groups, $this->options->groups)) === 0) {
             return false;
         }
 

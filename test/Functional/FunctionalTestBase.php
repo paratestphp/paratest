@@ -10,6 +10,7 @@ use PHPUnit;
 
 use function extension_loaded;
 use function file_exists;
+use function sprintf;
 
 abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
 {
@@ -25,11 +26,15 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
 
     final protected function assertTestsPassed(
         RunnerResult $proc,
-        string $testPattern = '\d+',
-        string $assertionPattern = '\d+'
+        ?string $testPattern = null,
+        ?string $assertionPattern = null
     ): void {
         static::assertMatchesRegularExpression(
-            "/OK \($testPattern tests?, $assertionPattern assertions?\)/",
+            sprintf(
+                '/OK \(%s tests?, %s assertions?\)/',
+                $testPattern ?? '\d+',
+                $assertionPattern ?? '\d+'
+            ),
             $proc->getOutput(),
         );
         static::assertEquals(0, $proc->getExitCode());
