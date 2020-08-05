@@ -220,8 +220,9 @@ final class SuiteLoader
                 continue;
             }
 
-            if (($dependsOn = $this->methodDependency($method)) !== null) {
-                $this->addDependentTestsToBatchSet($batches, $dependsOn, $tests);
+            $dependencies = Test::getDependencies($class->getName(), $method->getName());
+            if (count($dependencies) !== 0) {
+                $this->addDependentTestsToBatchSet($batches, $dependencies, $tests);
             } else {
                 $this->addTestsToBatchSet($batches, $tests, $maxBatchSize);
             }
@@ -232,13 +233,14 @@ final class SuiteLoader
 
     /**
      * @param string[][] $batches
+     * @param string[]   $dependencies
      * @param string[]   $tests
      */
-    private function addDependentTestsToBatchSet(array &$batches, string $dependsOn, array $tests): void
+    private function addDependentTestsToBatchSet(array &$batches, array $dependencies, array $tests): void
     {
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
-                if ($dependsOn === $methodName) {
+                if (in_array($methodName, $dependencies, true)) {
                     $batches[$key] = array_merge($batches[$key], $tests);
                     continue;
                 }
@@ -338,15 +340,6 @@ final class SuiteLoader
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;
-    }
-
-    private function methodDependency(ParsedFunction $method): ?string
-    {
-        if (preg_match("/@\bdepends\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return null;
     }
 
     private function createSuite(string $path, ParsedClass $class): Suite
