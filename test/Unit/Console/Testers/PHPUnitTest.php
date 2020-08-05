@@ -9,6 +9,7 @@ use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Tests\TestBase;
+use PHPUnit\Framework\Exception;
 use RuntimeException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\HelpCommand;
@@ -17,6 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\NullOutput;
 
 use function chdir;
 use function getcwd;
@@ -127,11 +129,12 @@ final class PHPUnitTest extends TestBase
         $command = new ParaTestCommand($tester);
         $input   = new ArgvInput([], $command->getDefinition());
         $input->setOption('configuration', 'nope.xml');
-        $output = new BufferedOutput();
+        $output = new NullOutput();
+
+        static::expectException(Exception::class);
+        static::expectDeprecationMessage('Could not read "nope.xml"');
 
         $tester->execute($input, $output);
-
-        static::assertStringContainsString('Could not read "nope.xml"', $output->fetch());
     }
 
     public function testDisplayHelpWithoutConfigNorPath(): void

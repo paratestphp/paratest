@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit\Worker;
 
-use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
+use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
 
 use function fgets;

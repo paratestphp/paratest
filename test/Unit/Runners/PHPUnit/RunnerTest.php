@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
-use ParaTest\Runners\PHPUnit\Configuration;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Tests\TestBase;
+use PHPUnit\TextUI\Configuration\Loader;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function getcwd;
@@ -41,7 +41,7 @@ final class RunnerTest extends TestBase
         static::assertEquals(-1, $this->getObjectValue($runner, 'exitcode'));
         static::assertTrue($options->functional);
         //filter out processes and path and phpunit
-        $config = new Configuration(getcwd() . DS . 'phpunit.xml.dist');
+        $config = (new Loader())->load(getcwd() . DS . 'phpunit.xml.dist');
         static::assertEquals(['bootstrap' => 'hello', 'configuration' => $config], $options->filtered);
         static::assertInstanceOf(LogInterpreter::class, $this->getObjectValue($runner, 'interpreter'));
         static::assertInstanceOf(ResultPrinter::class, $this->getObjectValue($runner, 'printer'));

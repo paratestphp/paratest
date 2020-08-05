@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use PHPUnit\TextUI\Configuration\Configuration;
+
 use function array_reduce;
 use function count;
 use function implode;

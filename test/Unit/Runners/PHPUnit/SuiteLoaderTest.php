@@ -16,6 +16,7 @@ use function array_keys;
 use function array_shift;
 use function count;
 use function strstr;
+use function uniqid;
 
 final class SuiteLoaderTest extends TestBase
 {
@@ -90,20 +91,6 @@ final class SuiteLoaderTest extends TestBase
         static::assertCount($expected, $files);
     }
 
-    public function testLoadTestsuiteFilesFromConfigWhileIncludingAndExcludingTheSameDirectory(): void
-    {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-excluded-including-excluding-same-dir.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
-        ]);
-        $loader  = new SuiteLoader($options);
-        $loader->load();
-        $files = $this->getObjectValue($loader, 'files');
-
-        $expected = 1;
-        static::assertCount($expected, $files);
-    }
-
     public function testLoadTestsuiteFilesFromConfig(): void
     {
         $options = new Options([
@@ -160,21 +147,6 @@ final class SuiteLoaderTest extends TestBase
         static::assertCount($expected, $files);
     }
 
-    public function testLoadTestsuiteWithNestedSuite(): void
-    {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-files-dirs-mix-nested.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
-        ]);
-        $loader  = new SuiteLoader($options);
-        $loader->load();
-        $files = $this->getObjectValue($loader, 'files');
-
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            count($this->findTests(FIXTURES . DS . 'failing-tests')) + 1;
-        static::assertCount($expected, $files);
-    }
-
     public function testLoadTestsuiteWithDuplicateFilesDirMixed(): void
     {
         $options = new Options([
@@ -185,7 +157,7 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) + 1;
+        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) + 2;
         static::assertCount($expected, $files);
     }
 
@@ -214,11 +186,15 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadSuiteFromConfigWithBadSuitePath(): void
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Suite path ./nope/ could not be found');
-
-        $options = new Options(['configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml')]);
+        $options = new Options([
+            'configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml'),
+            'testsuite' => [uniqid()],
+        ]);
         $loader  = new SuiteLoader($options);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Suite path \w+ could not be found/');
+
         $loader->load();
     }
 

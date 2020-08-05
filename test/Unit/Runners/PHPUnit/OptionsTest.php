@@ -118,14 +118,6 @@ final class OptionsTest extends TestBase
         $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', getcwd(), 'phpunit-myconfig.xml');
     }
 
-    public function testConfigurationShouldBeSetEvenIfFileDoesNotExist(): void
-    {
-        $this->unfiltered['path']          = getcwd();
-        $this->unfiltered['configuration'] = '/path/to/config';
-        $options                           = new Options($this->unfiltered);
-        static::assertEquals('/path/to/config', $options->filtered['configuration']->getPath());
-    }
-
     public function testConfigurationKeyIsNotPresentIfNoConfigGiven(): void
     {
         $this->unfiltered['path'] = getcwd();
@@ -181,7 +173,7 @@ final class OptionsTest extends TestBase
         $options = new Options($this->unfiltered);
         static::assertEquals(
             __DIR__ . DS . 'generated-configs' . DS . $configFileName,
-            $options->filtered['configuration']->getPath()
+            $options->filtered['configuration']->filename()
         );
     }
 }
