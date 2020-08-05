@@ -9,7 +9,9 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
 use PHPUnit\TextUI\Configuration\Configuration;
+use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Configuration\TestSuite;
+use PHPUnit\Util\FileLoader;
 use PHPUnit\Util\Test;
 use RuntimeException;
 use SebastianBergmann\FileIterator\Facade;
@@ -106,6 +108,8 @@ final class SuiteLoader
      */
     public function load(string $path = ''): void
     {
+        $this->loadConfiguration();
+
         if ($path !== '') {
             $testFileLoader = new TestFileLoader($this->options);
             $this->files    = array_merge(
@@ -398,5 +402,25 @@ final class SuiteLoader
 
             $this->files[] = $file->path();
         }
+    }
+
+    private function loadConfiguration(): void
+    {
+        if ($this->configuration !== null) {
+            (new PhpHandler())->handle($this->configuration->php());
+        }
+
+        $bootstrap = null;
+        if (isset($this->options->filtered['bootstrap'])) {
+            $bootstrap = $this->options->filtered['bootstrap'];
+        } elseif ($this->configuration !== null && $this->configuration->phpunit()->hasBootstrap()) {
+            $bootstrap = $this->configuration->phpunit()->bootstrap();
+        }
+
+        if ($bootstrap === null) {
+            return;
+        }
+
+        FileLoader::checkAndLoad($bootstrap);
     }
 }

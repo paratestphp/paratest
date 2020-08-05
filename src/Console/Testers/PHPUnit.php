@@ -21,11 +21,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_key_exists;
 use function array_merge;
-use function assert;
-use function chdir;
 use function class_exists;
 use function file_exists;
-use function getcwd;
 use function is_string;
 use function is_subclass_of;
 use function realpath;
@@ -108,10 +105,7 @@ final class PHPUnit extends Tester
             return $this->displayHelp($input, $output);
         }
 
-        $bareOptions = $this->getRunnerOptions($input);
-        $this->requireBootstrap($this->getBootstrapFile($input, $bareOptions));
-
-        $options     = new Options($bareOptions);
+        $options     = new Options($this->getRunnerOptions($input));
         $runnerClass = $this->getRunnerClass($input);
 
         $runner = new $runnerClass($options, $output);
@@ -196,39 +190,6 @@ final class PHPUnit extends Tester
     }
 
     /**
-     * Require the bootstrap. If the file is specified, but does not exist
-     * then an exception will be raised.
-     *
-     * @throws RuntimeException
-     */
-    public function requireBootstrap(string $file): void
-    {
-        if ($file === '') {
-            return;
-        }
-
-        if (! file_exists($file)) {
-            $message = sprintf('Bootstrap specified but could not be found (%s)', $file);
-
-            throw new RuntimeException($message);
-        }
-
-        $this->scopedRequire($file);
-    }
-
-    /**
-     * This function limits the scope of a required file
-     * so that variables defined in it do not break
-     * this object's configuration.
-     */
-    private function scopedRequire(string $file): void
-    {
-        $cwd = getcwd();
-        require_once $file;
-        chdir($cwd);
-    }
-
-    /**
      * Return whether or not code coverage information should be collected.
      *
      * @param array<string, string> $options
@@ -243,32 +204,6 @@ final class PHPUnit extends Tester
         $isPHP        = isset($options['coverage-php']);
 
         return $isTextFormat || $isFileFormat && ! $isPHP;
-    }
-
-    /**
-     * Fetch the path to the bootstrap file.
-     *
-     * @param array<string, string|string[]> $options
-     */
-    private function getBootstrapFile(InputInterface $input, array $options): string
-    {
-        if (isset($options['bootstrap'])) {
-            assert(is_string($options['bootstrap']));
-
-            return $options['bootstrap'];
-        }
-
-        $config = $this->getConfig($input);
-        if ($config === null) {
-            return '';
-        }
-
-        $phpunitConfig = $config->phpunit();
-        if (! $phpunitConfig->hasBootstrap()) {
-            return '';
-        }
-
-        return $phpunitConfig->bootstrap();
     }
 
     /**

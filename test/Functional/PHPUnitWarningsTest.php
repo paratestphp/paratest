@@ -14,7 +14,6 @@ final class PHPUnitWarningsTest extends FunctionalTestBase
         $proc = $this->invokeParatest(
             'warning-tests/HasWarningsTest.php',
             [
-                'bootstrap' => BOOTSTRAP,
                 'configuration' => FIXTURES . DS . 'warning-tests' . DS . 'phpunit.xml.dist',
             ]
         );

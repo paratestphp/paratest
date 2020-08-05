@@ -10,7 +10,6 @@ use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Tests\TestBase;
 use PHPUnit\Framework\Exception;
-use RuntimeException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -22,7 +21,6 @@ use Symfony\Component\Console\Output\NullOutput;
 
 use function chdir;
 use function getcwd;
-use function uniqid;
 
 final class PHPUnitTest extends TestBase
 {
@@ -100,27 +98,6 @@ final class PHPUnitTest extends TestBase
         $tester      = new PHPUnit();
         $tester->configure($testCommand);
         static::assertEquals($definition, $testCommand->getDefinition());
-    }
-
-    public function testRequireBootstrapIsChdirResistent(): void
-    {
-        $file   = __DIR__ . '/../../../fixtures/chdirBootstrap.php';
-        $tester = new PHPUnit();
-        $cwd    = getcwd();
-
-        $tester->requireBootstrap($file);
-        static::assertEquals($cwd, getcwd());
-    }
-
-    public function testWithBootstrapThatDoesNotExist(): void
-    {
-        $file   = __DIR__ . '/' . uniqid('bootstrap_');
-        $tester = new PHPUnit();
-
-        self::expectException(RuntimeException::class);
-        self::expectDeprecationMessageMatches('/Bootstrap specified but could not be found/');
-
-        $tester->requireBootstrap($file);
     }
 
     public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
