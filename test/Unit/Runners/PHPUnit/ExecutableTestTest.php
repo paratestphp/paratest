@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Tests\TestBase;
-use Symfony\Component\Process\PhpExecutableFinder;
 
 use function defined;
 use function preg_quote;
-use function preg_replace;
 use function str_replace;
 use function unlink;
 
@@ -21,57 +19,11 @@ final class ExecutableTestTest extends TestBase
     public function setUp(): void
     {
         $this->executableTestChild = new ExecutableTestChild('pathToFile');
-        parent::setUp();
     }
 
     public function testConstructor(): void
     {
         static::assertEquals('pathToFile', $this->getObjectValue($this->executableTestChild, 'path'));
-    }
-
-    public function testGetCommandStringIncludesPassthruOptions(): void
-    {
-        $options     = ['bootstrap' => 'test' . DS . 'bootstrap.php'];
-        $binary      = '/usr/bin/phpunit';
-        $passthru    = ['--prepend', 'xdebug-filter.php'];
-        $passthruPhp = ['-d', 'zend_extension=xdebug.so'];
-
-        $command = $this->call(
-            $this->executableTestChild,
-            'getFullCommandlineString',
-            $binary,
-            $options,
-            $passthru,
-            $passthruPhp
-        );
-        // Note:
-        // '--log-junit' '/tmp/PT_LKnfzA'
-        // is appended by default where PT_LKnfzA is randomly generated - so we remove it from the resulting command
-        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $command = preg_replace('# --log-junit [^ ]+#', '', $command);
-        } else {
-            $command = preg_replace("# '--log-junit' '[^']+?'#", '', $command);
-        }
-
-        // Note:
-        // The pass to the php executable depends on the system,
-        // so we need to keep it flexible in the test
-        $finder        = new PhpExecutableFinder();
-        $phpExecutable = $finder->find();
-
-        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            static::assertEquals(
-                "$phpExecutable -d zend_extension=xdebug.so \"/usr/bin/phpunit\" --prepend xdebug-filter.php " .
-                    '--bootstrap test' . DS . 'bootstrap.php pathToFile',
-                $command
-            );
-        } else {
-            static::assertEquals(
-                "'$phpExecutable' '-d' 'zend_extension=xdebug.so' '/usr/bin/phpunit' '--prepend' 'xdebug-filter.php' " .
-                    "'--bootstrap' 'test" . DS . "bootstrap.php' 'pathToFile'",
-                $command
-            );
-        }
     }
 
     public function testCommandRedirectsCoverage(): void
@@ -93,19 +45,6 @@ final class ExecutableTestTest extends TestBase
                 $command
             );
         }
-    }
-
-    public function testHandleEnvironmentVariablesAssignsToken(): void
-    {
-        $environmentVariables = ['TEST_TOKEN' => 3, 'APPLICATION_ENVIRONMENT_VAR' => 'abc'];
-        $this->call($this->executableTestChild, 'handleEnvironmentVariables', $environmentVariables);
-        static::assertEquals(3, $this->getObjectValue($this->executableTestChild, 'token'));
-    }
-
-    public function testGetTokenReturnsValidToken(): void
-    {
-        $this->setObjectValue($this->executableTestChild, 'token', 3);
-        static::assertEquals(3, $this->executableTestChild->getToken());
     }
 
     public function testGetTempFileShouldCreateTempFile(): void

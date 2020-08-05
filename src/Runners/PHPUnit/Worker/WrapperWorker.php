@@ -20,9 +20,6 @@ use function strstr;
 
 final class WrapperWorker extends BaseWorker
 {
-    /** @var string[] */
-    private $commands = [];
-
     /** @var ExecutableTest|null */
     private $currentlyExecuting;
 

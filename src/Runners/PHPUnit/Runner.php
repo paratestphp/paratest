@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use Exception;
 use Habitat\Habitat;
+use ParaTest\Runners\PHPUnit\Worker\RunnerWorker;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
@@ -26,7 +27,7 @@ final class Runner extends BaseRunner
      * A collection of ExecutableTest objects that have processes
      * currently running.
      *
-     * @var ExecutableTest[]
+     * @var RunnerWorker[]
      */
     private $running = [];
 
@@ -61,7 +62,7 @@ final class Runner extends BaseRunner
                 } catch (Throwable $e) {
                     if ($this->options->verbose > 0) {
                         $this->output->writeln("An error for $key: {$e->getMessage()}");
-                        $this->output->writeln("Command: {$test->getLastCommand()}");
+                        $this->output->writeln("Command: {$test->getExecutableTest()->getLastCommand()}");
                         $this->output->writeln('StdErr: ' . $test->getStderr());
                         $this->output->writeln('StdOut: ' . $test->getStdout());
                     }
@@ -110,18 +111,27 @@ final class Runner extends BaseRunner
             }
 
             $this->acquireToken($tokenData['token']);
-            $env                                = [
+            $env = [
                 'TEST_TOKEN' => $tokenData['token'],
                 'UNIQUE_TEST_TOKEN' => $tokenData['unique'],
             ] + Habitat::getAll();
-            $this->running[$tokenData['token']] = array_shift($this->pending)
-                ->run($opts->phpunit, $opts->filtered, $env, $opts->passthru, $opts->passthruPhp);
+
+            $executebleTest                     = array_shift($this->pending);
+            $this->running[$tokenData['token']] = new RunnerWorker($executebleTest);
+            $this->running[$tokenData['token']]->run(
+                $opts->phpunit,
+                $opts->filtered,
+                $env,
+                $opts->passthru,
+                $opts->passthruPhp
+            );
+
             if ($opts->verbose === 0) {
                 continue;
             }
 
             $cmd = $this->running[$tokenData['token']];
-            $this->output->write("\nExecuting test via: {$cmd->getLastCommand()}\n");
+            $this->output->write("\nExecuting test via: {$cmd->getExecutableTest()->getLastCommand()}\n");
         }
     }
 
@@ -133,30 +143,31 @@ final class Runner extends BaseRunner
      *
      * @throws Exception
      */
-    private function testIsStillRunning(ExecutableTest $test): bool
+    private function testIsStillRunning(RunnerWorker $worker): bool
     {
-        if (! $test->isDoneRunning()) {
+        if (! $worker->isDoneRunning()) {
             return true;
         }
 
-        $this->setExitCode($test);
-        $test->stop();
-        if ($this->options->stopOnFailure && $test->getExitCode() > 0) {
+        $this->setExitCode($worker);
+        $worker->stop();
+        if ($this->options->stopOnFailure && $worker->getExitCode() > 0) {
             $this->pending = [];
         }
 
-        if ($test->getExitCode() === self::PHPUNIT_FATAL_ERROR) {
-            $errorOutput = $test->getStderr();
+        $executableTest = $worker->getExecutableTest();
+        if ($worker->getExitCode() === self::PHPUNIT_FATAL_ERROR) {
+            $errorOutput = $worker->getStderr();
             if ($errorOutput === '') {
-                $errorOutput = $test->getStdout();
+                $errorOutput = $worker->getStdout();
             }
 
-            throw new RuntimeException(sprintf("Fatal error in %s:\n%s", $test->getPath(), $errorOutput));
+            throw new RuntimeException(sprintf("Fatal error in %s:\n%s", $executableTest->getPath(), $errorOutput));
         }
 
-        $this->printer->printFeedback($test);
+        $this->printer->printFeedback($executableTest);
         if ($this->hasCoverage()) {
-            $this->addCoverage($test);
+            $this->addCoverage($executableTest);
         }
 
         return false;
@@ -167,7 +178,7 @@ final class Runner extends BaseRunner
      * higher than the currently set exit code, that exit
      * code will be set as the overall exit code.
      */
-    private function setExitCode(ExecutableTest $test): void
+    private function setExitCode(RunnerWorker $test): void
     {
         $exit = $test->getExitCode();
         if ($exit <= $this->exitcode) {

@@ -46,6 +46,8 @@ abstract class BaseWorker
     protected $inExecution = 0;
     /** @var OutputInterface */
     protected $output;
+    /** @var string[] */
+    protected $commands = [];
 
     /** @var int|null */
     private $exitCode = null;
