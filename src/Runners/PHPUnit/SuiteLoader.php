@@ -111,10 +111,9 @@ final class SuiteLoader
         $this->loadConfiguration();
 
         if ($path !== '') {
-            $testFileLoader = new TestFileLoader($this->options);
-            $this->files    = array_merge(
+            $this->files = array_merge(
                 $this->files,
-                $testFileLoader->loadPath($path)
+                (new Facade())->getFilesAsArray($path, ['Test.php'])
             );
         } elseif (
             isset($this->options->parallelSuite)

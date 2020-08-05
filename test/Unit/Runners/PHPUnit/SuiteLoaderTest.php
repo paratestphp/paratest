@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Suite;
@@ -35,7 +34,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadThrowsExceptionWithInvalidPath(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(RuntimeException::class);
 
         $loader = new SuiteLoader();
         $loader->load('/path/to/nowhere');
