@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
-use ParaTest\Parser\ParsedFunction;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Suite;
@@ -94,7 +93,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new ParsedFunction('doc', 'function' . $i);
+            $funcs[] = new TestMethod((string) $i, []);
         }
 
         $suite = new Suite('/path', $funcs);
@@ -149,8 +148,8 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new ParsedFunction('doc', 'funcOne'),
-            new ParsedFunction('doc', 'funcTwo'),
+            new TestMethod('funcOne', []),
+            new TestMethod('funcTwo', []),
         ]);
         $this->printer->addTest($suite);
         static::assertEquals(2, $this->printer->getTotalCases());

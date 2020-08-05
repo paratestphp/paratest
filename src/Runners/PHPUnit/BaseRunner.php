@@ -7,7 +7,6 @@ namespace ParaTest\Runners\PHPUnit;
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
-use ParaTest\Parser\ParsedFunction;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
@@ -27,17 +26,9 @@ abstract class BaseRunner implements RunnerInterface
      * A collection of pending ExecutableTest objects that have
      * yet to run.
      *
-     * @var array<int|string, ExecutableTest|TestMethod|ParsedFunction>
+     * @var array<int|string, ExecutableTest>
      */
     protected $pending = [];
-
-    /**
-     * A collection of ExecutableTest objects that have processes
-     * currently running.
-     *
-     * @var array|ExecutableTest[]
-     */
-    protected $running = [];
 
     /**
      * A tallied exit code that returns the highest exit

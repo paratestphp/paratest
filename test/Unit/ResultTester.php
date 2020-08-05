@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit;
 
-use ParaTest\Parser\ParsedFunction;
 use ParaTest\Runners\PHPUnit\Suite;
+use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\TestBase;
 
 abstract class ResultTester extends TestBase
@@ -42,17 +42,12 @@ abstract class ResultTester extends TestBase
         $result    = FIXTURES . DS . 'results' . DS . $result;
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
-            $functions[] = $this->mockFunction((string) $i);
+            $functions[] = new TestMethod((string) $i, []);
         }
 
         $suite = new Suite('', $functions);
         $suite->setTempFile($result);
 
         return $suite;
-    }
-
-    final protected function mockFunction(string $functionCount): ParsedFunction
-    {
-        return new ParsedFunction('doc', 'func' . $functionCount);
     }
 }

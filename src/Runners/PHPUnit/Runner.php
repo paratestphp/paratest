@@ -23,6 +23,14 @@ final class Runner extends BaseRunner
     private const PHPUNIT_FATAL_ERROR = 255;
 
     /**
+     * A collection of ExecutableTest objects that have processes
+     * currently running.
+     *
+     * @var ExecutableTest[]
+     */
+    private $running = [];
+
+    /**
      * A collection of available tokens based on the number
      * of processes specified in $options.
      *
