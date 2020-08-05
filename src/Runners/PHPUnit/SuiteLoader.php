@@ -307,13 +307,13 @@ final class SuiteLoader
                     $method->getName(),
                     is_int($key) ? '#' . $key : '"' . $key . '"'
                 );
-                if (! $this->testMatchOptions($class->getName(), $test)) {
+                if (! $this->testMatchFilterOptions($class->getName(), $test)) {
                     continue;
                 }
 
                 $result[] = $test;
             }
-        } elseif ($this->testMatchOptions($class->getName(), $method->getName())) {
+        } elseif ($this->testMatchFilterOptions($class->getName(), $method->getName())) {
             $result = [$method->getName()];
         }
 
@@ -352,11 +352,6 @@ final class SuiteLoader
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;
-    }
-
-    private function testMatchOptions(string $className, string $name): bool
-    {
-        return $this->testMatchFilterOptions($className, $name);
     }
 
     private function methodDataProvider(ParsedFunction $method): ?string
