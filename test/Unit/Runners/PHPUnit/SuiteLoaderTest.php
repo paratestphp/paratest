@@ -199,7 +199,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadFileGetsPathOfFile(): void
     {
-        $path  = $this->fixture('failing-tests/UnitTestWithClassAnnotationTest.php');
+        $path  = $this->fixture('failing-tests' . DS . 'UnitTestWithClassAnnotationTest.php');
         $paths = $this->getLoadedPaths($path);
         static::assertEquals($path, array_shift($paths));
     }
@@ -218,7 +218,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadFileShouldLoadFileWhereNameDoesNotEndInTest(): void
     {
-        $path  = $this->fixture('passing-tests/TestOfUnits.php');
+        $path  = $this->fixture('passing-tests' . DS . 'TestOfUnits.php');
         $paths = $this->getLoadedPaths($path);
         static::assertEquals($path, array_shift($paths));
     }
