@@ -10,6 +10,7 @@ use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
 use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\Configuration\TestSuite;
+use PHPUnit\Util\Test;
 use ReflectionClass;
 use RuntimeException;
 use SebastianBergmann\FileIterator\Facade;
@@ -24,7 +25,6 @@ use function in_array;
 use function is_array;
 use function is_int;
 use function preg_match;
-use function preg_match_all;
 use function sprintf;
 use function substr;
 use function version_compare;
@@ -281,7 +281,10 @@ final class SuiteLoader
     {
         $result = [];
 
-        $groups = $this->testGroups($class, $method);
+        $groups = Test::getGroups($class->getName(), $method->getName());
+        if (! $this->testMatchGroupOptions($groups)) {
+            return $result;
+        }
 
         $dataProvider = $this->methodDataProvider($method);
         if (isset($dataProvider)) {
@@ -304,13 +307,13 @@ final class SuiteLoader
                     $method->getName(),
                     is_int($key) ? '#' . $key : '"' . $key . '"'
                 );
-                if (! $this->testMatchOptions($class->getName(), $test, $groups)) {
+                if (! $this->testMatchOptions($class->getName(), $test)) {
                     continue;
                 }
 
                 $result[] = $test;
             }
-        } elseif ($this->testMatchOptions($class->getName(), $method->getName(), $groups)) {
+        } elseif ($this->testMatchOptions($class->getName(), $method->getName())) {
             $result = [$method->getName()];
         }
 
@@ -351,24 +354,9 @@ final class SuiteLoader
         return preg_match($re, $fullName) === 1;
     }
 
-    /**
-     * @param string[] $group
-     */
-    private function testMatchOptions(string $className, string $name, array $group): bool
+    private function testMatchOptions(string $className, string $name): bool
     {
-        return $this->testMatchGroupOptions($group)
-                && $this->testMatchFilterOptions($className, $name);
-    }
-
-    /**
-     * @return string[]
-     */
-    private function testGroups(ParsedClass $class, ParsedFunction $method): array
-    {
-        return array_merge(
-            $this->classGroups($class),
-            $this->methodGroups($method)
-        );
+        return $this->testMatchFilterOptions($className, $name);
     }
 
     private function methodDataProvider(ParsedFunction $method): ?string
@@ -387,30 +375,6 @@ final class SuiteLoader
         }
 
         return null;
-    }
-
-    /**
-     * @return string[]
-     */
-    private function methodGroups(ParsedFunction $method): array
-    {
-        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return [];
-    }
-
-    /**
-     * @return string[]
-     */
-    private function classGroups(ParsedClass $class): array
-    {
-        if (preg_match_all("/@\bgroup\b \b(.*)\b/", $class->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return [];
     }
 
     private function createSuite(string $path, ParsedClass $class): Suite
