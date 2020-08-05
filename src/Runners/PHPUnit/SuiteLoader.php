@@ -11,7 +11,6 @@ use ParaTest\Parser\Parser;
 use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\Configuration\TestSuite;
 use PHPUnit\Util\Test;
-use ReflectionClass;
 use RuntimeException;
 use SebastianBergmann\FileIterator\Facade;
 
@@ -286,22 +285,9 @@ final class SuiteLoader
             return $result;
         }
 
-        $dataProvider = $this->methodDataProvider($method);
-        if (isset($dataProvider)) {
-            $testFullClassName = '\\' . $class->getName();
-            $testClass         = new $testFullClassName();
-            $result            = [];
-
-            $testClassReflection = new ReflectionClass($testFullClassName);
-            $dataProviderMethod  = $testClassReflection->getMethod($dataProvider);
-
-            if ($dataProviderMethod->getNumberOfParameters() === 0) {
-                $data = $dataProviderMethod->invoke($testClass);
-            } else {
-                $data = $dataProviderMethod->invoke($testClass, $method->getName());
-            }
-
-            foreach ($data as $key => $value) {
+        $providedData = Test::getProvidedData($class->getName(), $method->getName());
+        if ($providedData !== null) {
+            foreach ($providedData as $key => $value) {
                 $test = sprintf(
                     '%s with data set %s',
                     $method->getName(),
@@ -352,15 +338,6 @@ final class SuiteLoader
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;
-    }
-
-    private function methodDataProvider(ParsedFunction $method): ?string
-    {
-        if (preg_match("/@\bdataProvider\b \b(.*)\b/", $method->getDocBlock(), $matches)) {
-            return $matches[1];
-        }
-
-        return null;
     }
 
     private function methodDependency(ParsedFunction $method): ?string
