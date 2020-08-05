@@ -76,6 +76,7 @@ parameters:
         # Known errors
         - "#^Variable property access on .+$#"
         - "#^Variable method call on .+$#"
+        - "#^.+ has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
         -
             message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
             count: 2
@@ -88,10 +89,6 @@ parameters:
             message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
             count: 1
             path: src/Logging/JUnit/Writer.php
-        -
-            message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\RunnerWorker\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
-            count: 1
-            path: src/Runners/PHPUnit/Worker/RunnerWorker.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
