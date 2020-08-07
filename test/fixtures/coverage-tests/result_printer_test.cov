@@ -1,6 +1,43 @@
 <?php
-$coverage = new SebastianBergmann\CodeCoverage\CodeCoverage;
-$coverage->setData(array (
+
+$filter = new \SebastianBergmann\CodeCoverage\Filter();
+$filter->includeFiles(array (
+    '/home/munkie/Projects/paratest/src/ParaTest/Console/Commands/ParaTestCommand.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Console/ParaTestApplication.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Console/Testers/PHPUnit.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Console/Testers/Tester.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageMerger.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageReporter.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageReporterInterface.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageReporterLegacy.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/Reader.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/TestCase.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/TestSuite.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/Writer.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Logging/LogInterpreter.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Logging/MetaProvider.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Parser/NoClassInFileException.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Parser/ParsedClass.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Parser/ParsedFunction.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Parser/ParsedObject.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Parser/Parser.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/BaseRunner.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Configuration.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/ExecutableTest.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Options.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/ResultPrinter.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Runner.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Suite.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/SuiteLoader.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/SuitePath.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/TestFileLoader.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/TestMethod.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Worker.php',
+    '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/WrapperRunner.php',
+));
+
+$coverage = new \SebastianBergmann\CodeCoverage\CodeCoverage(new \SebastianBergmann\CodeCoverage\Driver\PcovDriver($filter), $filter);
+$data = array (
   '/home/munkie/Projects/paratest/src/ParaTest/Console/ParaTestApplication.php' => 
   array (
     18 => 
@@ -5752,7 +5789,14 @@ $coverage->setData(array (
     ),
     176 => NULL,
   ),
-));
+);
+if (class_exists(\SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData::class)) {
+    $processedData = new \SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData();
+    $processedData->setLineCoverage($data);
+
+    $data = $processedData;
+}
+$coverage->setData($data);
 $coverage->setTests(array (
   'UNCOVERED_FILES_FROM_WHITELIST' => 
   array (
@@ -5859,42 +5903,6 @@ $coverage->setTests(array (
     'size' => 'unknown',
     'status' => 0,
   ),
-));
-
-$filter = $coverage->filter();
-$filter->setWhitelistedFiles(array (
-  '/home/munkie/Projects/paratest/src/ParaTest/Console/Commands/ParaTestCommand.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Console/ParaTestApplication.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Console/Testers/PHPUnit.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Console/Testers/Tester.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageMerger.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageReporter.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageReporterInterface.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Coverage/CoverageReporterLegacy.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/Reader.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/TestCase.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/TestSuite.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Logging/JUnit/Writer.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Logging/LogInterpreter.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Logging/MetaProvider.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Parser/NoClassInFileException.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Parser/ParsedClass.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Parser/ParsedFunction.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Parser/ParsedObject.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Parser/Parser.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/BaseRunner.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Configuration.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/ExecutableTest.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Options.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/ResultPrinter.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Runner.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Suite.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/SuiteLoader.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/SuitePath.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/TestFileLoader.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/TestMethod.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/Worker.php' => true,
-  '/home/munkie/Projects/paratest/src/ParaTest/Runners/PHPUnit/WrapperRunner.php' => true,
 ));
 
 return $coverage;

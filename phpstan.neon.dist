@@ -14,12 +14,6 @@ parameters:
     excludes_analyse:
         - test/fixtures/*
     ignoreErrors:
-        # @see https://github.com/phpstan/phpstan-src/pull/281
-        -
-            message: "#^Strict comparison using \\=\\=\\= between int and false will always evaluate to false\\.$#"
-            count: 1
-            path: src/Runners/PHPUnit/SqliteRunner.php
-
         # Known fixtures
         -
             message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\ExecutableTest\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"

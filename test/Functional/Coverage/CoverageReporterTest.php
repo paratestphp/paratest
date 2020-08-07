@@ -107,7 +107,7 @@ class CoverageReporterTest extends TestBase
 
         static::assertFileExists($target);
 
-        $reportXml = Xml::loadFile($target);
+        $reportXml = (new Xml\Loader())->loadFile($target);
         static::assertInstanceOf('DomDocument', $reportXml, 'Incorrect clover report xml was generated');
     }
 
@@ -133,7 +133,7 @@ class CoverageReporterTest extends TestBase
 
         static::assertFileExists($target);
 
-        $reportXml = Xml::loadFile($target);
+        $reportXml = (new Xml\Loader())->loadFile($target);
         static::assertInstanceOf('DomDocument', $reportXml, 'Incorrect crap4j report xml was generated');
         static::assertEquals('crap_result', $reportXml->documentElement->tagName);
     }
