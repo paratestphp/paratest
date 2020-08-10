@@ -6,6 +6,7 @@ namespace ParaTest\Coverage;
 
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData;
 use SplFileObject;
 
 use function array_map;
@@ -110,7 +111,8 @@ final class CoverageMerger
             return;
         }
 
-        $coverage->setData(array_map(
+        $data          = $coverage->getData(true);
+        $newData       = array_map(
             function (array $lines): array {
                 return array_map(function ($value) {
                     if (! is_array($value)) {
@@ -120,7 +122,11 @@ final class CoverageMerger
                     return array_slice($value, 0, $this->test_limit);
                 }, $lines);
             },
-            $coverage->getData($raw = true)
-        ));
+            $data->lineCoverage(),
+        );
+        $processedData = new ProcessedCodeCoverageData();
+        $processedData->setLineCoverage($newData);
+
+        $coverage->setData($processedData);
     }
 }

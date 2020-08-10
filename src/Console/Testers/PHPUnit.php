@@ -9,8 +9,8 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Util\Str;
-use PHPUnit\TextUI\Configuration\Configuration;
-use PHPUnit\TextUI\Configuration\Registry;
+use PHPUnit\TextUI\XmlConfiguration\Configuration;
+use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -147,7 +147,7 @@ final class PHPUnit extends Tester
             return null;
         }
 
-        return Registry::getInstance()->get(realpath($configFilename));
+        return (new Loader())->load(realpath($configFilename));
     }
 
     /**

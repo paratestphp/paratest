@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
-use PHPUnit\TextUI\Configuration\Configuration;
+use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use RuntimeException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;

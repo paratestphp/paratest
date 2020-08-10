@@ -9,7 +9,7 @@ use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Tests\TestBase;
-use PHPUnit\Framework\Exception;
+use PHPUnit\TextUI\XmlConfiguration\Exception;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\ArgvInput;

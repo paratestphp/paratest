@@ -107,7 +107,7 @@ final class CoverageReporterTest extends TestBase
 
         static::assertFileExists($target);
 
-        $reportXml = Xml::loadFile($target);
+        $reportXml = (new Xml\Loader())->loadFile($target);
         static::assertTrue($reportXml->hasChildNodes(), 'Incorrect clover report xml was generated');
     }
 
@@ -133,7 +133,7 @@ final class CoverageReporterTest extends TestBase
 
         static::assertFileExists($target);
 
-        $reportXml = Xml::loadFile($target);
+        $reportXml = (new Xml\Loader())->loadFile($target);
         static::assertTrue($reportXml->hasChildNodes(), 'Incorrect crap4j report xml was generated');
         static::assertEquals('crap_result', $reportXml->documentElement->tagName);
     }
@@ -204,7 +204,7 @@ final class CoverageReporterTest extends TestBase
         static::assertFileExists($target);
         static::assertFileExists($target . DS . 'index.xml', 'Index xml file was not generated');
 
-        $reportXml = Xml::loadFile($target . DS . 'index.xml');
+        $reportXml = (new Xml\Loader())->loadFile($target . DS . 'index.xml');
         static::assertTrue($reportXml->hasChildNodes(), 'Incorrect xml was generated');
     }
 

@@ -62,6 +62,7 @@ parameters:
             count: 3
             path: bin/phpunit-wrapper.php
 
+        # Known fixtures
         -
             message: "#^Should not use function \"proc_open\", please change the code\\.$#"
             count: 1

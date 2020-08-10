@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPUnit\TextUI\Configuration\Configuration;
+use PHPUnit\TextUI\XmlConfiguration\Configuration;
 
 use function array_reduce;
 use function count;

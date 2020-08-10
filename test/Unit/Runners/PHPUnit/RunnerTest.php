@@ -9,7 +9,7 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Tests\TestBase;
-use PHPUnit\TextUI\Configuration\Loader;
+use PHPUnit\TextUI\XmlConfiguration\Loader;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function getcwd;

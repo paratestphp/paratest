@@ -8,9 +8,10 @@ use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
-use PHPUnit\TextUI\Configuration\Configuration;
-use PHPUnit\TextUI\Configuration\PhpHandler;
-use PHPUnit\TextUI\Configuration\TestSuite;
+use PHPUnit\Framework\ExecutionOrderDependency;
+use PHPUnit\TextUI\XmlConfiguration\Configuration;
+use PHPUnit\TextUI\XmlConfiguration\PhpHandler;
+use PHPUnit\TextUI\XmlConfiguration\TestSuite;
 use PHPUnit\Util\FileLoader;
 use PHPUnit\Util\Test;
 use RuntimeException;
@@ -27,6 +28,7 @@ use function is_array;
 use function is_int;
 use function preg_match;
 use function sprintf;
+use function strrpos;
 use function substr;
 use function version_compare;
 
@@ -235,12 +237,16 @@ final class SuiteLoader
     }
 
     /**
-     * @param string[][] $batches
-     * @param string[]   $dependencies
-     * @param string[]   $tests
+     * @param string[][]                 $batches
+     * @param ExecutionOrderDependency[] $dependencies
+     * @param string[]                   $tests
      */
     private function addDependentTestsToBatchSet(array &$batches, array $dependencies, array $tests): void
     {
+        $dependencies = array_map(static function (ExecutionOrderDependency $dependency): string {
+            return substr($dependency->getTarget(), strrpos($dependency->getTarget(), ':') + 1);
+        }, $dependencies);
+
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
                 if (in_array($methodName, $dependencies, true)) {

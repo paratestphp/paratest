@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPUnit\TextUI\Configuration\Configuration;
+use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use Symfony\Component\Process\Process;
 
 use function array_map;

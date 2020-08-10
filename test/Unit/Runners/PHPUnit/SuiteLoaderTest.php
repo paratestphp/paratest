@@ -335,8 +335,8 @@ final class SuiteLoaderTest extends TestBase
         $tests = $loader->getTestMethods();
         static::assertCount(2, $tests);
         $testMethod = $tests[0];
-        static::assertEquals($testMethod->getName(), 'testOneA|testOneBDependsOnA|testOneCDependsOnB');
+        static::assertEquals('testOneA|testOneBDependsOnA|testOneCDependsOnB', $testMethod->getName());
         $testMethod = $tests[1];
-        static::assertEquals($testMethod->getName(), 'testTwoA|testTwoBDependsOnA');
+        static::assertEquals('testTwoA|testTwoBDependsOnA', $testMethod->getName());
     }
 }

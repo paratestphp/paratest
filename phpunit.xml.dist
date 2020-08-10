@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-         bootstrap="./test/bootstrap.php"
-         colors="true"
-         failOnRisky="true"
-         failOnWarning="true"
-         beStrictAboutChangesToGlobalState="true"
-         beStrictAboutOutputDuringTests="true"
-         beStrictAboutTodoAnnotatedTests="true"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+        bootstrap="./test/bootstrap.php"
+        colors="true"
+        failOnRisky="true"
+        failOnWarning="true"
+        beStrictAboutChangesToGlobalState="true"
+        beStrictAboutOutputDuringTests="true"
+        beStrictAboutTodoAnnotatedTests="true"
 >
-    <testsuites>
-        <testsuite name="ParaTest Unit Tests">
-            <directory>./test/Unit/</directory>
-        </testsuite>
-        <testsuite name="ParaTest Functional Tests">
-            <directory>./test/Functional/</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="ParaTest Unit Tests">
+      <directory>./test/Unit/</directory>
+    </testsuite>
+    <testsuite name="ParaTest Functional Tests">
+      <directory>./test/Functional/</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>

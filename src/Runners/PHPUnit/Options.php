@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPUnit\TextUI\Configuration\Configuration;
-use PHPUnit\TextUI\Configuration\Registry;
+use PHPUnit\TextUI\XmlConfiguration\Configuration;
+use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 
@@ -350,7 +350,7 @@ final class Options
             'coverage-test-limit' => $this->coverageTestLimit,
         ]);
         if (($configuration = $this->getConfigurationPath($filtered)) !== null) {
-            $filtered['configuration'] = Registry::getInstance()->get($configuration);
+            $filtered['configuration'] = (new Loader())->load($configuration);
         }
 
         return $filtered;
