@@ -2,7 +2,8 @@
 
 set -ex
 
-phpunitXsd="vendor/phpunit/phpunit/schema/9.3.xsd"
+phpunitXsd="vendor/phpunit/phpunit/phpunit.xsd"
+
 xmllint --noout --schema "$phpunitXsd" phpunit.xml.dist
 xmllint --noout --schema vendor/squizlabs/php_codesniffer/phpcs.xsd phpcs.xml.dist
 xmllint --noout --schema vendor/vimeo/psalm/config.xsd psalm.xml.dist
