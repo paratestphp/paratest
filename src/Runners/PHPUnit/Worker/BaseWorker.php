@@ -157,7 +157,7 @@ abstract class BaseWorker
     }
 
     /**
-     * @param array<string, bool|int> $status
+     * @param array<string, bool|int|string> $status
      */
     protected function setExitCode(array $status): void
     {

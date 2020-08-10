@@ -137,6 +137,14 @@ The corresponding logfiles are placed in your `sys_get_temp_dir()`.
 See [Logging docs](docs/logging.md) for further information.
 
 ### Generating code coverage
+
+Beginning from PHPUnit 9.3.4, it is strongly advised to warm the coverage cache before running any code-coverage
+analysis, see [PHPUnit Changlog @ 9.3.4](https://github.com/sebastianbergmann/phpunit/blob/master/ChangeLog-9.3.md#934---2020-08-10):
+
+```
+vendor/bin/phpunit --warm-coverage-cache
+``` 
+
 Examples assume your tests are located under `./test/unit`.
 ````
 vendor/bin/paratest -p 1 --coverage-text test/unit

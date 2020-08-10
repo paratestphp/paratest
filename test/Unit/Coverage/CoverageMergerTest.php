@@ -7,7 +7,9 @@ namespace ParaTest\Tests\Unit\Coverage;
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Tests\TestBase;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Driver\Driver;
 use SebastianBergmann\CodeCoverage\Filter;
+use SebastianBergmann\CodeCoverage\RawCodeCoverageData;
 
 use function assert;
 
@@ -34,20 +36,24 @@ class CoverageMergerTest extends TestBase
         $secondFileFirstLine = 53;
 
         $filter = new Filter();
-        $filter->addFilesToWhitelist([$firstFile, $secondFile]);
-        $coverage1 = new CodeCoverage(null, $filter);
+        $filter->includeFiles([$firstFile, $secondFile]);
+
+        $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
+            $firstFile => [$firstFileFirstLine => 1],
+            $secondFile => [$secondFileFirstLine => 1],
+        ]);
+        $coverage1 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
         $coverage1->append(
-            [
-                $firstFile => [$firstFileFirstLine => 1],
-                $secondFile => [$secondFileFirstLine => 1],
-            ],
+            $data,
             'Test1'
         );
-        $coverage2 = new CodeCoverage(null, $filter);
+
+        $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
+            $firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
+        ]);
+        $coverage2 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
         $coverage2->append(
-            [
-                $firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
-            ],
+            $data,
             'Test2'
         );
 
@@ -60,7 +66,7 @@ class CoverageMergerTest extends TestBase
 
         $this->assertInstanceOf(CodeCoverage::class, $coverage);
 
-        $data = $coverage->getData();
+        $data = $coverage->getData()->lineCoverage();
 
         $this->assertCount(2, $data[$firstFile][$firstFileFirstLine]);
         $this->assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
@@ -86,20 +92,24 @@ class CoverageMergerTest extends TestBase
         $secondFileFirstLine = 53;
 
         $filter = new Filter();
-        $filter->addFilesToWhitelist([$firstFile, $secondFile]);
-        $coverage1 = new CodeCoverage(null, $filter);
+        $filter->includeFiles([$firstFile, $secondFile]);
+
+        $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
+            $firstFile => [$firstFileFirstLine => 1],
+            $secondFile => [$secondFileFirstLine => 1],
+        ]);
+        $coverage1 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
         $coverage1->append(
-            [
-                $firstFile => [$firstFileFirstLine => 1],
-                $secondFile => [$secondFileFirstLine => 1],
-            ],
+            $data,
             'Test1'
         );
-        $coverage2 = new CodeCoverage(null, $filter);
+
+        $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
+            $firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
+        ]);
+        $coverage2 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
         $coverage2->append(
-            [
-                $firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
-            ],
+            $data,
             'Test2'
         );
 
@@ -111,7 +121,7 @@ class CoverageMergerTest extends TestBase
         assert($coverage instanceof CodeCoverage);
 
         $this->assertInstanceOf(CodeCoverage::class, $coverage);
-        $data = $coverage->getData();
+        $data = $coverage->getData()->lineCoverage();
 
         $this->assertCount(1, $data[$firstFile][$firstFileFirstLine]);
         $this->assertCount(1, $data[$secondFile][$secondFileFirstLine]);
