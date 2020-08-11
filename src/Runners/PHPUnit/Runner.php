@@ -111,10 +111,15 @@ final class Runner extends BaseRunner
             }
 
             $this->acquireToken($tokenData['token']);
-            $env = [
-                'TEST_TOKEN' => $tokenData['token'],
-                'UNIQUE_TEST_TOKEN' => $tokenData['unique'],
-            ] + Habitat::getAll();
+            $env = [];
+            if (! $this->options->noTestTokens) {
+                $env = [
+                    'TEST_TOKEN' => $tokenData['token'],
+                    'UNIQUE_TEST_TOKEN' => $tokenData['unique'],
+                ];
+            }
+
+            $env += Habitat::getAll();
 
             $executebleTest                     = array_shift($this->pending);
             $this->running[$tokenData['token']] = new RunnerWorker($executebleTest);
