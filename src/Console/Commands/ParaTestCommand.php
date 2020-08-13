@@ -8,10 +8,6 @@ use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
-use ParaTest\Util\Str;
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
-use PHPUnit\TextUI\XmlConfiguration\Loader;
-use RuntimeException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -20,25 +16,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function array_key_exists;
-use function array_merge;
 use function class_exists;
 use function file_exists;
 use function is_string;
 use function is_subclass_of;
-use function realpath;
 use function sprintf;
-use function sys_get_temp_dir;
-use function tempnam;
 
 final class ParaTestCommand extends Command
 {
-    /**
-     * @see \PHPUnit\Util\Configuration
-     * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
-     */
-    private const TEST_SUITE_FILTER_SEPARATOR = ',';
-
     /** @var string */
     protected static $defaultName = 'ParaTest';
 
@@ -182,7 +167,7 @@ final class ParaTestCommand extends Command
             return $this->displayHelp($input, $output);
         }
 
-        $options     = new Options($this->getRunnerOptions($input));
+        $options     = Options::fromConsoleInput($input);
         $runnerClass = $this->getRunnerClass($input);
 
         $runner = new $runnerClass($options, $output);
@@ -212,7 +197,7 @@ final class ParaTestCommand extends Command
         return $this->getConfig($input) !== null;
     }
 
-    private function getConfig(InputInterface $input): ?Configuration
+    private function getConfig(InputInterface $input): ?string
     {
         if (is_string($path = $input->getOption('configuration')) && file_exists($path)) {
             $configFilename = $path;
@@ -224,7 +209,7 @@ final class ParaTestCommand extends Command
             return null;
         }
 
-        return (new Loader())->load(realpath($configFilename));
+        return $configFilename;
     }
 
     /**
@@ -236,51 +221,6 @@ final class ParaTestCommand extends Command
         $input = new ArrayInput(['command_name' => $this->getName()]);
 
         return $help->run($input, $output);
-    }
-
-    /**
-     * @return array<string, string|string[]>
-     *
-     * @throws RuntimeException
-     */
-    public function getRunnerOptions(InputInterface $input): array
-    {
-        $path    = $input->getArgument('path');
-        $options = $this->getOptions($input);
-
-        if ($this->hasCoverage($options)) {
-            $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');
-        }
-
-        if ($path !== null && $path !== '') {
-            $options = array_merge(['path' => $path], $options);
-        }
-
-        if (array_key_exists('testsuite', $options)) {
-            $options['testsuite'] = Str::explodeWithCleanup(
-                self::TEST_SUITE_FILTER_SEPARATOR,
-                $options['testsuite']
-            );
-        }
-
-        return $options;
-    }
-
-    /**
-     * Return whether or not code coverage information should be collected.
-     *
-     * @param array<string, string> $options
-     */
-    private function hasCoverage(array $options): bool
-    {
-        $isFileFormat = isset($options['coverage-html'])
-            || isset($options['coverage-clover'])
-            || isset($options['coverage-crap4j'])
-            || isset($options['coverage-xml']);
-        $isTextFormat = isset($options['coverage-text']);
-        $isPHP        = isset($options['coverage-php']);
-
-        return $isTextFormat || $isFileFormat && ! $isPHP;
     }
 
     /**
@@ -306,24 +246,5 @@ final class ParaTestCommand extends Command
         }
 
         return $runnerClass;
-    }
-
-    /**
-     * Returns non-empty options.
-     *
-     * @return array<string, string>
-     */
-    private function getOptions(InputInterface $input): array
-    {
-        $options = $input->getOptions();
-        foreach ($options as $key => $value) {
-            if (! empty($options[$key])) {
-                continue;
-            }
-
-            unset($options[$key]);
-        }
-
-        return $options;
     }
 }

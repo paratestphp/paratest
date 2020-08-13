@@ -49,11 +49,11 @@ final class ParaTestInvoker
             $input->setArgument('path', $this->path);
         }
 
-        $options = $paraTestCommand->getRunnerOptions($input);
+        $options = Options::fromConsoleInput($input);
 
         $output = new BufferedOutput();
 
-        $runner = new $runnerClass(new Options($options), $output);
+        $runner = new $runnerClass($options, $output);
         $runner->run();
 
         return new RunnerResult($runner, $output);

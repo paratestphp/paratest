@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Util\Str;
 use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Process\Process;
 
 use function array_diff_key;
+use function array_key_exists;
+use function array_merge;
 use function array_shift;
 use function assert;
 use function count;
@@ -31,6 +35,8 @@ use function realpath;
 use function rtrim;
 use function sprintf;
 use function strlen;
+use function sys_get_temp_dir;
+use function tempnam;
 use function unserialize;
 
 use const DIRECTORY_SEPARATOR;
@@ -63,6 +69,12 @@ use const PHP_BINARY;
  */
 final class Options
 {
+    /**
+     * @see \PHPUnit\Util\Configuration
+     * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
+     */
+    private const TEST_SUITE_FILTER_SEPARATOR = ',';
+
     /**
      * The number of processes to run at a time.
      *
@@ -131,15 +143,11 @@ final class Options
     /** @var string */
     private $filter;
 
-    // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
-
     /** @var string[] */
     private $groups;
 
     /** @var string[] */
     private $excludeGroups;
-
-    // phpcs:enable
 
     /**
      * A collection of option values directly corresponding
@@ -235,6 +243,65 @@ final class Options
 
         $this->filtered = $this->filterOptions($opts);
         $this->initAnnotations();
+    }
+
+    public static function fromConsoleInput(InputInterface $input): self
+    {
+        $path    = $input->getArgument('path');
+        $options = self::getOptions($input);
+
+        if (self::hasCoverage($options)) {
+            $options['coverage-php'] = tempnam(sys_get_temp_dir(), 'paratest_');
+        }
+
+        if ($path !== null && $path !== '') {
+            $options = array_merge(['path' => $path], $options);
+        }
+
+        if (array_key_exists('testsuite', $options)) {
+            $options['testsuite'] = Str::explodeWithCleanup(
+                self::TEST_SUITE_FILTER_SEPARATOR,
+                $options['testsuite']
+            );
+        }
+
+        return new self($options);
+    }
+
+    /**
+     * Return whether or not code coverage information should be collected.
+     *
+     * @param array<string, string> $options
+     */
+    private static function hasCoverage(array $options): bool
+    {
+        $isFileFormat = isset($options['coverage-html'])
+            || isset($options['coverage-clover'])
+            || isset($options['coverage-crap4j'])
+            || isset($options['coverage-xml']);
+        $isTextFormat = isset($options['coverage-text']);
+        $isPHP        = isset($options['coverage-php']);
+
+        return $isTextFormat || $isFileFormat && ! $isPHP;
+    }
+
+    /**
+     * Returns non-empty options.
+     *
+     * @return array<string, string>
+     */
+    private static function getOptions(InputInterface $input): array
+    {
+        $options = $input->getOptions();
+        foreach ($options as $key => $value) {
+            if (! empty($options[$key])) {
+                continue;
+            }
+
+            unset($options[$key]);
+        }
+
+        return $options;
     }
 
     /**
