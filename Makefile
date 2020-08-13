@@ -8,7 +8,7 @@ vendor: composer.lock
 .PHONY: csfix
 csfix: vendor
 	vendor/bin/phpcbf || true
-	vendor/bin/phpcs
+	vendor/bin/phpcs --cache
 
 .PHONY: static-analysis
 static-analysis: vendor
