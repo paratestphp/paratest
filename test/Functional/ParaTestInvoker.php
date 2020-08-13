@@ -6,7 +6,6 @@ namespace ParaTest\Tests\Functional;
 
 use InvalidArgumentException;
 use ParaTest\Console\Commands\ParaTestCommand;
-use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
@@ -40,8 +39,7 @@ final class ParaTestInvoker
         }
 
         $options['phpunit'] = PHPUNIT;
-        $phpunitTester      = new PHPUnit();
-        $paraTestCommand    = new ParaTestCommand($phpunitTester);
+        $paraTestCommand    = new ParaTestCommand();
         $input              = new ArrayInput([], $paraTestCommand->getDefinition());
         foreach ($options as $key => $value) {
             $input->setOption($key, $value);
@@ -51,7 +49,7 @@ final class ParaTestInvoker
             $input->setArgument('path', $this->path);
         }
 
-        $options = $phpunitTester->getRunnerOptions($input);
+        $options = $paraTestCommand->getRunnerOptions($input);
 
         $output = new BufferedOutput();
 

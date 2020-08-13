@@ -31,7 +31,4 @@ if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
     exit(1);
 }
 
-use ParaTest\Console\Commands\ParaTestCommand;
-use ParaTest\Console\Testers\PHPUnit;
-
-ParaTestCommand::applicationFactory(new PHPUnit())->run();
+\ParaTest\Console\Commands\ParaTestCommand::applicationFactory()->run();

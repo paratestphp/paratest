@@ -4,35 +4,53 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Console\Commands;
 
+use InvalidArgumentException;
 use ParaTest\Console\Commands\ParaTestCommand;
-use ParaTest\Console\Testers\PHPUnit;
+use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Tests\TestBase;
+use PHPUnit\TextUI\XmlConfiguration\Exception;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Tester\CommandTester;
+
+use function chdir;
+use function getcwd;
 
 final class ParaTestCommandTest extends TestBase
 {
-    /** @var PHPUnit  */
-    protected $tester;
     /** @var ParaTestCommand  */
-    protected $command;
+    private $command;
+    /** @var CommandTester */
+    private $commandTester;
+    /** @var string */
+    private $cwd;
 
     public function setUp(): void
     {
-        $this->tester  = new PHPUnit();
-        $this->command = new ParaTestCommand($this->tester);
+        $this->command = new ParaTestCommand();
+
+        $application = new Application();
+        $application->add($this->command);
+        $application->add(new HelpCommand());
+
+        $this->commandTester = new CommandTester($this->command);
+
+        $cwd = getcwd();
+        static::assertIsString($cwd);
+        $this->cwd = $cwd;
     }
 
-    public function testConstructor(): void
+    protected function tearDown(): void
     {
-        static::assertEquals('paratest', $this->command->getName());
-        static::assertSame($this->tester, $this->getObjectValue($this->command, 'tester'));
+        chdir($this->cwd);
     }
 
     public function testApplicationFactory(): void
     {
-        $application = ParaTestCommand::applicationFactory($this->tester);
+        $application = ParaTestCommand::applicationFactory();
         $commands    = $application->all();
 
         static::assertArrayHasKey($this->command->getName(), $commands);
@@ -213,11 +231,60 @@ final class ParaTestCommandTest extends TestBase
         ];
         $expected = new InputDefinition($options);
 
-        $application = ParaTestCommand::applicationFactory($this->tester);
+        $application = ParaTestCommand::applicationFactory();
         $command     = $application->get($this->command->getName());
         $command->mergeApplicationDefinition();
         $definition = $command->getDefinition();
 
         static::assertEquals($expected, $definition);
+    }
+
+    public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
+    {
+        static::expectException(Exception::class);
+        static::expectDeprecationMessage('Could not read "nope.xml"');
+
+        $this->commandTester->execute(['--configuration' => 'nope.xml']);
+    }
+
+    public function testDisplayHelpWithoutConfigNorPath(): void
+    {
+        chdir(__DIR__);
+
+        $this->commandTester->execute([]);
+
+        static::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
+    }
+
+    public function testCustomRunnerMustBeAValidRunner(): void
+    {
+        static::expectException(InvalidArgumentException::class);
+
+        $this->commandTester->execute(['--runner' => 'stdClass']);
+    }
+
+    /**
+     * @dataProvider provideConfigurationDirectories
+     */
+    public function testGetPhpunitConfigFromDefaults(string $directory): void
+    {
+        chdir($directory);
+
+        $this->commandTester->execute([
+            '--runner' => EmptyRunnerStub::class,
+        ]);
+
+        static::assertStringContainsString($directory, $this->commandTester->getDisplay());
+    }
+
+    /**
+     * @return array<string, string[]>
+     */
+    public function provideConfigurationDirectories(): array
+    {
+        return [
+            'config-from-phpunit.xml' => [FIXTURES . DS . 'config-from-phpunit.xml'],
+            'config-from-phpunit.xml.dist' => [FIXTURES . DS . 'config-from-phpunit.xml.dist'],
+        ];
     }
 }

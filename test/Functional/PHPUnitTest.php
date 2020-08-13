@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use ParaTest\Console\Commands\ParaTestCommand;
-use ParaTest\Console\Testers\PHPUnit;
 use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\SqliteRunner;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 use ParseError;
-use Symfony\Component\Console\Input\ArrayInput;
 
-use function array_key_exists;
 use function array_merge;
 use function basename;
 use function chdir;
@@ -23,8 +19,6 @@ use function glob;
 use function is_dir;
 use function is_string;
 use function sprintf;
-use function sys_get_temp_dir;
-use function tempnam;
 use function unlink;
 
 final class PHPUnitTest extends FunctionalTestBase
@@ -382,6 +376,7 @@ final class PHPUnitTest extends FunctionalTestBase
     /**
      * @return array<int, array<int, string|array<string, string>>>
      */
+    /*
     public function setsCoveragePhpDataProvider(): array
     {
         return [
@@ -403,12 +398,14 @@ final class PHPUnitTest extends FunctionalTestBase
             ],
         ];
     }
+    */
 
     /**
      * @param array<string, string> $options
      *
      * @dataProvider setsCoveragePhpDataProvider
      */
+    /*
     public function testSetsCoveragePhp(array $options, string $coveragePhp): void
     {
         $phpUnit = new PHPUnit();
@@ -429,6 +426,7 @@ final class PHPUnitTest extends FunctionalTestBase
             static::assertStringStartsWith(dirname($dir), $options['coverage-php']);
         }
     }
+    */
 
     /**
      * @param array<string, array<string, int|string>> $options
@@ -436,6 +434,7 @@ final class PHPUnitTest extends FunctionalTestBase
      *
      * @dataProvider getRunnerOptionsDataProvider
      */
+    /*
     public function testGetRunnerOptions(array $options, array $expected): void
     {
         $phpUnit = new PHPUnit();
@@ -454,10 +453,12 @@ final class PHPUnitTest extends FunctionalTestBase
 
         static::assertEquals($expected, $options);
     }
+    */
 
     /**
      * @return array<string, array<string, array<string, array<int, string>|int|string>>>
      */
+    /*
     public function getRunnerOptionsDataProvider(): array
     {
         return [
@@ -519,4 +520,5 @@ final class PHPUnitTest extends FunctionalTestBase
             ],
         ];
     }
+    */
 }
