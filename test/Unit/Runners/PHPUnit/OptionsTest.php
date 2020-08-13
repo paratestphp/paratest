@@ -8,6 +8,7 @@ use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputDefinition;
 
 use function chdir;
 use function defined;
@@ -17,6 +18,7 @@ use function glob;
 use function intdiv;
 use function is_dir;
 use function mkdir;
+use function sort;
 use function sys_get_temp_dir;
 use function unlink;
 
@@ -62,6 +64,22 @@ final class OptionsTest extends TestBase
         foreach (glob(getcwd() . DS . '*') as $file) {
             unlink($file);
         }
+    }
+
+    public function testOptionsAreOrdered(): void
+    {
+        $inputDefinition = new InputDefinition();
+        Options::setInputDefinition($inputDefinition);
+
+        $options = [];
+        foreach ($inputDefinition->getOptions() as $inputOption) {
+            $options[] = $inputOption->getName();
+        }
+
+        $expectedOrder = $options;
+        sort($expectedOrder);
+
+        static::assertSame($expectedOrder, $options);
     }
 
     public function testFilteredOptionsShouldContainExtraneousOptions(): void

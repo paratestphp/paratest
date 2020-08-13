@@ -310,30 +310,31 @@ final class Options
     public static function setInputDefinition(InputDefinition $inputDefinition): void
     {
         $inputDefinition->setDefinition([
+            // Arguments
+            new InputArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
+            ),
+
+            // Options
             new InputOption(
-                'processes',
-                'p',
+                'bootstrap',
+                null,
                 InputOption::VALUE_REQUIRED,
-                'The number of test processes to run.',
-                'auto'
+                'The bootstrap file to be used by PHPUnit.'
             ),
             new InputOption(
-                'functional',
-                'f',
-                InputOption::VALUE_NONE,
-                'Run test methods instead of classes in separate processes.'
-            ),
-            new InputOption(
-                'no-test-tokens',
+                'colors',
                 null,
                 InputOption::VALUE_NONE,
-                'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'
+                'Displays a colored bar as a test result.'
             ),
             new InputOption(
-                'help',
-                'h',
-                InputOption::VALUE_NONE,
-                'Display this help message.'
+                'configuration',
+                'c',
+                InputOption::VALUE_REQUIRED,
+                'The PHPUnit configuration file to use.'
             ),
             new InputOption(
                 'coverage-clover',
@@ -360,6 +361,13 @@ final class Options
                 'Serialize PHP_CodeCoverage object to file.'
             ),
             new InputOption(
+                'coverage-test-limit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of ' .
+                'coverage reports.'
+            ),
+            new InputOption(
                 'coverage-text',
                 null,
                 InputOption::VALUE_NONE,
@@ -372,11 +380,40 @@ final class Options
                 'Generate code coverage report in PHPUnit XML format.'
             ),
             new InputOption(
-                'coverage-test-limit',
+                'exclude-group',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of ' .
-                'coverage reports.'
+                'Don\'t run tests from the specified group(s).'
+            ),
+            new InputOption(
+                'filter',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Filter (only for functional mode).'
+            ),
+            new InputOption(
+                'functional',
+                'f',
+                InputOption::VALUE_NONE,
+                'Run test methods instead of classes in separate processes.'
+            ),
+            new InputOption(
+                'group',
+                'g',
+                InputOption::VALUE_REQUIRED,
+                'Only runs tests from the specified group(s).'
+            ),
+            new InputOption(
+                'help',
+                'h',
+                InputOption::VALUE_NONE,
+                'Display this help message.'
+            ),
+            new InputOption(
+                'log-junit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Log test execution in JUnit XML format to file.'
             ),
             new InputOption(
                 'max-batch-size',
@@ -386,10 +423,10 @@ final class Options
                 0
             ),
             new InputOption(
-                'filter',
+                'no-test-tokens',
                 null,
-                InputOption::VALUE_REQUIRED,
-                'Filter (only for functional mode).'
+                InputOption::VALUE_NONE,
+                'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'
             ),
             new InputOption(
                 'parallel-suite',
@@ -412,10 +449,10 @@ final class Options
                 '\'zend_extension=xdebug.so\'"'
             ),
             new InputOption(
-                'whitelist',
+                'path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Directory to add to the coverage whitelist.'
+                'An alias for the path argument.'
             ),
             new InputOption(
                 'phpunit',
@@ -424,34 +461,17 @@ final class Options
                 'The PHPUnit binary to execute. <comment>(default: vendor/bin/phpunit)</comment>'
             ),
             new InputOption(
+                'processes',
+                'p',
+                InputOption::VALUE_REQUIRED,
+                'The number of test processes to run.',
+                'auto'
+            ),
+            new InputOption(
                 'runner',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Runner, WrapperRunner or SqliteRunner. <comment>(default: Runner)</comment>'
-            ),
-            new InputOption(
-                'bootstrap',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'The bootstrap file to be used by PHPUnit.'
-            ),
-            new InputOption(
-                'configuration',
-                'c',
-                InputOption::VALUE_REQUIRED,
-                'The PHPUnit configuration file to use.'
-            ),
-            new InputOption(
-                'group',
-                'g',
-                InputOption::VALUE_REQUIRED,
-                'Only runs tests from the specified group(s).'
-            ),
-            new InputOption(
-                'exclude-group',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Don\'t run tests from the specified group(s).'
             ),
             new InputOption(
                 'stop-on-failure',
@@ -460,33 +480,16 @@ final class Options
                 'Don\'t start any more processes after a failure.'
             ),
             new InputOption(
-                'log-junit',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Log test execution in JUnit XML format to file.'
-            ),
-            new InputOption(
-                'colors',
-                null,
-                InputOption::VALUE_NONE,
-                'Displays a colored bar as a test result.'
-            ),
-            new InputOption(
                 'testsuite',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Filter which testsuite to run'
             ),
-            new InputArgument(
-                'path',
-                InputArgument::OPTIONAL,
-                'The path to a directory or file containing tests. <comment>(default: current directory)</comment>'
-            ),
             new InputOption(
-                'path',
+                'whitelist',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'An alias for the path argument.'
+                'Directory to add to the coverage whitelist.'
             ),
         ]);
     }
