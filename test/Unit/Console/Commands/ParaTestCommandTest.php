@@ -6,13 +6,10 @@ namespace ParaTest\Tests\Unit\Console\Commands;
 
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Console\Testers\PHPUnit;
-use ParaTest\Console\Testers\Tester;
 use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
 final class ParaTestCommandTest extends TestBase
 {
@@ -222,21 +219,5 @@ final class ParaTestCommandTest extends TestBase
         $definition = $command->getDefinition();
 
         static::assertEquals($expected, $definition);
-    }
-
-    public function testExecuteInvokesTestersExecuteMethod(): void
-    {
-        $input  = $this->getMockBuilder(InputInterface::class)->getMock();
-        $output = $this->getMockBuilder(OutputInterface::class)->getMock();
-        $tester = $this->getMockBuilder(Tester::class)->getMock();
-        $tester
-            ->expects(static::once())
-            ->method('execute')
-            ->with(
-                static::equalTo($input),
-                static::equalTo($output)
-            );
-        $command = new ParaTestCommand($tester);
-        $command->execute($input, $output);
     }
 }

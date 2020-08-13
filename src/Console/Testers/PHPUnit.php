@@ -30,10 +30,7 @@ use function sprintf;
 use function sys_get_temp_dir;
 use function tempnam;
 
-/**
- * Creates the interface for PHPUnit testing
- */
-final class PHPUnit extends Tester
+final class PHPUnit
 {
     /**
      * @see \PHPUnit\Util\Configuration
@@ -229,5 +226,24 @@ final class PHPUnit extends Tester
         }
 
         return $runnerClass;
+    }
+
+    /**
+     * Returns non-empty options.
+     *
+     * @return array<string, string>
+     */
+    private function getOptions(InputInterface $input): array
+    {
+        $options = $input->getOptions();
+        foreach ($options as $key => $value) {
+            if (! empty($options[$key])) {
+                continue;
+            }
+
+            unset($options[$key]);
+        }
+
+        return $options;
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Console\Commands;
 
-use ParaTest\Console\Testers\Tester;
+use ParaTest\Console\Testers\PHPUnit;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,17 +13,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class ParaTestCommand extends Command
 {
-    /** @var Tester */
+    /** @var PHPUnit */
     protected $tester;
 
-    public function __construct(Tester $tester)
+    public function __construct(PHPUnit $tester)
     {
         parent::__construct('paratest');
         $this->tester = $tester;
         $this->tester->configure($this);
     }
 
-    public static function applicationFactory(Tester $tester): Application
+    public static function applicationFactory(PHPUnit $tester): Application
     {
         $application = new Application('ParaTest');
         $command     = new ParaTestCommand($tester);
