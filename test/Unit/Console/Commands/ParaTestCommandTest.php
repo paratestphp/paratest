@@ -9,7 +9,6 @@ use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Tests\TestBase;
 use PHPUnit\TextUI\XmlConfiguration\Exception;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -21,8 +20,6 @@ use function getcwd;
 
 final class ParaTestCommandTest extends TestBase
 {
-    /** @var ParaTestCommand  */
-    private $command;
     /** @var CommandTester */
     private $commandTester;
     /** @var string */
@@ -30,13 +27,10 @@ final class ParaTestCommandTest extends TestBase
 
     public function setUp(): void
     {
-        $this->command = new ParaTestCommand();
-
-        $application = new Application();
-        $application->add($this->command);
+        $application = ParaTestCommand::applicationFactory();
         $application->add(new HelpCommand());
 
-        $this->commandTester = new CommandTester($this->command);
+        $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
 
         $cwd = getcwd();
         static::assertIsString($cwd);
@@ -53,8 +47,8 @@ final class ParaTestCommandTest extends TestBase
         $application = ParaTestCommand::applicationFactory();
         $commands    = $application->all();
 
-        static::assertArrayHasKey($this->command->getName(), $commands);
-        static::assertInstanceOf(ParaTestCommand::class, $commands[$this->command->getName()]);
+        static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
+        static::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
     }
 
     /**
@@ -72,18 +66,7 @@ final class ParaTestCommandTest extends TestBase
             ),
 
             // Default Symfony options
-            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message'),
-            new InputOption('--quiet', '-q', InputOption::VALUE_NONE, 'Do not output any message'),
-            new InputOption(
-                '--verbose',
-                '-v|vv|vvv',
-                InputOption::VALUE_NONE,
-                'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'
-            ),
-            new InputOption('--version', '-V', InputOption::VALUE_NONE, 'Display this application version'),
-            new InputOption('--ansi', '', InputOption::VALUE_NONE, 'Force ANSI output'),
-            new InputOption('--no-ansi', '', InputOption::VALUE_NONE, 'Disable ANSI output'),
-            new InputOption('--no-interaction', '-n', InputOption::VALUE_NONE, 'Do not ask any interactive question'),
+            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message.'),
 
             // Custom options
             new InputOption(
@@ -232,7 +215,7 @@ final class ParaTestCommandTest extends TestBase
         $expected = new InputDefinition($options);
 
         $application = ParaTestCommand::applicationFactory();
-        $command     = $application->get($this->command->getName());
+        $command     = $application->get(ParaTestCommand::COMMAND_NAME);
         $command->mergeApplicationDefinition();
         $definition = $command->getDefinition();
 

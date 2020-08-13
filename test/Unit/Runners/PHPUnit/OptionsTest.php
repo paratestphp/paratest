@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
+use Symfony\Component\Console\Input\ArrayInput;
 
 use function chdir;
 use function defined;
@@ -15,6 +17,7 @@ use function glob;
 use function intdiv;
 use function is_dir;
 use function mkdir;
+use function sys_get_temp_dir;
 use function unlink;
 
 final class OptionsTest extends TestBase
@@ -176,4 +179,146 @@ final class OptionsTest extends TestBase
             $options->filtered['configuration']->filename()
         );
     }
+
+    /**
+     * @param array<string, string> $options
+     *
+     * @dataProvider setsCoveragePhpDataProvider
+     */
+    public function testSetsCoveragePhp(array $options, string $coveragePhp): void
+    {
+        $c = new ParaTestCommand();
+
+        $input = new ArrayInput([], $c->getDefinition());
+        foreach ($options as $key => $value) {
+            $input->setOption($key, $value);
+        }
+
+        $input->setArgument('path', '.');
+        $options = Options::fromConsoleInput($input);
+
+        if ($coveragePhp !== '') {
+            static::assertEquals($coveragePhp, $options->filtered['coverage-php']);
+        } else {
+            static::assertStringStartsWith(sys_get_temp_dir(), $options->filtered['coverage-php']);
+        }
+    }
+
+    /**
+     * @return array<int, array<int, string|array<string, string>>>
+     */
+    public function setsCoveragePhpDataProvider(): array
+    {
+        return [
+            [
+                ['coverage-html' => 'wayne'],
+                '',
+            ],
+            [
+                ['coverage-clover' => 'wayne'],
+                '',
+            ],
+            [
+                ['coverage-php' => 'notWayne'],
+                'notWayne',
+            ],
+            [
+                ['coverage-clover' => 'wayne', 'coverage-php' => 'notWayne'],
+                'notWayne',
+            ],
+        ];
+    }
+
+    /**
+     * @param array<string, array<string, int|string>> $options
+     * @param array<string, array<string, int|string>> $expected
+     *
+     * @dataProvider getRunnerOptionsDataProvider
+     */
+    /*
+    public function testGetRunnerOptions(array $options, array $expected): void
+    {
+        $c       = new ParaTestCommand();
+        $input   = new ArrayInput($options, $c->getDefinition());
+
+        $options = Options::fromConsoleInput($input);
+
+        // Note:
+        // 'coverage-php' contains a random, temporary string.
+        // has to be refactored to be testable but I'll leave that as a
+        // TODO
+        if (array_key_exists('coverage-php', $options)) {
+            unset($options['coverage-php']);
+        }
+
+        static::assertEquals($expected, $options);
+    }
+    */
+
+    /**
+     * @return array<string, array<string, array<string, array<int, string>|int|string>>>
+     */
+    /*
+    public function getRunnerOptionsDataProvider(): array
+    {
+        return [
+            'default' => [
+                'input' => [
+                    'path' => 'bar',
+                    '--processes' => '10',
+                ],
+                'expected' => [
+                    'path' => 'bar',
+                    'processes' => '10',
+                ],
+            ],
+            'accepts all defined options' => [
+                'input' => [
+                    'path' => 'bar',
+                    '--processes' => '10',
+                    '--functional' => 1,
+                    '--no-test-tokens' => 1,
+//                    '--help' => "",
+                    '--coverage-clover' => 'clover',
+                    '--coverage-crap4j' => 'xml',
+                    '--coverage-html' => 'html',
+                    '--coverage-text' => 'text',
+                    '--coverage-xml' => 'xml',
+                    '--max-batch-size' => '5',
+                    '--filter' => 'filter',
+                    '--parallel-suite' => 'parallel-suite',
+                ],
+                'expected' => [
+                    'path' => 'bar',
+                    'processes' => '10',
+                    'functional' => 1,
+                    'no-test-tokens' => 1,
+                    'coverage-clover' => 'clover',
+                    'coverage-crap4j' => 'xml',
+                    'coverage-html' => 'html',
+                    'coverage-text' => 'text',
+                    'coverage-xml' => 'xml',
+                    'max-batch-size' => '5',
+                    'filter' => 'filter',
+                    'parallel-suite' => 'parallel-suite',
+                ],
+            ],
+            "splits testsuite on ','" => [
+                'input' => [
+                    'path' => 'bar',
+                    '--processes' => '10',
+                    '--testsuite' => 't1,t2',
+                ],
+                'expected' => [
+                    'path' => 'bar',
+                    'processes' => '10',
+                    'testsuite' => [
+                        't1',
+                        't2',
+                    ],
+                ],
+            ],
+        ];
+    }
+    */
 }
