@@ -301,7 +301,7 @@ final class ResultPrinter
     private function isSkippedIncompleTestCanBeTracked(Options $options): bool
     {
         return $options->functional()
-            || (count($options->groups()) === 0 && count($options->excludeGroups()) === 0);
+            || (count($options->group()) === 0 && count($options->excludeGroup()) === 0);
     }
 
     /**

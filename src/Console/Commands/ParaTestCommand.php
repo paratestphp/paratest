@@ -24,10 +24,19 @@ final class ParaTestCommand extends Command
 {
     public const COMMAND_NAME = 'paratest';
 
-    public static function applicationFactory(): Application
+    /** @var string */
+    private $cwd;
+
+    public function __construct(string $cwd, ?string $name = null)
+    {
+        $this->cwd = $cwd;
+        parent::__construct($name);
+    }
+
+    public static function applicationFactory(string $cwd): Application
     {
         $application = new Application();
-        $command     = new self(self::COMMAND_NAME);
+        $command     = new self($cwd, self::COMMAND_NAME);
 
         $application->add($command);
         $application->setDefaultCommand($command->getName(), true);
@@ -40,7 +49,7 @@ final class ParaTestCommand extends Command
      */
     protected function configure(): void
     {
-        Options::setInputDefinition($this->getDefinition());
+        Options::setInputDefinition($this->getDefinition(), $this->cwd);
     }
 
     public function mergeApplicationDefinition(bool $mergeArgs = true): void
@@ -56,7 +65,7 @@ final class ParaTestCommand extends Command
             return $this->displayHelp($input, $output);
         }
 
-        $options     = Options::fromConsoleInput($input);
+        $options     = Options::fromConsoleInput($input, $this->cwd);
         $runnerClass = $this->getRunnerClass($input);
 
         $runner = new $runnerClass($options, $output);

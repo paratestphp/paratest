@@ -322,16 +322,16 @@ final class SuiteLoader
      */
     private function testMatchGroupOptions(array $groups): bool
     {
-        if ($this->options === null || count($this->options->groups()) === 0) {
+        if ($this->options === null || count($this->options->group()) === 0) {
             return true;
         }
 
-        if (count($groups) === 0 || count(array_intersect($groups, $this->options->groups())) === 0) {
+        if (count($groups) === 0 || count(array_intersect($groups, $this->options->group())) === 0) {
             return false;
         }
 
-        return count($this->options->excludeGroups()) === 0
-            || count(array_intersect($groups, $this->options->excludeGroups())) === 0;
+        return count($this->options->excludeGroup()) === 0
+            || count(array_intersect($groups, $this->options->excludeGroup())) === 0;
     }
 
     private function testMatchFilterOptions(string $className, string $name): bool
