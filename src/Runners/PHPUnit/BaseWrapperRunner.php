@@ -20,7 +20,7 @@ abstract class BaseWrapperRunner extends BaseRunner
 
     final protected function beforeLoadChecks(): void
     {
-        if ($this->options->functional) {
+        if ($this->options->functional()) {
             throw new RuntimeException(
                 'The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due ' .
                     'to the current PHPUnit commands causing classloading issues.'

@@ -34,15 +34,15 @@ final class RunnerTest extends TestBase
         $runner  = new Runner(new Options($opts), $this->output);
         $options = $this->getObjectValue($runner, 'options');
 
-        static::assertEquals(4, $options->processes);
-        static::assertEquals(FIXTURES . DS . 'tests', $options->path);
+        static::assertEquals(4, $options->processes());
+        static::assertEquals(FIXTURES . DS . 'tests', $options->path());
         static::assertEquals([], $this->getObjectValue($runner, 'pending'));
         static::assertEquals([], $this->getObjectValue($runner, 'running'));
         static::assertEquals(-1, $this->getObjectValue($runner, 'exitcode'));
-        static::assertTrue($options->functional);
+        static::assertTrue($options->functional());
         //filter out processes and path and phpunit
         $config = (new Loader())->load(getcwd() . DS . 'phpunit.xml.dist');
-        static::assertEquals(['bootstrap' => 'hello', 'configuration' => $config], $options->filtered);
+        static::assertEquals(['bootstrap' => 'hello', 'configuration' => $config], $options->filtered());
         static::assertInstanceOf(LogInterpreter::class, $this->getObjectValue($runner, 'interpreter'));
         static::assertInstanceOf(ResultPrinter::class, $this->getObjectValue($runner, 'printer'));
     }

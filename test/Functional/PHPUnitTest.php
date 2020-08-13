@@ -85,7 +85,7 @@ final class PHPUnitTest extends FunctionalTestBase
         $cases['issue-432']['testPattern']      = '1';
         $cases['issue-432']['assertionPattern'] = '1';
 
-        $cases['issue-505']['options']       = ['no-test-tokens' => '1'];
+        $cases['issue-505']['options']       = ['no-test-tokens' => true];
         $cases['issue-505tokens']['options'] = [];
 
         return $cases;
@@ -311,7 +311,7 @@ final class PHPUnitTest extends FunctionalTestBase
         $proc    = $this->invokeParatest('failing-tests/StopOnFailureTest.php', [
             'stop-on-failure' => true,
             'functional' => true,
-            'processes' => '1',
+            'processes' => 1,
         ]);
         $results = $proc->getOutput();
         static::assertStringContainsString('Tests: 2,', $results);     // The suite actually has 4 tests
@@ -323,7 +323,7 @@ final class PHPUnitTest extends FunctionalTestBase
         $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';
         $proc   = $this->invokeParatest('passing-tests', [
             'functional' => true,
-            'processes' => '6',
+            'processes' => 6,
             'log-junit' => $output,
         ]);
         $this->assertTestsPassed($proc);

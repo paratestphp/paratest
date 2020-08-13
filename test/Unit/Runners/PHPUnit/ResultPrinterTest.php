@@ -84,7 +84,7 @@ final class ResultPrinterTest extends ResultTester
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit
+            $options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
     }
@@ -119,7 +119,7 @@ final class ResultPrinterTest extends ResultTester
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit,
+            $options->phpunit(),
             $pathToConfig
         );
         static::assertStringStartsWith($expected, $contents);
@@ -132,7 +132,7 @@ final class ResultPrinterTest extends ResultTester
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit
+            $options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
     }
@@ -141,7 +141,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $options  = new Options(['processes' => 1]);
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
+        $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit());
         static::assertStringStartsWith($expected, $contents);
     }
 

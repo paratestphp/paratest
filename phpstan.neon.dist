@@ -84,7 +84,7 @@ parameters:
         -
             message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
             count: 1
-            path: src/Console/Commands/ParaTestCommand.php
+            path: src/Runners/PHPUnit/Options.php
         -
             message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
             count: 1

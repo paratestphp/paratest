@@ -22,6 +22,9 @@ use function sort;
 use function sys_get_temp_dir;
 use function unlink;
 
+/**
+ * @covers \ParaTest\Runners\PHPUnit\Options
+ */
 final class OptionsTest extends TestBase
 {
     /** @var Options */
@@ -84,44 +87,44 @@ final class OptionsTest extends TestBase
 
     public function testFilteredOptionsShouldContainExtraneousOptions(): void
     {
-        static::assertEquals('group1', $this->options->filtered['group']);
-        static::assertEquals('/path/to/bootstrap', $this->options->filtered['bootstrap']);
+        static::assertEquals('group1', $this->options->filtered()['group']);
+        static::assertEquals('/path/to/bootstrap', $this->options->filtered()['bootstrap']);
     }
 
     public function testFilteredOptionsIsSet(): void
     {
-        static::assertEquals($this->unfiltered['processes'], $this->options->processes);
-        static::assertEquals($this->unfiltered['path'], $this->options->path);
-        static::assertEquals($this->unfiltered['phpunit'], $this->options->phpunit);
-        static::assertEquals($this->unfiltered['functional'], $this->options->functional);
-        static::assertEquals([$this->unfiltered['group']], $this->options->groups);
+        static::assertEquals($this->unfiltered['processes'], $this->options->processes());
+        static::assertEquals($this->unfiltered['path'], $this->options->path());
+        static::assertEquals($this->unfiltered['phpunit'], $this->options->phpunit());
+        static::assertEquals($this->unfiltered['functional'], $this->options->functional());
+        static::assertEquals([$this->unfiltered['group']], $this->options->groups());
     }
 
     public function testAnnotationsReturnsAnnotations(): void
     {
-        static::assertCount(1, $this->options->annotations);
-        static::assertEquals('group1', $this->options->annotations['group']);
+        static::assertCount(1, $this->options->annotations());
+        static::assertEquals('group1', $this->options->annotations()['group']);
     }
 
     public function testAnnotationsDefaultsToEmptyArray(): void
     {
         $options = new Options([]);
-        static::assertEmpty($options->annotations);
+        static::assertEmpty($options->annotations());
     }
 
     public function testDefaults(): void
     {
         $options = new Options();
-        static::assertEquals(Options::getNumberOfCPUCores(), $options->processes);
-        static::assertEmpty($options->path);
-        static::assertEquals(PHPUNIT, $options->phpunit);
-        static::assertFalse($options->functional);
+        static::assertEquals(Options::getNumberOfCPUCores(), $options->processes());
+        static::assertEmpty($options->path());
+        static::assertEquals(PHPUNIT, $options->phpunit());
+        static::assertFalse($options->functional());
     }
 
     public function testHalfProcessesMode(): void
     {
         $options = new Options(['processes' => 'half']);
-        static::assertEquals(intdiv(Options::getNumberOfCPUCores(), 2), $options->processes);
+        static::assertEquals(intdiv(Options::getNumberOfCPUCores(), 2), $options->processes());
     }
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd(): void
@@ -143,7 +146,7 @@ final class OptionsTest extends TestBase
     {
         $this->unfiltered['path'] = getcwd();
         $options                  = new Options($this->unfiltered);
-        static::assertArrayNotHasKey('configuration', $options->filtered);
+        static::assertArrayNotHasKey('configuration', $options->filtered());
     }
 
     public function testPassthru(): void
@@ -163,11 +166,11 @@ final class OptionsTest extends TestBase
         $expectedPassthru    = ['--prepend', 'xdebug-filter.php'];
         $expectedPassthruPhp = ['-d', 'zend_extension=xdebug.so'];
 
-        static::assertSame($expectedPassthru, $options->passthru);
-        static::assertSame($expectedPassthruPhp, $options->passthruPhp);
+        static::assertSame($expectedPassthru, $options->passthru());
+        static::assertSame($expectedPassthruPhp, $options->passthruPhp());
 
         $emptyOptions = new Options(['passthru' => '']);
-        static::assertNull($emptyOptions->passthru);
+        static::assertNull($emptyOptions->passthru());
     }
 
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists(): void
@@ -194,7 +197,7 @@ final class OptionsTest extends TestBase
         $options = new Options($this->unfiltered);
         static::assertEquals(
             __DIR__ . DS . 'generated-configs' . DS . $configFileName,
-            $options->filtered['configuration']->filename()
+            $options->filtered()['configuration']->filename()
         );
     }
 
@@ -216,9 +219,9 @@ final class OptionsTest extends TestBase
         $options = Options::fromConsoleInput($input);
 
         if ($coveragePhp !== '') {
-            static::assertEquals($coveragePhp, $options->filtered['coverage-php']);
+            static::assertEquals($coveragePhp, $options->filtered()['coverage-php']);
         } else {
-            static::assertStringStartsWith(sys_get_temp_dir(), $options->filtered['coverage-php']);
+            static::assertStringStartsWith(sys_get_temp_dir(), $options->filtered()['coverage-php']);
         }
     }
 

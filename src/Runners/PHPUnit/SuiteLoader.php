@@ -67,11 +67,11 @@ final class SuiteLoader
     {
         $this->options = $options;
 
-        if (! isset($this->options->filtered['configuration'])) {
+        if ($this->options === null || ! isset($this->options->filtered()['configuration'])) {
             return;
         }
 
-        $this->configuration = $this->options->filtered['configuration'];
+        $this->configuration = $this->options->filtered()['configuration'];
     }
 
     /**
@@ -118,8 +118,8 @@ final class SuiteLoader
                 (new Facade())->getFilesAsArray($path, ['Test.php'])
             );
         } elseif (
-            isset($this->options->parallelSuite)
-            && $this->options->parallelSuite
+            $this->options !== null
+            && $this->options->parallelSuite()
             && $this->configuration !== null
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
@@ -131,18 +131,18 @@ final class SuiteLoader
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
             $testSuiteCollection = $this->configuration->testSuite()->asArray();
-            if (count($this->options->testsuite) > 0) {
+            if (count($this->options->testsuite()) > 0) {
                 $suitesName = array_map(static function (TestSuite $testSuite): string {
                     return $testSuite->name();
                 }, $testSuiteCollection);
-                foreach ($this->options->testsuite as $testSuiteName) {
+                foreach ($this->options->testsuite() as $testSuiteName) {
                     if (! in_array($testSuiteName, $suitesName, true)) {
                         throw new RuntimeException("Suite path $testSuiteName could not be found");
                     }
                 }
 
                 foreach ($testSuiteCollection as $index => $testSuite) {
-                    if (in_array($testSuite->name(), $this->options->testsuite, true)) {
+                    if (in_array($testSuite->name(), $this->options->testsuite(), true)) {
                         continue;
                     }
 
@@ -215,8 +215,8 @@ final class SuiteLoader
      */
     private function getMethodBatches(ParsedClass $class): array
     {
-        $classMethods = $class->getMethods($this->options !== null ? $this->options->annotations : []);
-        $maxBatchSize = $this->options !== null && $this->options->functional ? $this->options->maxBatchSize : 0;
+        $classMethods = $class->getMethods($this->options !== null ? $this->options->annotations() : []);
+        $maxBatchSize = $this->options !== null && $this->options->functional() ? $this->options->maxBatchSize() : 0;
         $batches      = [];
         foreach ($classMethods as $method) {
             $tests = $this->getMethodTests($class, $method);
@@ -322,27 +322,27 @@ final class SuiteLoader
      */
     private function testMatchGroupOptions(array $groups): bool
     {
-        if ($this->options === null || count($this->options->groups) === 0) {
+        if ($this->options === null || count($this->options->groups()) === 0) {
             return true;
         }
 
-        if (count($groups) === 0 || count(array_intersect($groups, $this->options->groups)) === 0) {
+        if (count($groups) === 0 || count(array_intersect($groups, $this->options->groups())) === 0) {
             return false;
         }
 
-        return count($this->options->excludeGroups) === 0
-            || count(array_intersect($groups, $this->options->excludeGroups)) === 0;
+        return count($this->options->excludeGroups()) === 0
+            || count(array_intersect($groups, $this->options->excludeGroups())) === 0;
     }
 
     private function testMatchFilterOptions(string $className, string $name): bool
     {
-        if ($this->options === null || $this->options->filter === null) {
+        if ($this->options === null || $this->options->filter() === null) {
             return true;
         }
 
-        $re       = substr($this->options->filter, 0, 1) === '/'
-            ? $this->options->filter
-            : '/' . $this->options->filter . '/';
+        $re       = substr($this->options->filter(), 0, 1) === '/'
+            ? $this->options->filter()
+            : '/' . $this->options->filter() . '/';
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;
@@ -365,7 +365,7 @@ final class SuiteLoader
     }
 
     /**
-     * @see \PHPUnit\TextUI\Configuration\TestSuiteMapper::map
+     * @see \PHPUnit\TextUI\XmlConfiguration\TestSuiteMapper::map
      */
     private function loadFilesFromTestSuite(TestSuite $testSuiteCollection): void
     {
@@ -416,8 +416,8 @@ final class SuiteLoader
         }
 
         $bootstrap = null;
-        if (isset($this->options->filtered['bootstrap'])) {
-            $bootstrap = $this->options->filtered['bootstrap'];
+        if ($this->options !== null && isset($this->options->filtered()['bootstrap'])) {
+            $bootstrap = $this->options->filtered()['bootstrap'];
         } elseif ($this->configuration !== null && $this->configuration->phpunit()->hasBootstrap()) {
             $bootstrap = $this->configuration->phpunit()->bootstrap();
         }

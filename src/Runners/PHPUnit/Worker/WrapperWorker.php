@@ -59,9 +59,9 @@ final class WrapperWorker extends BaseWorker
         }
 
         $this->currentlyExecuting = $test;
-        $commandArguments         = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru);
+        $commandArguments         = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
         $command                  = implode(' ', $commandArguments);
-        if ($options->verbose > 0) {
+        if ($options->verbose() > 0) {
             $this->output->write("\nExecuting test via: $command\n");
         }
 

@@ -48,27 +48,6 @@ use const PHP_BINARY;
 /**
  * An object containing all configurable information used
  * to run PHPUnit via ParaTest.
- *
- * @property-read int $processes
- * @property-read string $path
- * @property-read string $phpunit
- * @property-read bool $functional
- * @property-read bool $stopOnFailure
- * @property-read array<string, (string|bool|int|Configuration|string[]|null)> $filtered
- * @property-read string $runner
- * @property-read bool $noTestTokens
- * @property-read bool $colors
- * @property-read string[] $testsuite
- * @property-read int|null $maxBatchSize
- * @property-read string $filter
- * @property-read string[] $groups
- * @property-read string[] $excludeGroups
- * @property-read array<string, string> $annotations
- * @property-read bool $parallelSuite
- * @property-read string[]|null $passthru
- * @property-read string[]|null $passthruPhp
- * @property-read int $verbose
- * @property-read int $coverageTestLimit
  */
 final class Options
 {
@@ -143,7 +122,7 @@ final class Options
     /** @var int|null */
     private $maxBatchSize;
 
-    /** @var string */
+    /** @var string|null */
     private $filter;
 
     /** @var string[] */
@@ -495,25 +474,6 @@ final class Options
     }
 
     /**
-     * Public read accessibility.
-     *
-     * @return mixed
-     */
-    public function __get(string $var)
-    {
-        return $this->{$var};
-    }
-
-    /**
-     * Public read accessibility
-     * (e.g. to make empty($options->property) work as expected).
-     */
-    public function __isset(string $var): bool
-    {
-        return isset($this->{$var});
-    }
-
-    /**
      * Returns a collection of ParaTest's default
      * option values.
      *
@@ -524,7 +484,7 @@ final class Options
         return [
             'processes' => 'auto',
             'path' => '',
-            'phpunit' => static::phpunit(),
+            'phpunit' => static::getPhpunitBinary(),
             'functional' => false,
             'stop-on-failure' => false,
             'runner' => 'Runner',
@@ -550,7 +510,7 @@ final class Options
      *
      * @return string $phpunit the path to phpunit
      */
-    private static function phpunit(): string
+    private static function getPhpunitBinary(): string
     {
         $vendor = static::vendorDir();
 
@@ -733,5 +693,112 @@ final class Options
         }
 
         return $passthruAsArguments;
+    }
+
+    public function processes(): int
+    {
+        return $this->processes;
+    }
+
+    public function path(): string
+    {
+        return $this->path;
+    }
+
+    public function phpunit(): string
+    {
+        return $this->phpunit;
+    }
+
+    public function functional(): bool
+    {
+        return $this->functional;
+    }
+
+    public function stopOnFailure(): bool
+    {
+        return $this->stopOnFailure;
+    }
+
+    /** @return array<string, (string|bool|int|Configuration|string[]|null)> */
+    public function filtered(): array
+    {
+        return $this->filtered;
+    }
+
+    public function runner(): string
+    {
+        return $this->runner;
+    }
+
+    public function noTestTokens(): bool
+    {
+        return $this->noTestTokens;
+    }
+
+    public function colors(): bool
+    {
+        return $this->colors;
+    }
+
+    /** @return string[] */
+    public function testsuite(): array
+    {
+        return $this->testsuite;
+    }
+
+    public function maxBatchSize(): ?int
+    {
+        return $this->maxBatchSize;
+    }
+
+    public function filter(): ?string
+    {
+        return $this->filter;
+    }
+
+    /** @return string[] */
+    public function groups(): array
+    {
+        return $this->groups;
+    }
+
+    /** @return string[] */
+    public function excludeGroups(): array
+    {
+        return $this->excludeGroups;
+    }
+
+    /** @return array<string, string> */
+    public function annotations(): array
+    {
+        return $this->annotations;
+    }
+
+    public function parallelSuite(): bool
+    {
+        return $this->parallelSuite;
+    }
+
+    /** @return string[]|null */
+    public function passthru(): ?array
+    {
+        return $this->passthru;
+    }
+
+    /** @return string[]|null */
+    public function passthruPhp(): ?array
+    {
+        return $this->passthruPhp;
+    }
+
+    public function verbose(): int
+    {
+        return $this->verbose;
+    }
+
+    public function coverageTestLimit(): int
+    {
+        return $this->coverageTestLimit;
     }
 }

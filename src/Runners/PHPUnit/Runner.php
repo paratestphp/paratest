@@ -60,7 +60,7 @@ final class Runner extends BaseRunner
                         $this->releaseToken($key);
                     }
                 } catch (Throwable $e) {
-                    if ($this->options->verbose > 0) {
+                    if ($this->options->verbose() > 0) {
                         $this->output->writeln("An error for $key: {$e->getMessage()}");
                         $this->output->writeln("Command: {$test->getExecutableTest()->getLastCommand()}");
                         $this->output->writeln('StdErr: ' . $test->getStderr());
@@ -103,8 +103,7 @@ final class Runner extends BaseRunner
      */
     private function fillRunQueue(): void
     {
-        $opts = $this->options;
-        while (count($this->pending) > 0 && count($this->running) < $opts->processes) {
+        while (count($this->pending) > 0 && count($this->running) < $this->options->processes()) {
             $tokenData = $this->getNextAvailableToken();
             if ($tokenData === false) {
                 continue;
@@ -112,7 +111,7 @@ final class Runner extends BaseRunner
 
             $this->acquireToken($tokenData['token']);
             $env = [];
-            if (! $this->options->noTestTokens) {
+            if (! $this->options->noTestTokens()) {
                 $env = [
                     'TEST_TOKEN' => $tokenData['token'],
                     'UNIQUE_TEST_TOKEN' => $tokenData['unique'],
@@ -124,14 +123,14 @@ final class Runner extends BaseRunner
             $executebleTest                     = array_shift($this->pending);
             $this->running[$tokenData['token']] = new RunnerWorker($executebleTest);
             $this->running[$tokenData['token']]->run(
-                $opts->phpunit,
-                $opts->filtered,
+                $this->options->phpunit(),
+                $this->options->filtered(),
                 $env,
-                $opts->passthru,
-                $opts->passthruPhp
+                $this->options->passthru(),
+                $this->options->passthruPhp()
             );
 
-            if ($opts->verbose === 0) {
+            if ($this->options->verbose() === 0) {
                 continue;
             }
 
@@ -156,7 +155,7 @@ final class Runner extends BaseRunner
 
         $this->setExitCode($worker);
         $worker->stop();
-        if ($this->options->stopOnFailure && $worker->getExitCode() > 0) {
+        if ($this->options->stopOnFailure() && $worker->getExitCode() > 0) {
             $this->pending = [];
         }
 
@@ -200,7 +199,7 @@ final class Runner extends BaseRunner
     private function initTokens(): void
     {
         $this->tokens = [];
-        for ($i = 1; $i <= $this->options->processes; ++$i) {
+        for ($i = 1; $i <= $this->options->processes(); ++$i) {
             $this->tokens[$i] = ['token' => $i, 'unique' => uniqid(sprintf('%s_', $i)), 'available' => true];
         }
     }

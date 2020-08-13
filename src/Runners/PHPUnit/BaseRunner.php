@@ -65,8 +65,8 @@ abstract class BaseRunner implements RunnerInterface
     private function load(SuiteLoader $loader): void
     {
         $this->beforeLoadChecks();
-        $loader->load($this->options->path);
-        $executables   = $this->options->functional ? $loader->getTestMethods() : $loader->getSuites();
+        $loader->load($this->options->path());
+        $executables   = $this->options->functional() ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
         foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);
@@ -89,12 +89,12 @@ abstract class BaseRunner implements RunnerInterface
      */
     final protected function log(): void
     {
-        if (! isset($this->options->filtered['log-junit'])) {
+        if (! isset($this->options->filtered()['log-junit'])) {
             return;
         }
 
-        $output = $this->options->filtered['log-junit'];
-        $writer = new Writer($this->interpreter, $this->options->path);
+        $output = $this->options->filtered()['log-junit'];
+        $writer = new Writer($this->interpreter, $this->options->path());
         $writer->write($output);
     }
 
@@ -107,7 +107,7 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $filteredOptions = $this->options->filtered;
+        $filteredOptions = $this->options->filtered();
 
         $reporter = $this->getCoverage()->getReporter();
 
@@ -136,11 +136,11 @@ abstract class BaseRunner implements RunnerInterface
 
     private function initCoverage(): void
     {
-        if (! isset($this->options->filtered['coverage-php'])) {
+        if (! isset($this->options->filtered()['coverage-php'])) {
             return;
         }
 
-        $this->coverage = new CoverageMerger($this->options->coverageTestLimit);
+        $this->coverage = new CoverageMerger($this->options->coverageTestLimit());
     }
 
     final protected function hasCoverage(): bool

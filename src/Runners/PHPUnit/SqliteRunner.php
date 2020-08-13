@@ -38,7 +38,7 @@ final class SqliteRunner extends BaseWrapperRunner
     {
         parent::__construct($opts, $output);
 
-        $this->dbFileName = (string) ($opts->filtered['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
+        $this->dbFileName = (string) ($opts->filtered()['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
         $this->db         = new PDO('sqlite:' . $this->dbFileName);
     }
 
@@ -72,9 +72,9 @@ final class SqliteRunner extends BaseWrapperRunner
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-sqlite-wrapper.php'
         );
 
-        for ($i = 1; $i <= $this->options->processes; ++$i) {
+        for ($i = 1; $i <= $this->options->processes(); ++$i) {
             $worker = new SqliteWorker($this->output, $this->dbFileName);
-            if ($this->options->noTestTokens) {
+            if ($this->options->noTestTokens()) {
                 $token       = null;
                 $uniqueToken = null;
             } else {
@@ -134,7 +134,10 @@ final class SqliteRunner extends BaseWrapperRunner
         foreach ($this->pending as $fileName => $test) {
             $this->db->prepare('INSERT INTO tests (command, file_name) VALUES (:command, :fileName)')
                 ->execute([
-                    ':command' => serialize($test->commandArguments($this->options->phpunit, $this->options->filtered)),
+                    ':command' => serialize($test->commandArguments(
+                        $this->options->phpunit(),
+                        $this->options->filtered()
+                    )),
                     ':fileName' => $fileName,
                 ]);
         }
