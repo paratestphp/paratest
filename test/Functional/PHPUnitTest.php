@@ -91,6 +91,9 @@ final class PHPUnitTest extends FunctionalTestBase
         $cases['issue-432']['testPattern']      = '1';
         $cases['issue-432']['assertionPattern'] = '1';
 
+        $cases['issue-505']['options']       = ['no-test-tokens' => '1'];
+        $cases['issue-505tokens']['options'] = [];
+
         return $cases;
     }
 
