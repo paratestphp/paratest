@@ -25,10 +25,11 @@ use function file_get_contents;
 use function implode;
 use function in_array;
 use function intdiv;
+use function is_dir;
 use function is_file;
-use function is_string;
 use function pclose;
 use function popen;
+use function preg_match;
 use function preg_match_all;
 use function realpath;
 use function sprintf;
@@ -61,7 +62,7 @@ final class Options
      * The test path pointing to tests that will
      * be run.
      *
-     * @var string
+     * @var string|null
      */
     private $path;
 
@@ -289,20 +290,19 @@ final class Options
         return $this->coverageClover !== null
             || $this->coverageCrap4j !== null
             || $this->coverageHtml !== null
-            || $this->coverageText !== null
+            || $this->coverageText
             || $this->coveragePhp !== null
             || $this->coverageXml !== null;
     }
 
-    public static function setInputDefinition(InputDefinition $inputDefinition, string $cwd): void
+    public static function setInputDefinition(InputDefinition $inputDefinition): void
     {
         $inputDefinition->setDefinition([
             // Arguments
             new InputArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'The path to a directory or file containing tests.',
-                $cwd
+                'The path to a directory or file containing tests.'
             ),
 
             // Options
@@ -532,21 +532,34 @@ final class Options
      * Retrieve the default configuration given a path (directory or file).
      * This will search into the directory, if a directory is specified.
      */
-    private function guessConfigurationFile(?string $configuration, string $path): ?string
+    private function guessConfigurationFile(?string $configuration, string $cwd): ?string
     {
-        if ($configuration !== null && is_file($configuration)) {
-            return realpath($configuration);
+        if ($configuration !== null && ! $this->isAbsolutePath($configuration)) {
+            $configuration = $cwd . DIRECTORY_SEPARATOR . $configuration;
+        }
+
+        if ($configuration !== null) {
+            if (! is_dir($configuration)) {
+                return $configuration;
+            }
+
+            $cwd = $configuration;
         }
 
         $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
-            if (is_file($fileFound = $path . DIRECTORY_SEPARATOR . $suffix)) {
+            if (is_file($fileFound = $cwd . DIRECTORY_SEPARATOR . $suffix)) {
                 return realpath($fileFound);
             }
         }
 
         return null;
+    }
+
+    private function isAbsolutePath(string $path): bool
+    {
+        return $path[0] === DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0;
     }
 
     /**
@@ -557,7 +570,7 @@ final class Options
     {
         $annotatedOptions = ['group'];
         foreach ($this->filtered as $key => $value) {
-            if (! in_array($key, $annotatedOptions, true) || ! is_string($value)) {
+            if (! in_array($key, $annotatedOptions, true)) {
                 continue;
             }
 
@@ -635,7 +648,7 @@ final class Options
         return $this->processes;
     }
 
-    public function path(): string
+    public function path(): ?string
     {
         return $this->path;
     }
@@ -655,7 +668,7 @@ final class Options
         return $this->stopOnFailure;
     }
 
-    /** @return array<string, (string|bool|int|Configuration|string[]|null)> */
+    /** @return array<string, string> */
     public function filtered(): array
     {
         return $this->filtered;

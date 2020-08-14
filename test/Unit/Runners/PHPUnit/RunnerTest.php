@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
-use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Tests\TestBase;
@@ -25,13 +24,18 @@ final class RunnerTest extends TestBase
     public function setUp(): void
     {
         $this->output = new BufferedOutput();
-        $this->runner = new Runner(new Options([]), $this->output);
+        $this->runner = new Runner($this->createOptionsFromArgv([]), $this->output);
     }
 
     public function testConstructor(): void
     {
-        $opts    = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner  = new Runner(new Options($opts), $this->output);
+        $opts    = [
+            '--processes' => 4,
+            '--path' => FIXTURES . DS . 'tests',
+            '--bootstrap' => 'hello',
+            '--functional' => true,
+        ];
+        $runner  = new Runner($this->createOptionsFromArgv($opts), $this->output);
         $options = $this->getObjectValue($runner, 'options');
 
         static::assertEquals(4, $options->processes());
@@ -42,7 +46,7 @@ final class RunnerTest extends TestBase
         static::assertTrue($options->functional());
         //filter out processes and path and phpunit
         $config = (new Loader())->load(getcwd() . DS . 'phpunit.xml.dist');
-        static::assertEquals(['bootstrap' => 'hello', 'configuration' => $config], $options->filtered());
+        static::assertEquals(['bootstrap' => 'hello', 'configuration' => $config->filename()], $options->filtered());
         static::assertInstanceOf(LogInterpreter::class, $this->getObjectValue($runner, 'interpreter'));
         static::assertInstanceOf(ResultPrinter::class, $this->getObjectValue($runner, 'printer'));
     }
@@ -54,8 +58,13 @@ final class RunnerTest extends TestBase
 
     public function testConstructorAssignsTokens(): void
     {
-        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner(new Options($opts), $this->output);
+        $opts   = [
+            '--processes' => 4,
+            '--path' => FIXTURES . DS . 'tests',
+            '--bootstrap' => 'hello',
+            '--functional' => true,
+        ];
+        $runner = new Runner($this->createOptionsFromArgv($opts), $this->output);
         $tokens = $this->getObjectValue($runner, 'tokens');
         static::assertCount(4, $tokens);
     }
@@ -68,8 +77,13 @@ final class RunnerTest extends TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => true],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner(new Options($opts), $this->output);
+        $opts   = [
+            '--processes' => 4,
+            '--path' => FIXTURES . DS . 'tests',
+            '--bootstrap' => 'hello',
+            '--functional' => true,
+        ];
+        $runner = new Runner($this->createOptionsFromArgv($opts), $this->output);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
         $tokenData = $this->call($runner, 'getNextAvailableToken');
@@ -84,8 +98,13 @@ final class RunnerTest extends TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner(new Options($opts), $this->output);
+        $opts   = [
+            '--processes' => 4,
+            '--path' => FIXTURES . DS . 'tests',
+            '--bootstrap' => 'hello',
+            '--functional' => true,
+        ];
+        $runner = new Runner($this->createOptionsFromArgv($opts), $this->output);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
         $tokenData = $this->call($runner, 'getNextAvailableToken');
@@ -100,8 +119,13 @@ final class RunnerTest extends TestBase
             2 => ['token' => 2, 'unique' => uniqid(), 'available' => false],
             3 => ['token' => 3, 'unique' => uniqid(), 'available' => false],
         ];
-        $opts   = ['processes' => 4, 'path' => FIXTURES . DS . 'tests', 'bootstrap' => 'hello', 'functional' => true];
-        $runner = new Runner(new Options($opts), $this->output);
+        $opts   = [
+            '--processes' => 4,
+            '--path' => FIXTURES . DS . 'tests',
+            '--bootstrap' => 'hello',
+            '--functional' => true,
+        ];
+        $runner = new Runner($this->createOptionsFromArgv($opts), $this->output);
         $this->setObjectValue($runner, 'tokens', $tokens);
 
         static::assertFalse($tokens[1]['available']);

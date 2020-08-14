@@ -79,7 +79,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfo(): void
     {
-        $options  = new Options();
+        $options  = $this->createOptionsFromArgv([]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\n",
@@ -98,7 +98,7 @@ final class ResultPrinterTest extends ResultTester
 
         $suite = new Suite('/path', $funcs);
         $this->printer->addTest($suite);
-        $this->getStartOutput(new Options());
+        $this->getStartOutput($this->createOptionsFromArgv([]));
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
         static::assertEquals(3, $numTestsWidth);
         $maxExpectedColumun = 63;
@@ -114,7 +114,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $pathToConfig = $this->getPathToConfig();
         file_put_contents($pathToConfig, '<root />');
-        $options  = new Options(['configuration' => $pathToConfig]);
+        $options  = $this->createOptionsFromArgv(['--configuration' => $pathToConfig]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
@@ -127,7 +127,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithFunctionalMode(): void
     {
-        $options  = new Options(['functional' => true]);
+        $options  = $this->createOptionsFromArgv(['--functional' => true]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
@@ -139,7 +139,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
     {
-        $options  = new Options(['processes' => 1]);
+        $options  = $this->createOptionsFromArgv(['--processes' => 1]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit());
         static::assertStringStartsWith($expected, $contents);
@@ -278,7 +278,7 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuite);
         }
 
-        $this->printer->start(new Options());
+        $this->printer->start($this->createOptionsFromArgv([]));
         $this->output->fetch();
 
         for ($i = 0; $i < 40; ++$i) {
@@ -315,7 +315,7 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuiteWithWrongTestCountEstimation);
         }
 
-        $this->printer->start(new Options());
+        $this->printer->start($this->createOptionsFromArgv([]));
         $this->output->fetch();
 
         for ($i = 0; $i < 22; ++$i) {

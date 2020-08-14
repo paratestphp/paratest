@@ -4,33 +4,26 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use ParaTest\Runners\PHPUnit\BaseRunner;
-use Symfony\Component\Console\Output\BufferedOutput;
-
 final class RunnerResult
 {
-    /** @var BaseRunner */
-    private $runner;
-    /** @var BufferedOutput */
-    private $output;
+    /** @var int */
+    private $exitCode;
     /** @var string */
-    private $completeOutput = '';
+    private $output;
 
-    public function __construct(BaseRunner $runner, BufferedOutput $output)
+    public function __construct(int $exitCode, string $output)
     {
-        $this->runner = $runner;
-        $this->output = $output;
+        $this->exitCode = $exitCode;
+        $this->output   = $output;
     }
 
     public function getOutput(): string
     {
-        $this->completeOutput .= $this->output->fetch();
-
-        return $this->completeOutput;
+        return $this->output;
     }
 
     public function getExitCode(): int
     {
-        return $this->runner->getExitCode();
+        return $this->exitCode;
     }
 }

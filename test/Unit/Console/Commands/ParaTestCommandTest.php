@@ -12,36 +12,25 @@ use PHPUnit\TextUI\XmlConfiguration\Exception;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
-use function chdir;
 use function getcwd;
+use function sprintf;
 
 final class ParaTestCommandTest extends TestBase
 {
     /** @var CommandTester */
     private $commandTester;
-    /** @var string */
-    private $cwd;
 
     public function setUp(): void
     {
-        $application = ParaTestCommand::applicationFactory();
+        $application = ParaTestCommand::applicationFactory(getcwd());
         $application->add(new HelpCommand());
 
         $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
-
-        $cwd = getcwd();
-        static::assertIsString($cwd);
-        $this->cwd = $cwd;
-    }
-
-    protected function tearDown(): void
-    {
-        chdir($this->cwd);
     }
 
     public function testApplicationFactory(): void
     {
-        $application = ParaTestCommand::applicationFactory();
+        $application = ParaTestCommand::applicationFactory(getcwd());
         $commands    = $application->all();
 
         static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
@@ -51,15 +40,17 @@ final class ParaTestCommandTest extends TestBase
     public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
     {
         static::expectException(Exception::class);
-        static::expectDeprecationMessage('Could not read "nope.xml"');
+        static::expectExceptionMessage(sprintf('Could not read "%s%snope.xml"', getcwd(), DS));
 
         $this->commandTester->execute(['--configuration' => 'nope.xml']);
     }
 
     public function testDisplayHelpWithoutConfigNorPath(): void
     {
-        chdir(__DIR__);
+        $application = ParaTestCommand::applicationFactory(__DIR__);
+        $application->add(new HelpCommand());
 
+        $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
         $this->commandTester->execute([]);
 
         static::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
@@ -77,8 +68,10 @@ final class ParaTestCommandTest extends TestBase
      */
     public function testGetPhpunitConfigFromDefaults(string $directory): void
     {
-        chdir($directory);
+        $application = ParaTestCommand::applicationFactory($directory);
+        $application->add(new HelpCommand());
 
+        $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
         $this->commandTester->execute([
             '--runner' => EmptyRunnerStub::class,
         ]);

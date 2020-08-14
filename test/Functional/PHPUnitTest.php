@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Functional;
 
 use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
-use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\SqliteRunner;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 use ParseError;
 
 use function array_merge;
 use function basename;
-use function chdir;
 use function dirname;
 use function file_exists;
 use function glob;
@@ -30,7 +28,7 @@ final class PHPUnitTest extends FunctionalTestBase
 
     public function testWithJustConfiguration(): void
     {
-        $this->assertTestsPassed($this->invokeParatest('passing-tests', ['configuration' => PHPUNIT_CONFIGURATION]));
+        $this->assertTestsPassed($this->invokeParatest('passing-tests', ['--configuration' => PHPUNIT_CONFIGURATION]));
     }
 
     /**
@@ -41,16 +39,14 @@ final class PHPUnitTest extends FunctionalTestBase
     public function testGithubIssues(
         string $directory,
         array $options,
-        ?string $runnerClass = null,
         ?string $testPattern = null,
         ?string $assertionPattern = null
     ): void {
         $this->assertTestsPassed($this->invokeParatest(
             null,
             array_merge([
-                'configuration' => sprintf('%s%sphpunit%s.xml', $directory, DS, basename($directory)),
+                '--configuration' => sprintf('%s%sphpunit%s.xml', $directory, DS, basename($directory)),
             ], $options),
-            $runnerClass ?? Runner::class
         ), $testPattern, $assertionPattern);
     }
 
@@ -69,23 +65,22 @@ final class PHPUnitTest extends FunctionalTestBase
             $cases['issue-' . basename($path)] = [
                 'directory' => $path,
                 'options' => [],
-                'runnerClass' => null,
                 'testPattern' => null,
                 'assertionPattern' => null,
             ];
         }
 
-        $cases['issue-420bis']['options']['bootstrap'] = sprintf(
+        $cases['issue-420bis']['options']['--bootstrap'] = sprintf(
             '%s%sbootstrap420bis.php',
             $cases['issue-420bis']['directory'],
             DS
         );
 
-        $cases['issue-432']['options']          = ['group' => 'group1'];
+        $cases['issue-432']['options']          = ['--group' => 'group1'];
         $cases['issue-432']['testPattern']      = '1';
         $cases['issue-432']['assertionPattern'] = '1';
 
-        $cases['issue-505']['options']       = ['no-test-tokens' => true];
+        $cases['issue-505']['options']       = ['--no-test-tokens' => true];
         $cases['issue-505tokens']['options'] = [];
 
         return $cases;
@@ -98,8 +93,10 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $this->assertTestsPassed($this->invokeParatest(
             'passing-tests',
-            ['configuration' => PHPUNIT_CONFIGURATION],
-            WrapperRunner::class
+            [
+                '--configuration' => PHPUNIT_CONFIGURATION,
+                '--runner' => WrapperRunner::class,
+            ]
         ));
     }
 
@@ -109,8 +106,10 @@ final class PHPUnitTest extends FunctionalTestBase
 
         $this->assertTestsPassed($this->invokeParatest(
             'passing-tests',
-            ['configuration' => PHPUNIT_CONFIGURATION],
-            SqliteRunner::class
+            [
+                '--configuration' => PHPUNIT_CONFIGURATION,
+                '--runner' => SqliteRunner::class,
+            ]
         ));
     }
 
@@ -118,8 +117,10 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $runnerResult = $this->invokeParatest(
             'passing-tests',
-            ['configuration' => PHPUNIT_CONFIGURATION],
-            EmptyRunnerStub::class
+            [
+                '--configuration' => PHPUNIT_CONFIGURATION,
+                '--runner' => EmptyRunnerStub::class,
+            ]
         );
         static::assertStringContainsString(EmptyRunnerStub::OUTPUT, $runnerResult->getOutput());
     }
@@ -128,7 +129,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'paratest-only-tests/EnvironmentTest.php',
-            ['colors' => true]
+            ['--colors' => true]
         );
         static::assertStringContainsString(
             '[30;42m[2KOK',
@@ -140,7 +141,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'failing-tests/UnitTestWithErrorTest.php',
-            ['colors' => true]
+            ['--colors' => true]
         );
         static::assertStringContainsString(
             '[37;41m[2KFAILURES',
@@ -163,8 +164,9 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $this->assertTestsPassed($this->invokeParatest(
             'paratest-only-tests/EnvironmentTest.php',
-            [],
-            WrapperRunner::class
+            [
+                '--runner' => WrapperRunner::class,
+            ]
         ));
     }
 
@@ -175,8 +177,10 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'paratest-only-tests/EnvironmentTest.php',
-            ['no-test-tokens' => true],
-            WrapperRunner::class
+            [
+                '--no-test-tokens' => true,
+                '--runner' => WrapperRunner::class,
+            ]
         );
         static::assertMatchesRegularExpression('/Failures: 1/', $proc->getOutput());
     }
@@ -186,22 +190,22 @@ final class PHPUnitTest extends FunctionalTestBase
         $this->guardSqliteExtensionLoaded();
         $this->assertTestsPassed($this->invokeParatest(
             'paratest-only-tests/EnvironmentTest.php',
-            [],
-            SqliteRunner::class
+            [
+                '--runner' => SqliteRunner::class,
+            ]
         ));
     }
 
     public function testWithConfigurationInDirWithoutConfigFile(): void
     {
-        chdir(dirname(FIXTURES));
-        $this->assertTestsPassed($this->invokeParatest('passing-tests'));
+        $this->assertTestsPassed($this->invokeParatest('passing-tests', [], dirname(FIXTURES)));
     }
 
     public function testFunctionalWithBootstrap(): void
     {
         $this->assertTestsPassed($this->invokeParatest(
             'passing-tests',
-            ['functional' => true]
+            ['--functional' => true]
         ));
     }
 
@@ -209,7 +213,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $this->assertTestsPassed($this->invokeParatest(
             'passing-tests',
-            ['configuration' => PHPUNIT_CONFIGURATION, 'functional' => true]
+            ['--configuration' => PHPUNIT_CONFIGURATION, '--functional' => true]
         ));
     }
 
@@ -217,7 +221,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'passing-tests',
-            ['processes' => 6]
+            ['--processes' => 6]
         );
         static::assertMatchesRegularExpression('/Running phpunit in 6 processes/', $proc->getOutput());
         $this->assertTestsPassed($proc);
@@ -225,48 +229,41 @@ final class PHPUnitTest extends FunctionalTestBase
 
     public function testDefaultSettingsWithoutBootstrap(): void
     {
-        chdir(PARATEST_ROOT);
-        $this->assertTestsPassed($this->invokeParatest('passing-tests'));
+        $this->assertTestsPassed($this->invokeParatest('passing-tests', [], PARATEST_ROOT));
     }
 
     public function testDefaultSettingsWithSpecifiedPath(): void
     {
-        chdir(PARATEST_ROOT);
         $this->assertTestsPassed($this->invokeParatest(
             'passing-tests',
-            ['path' => 'test/fixtures/passing-tests']
+            ['--path' => 'test/fixtures/passing-tests'],
+            PARATEST_ROOT
         ));
     }
 
     public function testLoggingXmlOfDirectory(): void
     {
-        chdir(PARATEST_ROOT);
         $output = FIXTURES . DS . 'logs' . DS . 'functional-directory.xml';
-        $proc   = $this->invokeParatest('passing-tests', ['log-junit' => $output]);
+        $proc   = $this->invokeParatest('passing-tests', ['--log-junit' => $output], PARATEST_ROOT);
         $this->assertTestsPassed($proc);
         static::assertFileExists($output);
-        if (! file_exists($output)) {
-            return;
-        }
-
         unlink($output);
     }
 
     public function testTestTokenEnvVarIsPassed(): void
     {
-        chdir(PARATEST_ROOT);
         $proc = $this->invokeParatest(
             'passing-tests',
-            ['path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php']
+            ['--path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php'],
+            PARATEST_ROOT
         );
         $this->assertTestsPassed($proc, '1', '1');
     }
 
     public function testLoggingXmlOfSingleFile(): void
     {
-        chdir(PARATEST_ROOT);
         $output = FIXTURES . DS . 'logs' . DS . 'functional-file.xml';
-        $proc   = $this->invokeParatest('passing-tests/GroupsTest.php', ['log-junit' => $output]);
+        $proc   = $this->invokeParatest('passing-tests/GroupsTest.php', ['--log-junit' => $output], PARATEST_ROOT);
         $this->assertTestsPassed($proc, '5', '5');
         static::assertFileExists($output);
         if (! file_exists($output)) {
@@ -309,9 +306,9 @@ final class PHPUnitTest extends FunctionalTestBase
     public function testStopOnFailurePreventsStartingFurtherTestsAfterFailure(): void
     {
         $proc    = $this->invokeParatest('failing-tests/StopOnFailureTest.php', [
-            'stop-on-failure' => true,
-            'functional' => true,
-            'processes' => 1,
+            '--stop-on-failure' => true,
+            '--functional' => true,
+            '--processes' => 1,
         ]);
         $results = $proc->getOutput();
         static::assertStringContainsString('Tests: 2,', $results);     // The suite actually has 4 tests
@@ -322,9 +319,9 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';
         $proc   = $this->invokeParatest('passing-tests', [
-            'functional' => true,
-            'processes' => 6,
-            'log-junit' => $output,
+            '--functional' => true,
+            '--processes' => 6,
+            '--log-junit' => $output,
         ]);
         $this->assertTestsPassed($proc);
         $results = $proc->getOutput();
@@ -342,7 +339,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $this->assertTestsPassed($this->invokeParatest(
             'passing-tests',
-            ['functional' => true]
+            ['--functional' => true]
         ));
     }
 
@@ -350,7 +347,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'passing-tests/DependsOnChain.php',
-            ['functional' => true]
+            ['--functional' => true]
         );
         $this->assertTestsPassed($proc, '5', '5');
     }
@@ -359,7 +356,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'passing-tests/DependsOnSame.php',
-            ['functional' => true]
+            ['--functional' => true]
         );
         $this->assertTestsPassed($proc, '3', '3');
     }
@@ -368,7 +365,7 @@ final class PHPUnitTest extends FunctionalTestBase
     {
         $proc = $this->invokeParatest(
             'passing-tests/FunctionalModeEachTestCalledOnce.php',
-            ['functional' => true]
+            ['--functional' => true]
         );
         $this->assertTestsPassed($proc, '2', '2');
     }

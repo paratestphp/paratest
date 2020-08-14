@@ -6,13 +6,10 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 
-use function chdir;
 use function defined;
 use function file_put_contents;
-use function getcwd;
 use function glob;
 use function intdiv;
 use function is_dir;
@@ -20,9 +17,6 @@ use function mkdir;
 use function sort;
 use function unlink;
 
-/**
- * @covers \ParaTest\Runners\PHPUnit\Options
- */
 final class OptionsTest extends TestBase
 {
     /** @var Options */
@@ -30,7 +24,7 @@ final class OptionsTest extends TestBase
     /** @var array<string, mixed>  */
     private $unfiltered;
     /** @var string */
-    private $currentCwd;
+    private $testCwd;
 
     public function setUp(): void
     {
@@ -44,38 +38,22 @@ final class OptionsTest extends TestBase
             '--bootstrap' => '/path/to/bootstrap',
         ];
         $this->options    = $this->createOptionsFromArgv($this->unfiltered);
-        $this->currentCwd = getcwd();
-        $testCwd          = __DIR__ . DS . 'generated-configs';
-        if (! is_dir($testCwd)) {
-            mkdir($testCwd, 0777, true);
+        $this->testCwd    = __DIR__ . DS . 'generated-configs';
+        if (! is_dir($this->testCwd)) {
+            mkdir($this->testCwd, 0777, true);
         }
 
-        chdir($testCwd);
         $this->cleanUpGeneratedFiles();
-    }
-
-    /**
-     * @param array<string, string|bool> $argv
-     */
-    private function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
-    {
-        $inputDefinition = new InputDefinition();
-        Options::setInputDefinition($inputDefinition, $cwd ?? getcwd());
-
-        $input = new ArrayInput($argv, $inputDefinition);
-
-        return Options::fromConsoleInput($input, $cwd ?? getcwd());
     }
 
     protected function tearDown(): void
     {
         $this->cleanUpGeneratedFiles();
-        chdir($this->currentCwd);
     }
 
     private function cleanUpGeneratedFiles(): void
     {
-        foreach (glob(getcwd() . DS . '*') as $file) {
+        foreach (glob($this->testCwd . DS . '*') as $file) {
             unlink($file);
         }
     }
@@ -83,7 +61,7 @@ final class OptionsTest extends TestBase
     public function testOptionsAreOrdered(): void
     {
         $inputDefinition = new InputDefinition();
-        Options::setInputDefinition($inputDefinition, getcwd());
+        Options::setInputDefinition($inputDefinition);
 
         $options = [];
         foreach ($inputDefinition->getOptions() as $inputOption) {
@@ -133,22 +111,22 @@ final class OptionsTest extends TestBase
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml', getcwd());
+        $this->assertConfigurationFileFiltered('phpunit.xml', $this->testCwd);
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml.dist', getcwd());
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', $this->testCwd);
     }
 
     public function testConfigurationShouldReturnSpecifiedConfigurationIfFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', getcwd(), 'phpunit-myconfig.xml');
+        $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', $this->testCwd, 'phpunit-myconfig.xml');
     }
 
     public function testConfigurationKeyIsNotPresentIfNoConfigGiven(): void
     {
-        $options = $this->createOptionsFromArgv([]);
+        $options = $this->createOptionsFromArgv([], __DIR__);
 
         static::assertArrayNotHasKey('configuration', $options->filtered());
     }
@@ -182,12 +160,12 @@ final class OptionsTest extends TestBase
 
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml', getcwd(), getcwd());
+        $this->assertConfigurationFileFiltered('phpunit.xml', $this->testCwd, $this->testCwd);
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigSpecifiedAsDirectoryAndFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml.dist', getcwd(), getcwd());
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', $this->testCwd, $this->testCwd);
     }
 
     private function assertConfigurationFileFiltered(
@@ -195,22 +173,22 @@ final class OptionsTest extends TestBase
         string $path,
         ?string $configurationParameter = null
     ): void {
-        file_put_contents($configFileName, '<?xml version="1.0" encoding="UTF-8"?><phpunit />');
+        file_put_contents($this->testCwd . DS . $configFileName, '<?xml version="1.0" encoding="UTF-8"?><phpunit />');
         $this->unfiltered['path'] = $path;
         if ($configurationParameter !== null) {
             $this->unfiltered['--configuration'] = $configurationParameter;
         }
 
-        $options = $this->createOptionsFromArgv($this->unfiltered);
+        $options = $this->createOptionsFromArgv($this->unfiltered, $this->testCwd);
         static::assertEquals(
-            __DIR__ . DS . 'generated-configs' . DS . $configFileName,
+            $this->testCwd . DS . $configFileName,
             $options->configuration()->filename()
         );
     }
 
     public function testDefaultOptions(): void
     {
-        $options = $this->createOptionsFromArgv([]);
+        $options = $this->createOptionsFromArgv([], __DIR__);
 
         static::assertNull($options->bootstrap());
         static::assertFalse($options->colors());
@@ -232,7 +210,7 @@ final class OptionsTest extends TestBase
         static::assertFalse($options->parallelSuite());
         static::assertEmpty($options->passthru());
         static::assertEmpty($options->passthruPhp());
-        static::assertSame(getcwd(), $options->path());
+        static::assertNull($options->path());
         static::assertEquals(PHPUNIT, $options->phpunit());
         static::assertGreaterThan(0, $options->processes());
         static::assertStringContainsString('Runner', $options->runner());
@@ -246,7 +224,7 @@ final class OptionsTest extends TestBase
         $argv = [
             '--bootstrap' => 'BOOTSTRAP',
             '--colors' => true,
-            '--configuration' => __DIR__ . DS . 'phpunit-ConfigurationTest.xml',
+            '--configuration' => 'phpunit-ConfigurationTest.xml',
             '--coverage-clover' => 'COVERAGE-CLOVER',
             '--coverage-crap4j' => 'COVERAGE-CRAP4J',
             '--coverage-html' => 'COVERAGE-HTML',
@@ -273,7 +251,7 @@ final class OptionsTest extends TestBase
             '--whitelist' => 'WHITELIST',
         ];
 
-        $options = $this->createOptionsFromArgv($argv);
+        $options = $this->createOptionsFromArgv($argv, __DIR__);
 
         static::assertSame('BOOTSTRAP', $options->bootstrap());
         static::assertTrue($options->colors());

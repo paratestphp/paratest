@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Functional;
 
 use InvalidArgumentException;
-use ParaTest\Runners\PHPUnit\BaseRunner;
 use PHPUnit;
 
 use function extension_loaded;
@@ -42,12 +41,11 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
 
     /**
      * @param array<string, string|int|true> $options
-     * @param class-string<BaseRunner>|null  $runnerClass
      */
     final protected function invokeParatest(
         ?string $path,
         array $options = [],
-        ?string $runnerClass = null
+        ?string $cwd = null
     ): RunnerResult {
         if ($path !== null) {
             $path = $this->fixture($path);
@@ -55,7 +53,7 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
 
         $invoker = new ParaTestInvoker($path);
 
-        return $invoker->execute($options, $runnerClass);
+        return $invoker->execute($options, $cwd);
     }
 
     /**

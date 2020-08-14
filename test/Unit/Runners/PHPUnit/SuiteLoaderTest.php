@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
-use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\SuiteLoader;
 use ParaTest\Tests\TestBase;
@@ -21,7 +20,7 @@ final class SuiteLoaderTest extends TestBase
 {
     public function testConstructor(): void
     {
-        $options = new Options(['group' => 'group1']);
+        $options = $this->createOptionsFromArgv(['--group' => 'group1']);
         $loader  = new SuiteLoader($options);
         static::assertEquals($options, $this->getObjectValue($loader, 'options'));
     }
@@ -51,9 +50,10 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteFileFromConfig(): void
     {
-        $options = new Options(
-            ['configuration' => $this->fixture('phpunit-file.xml'), 'testsuite' => ['ParaTest Fixtures']]
-        );
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-file.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
+        ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -64,9 +64,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag(): void
     {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-excluded-including-file.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-excluded-including-file.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -78,9 +78,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag(): void
     {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-excluded-including-dir.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-excluded-including-dir.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -92,9 +92,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteFilesFromConfig(): void
     {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-multifile.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-multifile.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -106,9 +106,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteWithDirectory(): void
     {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-passing.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -120,9 +120,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteWithDirectories(): void
     {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-multidir.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-multidir.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -135,9 +135,10 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteWithFilesDirsMixed(): void
     {
-        $options = new Options(
-            ['configuration' => $this->fixture('phpunit-files-dirs-mix.xml'), 'testsuite' => ['ParaTest Fixtures']]
-        );
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-files-dirs-mix.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
+        ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -148,9 +149,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteWithDuplicateFilesDirMixed(): void
     {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'),
-            'testsuite' => ['ParaTest Fixtures'],
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'),
+            '--testsuite' => 'ParaTest Fixtures',
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -162,7 +163,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadSuiteFromConfig(): void
     {
-        $options = new Options(['configuration' => $this->fixture('phpunit-passing.xml')]);
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -173,7 +176,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadSuiteFromConfigWithMultipleDirs(): void
     {
-        $options = new Options(['configuration' => $this->fixture('phpunit-multidir.xml')]);
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-multidir.xml'),
+        ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
@@ -185,9 +190,9 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadSuiteFromConfigWithBadSuitePath(): void
     {
-        $options = new Options([
-            'configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml'),
-            'testsuite' => [uniqid()],
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml'),
+            '--testsuite' => uniqid(),
         ]);
         $loader  = new SuiteLoader($options);
 
@@ -288,7 +293,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testGetTestMethodsOnlyReturnsMethodsOfGroupIfOptionIsSpecified(): void
     {
-        $options    = new Options(['group' => 'group1']);
+        $options    = $this->createOptionsFromArgv(['--group' => 'group1']);
         $loader     = new SuiteLoader($options);
         $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
         $loader->load($groupsTest);
@@ -300,7 +305,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testGetTestMethodsOnlyReturnsMethodsOfClassGroup(): void
     {
-        $options    = new Options(['group' => 'group4']);
+        $options    = $this->createOptionsFromArgv(['--group' => 'group4']);
         $loader     = new SuiteLoader($options);
         $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
         $loader->load($groupsTest);
@@ -311,7 +316,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testGetSuitesForNonMatchingGroups(): void
     {
-        $options    = new Options(['group' => 'non-existent']);
+        $options    = $this->createOptionsFromArgv(['--group' => 'non-existent']);
         $loader     = new SuiteLoader($options);
         $groupsTest = $this->fixture('passing-tests/GroupsTest.php');
         $loader->load($groupsTest);

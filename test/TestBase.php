@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Tests;
 
 use InvalidArgumentException;
+use ParaTest\Runners\PHPUnit\Options;
 use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Runner\Version;
@@ -16,10 +17,13 @@ use ReflectionProperty;
 use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
 use SplFileObject;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputDefinition;
 
 use function copy;
 use function file_exists;
 use function get_class;
+use function getcwd;
 use function is_dir;
 use function is_object;
 use function is_string;
@@ -31,6 +35,19 @@ use function unlink;
 
 abstract class TestBase extends PHPUnit\Framework\TestCase
 {
+    /**
+     * @param array<string, string|bool|int> $argv
+     */
+    final protected function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
+    {
+        $inputDefinition = new InputDefinition();
+        Options::setInputDefinition($inputDefinition);
+
+        $input = new ArrayInput($argv, $inputDefinition);
+
+        return Options::fromConsoleInput($input, $cwd ?? getcwd());
+    }
+
     /**
      * Get PHPUnit version.
      */

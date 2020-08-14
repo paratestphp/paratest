@@ -25,8 +25,8 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
     public function testSkippedInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => true,
-            'filter' => 'testSkipped',
+            '--functional' => true,
+            '--filter' => 'testSkipped',
         ]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
@@ -39,8 +39,8 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
     public function testIncompleteInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => true,
-            'filter' => 'testIncomplete',
+            '--functional' => true,
+            '--filter' => 'testIncomplete',
         ]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
@@ -53,9 +53,9 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
     public function testDataProviderWithSkippedInFunctionalMode(): void
     {
         $proc = $this->invoker->execute([
-            'functional' => true,
-            'max-batch-size' => 50,
-            'filter' => 'testDataProviderWithSkipped',
+            '--functional' => true,
+            '--max-batch-size' => 50,
+            '--filter' => 'testDataProviderWithSkipped',
         ]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
@@ -71,7 +71,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $this->invoker = new ParaTestInvoker($this->fixture('skipped-tests/SkippedTest.php'));
 
-        $proc = $this->invoker->execute();
+        $proc = $this->invoker->execute([]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
             . 'Tests: 1, Assertions: 0, Incomplete: 1.';
@@ -86,7 +86,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $this->invoker = new ParaTestInvoker($this->fixture('skipped-tests/IncompleteTest.php'));
 
-        $proc = $this->invoker->execute();
+        $proc = $this->invoker->execute([]);
 
         // TODO: What happened to the incomplete test?
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
@@ -104,7 +104,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
 
         $this->invoker = new ParaTestInvoker($this->fixture('skipped-tests/SkippedAndIncompleteDataProviderTest.php'));
 
-        $proc = $this->invoker->execute();
+        $proc = $this->invoker->execute([]);
 
         $expected = "OK, but incomplete, skipped, or risky tests!\nTests: 100, Assertions: 33, Incomplete: 67.";
         static::assertStringContainsString($expected, $proc->getOutput());

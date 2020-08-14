@@ -66,12 +66,11 @@ final class SuiteLoader
     public function __construct(?Options $options = null)
     {
         $this->options = $options;
-
-        if ($this->options === null || ! isset($this->options->filtered()['configuration'])) {
+        if ($options === null) {
             return;
         }
 
-        $this->configuration = $this->options->filtered()['configuration'];
+        $this->configuration = $options->configuration();
     }
 
     /**
@@ -108,11 +107,11 @@ final class SuiteLoader
      *
      * @throws RuntimeException
      */
-    public function load(string $path = ''): void
+    public function load(?string $path = null): void
     {
         $this->loadConfiguration();
 
-        if ($path !== '') {
+        if ($path !== null) {
             $this->files = array_merge(
                 $this->files,
                 (new Facade())->getFilesAsArray($path, ['Test.php'])
@@ -416,8 +415,8 @@ final class SuiteLoader
         }
 
         $bootstrap = null;
-        if ($this->options !== null && isset($this->options->filtered()['bootstrap'])) {
-            $bootstrap = $this->options->filtered()['bootstrap'];
+        if ($this->options !== null && $this->options->bootstrap() !== null) {
+            $bootstrap = $this->options->bootstrap();
         } elseif ($this->configuration !== null && $this->configuration->phpunit()->hasBootstrap()) {
             $bootstrap = $this->configuration->phpunit()->bootstrap();
         }

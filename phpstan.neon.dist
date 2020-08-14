@@ -84,10 +84,6 @@ parameters:
         -
             message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
             count: 1
-            path: src/Runners/PHPUnit/Options.php
-        -
-            message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
-            count: 1
             path: src/Logging/JUnit/Writer.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"

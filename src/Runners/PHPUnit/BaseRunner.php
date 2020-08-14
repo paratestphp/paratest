@@ -89,11 +89,11 @@ abstract class BaseRunner implements RunnerInterface
      */
     final protected function log(): void
     {
-        if (! isset($this->options->filtered()['log-junit'])) {
+        if ($this->options->logJunit() === null) {
             return;
         }
 
-        $output = $this->options->filtered()['log-junit'];
+        $output = $this->options->logJunit();
         $writer = new Writer($this->interpreter, $this->options->path());
         $writer->write($output);
     }
@@ -107,36 +107,34 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $filteredOptions = $this->options->filtered();
-
         $reporter = $this->getCoverage()->getReporter();
 
-        if (isset($filteredOptions['coverage-clover'])) {
-            $reporter->clover($filteredOptions['coverage-clover']);
+        if ($this->options->coverageClover() !== null) {
+            $reporter->clover($this->options->coverageClover());
         }
 
-        if (isset($filteredOptions['coverage-crap4j'])) {
-            $reporter->crap4j($filteredOptions['coverage-crap4j']);
+        if ($this->options->coverageCrap4j() !== null) {
+            $reporter->crap4j($this->options->coverageCrap4j());
         }
 
-        if (isset($filteredOptions['coverage-html'])) {
-            $reporter->html($filteredOptions['coverage-html']);
+        if ($this->options->coverageHtml() !== null) {
+            $reporter->html($this->options->coverageHtml());
         }
 
-        if (isset($filteredOptions['coverage-text'])) {
+        if ($this->options->coverageText()) {
             $this->output->write($reporter->text());
         }
 
-        if (isset($filteredOptions['coverage-xml'])) {
-            $reporter->xml($filteredOptions['coverage-xml']);
+        if ($this->options->coverageXml() !== null) {
+            $reporter->xml($this->options->coverageXml());
         }
 
-        $reporter->php($filteredOptions['coverage-php']);
+        $reporter->php($this->options->coveragePhp());
     }
 
     private function initCoverage(): void
     {
-        if (! isset($this->options->filtered()['coverage-php'])) {
+        if (! $this->options->hasCoverage()) {
             return;
         }
 
@@ -145,7 +143,7 @@ abstract class BaseRunner implements RunnerInterface
 
     final protected function hasCoverage(): bool
     {
-        return $this->getCoverage() !== null;
+        return $this->options->hasCoverage();
     }
 
     final protected function getCoverage(): ?CoverageMerger
