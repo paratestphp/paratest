@@ -10,7 +10,6 @@ use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function count;
-use function file_exists;
 use function glob;
 use function simplexml_load_file;
 use function sys_get_temp_dir;
@@ -31,29 +30,23 @@ final class RunnerIntegrationTest extends TestBase
     {
         static::skipIfCodeCoverageNotEnabled();
 
+        $testcoverageFiles = sys_get_temp_dir() . DS . 'coverage-runner-integration*';
+        foreach (glob($testcoverageFiles) as $file) {
+            unlink($file);
+        }
+
         $this->bareOptions = [
             '--path' => FIXTURES . DS . 'failing-tests',
             '--phpunit' => PHPUNIT,
-            '--coverage-clover' => sys_get_temp_dir() . DS . 'coverage.clover',
-            '--coverage-crap4j' => sys_get_temp_dir() . DS . 'coverage.crap4j',
-            '--coverage-php' => sys_get_temp_dir() . DS . 'coverage.php',
-            '--coverage-xml' => sys_get_temp_dir() . DS . 'coverage.xml',
+            '--coverage-clover' => sys_get_temp_dir() . DS . 'coverage-runner-integration.clover',
+            '--coverage-crap4j' => sys_get_temp_dir() . DS . 'coverage-runner-integration.crap4j',
+            '--coverage-php' => sys_get_temp_dir() . DS . 'coverage-runner-integration.php',
             '--bootstrap' => BOOTSTRAP,
             '--whitelist' => FIXTURES . DS . 'failing-tests',
         ];
         $this->options     = $this->createOptionsFromArgv($this->bareOptions);
         $this->output      = new BufferedOutput();
         $this->runner      = new Runner($this->options, $this->output);
-    }
-
-    protected function tearDown(): void
-    {
-        $testcoverageFile = sys_get_temp_dir() . DS . 'coverage*';
-        if (file_exists($testcoverageFile)) {
-            unlink($testcoverageFile);
-        }
-
-        parent::tearDown();
     }
 
     /**
@@ -69,14 +62,12 @@ final class RunnerIntegrationTest extends TestBase
         static::assertFileDoesNotExist($this->bareOptions['--coverage-clover']);
         static::assertFileDoesNotExist($this->bareOptions['--coverage-crap4j']);
         static::assertFileDoesNotExist($this->bareOptions['--coverage-php']);
-        static::assertFileDoesNotExist($this->bareOptions['--coverage-xml']);
 
         $this->runner->run();
 
         static::assertFileExists($this->bareOptions['--coverage-clover']);
         static::assertFileExists($this->bareOptions['--coverage-crap4j']);
         static::assertFileExists($this->bareOptions['--coverage-php']);
-        static::assertFileExists($this->bareOptions['--coverage-xml']);
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles(): void

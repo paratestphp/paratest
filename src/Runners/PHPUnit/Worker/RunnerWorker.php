@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use RuntimeException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -68,10 +67,10 @@ final class RunnerWorker
     /**
      * Executes the test by creating a separate process.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
-     * @param array<string, string|int>                                    $environmentVariables
-     * @param string[]|null                                                $passthru
-     * @param string[]|null                                                $passthruPhp
+     * @param array<string, string>     $options
+     * @param array<string, string|int> $environmentVariables
+     * @param string[]|null             $passthru
+     * @param string[]|null             $passthruPhp
      *
      * @return $this
      */
@@ -98,10 +97,10 @@ final class RunnerWorker
      * Build the full executable as we would do on the command line, e.g.
      * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
-     * @param array<string, string|int>                                    $environmentVariables
-     * @param string[]|null                                                $passthru
-     * @param string[]|null                                                $passthruPhp
+     * @param array<string, string>     $options
+     * @param array<string, string|int> $environmentVariables
+     * @param string[]|null             $passthru
+     * @param string[]|null             $passthruPhp
      */
     private function getProcess(
         string $binary,

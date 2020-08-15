@@ -14,9 +14,9 @@ final class FullSuite extends ExecutableTest
     /** @var string */
     protected $configPath;
 
-    public function __construct(string $suiteName, string $configPath)
+    public function __construct(string $suiteName, string $configPath, bool $needsCoverage)
     {
-        parent::__construct('');
+        parent::__construct('', $needsCoverage);
 
         $this->suiteName  = $suiteName;
         $this->configPath = $configPath;
@@ -29,10 +29,7 @@ final class FullSuite extends ExecutableTest
     {
         return array_merge(
             $options,
-            [
-                'configuration' => $this->configPath,
-                'testsuite' => $this->suiteName,
-            ]
+            ['testsuite' => $this->suiteName]
         );
     }
 

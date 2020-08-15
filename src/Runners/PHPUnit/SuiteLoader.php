@@ -198,7 +198,11 @@ final class SuiteLoader
         $executableTests = [];
         $methodBatches   = $this->getMethodBatches($class);
         foreach ($methodBatches as $methodBatch) {
-            $executableTests[] = new TestMethod($path, $methodBatch);
+            $executableTests[] = new TestMethod(
+                $path,
+                $methodBatch,
+                $this->options !== null && $this->options->hasCoverage()
+            );
         }
 
         return $executableTests;
@@ -354,13 +358,18 @@ final class SuiteLoader
             $this->executableTests(
                 $path,
                 $class
-            )
+            ),
+            $this->options !== null && $this->options->hasCoverage()
         );
     }
 
     private function createFullSuite(string $suiteName, string $configPath): FullSuite
     {
-        return new FullSuite($suiteName, $configPath);
+        return new FullSuite(
+            $suiteName,
+            $configPath,
+            $this->options !== null && $this->options->hasCoverage()
+        );
     }
 
     /**

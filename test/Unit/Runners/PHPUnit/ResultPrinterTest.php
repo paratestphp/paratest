@@ -61,7 +61,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldAddTest(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', []);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false);
 
         $this->printer->addTest($suite);
 
@@ -70,7 +70,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestReturnsSelf(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', []);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false);
 
         $self = $this->printer->addTest($suite);
 
@@ -93,10 +93,10 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, []);
+            $funcs[] = new TestMethod((string) $i, [], false);
         }
 
-        $suite = new Suite('/path', $funcs);
+        $suite = new Suite('/path', $funcs, false);
         $this->printer->addTest($suite);
         $this->getStartOutput($this->createOptionsFromArgv([]));
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
@@ -148,16 +148,16 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new TestMethod('funcOne', []),
-            new TestMethod('funcTwo', []),
-        ]);
+            new TestMethod('funcOne', [], false),
+            new TestMethod('funcTwo', [], false),
+        ], false);
         $this->printer->addTest($suite);
         static::assertEquals(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod']);
+        $method = new TestMethod('/path', ['testThisMethod'], false);
         $this->printer->addTest($method);
         static::assertEquals(1, $this->printer->getTotalCases());
     }

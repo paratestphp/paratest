@@ -44,9 +44,13 @@ abstract class ExecutableTest
      */
     protected $lastCommand = '';
 
-    public function __construct(string $path)
+    /** @var bool */
+    private $needsCoverage;
+
+    public function __construct(string $path, bool $needsCoverage)
     {
-        $this->path = $path;
+        $this->path          = $path;
+        $this->needsCoverage = $needsCoverage;
     }
 
     /**
@@ -104,16 +108,18 @@ abstract class ExecutableTest
     /**
      * Generate command line arguments with passed options suitable to handle through paratest.
      *
-     * @param string                                                       $binary   executable binary name
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options  command line options
-     * @param string[]|null                                                $passthru
+     * @param string                $binary   executable binary name
+     * @param array<string, string> $options  command line options
+     * @param string[]|null         $passthru
      *
      * @return string[] command line arguments
      */
     final public function commandArguments(string $binary, array $options = [], ?array $passthru = null): array
     {
         $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
-        $options = $this->redirectCoverageOption($options);
+        if ($this->needsCoverage) {
+            $options['coverage-php'] = $this->getCoverageFileName();
+        }
 
         $arguments = [$binary];
         if ($passthru !== null) {
@@ -124,10 +130,6 @@ abstract class ExecutableTest
             $arguments[] = "--$key";
             if ($value === null) {
                 continue;
-            }
-
-            if ($value instanceof Configuration) {
-                $value = $value->filename();
             }
 
             $arguments[] = $value;
@@ -181,28 +183,4 @@ abstract class ExecutableTest
      * @return array<string, (string|bool|int|Configuration|string[]|null)>
      */
     abstract protected function prepareOptions(array $options): array;
-
-    /**
-     * Checks if the coverage-php option is set and redirects it to a unique temp file.
-     * This will ensure, that multiple tests write to separate coverage-files.
-     *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
-     *
-     * @return array<string, (string|bool|int|Configuration|string[]|null)> $options
-     */
-    private function redirectCoverageOption(array $options): array
-    {
-        if (isset($options['coverage-php'])) {
-            $options['coverage-php'] = $this->getCoverageFileName();
-        }
-
-        unset(
-            $options['coverage-html'],
-            $options['coverage-clover'],
-            $options['coverage-text'],
-            $options['coverage-crap4j']
-        );
-
-        return $options;
-    }
 }

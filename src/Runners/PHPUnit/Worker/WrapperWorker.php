@@ -7,7 +7,6 @@ namespace ParaTest\Runners\PHPUnit\Worker;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use RuntimeException;
 
 use function fgets;
@@ -50,7 +49,7 @@ final class WrapperWorker extends BaseWorker
     }
 
     /**
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $phpunitOptions
+     * @param array<string, string> $phpunitOptions
      */
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
