@@ -17,4 +17,4 @@ static-analysis: vendor
 
 .PHONY: test
 test: vendor
-	vendor/bin/phpunit
+	php -d zend.assertions=1 vendor/bin/phpunit

@@ -50,7 +50,10 @@ final class ParaTestCommand extends Command
         Options::setInputDefinition($this->getDefinition());
     }
 
-    public function mergeApplicationDefinition(bool $mergeArgs = true): void
+    /**
+     * {@inheritDoc}
+     */
+    public function mergeApplicationDefinition($mergeArgs = true): void
     {
     }
 
