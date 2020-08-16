@@ -35,7 +35,7 @@ final class Runner extends BaseRunner
      * A collection of available tokens based on the number
      * of processes specified in $options.
      *
-     * @var array<int, array<string, int|string|bool>>
+     * @var array<int, array{token: int, unique: string, available: bool}>
      */
     private $tokens = [];
 
@@ -208,7 +208,7 @@ final class Runner extends BaseRunner
      * Gets the next token that is available to be acquired
      * from a finished process.
      *
-     * @return bool|array<string, mixed>
+     * @return false|array{token: int, unique: string, available: bool}
      */
     private function getNextAvailableToken()
     {

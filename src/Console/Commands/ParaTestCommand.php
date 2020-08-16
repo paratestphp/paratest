@@ -14,7 +14,9 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function assert;
 use function class_exists;
+use function is_string;
 use function is_subclass_of;
 use function sprintf;
 
@@ -94,6 +96,7 @@ final class ParaTestCommand extends Command
         $runnerClass = Runner::class;
         $runner      = $input->getOption('runner');
         if ($runner !== null) {
+            assert(is_string($runner));
             $runnerClass = $runner;
             $runnerClass = class_exists($runnerClass)
                 ? $runnerClass

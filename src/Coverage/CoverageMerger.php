@@ -73,7 +73,7 @@ final class CoverageMerger
 
             $xdebug = function_exists('xdebug_get_code_coverage');
             $phpdbg = PHP_SAPI === 'phpdbg';
-            $pcov   = extension_loaded('pcov') && ini_get('pcov.enabled');
+            $pcov   = extension_loaded('pcov') && (bool) ini_get('pcov.enabled');
 
             if (! $xdebug && ! $phpdbg && ! $pcov) {
                 $extra = 'No coverage driver found! Enable one of Xdebug, PHPDBG or PCOV for coverage.';
@@ -86,7 +86,7 @@ final class CoverageMerger
 
         $this->addCoverage($this->getCoverageObject($file));
 
-        unlink($file->getRealPath());
+        unlink($coverageFile);
     }
 
     /**

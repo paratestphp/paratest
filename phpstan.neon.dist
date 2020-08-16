@@ -1,5 +1,5 @@
 includes:
-    - phar://phpstan.phar/conf/config.level6.neon
+    - phar://phpstan.phar/conf/config.level7.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
@@ -134,3 +134,23 @@ parameters:
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/wrapper-runner-exit-code-tests/FailureTest.php
+
+        # Level 7
+        -
+            message: "#^Cannot call method fetch\\(\\) on PDOStatement\\|false\\.$#"
+            count: 1
+            path: bin/phpunit-sqlite-wrapper.php
+        -
+            message: "#^Method ParaTest\\\\Parser\\\\Parser\\:\\:searchForUnitTestClass\\(\\) should return class\\-string\\<PHPUnit\\\\Framework\\\\TestCase\\>\\|null but returns class\\-string\\.$#"
+            count: 1
+            path: src/Parser/Parser.php
+
+        -
+            message: "#^Method ParaTest\\\\Parser\\\\Parser\\:\\:searchForUnitTestClass\\(\\) should return class\\-string\\<PHPUnit\\\\Framework\\\\TestCase\\>\\|null but returns class\\-string\\|null\\.$#"
+            count: 1
+            path: src/Parser/Parser.php
+
+        -
+            message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"
+            count: 1
+            path: test/Unit/Runners/PHPUnit/SuiteLoaderTest.php

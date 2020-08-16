@@ -146,10 +146,12 @@ final class WorkerTest extends TestBase
             2 => ['pipe', 'w'],
         ];
 
-        $proc    = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
+        $proc = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
+        static::assertIsResource($proc);
         $running = true;
         while ($running) {
-            $status  = proc_get_status($proc);
+            $status = proc_get_status($proc);
+            static::assertNotFalse($status);
             $running = $status['running'];
         }
 
@@ -206,7 +208,7 @@ final class WorkerTest extends TestBase
     private function assertJUnitLogIsValid(string $logFile): void
     {
         static::assertFileExists($logFile);
-        $log   = new SimpleXMLElement(file_get_contents($logFile));
+        $log   = new SimpleXMLElement((string) file_get_contents($logFile));
         $count = count($log->testsuite->testcase);
         static::assertGreaterThan(1, $count, 'Not even a test has been executed');
     }

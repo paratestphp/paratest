@@ -247,7 +247,7 @@ final class SuiteLoader
     private function addDependentTestsToBatchSet(array &$batches, array $dependencies, array $tests): void
     {
         $dependencies = array_map(static function (ExecutionOrderDependency $dependency): string {
-            return substr($dependency->getTarget(), strrpos($dependency->getTarget(), ':') + 1);
+            return substr($dependency->getTarget(), (int) strrpos($dependency->getTarget(), ':') + 1);
         }, $dependencies);
 
         foreach ($batches as $key => $batch) {

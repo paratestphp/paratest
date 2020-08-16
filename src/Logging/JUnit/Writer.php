@@ -10,6 +10,7 @@ use ParaTest\Logging\LogInterpreter;
 
 use function array_merge;
 use function array_reduce;
+use function assert;
 use function count;
 use function file_put_contents;
 use function get_object_vars;
@@ -94,7 +95,10 @@ final class Writer
             }
         }
 
-        return $this->document->saveXML();
+        $xml = $this->document->saveXML();
+        assert($xml !== false);
+
+        return $xml;
     }
 
     /**
@@ -114,7 +118,9 @@ final class Writer
         $suiteNode = $this->document->createElement('testsuite');
         $vars      = get_object_vars($suite);
         foreach ($vars as $name => $value) {
-            if (! preg_match(static::$suiteAttrs, $name)) {
+            $match = preg_match(static::$suiteAttrs, $name);
+            assert($match !== false);
+            if ($match === 0) {
                 continue;
             }
 
@@ -135,7 +141,9 @@ final class Writer
         $caseNode = $this->document->createElement('testcase');
         $vars     = get_object_vars($case);
         foreach ($vars as $name => $value) {
-            if (! preg_match(static::$caseAttrs, $name)) {
+            $match = preg_match(static::$caseAttrs, $name);
+            assert($match !== false);
+            if ($match === 0) {
                 continue;
             }
 

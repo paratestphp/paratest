@@ -12,7 +12,6 @@ use PHPUnit\TextUI\XmlConfiguration\Exception;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
-use function getcwd;
 use function sprintf;
 
 final class ParaTestCommandTest extends TestBase
@@ -22,7 +21,7 @@ final class ParaTestCommandTest extends TestBase
 
     public function setUp(): void
     {
-        $application = ParaTestCommand::applicationFactory(getcwd());
+        $application = ParaTestCommand::applicationFactory(PARATEST_ROOT);
         $application->add(new HelpCommand());
 
         $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
@@ -30,7 +29,7 @@ final class ParaTestCommandTest extends TestBase
 
     public function testApplicationFactory(): void
     {
-        $application = ParaTestCommand::applicationFactory(getcwd());
+        $application = ParaTestCommand::applicationFactory(PARATEST_ROOT);
         $commands    = $application->all();
 
         static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
@@ -40,7 +39,7 @@ final class ParaTestCommandTest extends TestBase
     public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
     {
         static::expectException(Exception::class);
-        static::expectExceptionMessage(sprintf('Could not read "%s%snope.xml"', getcwd(), DS));
+        static::expectExceptionMessage(sprintf('Could not read "%s%snope.xml"', PARATEST_ROOT, DS));
 
         $this->commandTester->execute(['--configuration' => 'nope.xml']);
     }

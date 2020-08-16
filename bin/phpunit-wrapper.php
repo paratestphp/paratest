@@ -19,7 +19,6 @@ foreach ($composerAutoloadFiles as $file) {
     }
 }
 
-$commands        = fopen('php://stdin', 'r');
 $lastExitCode    = 0;
 $rand            = mt_rand(0, 999999);
 $uniqueTestToken = getenv('UNIQUE_TEST_TOKEN') ?: 'no_unique_test_token';
@@ -28,7 +27,7 @@ $filename        = "paratest_t-{$testToken}_ut-{$uniqueTestToken}_r-{$rand}.log"
 $path            = sys_get_temp_dir() . '/' . $filename;
 $loggingEnabled  = getenv('PT_LOGGING_ENABLE');
 $logInfo         = static function (string $info) use ($path, $loggingEnabled): void {
-    if (! $loggingEnabled) {
+    if ($loggingEnabled === false) {
         return;
     }
 
@@ -38,11 +37,11 @@ $logInfo         = static function (string $info) use ($path, $loggingEnabled): 
 $i = 0;
 while (true) {
     $i++;
-    if (feof($commands)) {
+    if (feof(\STDIN)) {
         exit($lastExitCode);
     }
 
-    $command = fgets($commands);
+    $command = fgets(\STDIN);
     if ($command === false) {
         exit($lastExitCode);
     }
@@ -70,6 +69,8 @@ while (true) {
     ob_start();
     $lastExitCode = PHPUnit\TextUI\Command::main(false);
     $infoText     = ob_get_clean();
+    assert($infoText !== false);
+
     $logInfo($infoText);
 
     echo "FINISHED\n";

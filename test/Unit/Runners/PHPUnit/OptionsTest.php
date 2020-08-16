@@ -53,7 +53,9 @@ final class OptionsTest extends TestBase
 
     private function cleanUpGeneratedFiles(): void
     {
-        foreach (glob($this->testCwd . DS . '*') as $file) {
+        $glob = glob($this->testCwd . DS . '*');
+        self::assertNotFalse($glob);
+        foreach ($glob as $file) {
             unlink($file);
         }
     }

@@ -15,6 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
 
 use function array_shift;
+use function assert;
 use function count;
 use function dirname;
 use function escapeshellarg;
@@ -549,8 +550,9 @@ final class Options
         $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
-            if (is_file($fileFound = $cwd . DIRECTORY_SEPARATOR . $suffix)) {
-                return realpath($fileFound);
+            $fileFound = $cwd . DIRECTORY_SEPARATOR . $suffix;
+            if (is_file($fileFound) && ($fileFound = realpath($fileFound)) !== false) {
+                return $fileFound;
             }
         }
 
@@ -591,6 +593,7 @@ final class Options
         if (is_file('/proc/cpuinfo')) {
             // Linux (and potentially Windows with linux sub systems)
             $cpuinfo = file_get_contents('/proc/cpuinfo');
+            assert($cpuinfo !== false);
             preg_match_all('/^processor/m', $cpuinfo, $matches);
             $cores = count($matches[0]);
         } elseif (DIRECTORY_SEPARATOR === '\\') {

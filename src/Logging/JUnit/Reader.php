@@ -10,7 +10,7 @@ use SimpleXMLElement;
 
 use function array_merge;
 use function array_reduce;
-use function call_user_func_array;
+use function assert;
 use function count;
 use function current;
 use function file_exists;
@@ -32,7 +32,7 @@ final class Reader extends MetaProvider
     /** @var string */
     protected $logFile;
 
-    /** @var array<string, int|string> */
+    /** @var array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} */
     private static $defaultSuite = [
         'name' => '',
         'file' => '',
@@ -41,7 +41,7 @@ final class Reader extends MetaProvider
         'failures' => 0,
         'errors' => 0,
         'skipped' => 0,
-        'time' => 0,
+        'time' => 0.0,
     ];
 
     public function __construct(string $logFile)
@@ -58,7 +58,8 @@ final class Reader extends MetaProvider
         }
 
         $logFileContents = file_get_contents($this->logFile);
-        $this->xml       = new SimpleXMLElement($logFileContents);
+        assert($logFileContents !== false);
+        $this->xml = new SimpleXMLElement($logFileContents);
         $this->init();
     }
 
@@ -157,8 +158,8 @@ final class Reader extends MetaProvider
      * Creates and adds a TestSuite based on the given
      * suite properties and collection of test cases.
      *
-     * @param array<string, int|string|float> $properties
-     * @param TestCase[]                      $testCases
+     * @param array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $properties
+     * @param TestCase[]                                                                                                            $testCases
      */
     private function addSuite(array $properties, array $testCases): void
     {
@@ -173,29 +174,30 @@ final class Reader extends MetaProvider
      * @param SimpleXMLElement[] $nodeArray an array of testcase nodes
      * @param TestCase[]         $testCases an array reference. Individual testcases will be placed here.
      *
-     * @return array<string, int|string>
+     * @return array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float}
      */
     private function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = []): array
     {
-        $cb = [TestCase::class, 'caseFromNode'];
-
-        return array_reduce(
+        /** @var array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $result */
+        $result = array_reduce(
             $nodeArray,
-            static function (array $result, SimpleXMLElement $c) use (&$testCases, $cb): array {
-                $testCases[]    = call_user_func_array($cb, [$c]);
-                $result['name'] = (string) $c['class'];
-                $result['file'] = (string) $c['file'];
+            static function (array $result, SimpleXMLElement $xmlElement) use (&$testCases): array {
+                $testCases[]    = TestCase::caseFromNode($xmlElement);
+                $result['name'] = (string) $xmlElement['class'];
+                $result['file'] = (string) $xmlElement['file'];
                 ++$result['tests'];
-                $result['assertions'] += (int) $c['assertions'];
-                $result['failures']   += count($c->xpath('failure'));
-                $result['errors']     += count($c->xpath('error'));
-                $result['skipped']    += count($c->xpath('skipped'));
-                $result['time']       += (float) $c['time'];
+                $result['assertions'] += (int) $xmlElement['assertions'];
+                $result['failures']   += ($failues = $xmlElement->xpath('failure')) !== false ? count($failues) : 0;
+                $result['errors']     += ($error = $xmlElement->xpath('error')) !== false ? count($error) : 0;
+                $result['skipped']    += ($skipped = $xmlElement->xpath('skipped')) !== false ? count($skipped) : 0;
+                $result['time']       += (float) $xmlElement['time'];
 
                 return $result;
             },
             static::$defaultSuite
         );
+
+        return $result;
     }
 
     /**
@@ -207,7 +209,8 @@ final class Reader extends MetaProvider
     private function getCaseNodes(): array
     {
         $caseNodes = $this->xml->xpath('//testcase');
-        $cases     = [];
+        assert($caseNodes !== false);
+        $cases = [];
         foreach ($caseNodes as $node) {
             $caseFilename = (string) $node['file'];
             if (! isset($cases[$caseFilename])) {
@@ -227,9 +230,13 @@ final class Reader extends MetaProvider
      */
     private function initSuite(): void
     {
-        $suiteNodes     = $this->xml->xpath('/testsuites/testsuite/testsuite');
+        $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
+        assert($suiteNodes !== false);
         $this->isSingle = count($suiteNodes) === 0;
-        $node           = current($this->xml->xpath('/testsuites/testsuite'));
+
+        $node = $this->xml->xpath('/testsuites/testsuite');
+        assert($node !== false);
+        $node = current($node);
 
         if ($node !== false) {
             $this->suites[] = TestSuite::suiteFromNode($node);
