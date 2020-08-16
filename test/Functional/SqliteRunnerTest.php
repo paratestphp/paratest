@@ -23,7 +23,7 @@ final class SqliteRunnerTest extends FunctionalTestBase
         $generator = new TestGenerator();
         $generator->generate(self::TEST_CLASSES, self::TEST_METHODS_PER_CLASS);
 
-        $proc = $this->invokeParatest($generator->path, ['processes' => 3], SqliteRunner::class);
+        $proc = $this->invokeParatest($generator->path, ['--processes' => 3, '--runner' => SqliteRunner::class]);
 
         $expected = self::TEST_CLASSES * self::TEST_METHODS_PER_CLASS;
         $this->assertTestsPassed($proc, (string) $expected, (string) $expected);
@@ -34,18 +34,17 @@ final class SqliteRunnerTest extends FunctionalTestBase
         $generator = new TestGenerator();
         $generator->generate(1, 1);
 
-        $proc = $this->invokeParatest($generator->path, ['processes' => 2], SqliteRunner::class);
+        $proc = $this->invokeParatest($generator->path, ['--processes' => 2, '--runner' => SqliteRunner::class]);
 
         $this->assertTestsPassed($proc, '1', '1');
     }
 
     public function testExitCodes(): void
     {
-        $options = ['processes' => 1];
+        $options = ['--processes' => 1, '--runner' => SqliteRunner::class];
         $proc    = $this->invokeParatest(
             'wrapper-runner-exit-code-tests/ErrorTest.php',
-            $options,
-            SqliteRunner::class
+            $options
         );
         $output  = $proc->getOutput();
 
@@ -56,8 +55,7 @@ final class SqliteRunnerTest extends FunctionalTestBase
 
         $proc   = $this->invokeParatest(
             'wrapper-runner-exit-code-tests/FailureTest.php',
-            $options,
-            SqliteRunner::class
+            $options
         );
         $output = $proc->getOutput();
 
@@ -68,21 +66,19 @@ final class SqliteRunnerTest extends FunctionalTestBase
 
         $proc   = $this->invokeParatest(
             'wrapper-runner-exit-code-tests/SuccessTest.php',
-            $options,
-            SqliteRunner::class
+            $options
         );
         $output = $proc->getOutput();
 
         static::assertStringContainsString('OK (1 test, 1 assertion)', $output);
         static::assertEquals(0, $proc->getExitCode());
 
-        $options['processes'] = 3;
-        $proc                 = $this->invokeParatest(
+        $options['--processes'] = 3;
+        $proc                   = $this->invokeParatest(
             'wrapper-runner-exit-code-tests',
-            $options,
-            SqliteRunner::class
+            $options
         );
-        $output               = $proc->getOutput();
+        $output                 = $proc->getOutput();
         static::assertStringContainsString('Tests: 3', $output);
         static::assertStringContainsString('Failures: 1', $output);
         static::assertStringContainsString('Errors: 1', $output);

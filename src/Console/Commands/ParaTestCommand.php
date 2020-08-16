@@ -4,29 +4,37 @@ declare(strict_types=1);
 
 namespace ParaTest\Console\Commands;
 
-use ParaTest\Console\Testers\Tester;
+use InvalidArgumentException;
+use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Runners\PHPUnit\RunnerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function class_exists;
+use function is_subclass_of;
+use function sprintf;
 
 final class ParaTestCommand extends Command
 {
-    /** @var Tester */
-    protected $tester;
+    public const COMMAND_NAME = 'paratest';
 
-    public function __construct(Tester $tester)
+    /** @var string */
+    private $cwd;
+
+    public function __construct(string $cwd, ?string $name = null)
     {
-        parent::__construct('paratest');
-        $this->tester = $tester;
-        $this->tester->configure($this);
+        $this->cwd = $cwd;
+        parent::__construct($name);
     }
 
-    public static function applicationFactory(Tester $tester): Application
+    public static function applicationFactory(string $cwd): Application
     {
-        $application = new Application('ParaTest');
-        $command     = new ParaTestCommand($tester);
+        $application = new Application();
+        $command     = new self($cwd, self::COMMAND_NAME);
 
         $application->add($command);
         $application->setDefaultCommand($command->getName(), true);
@@ -39,78 +47,14 @@ final class ParaTestCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->addOption('processes', 'p', InputOption::VALUE_REQUIRED, 'The number of test processes to run.', 'auto')
-            ->addOption(
-                'functional',
-                'f',
-                InputOption::VALUE_NONE,
-                'Run test methods instead of classes in separate processes.'
-            )
-            ->addOption(
-                'no-test-tokens',
-                null,
-                InputOption::VALUE_NONE,
-                'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'
-            )
-            ->addOption('help', 'h', InputOption::VALUE_NONE, 'Display this help message.')
-            ->addOption(
-                'coverage-clover',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in Clover XML format.'
-            )
-            ->addOption(
-                'coverage-crap4j',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in Crap4J XML format.'
-            )
-            ->addOption(
-                'coverage-html',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in HTML format.'
-            )
-            ->addOption('coverage-php', null, InputOption::VALUE_REQUIRED, 'Serialize PHP_CodeCoverage object to file.')
-            ->addOption('coverage-text', null, InputOption::VALUE_NONE, 'Generate code coverage report in text format.')
-            ->addOption(
-                'coverage-xml',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in PHPUnit XML format.'
-            )
-            ->addOption(
-                'coverage-test-limit',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of ' .
-                    'coverage reports.'
-            )
-            ->addOption(
-                'max-batch-size',
-                'm',
-                InputOption::VALUE_REQUIRED,
-                'Max batch size (only for functional mode).',
-                0
-            )
-            ->addOption('filter', null, InputOption::VALUE_REQUIRED, 'Filter (only for functional mode).')
-            ->addOption('parallel-suite', null, InputOption::VALUE_NONE, 'Run the suites of the config in parallel.')
-            ->addOption(
-                'passthru',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Pass the given arguments verbatim to the underlying test framework. Example: ' .
-                    '--passthru="\'--prepend\' \'xdebug-filter.php\'"'
-            )
-            ->addOption(
-                'passthru-php',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' ' .
-                    '\'zend_extension=xdebug.so\'"'
-            )
-            ->addOption('whitelist', null, InputOption::VALUE_REQUIRED, 'Directory to add to the coverage whitelist.');
+        Options::setInputDefinition($this->getDefinition());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function mergeApplicationDefinition($mergeArgs = true): void
+    {
     }
 
     /**
@@ -118,6 +62,52 @@ final class ParaTestCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        return $this->tester->execute($input, $output);
+        $options = Options::fromConsoleInput($input, $this->cwd);
+        if ($options->configuration() === null && $options->path() === null) {
+            return $this->displayHelp($input, $output);
+        }
+
+        $runnerClass = $this->getRunnerClass($input);
+
+        $runner = new $runnerClass($options, $output);
+        $runner->run();
+
+        return $runner->getExitCode();
+    }
+
+    /**
+     * Displays help for the ParaTestCommand.
+     */
+    private function displayHelp(InputInterface $input, OutputInterface $output): int
+    {
+        $help  = $this->getApplication()->find('help');
+        $input = new ArrayInput(['command_name' => $this->getName()]);
+
+        return $help->run($input, $output);
+    }
+
+    /**
+     * @return class-string<RunnerInterface>
+     */
+    private function getRunnerClass(InputInterface $input): string
+    {
+        $runnerClass = Runner::class;
+        $runner      = $input->getOption('runner');
+        if ($runner !== null) {
+            $runnerClass = $runner;
+            $runnerClass = class_exists($runnerClass)
+                ? $runnerClass
+                : '\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass;
+        }
+
+        if (! class_exists($runnerClass) || ! is_subclass_of($runnerClass, RunnerInterface::class)) {
+            throw new InvalidArgumentException(sprintf(
+                'Selected runner class "%s" does not exist or does not implement %s',
+                $runnerClass,
+                RunnerInterface::class
+            ));
+        }
+
+        return $runnerClass;
     }
 }

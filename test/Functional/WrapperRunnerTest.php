@@ -26,7 +26,7 @@ final class WrapperRunnerTest extends FunctionalTestBase
         $generator = new TestGenerator();
         $generator->generate(self::TEST_CLASSES, self::TEST_METHODS_PER_CLASS);
 
-        $proc = $this->invokeParatest($generator->path, ['processes' => 3], WrapperRunner::class);
+        $proc = $this->invokeParatest($generator->path, ['--processes' => 3, '--runner' => WrapperRunner::class]);
 
         $expected = self::TEST_CLASSES * self::TEST_METHODS_PER_CLASS;
         $this->assertTestsPassed($proc, (string) $expected, (string) $expected);
@@ -37,18 +37,17 @@ final class WrapperRunnerTest extends FunctionalTestBase
         $generator = new TestGenerator();
         $generator->generate(1, 1);
 
-        $proc = $this->invokeParatest($generator->path, ['processes' => 2], WrapperRunner::class);
+        $proc = $this->invokeParatest($generator->path, ['--processes' => 2, '--runner' => WrapperRunner::class]);
 
         $this->assertTestsPassed($proc, '1', '1');
     }
 
     public function testExitCodes(): void
     {
-        $options = ['processes' => 1];
+        $options = ['--processes' => 1, '--runner' => WrapperRunner::class];
         $proc    = $this->invokeParatest(
             'wrapper-runner-exit-code-tests/ErrorTest.php',
-            $options,
-            WrapperRunner::class
+            $options
         );
         $output  = $proc->getOutput();
 
@@ -59,8 +58,7 @@ final class WrapperRunnerTest extends FunctionalTestBase
 
         $proc   = $this->invokeParatest(
             'wrapper-runner-exit-code-tests/FailureTest.php',
-            $options,
-            WrapperRunner::class
+            $options
         );
         $output = $proc->getOutput();
 
@@ -71,21 +69,19 @@ final class WrapperRunnerTest extends FunctionalTestBase
 
         $proc   = $this->invokeParatest(
             'wrapper-runner-exit-code-tests/SuccessTest.php',
-            $options,
-            WrapperRunner::class
+            $options
         );
         $output = $proc->getOutput();
 
         static::assertStringContainsString('OK (1 test, 1 assertion)', $output);
         static::assertEquals(0, $proc->getExitCode());
 
-        $options['processes'] = 3;
-        $proc                 = $this->invokeParatest(
+        $options['--processes'] = 3;
+        $proc                   = $this->invokeParatest(
             'wrapper-runner-exit-code-tests',
-            $options,
-            WrapperRunner::class
+            $options
         );
-        $output               = $proc->getOutput();
+        $output                 = $proc->getOutput();
         static::assertStringContainsString('Tests: 3', $output);
         static::assertStringContainsString('Failures: 1', $output);
         static::assertStringContainsString('Errors: 1', $output);
@@ -106,11 +102,11 @@ final class WrapperRunnerTest extends FunctionalTestBase
         $proc = $this->invokeParatest(
             null,
             [
-                'configuration' => $this->fixture('phpunit-parallel-suite.xml'),
-                'parallel-suite' => true,
-                'processes' => 2,
-            ],
-            WrapperRunner::class
+                '--configuration' => $this->fixture('phpunit-parallel-suite.xml'),
+                '--parallel-suite' => true,
+                '--processes' => 2,
+                '--runner' => WrapperRunner::class,
+            ]
         );
 
         $this->assertTestsPassed($proc);

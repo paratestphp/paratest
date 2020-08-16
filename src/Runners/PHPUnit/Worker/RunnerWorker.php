@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use RuntimeException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -68,10 +67,10 @@ final class RunnerWorker
     /**
      * Executes the test by creating a separate process.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
-     * @param array<string, string|int>                                    $environmentVariables
-     * @param string[]|null                                                $passthru
-     * @param string[]|null                                                $passthruPhp
+     * @param array<string, string>     $options
+     * @param array<string, string|int> $environmentVariables
+     * @param string[]|null             $passthru
+     * @param string[]|null             $passthruPhp
      *
      * @return $this
      */
@@ -82,13 +81,13 @@ final class RunnerWorker
         ?array $passthru = null,
         ?array $passthruPhp = null
     ) {
-        $command = $this->getFullCommandlineString($binary, $options, $passthru, $passthruPhp);
+        $process = $this->getProcess($binary, $options, $environmentVariables, $passthru, $passthruPhp);
+        $cmd     = $process->getCommandLine();
 
-        $this->assertValidCommandLineLength($command);
-        $this->executableTest->setLastCommand($command);
+        $this->assertValidCommandLineLength($cmd);
+        $this->executableTest->setLastCommand($cmd);
 
-        $environmentVariables['PARATEST'] = 1;
-        $this->process                    = Process::fromShellCommandline($command, null, $environmentVariables);
+        $this->process = $process;
         $this->process->start();
 
         return $this;
@@ -98,16 +97,18 @@ final class RunnerWorker
      * Build the full executable as we would do on the command line, e.g.
      * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
-     * @param string[]|null                                                $passthru
-     * @param string[]|null                                                $passthruPhp
+     * @param array<string, string>     $options
+     * @param array<string, string|int> $environmentVariables
+     * @param string[]|null             $passthru
+     * @param string[]|null             $passthruPhp
      */
-    private function getFullCommandlineString(
+    private function getProcess(
         string $binary,
         array $options,
+        array $environmentVariables = [],
         ?array $passthru = null,
         ?array $passthruPhp = null
-    ): string {
+    ): Process {
         $finder = new PhpExecutableFinder();
 
         $args = [$finder->find()];
@@ -117,7 +118,9 @@ final class RunnerWorker
 
         $args = array_merge($args, $this->executableTest->commandArguments($binary, $options, $passthru));
 
-        return (new Process($args))->getCommandLine();
+        $environmentVariables['PARATEST'] = 1;
+
+        return new Process($args, null, $environmentVariables);
     }
 
     /**

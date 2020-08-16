@@ -49,9 +49,9 @@ final class WrapperRunner extends BaseWrapperRunner
         $wrapper = realpath(
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
         );
-        for ($i = 1; $i <= $this->options->processes; ++$i) {
+        for ($i = 1; $i <= $this->options->processes(); ++$i) {
             $worker = new WrapperWorker($this->output);
-            if ($this->options->noTestTokens) {
+            if ($this->options->noTestTokens()) {
                 $token       = null;
                 $uniqueToken = null;
             } else {
@@ -67,8 +67,8 @@ final class WrapperRunner extends BaseWrapperRunner
 
     private function assignAllPendingTests(): void
     {
-        $phpunit        = $this->options->phpunit;
-        $phpunitOptions = $this->options->filtered;
+        $phpunit        = $this->options->phpunit();
+        $phpunitOptions = $this->options->filtered();
         // $phpunitOptions['no-globals-backup'] = null;  // removed in phpunit 6.0
         while (count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
@@ -84,7 +84,7 @@ final class WrapperRunner extends BaseWrapperRunner
                         $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
                     }
                 } catch (Throwable $e) {
-                    if ($this->options->verbose > 0) {
+                    if ($this->options->verbose() > 0) {
                         $worker->stop();
                         $this->output->writeln(
                             "Error while assigning pending tests for worker $key: {$e->getMessage()}"
@@ -172,7 +172,7 @@ final class WrapperRunner extends BaseWrapperRunner
                         unset($toStop[$index]);
                     }
                 } catch (Throwable $e) {
-                    if ($this->options->verbose > 0) {
+                    if ($this->options->verbose() > 0) {
                         $worker->stop();
                         unset($toStop[$index]);
                         $this->output->writeln("Error while waiting to finish for worker $index: {$e->getMessage()}");

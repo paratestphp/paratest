@@ -85,8 +85,8 @@ abstract class BaseWorker
         $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
         $bin           = escapeshellarg($phpExecutable);
-        if ($options !== null && $options->passthruPhp !== null) {
-            $bin .= ' ' . implode(' ', $options->passthruPhp) . ' ';
+        if ($options !== null && $options->passthruPhp() !== null) {
+            $bin .= ' ' . implode(' ', $options->passthruPhp()) . ' ';
         }
 
         $bin .= ' ' . escapeshellarg($wrapperBinary);
@@ -97,7 +97,7 @@ abstract class BaseWorker
         }
 
         $pipes = [];
-        if ($options !== null && $options->verbose > 0) {
+        if ($options !== null && $options->verbose() > 0) {
             $this->output->writeln("Starting WrapperWorker via: $bin");
         }
 

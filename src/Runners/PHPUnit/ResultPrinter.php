@@ -131,19 +131,19 @@ final class ResultPrinter
                          - strlen($this->getProgress());
         $this->output->write(sprintf(
             "\nRunning phpunit in %d process%s with %s%s\n\n",
-            $options->processes,
-            $options->processes > 1 ? 'es' : '',
-            $options->phpunit,
-            $options->functional ? '. Functional mode is ON.' : ''
+            $options->processes(),
+            $options->processes() > 1 ? 'es' : '',
+            $options->phpunit(),
+            $options->functional() ? '. Functional mode is ON.' : ''
         ));
-        if (isset($options->filtered['configuration'])) {
+        if ($options->configuration() !== null) {
             $this->output->write(sprintf(
                 "Configuration read from %s\n\n",
-                $options->filtered['configuration']->filename()
+                $options->configuration()->filename()
             ));
         }
 
-        $this->colors         = $options->colors;
+        $this->colors         = $options->colors();
         $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($options);
     }
 
@@ -300,8 +300,8 @@ final class ResultPrinter
      */
     private function isSkippedIncompleTestCanBeTracked(Options $options): bool
     {
-        return $options->functional
-            || (count($options->groups) === 0 && count($options->excludeGroups) === 0);
+        return $options->functional()
+            || (count($options->group()) === 0 && count($options->excludeGroup()) === 0);
     }
 
     /**

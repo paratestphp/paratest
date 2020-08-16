@@ -15,15 +15,15 @@ final class ParserTest extends TestBase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $parser = new Parser('/path/to/nowhere');
+        new Parser('/path/to/nowhere');
     }
 
     public function testConstructorThrowsExceptionIfClassNotFoundInFile(): void
     {
+        $fileWithoutAClass = FIXTURES . DS . 'fileWithoutClasses.php';
         $this->expectException(NoClassInFileException::class);
 
-        $fileWithoutAClass = FIXTURES . DS . 'chdirBootstrap.php';
-        $parser            = new Parser($fileWithoutAClass);
+        new Parser($fileWithoutAClass);
     }
 
     public function testPrefersClassByFileName(): void

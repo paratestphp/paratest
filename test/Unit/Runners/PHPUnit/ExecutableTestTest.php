@@ -7,8 +7,6 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 use ParaTest\Tests\TestBase;
 
 use function defined;
-use function preg_quote;
-use function str_replace;
 use function unlink;
 
 final class ExecutableTestTest extends TestBase
@@ -18,7 +16,7 @@ final class ExecutableTestTest extends TestBase
 
     public function setUp(): void
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile');
+        $this->executableTestChild = new ExecutableTestChild('pathToFile', true);
     }
 
     public function testConstructor(): void
@@ -28,20 +26,19 @@ final class ExecutableTestTest extends TestBase
 
     public function testCommandRedirectsCoverage(): void
     {
-        $options = ['a' => 'b', 'coverage-php' => 'target.php'];
+        $options = ['a' => 'b'];
         $binary  = '/usr/bin/phpunit';
 
-        $command          = $this->executableTestChild->command($binary, $options);
-        $coverageFileName = str_replace('/', '\/', $this->executableTestChild->getCoverageFileName());
+        $command = $this->executableTestChild->command($binary, $options);
 
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             static::assertMatchesRegularExpression(
-                '#^"/usr/bin/phpunit" --a b --coverage-php ' . preg_quote($coverageFileName, '#') . ' .*#',
+                '#^"/usr/bin/phpunit" --a b .+#',
                 $command
             );
         } else {
             static::assertMatchesRegularExpression(
-                "#^'/usr/bin/phpunit' '--a' 'b' '--coverage-php' '" . $coverageFileName . "' '.*'#",
+                "#^'/usr/bin/phpunit' '--a' 'b' .+#",
                 $command
             );
         }

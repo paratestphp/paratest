@@ -61,7 +61,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldAddTest(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', []);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false);
 
         $this->printer->addTest($suite);
 
@@ -70,7 +70,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestReturnsSelf(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', []);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false);
 
         $self = $this->printer->addTest($suite);
 
@@ -79,12 +79,12 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfo(): void
     {
-        $options  = new Options();
+        $options  = $this->createOptionsFromArgv([]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit
+            $options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
     }
@@ -93,12 +93,12 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, []);
+            $funcs[] = new TestMethod((string) $i, [], false);
         }
 
-        $suite = new Suite('/path', $funcs);
+        $suite = new Suite('/path', $funcs, false);
         $this->printer->addTest($suite);
-        $this->getStartOutput(new Options());
+        $this->getStartOutput($this->createOptionsFromArgv([]));
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
         static::assertEquals(3, $numTestsWidth);
         $maxExpectedColumun = 63;
@@ -114,12 +114,12 @@ final class ResultPrinterTest extends ResultTester
     {
         $pathToConfig = $this->getPathToConfig();
         file_put_contents($pathToConfig, '<root />');
-        $options  = new Options(['configuration' => $pathToConfig]);
+        $options  = $this->createOptionsFromArgv(['--configuration' => $pathToConfig]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit,
+            $options->phpunit(),
             $pathToConfig
         );
         static::assertStringStartsWith($expected, $contents);
@@ -127,37 +127,37 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithFunctionalMode(): void
     {
-        $options  = new Options(['functional' => true]);
+        $options  = $this->createOptionsFromArgv(['--functional' => true]);
         $contents = $this->getStartOutput($options);
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit
+            $options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
     {
-        $options  = new Options(['processes' => 1]);
+        $options  = $this->createOptionsFromArgv(['--processes' => 1]);
         $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit);
+        $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit());
         static::assertStringStartsWith($expected, $contents);
     }
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new TestMethod('funcOne', []),
-            new TestMethod('funcTwo', []),
-        ]);
+            new TestMethod('funcOne', [], false),
+            new TestMethod('funcTwo', [], false),
+        ], false);
         $this->printer->addTest($suite);
         static::assertEquals(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod']);
+        $method = new TestMethod('/path', ['testThisMethod'], false);
         $this->printer->addTest($method);
         static::assertEquals(1, $this->printer->getTotalCases());
     }
@@ -278,7 +278,7 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuite);
         }
 
-        $this->printer->start(new Options());
+        $this->printer->start($this->createOptionsFromArgv([]));
         $this->output->fetch();
 
         for ($i = 0; $i < 40; ++$i) {
@@ -315,7 +315,7 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuiteWithWrongTestCountEstimation);
         }
 
-        $this->printer->start(new Options());
+        $this->printer->start($this->createOptionsFromArgv([]));
         $this->output->fetch();
 
         for ($i = 0; $i < 22; ++$i) {

@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use InvalidArgumentException;
 use ParaTest\Console\Commands\ParaTestCommand;
-use ParaTest\Console\Testers\PHPUnit;
-use ParaTest\Runners\PHPUnit\BaseRunner;
-use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\Runner;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Command\HelpCommand;
+use Symfony\Component\Console\Tester\CommandTester;
+
+use function getcwd;
 
 final class ParaTestInvoker
 {
@@ -27,37 +24,23 @@ final class ParaTestInvoker
      * Runs the command, returns the proc after it's done.
      *
      * @param array<string, string|int|true> $options
-     * @param class-string<BaseRunner>|null  $runnerClass
      */
-    public function execute(array $options = [], ?string $runnerClass = null): RunnerResult
+    public function execute(array $options, ?string $cwd = null): RunnerResult
     {
-        if (isset($options['runner'])) {
-            throw new InvalidArgumentException('Specify the runner as a parameter instead of an option');
-        }
+        $application = ParaTestCommand::applicationFactory($cwd ?? getcwd());
+        $application->add(new HelpCommand());
 
-        if ($runnerClass === null) {
-            $runnerClass = Runner::class;
-        }
-
-        $options['phpunit'] = PHPUNIT;
-        $phpunitTester      = new PHPUnit();
-        $paraTestCommand    = new ParaTestCommand($phpunitTester);
-        $input              = new ArrayInput([], $paraTestCommand->getDefinition());
-        foreach ($options as $key => $value) {
-            $input->setOption($key, $value);
-        }
+        $commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
 
         if ($this->path !== null) {
-            $input->setArgument('path', $this->path);
+            $options['path'] = $this->path;
         }
 
-        $options = $phpunitTester->getRunnerOptions($input);
+        $commandTester->execute($options);
 
-        $output = new BufferedOutput();
-
-        $runner = new $runnerClass(new Options($options), $output);
-        $runner->run();
-
-        return new RunnerResult($runner, $output);
+        return new RunnerResult(
+            $commandTester->getStatusCode(),
+            $commandTester->getDisplay()
+        );
     }
 }

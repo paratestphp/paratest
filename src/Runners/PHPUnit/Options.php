@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Util\Str;
 use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
 
-use function array_diff_key;
 use function array_shift;
-use function assert;
 use function count;
 use function dirname;
 use function escapeshellarg;
@@ -19,16 +22,16 @@ use function explode;
 use function fgets;
 use function file_exists;
 use function file_get_contents;
+use function implode;
 use function in_array;
 use function intdiv;
 use function is_dir;
 use function is_file;
-use function is_string;
 use function pclose;
 use function popen;
+use function preg_match;
 use function preg_match_all;
 use function realpath;
-use function rtrim;
 use function sprintf;
 use function strlen;
 use function unserialize;
@@ -39,30 +42,15 @@ use const PHP_BINARY;
 /**
  * An object containing all configurable information used
  * to run PHPUnit via ParaTest.
- *
- * @property-read int $processes
- * @property-read string $path
- * @property-read string $phpunit
- * @property-read bool $functional
- * @property-read bool $stopOnFailure
- * @property-read array<string, (string|bool|int|Configuration|string[]|null)> $filtered
- * @property-read string $runner
- * @property-read bool $noTestTokens
- * @property-read bool $colors
- * @property-read string[] $testsuite
- * @property-read int|null $maxBatchSize
- * @property-read string $filter
- * @property-read string[] $groups
- * @property-read string[] $excludeGroups
- * @property-read array<string, string> $annotations
- * @property-read bool $parallelSuite
- * @property-read string[]|null $passthru
- * @property-read string[]|null $passthruPhp
- * @property-read int $verbose
- * @property-read int $coverageTestLimit
  */
 final class Options
 {
+    /**
+     * @see \PHPUnit\Util\Configuration
+     * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
+     */
+    private const TEST_SUITE_FILTER_SEPARATOR = ',';
+
     /**
      * The number of processes to run at a time.
      *
@@ -74,7 +62,7 @@ final class Options
      * The test path pointing to tests that will
      * be run.
      *
-     * @var string
+     * @var string|null
      */
     private $path;
 
@@ -105,7 +93,7 @@ final class Options
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options.
      *
-     * @var array<string, (string|bool|int|Configuration|string[]|null)>
+     * @var array<string, string>
      */
     private $filtered;
 
@@ -128,18 +116,14 @@ final class Options
     /** @var int|null */
     private $maxBatchSize;
 
-    /** @var string */
+    /** @var string|null */
     private $filter;
 
-    // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
+    /** @var string[] */
+    private $group;
 
     /** @var string[] */
-    private $groups;
-
-    /** @var string[] */
-    private $excludeGroups;
-
-    // phpcs:enable
+    private $excludeGroup;
 
     /**
      * A collection of option values directly corresponding
@@ -184,104 +168,327 @@ final class Options
      * @var int
      */
     private $coverageTestLimit;
+    /** @var string|null */
+    private $bootstrap;
+    /** @var Configuration|null */
+    private $configuration;
+    /** @var string|null */
+    private $coverageClover;
+    /** @var string|null */
+    private $coverageCrap4j;
+    /** @var string|null */
+    private $coverageHtml;
+    /** @var string|null */
+    private $coveragePhp;
+    /** @var bool */
+    private $coverageText;
+    /** @var string|null */
+    private $coverageXml;
+    /** @var string|null */
+    private $logJunit;
+    /** @var string|null */
+    private $whitelist;
 
-    /**
-     * @param array<string, string|bool|int|string[]> $opts
-     */
-    public function __construct(array $opts = [])
+    private function __construct()
     {
-        foreach (self::defaults() as $opt => $value) {
-            $opts[$opt] = $opts[$opt] ?? $value;
+    }
+
+    public static function fromConsoleInput(InputInterface $input, string $cwd): self
+    {
+        $options = $input->getOptions();
+        if ($options['path'] === null) {
+            $options['path'] = $input->getArgument('path');
         }
 
-        if ($opts['processes'] === 'auto') {
-            $opts['processes'] = self::getNumberOfCPUCores();
-        } elseif ($opts['processes'] === 'half') {
-            $opts['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
+        if ($options['processes'] === 'auto') {
+            $options['processes'] = self::getNumberOfCPUCores();
+        } elseif ($options['processes'] === 'half') {
+            $options['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
         }
 
-        $this->processes         = $opts['processes'];
-        $this->path              = $opts['path'];
-        $this->phpunit           = $opts['phpunit'];
-        $this->functional        = $opts['functional'];
-        $this->stopOnFailure     = $opts['stop-on-failure'];
-        $this->runner            = $opts['runner'];
-        $this->noTestTokens      = $opts['no-test-tokens'];
-        $this->colors            = $opts['colors'];
-        $this->testsuite         = $opts['testsuite'];
-        $this->maxBatchSize      = (int) $opts['max-batch-size'];
-        $this->filter            = $opts['filter'];
-        $this->parallelSuite     = $opts['parallel-suite'];
-        $this->passthru          = $this->parsePassthru($opts['passthru'] ?? null);
-        $this->passthruPhp       = $this->parsePassthru($opts['passthru-php'] ?? null);
-        $this->verbose           = $opts['verbose'] ?? 0;
-        $this->coverageTestLimit = $opts['coverage-test-limit'] ?? 0;
+        $instance = new self();
+
+        $instance->bootstrap      = $options['bootstrap'];
+        $instance->coverageClover = $options['coverage-clover'];
+        $instance->coverageCrap4j = $options['coverage-crap4j'];
+        $instance->coverageHtml   = $options['coverage-html'];
+        $instance->coveragePhp    = $options['coverage-php'];
+        $instance->coverageText   = $options['coverage-text'];
+        $instance->coverageXml    = $options['coverage-xml'];
+        $instance->logJunit       = $options['log-junit'];
+        $instance->processes      = (int) $options['processes'];
+        $instance->path           = $options['path'];
+        $instance->phpunit        = $options['phpunit'];
+        $instance->functional     = $options['functional'];
+        $instance->stopOnFailure  = $options['stop-on-failure'];
+        $instance->runner         = $options['runner'];
+        $instance->noTestTokens   = $options['no-test-tokens'];
+        $instance->colors         = $options['colors'];
+        $instance->testsuite      = [];
+        if ($options['testsuite'] !== null) {
+            $instance->testsuite = Str::explodeWithCleanup(
+                self::TEST_SUITE_FILTER_SEPARATOR,
+                $options['testsuite']
+            );
+        }
+
+        $instance->maxBatchSize      = (int) $options['max-batch-size'];
+        $instance->filter            = $options['filter'];
+        $instance->parallelSuite     = $options['parallel-suite'];
+        $instance->passthru          = $instance->parsePassthru($options['passthru'] ?? null);
+        $instance->passthruPhp       = $instance->parsePassthru($options['passthru-php'] ?? null);
+        $instance->verbose           = (int) $options['verbose'];
+        $instance->coverageTestLimit = (int) $options['coverage-test-limit'];
+        $instance->whitelist         = $options['whitelist'];
 
         // we need to register that options if they are blank but do not get them as
         // key with null value in $this->filtered as it will create problems for
         // phpunit command line generation (it will add them in command line with no value
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
-        $this->groups        = isset($opts['group']) && $opts['group'] !== ''
-            ? explode(',', $opts['group'])
+        $instance->group        = isset($options['group']) && $options['group'] !== ''
+            ? explode(',', $options['group'])
             : [];
-        $this->excludeGroups = isset($opts['exclude-group']) && $opts['exclude-group'] !== ''
-            ? explode(',', $opts['exclude-group'])
+        $instance->excludeGroup = isset($options['exclude-group']) && $options['exclude-group'] !== ''
+            ? explode(',', $options['exclude-group'])
             : [];
 
-        if (isset($opts['filter']) && strlen($opts['filter']) > 0 && ! $this->functional) {
+        if (isset($options['filter']) && strlen($options['filter']) > 0 && ! $instance->functional) {
             throw new RuntimeException('Option --filter is not implemented for non functional mode');
         }
 
-        $this->filtered = $this->filterOptions($opts);
-        $this->initAnnotations();
+        $instance->configuration = null;
+        $configurationFile       = $instance->guessConfigurationFile($options['configuration'], $cwd);
+        if ($configurationFile !== null) {
+            $instance->configuration = (new Loader())->load($configurationFile);
+        }
+
+        $instance->filtered = [];
+        if ($instance->bootstrap !== null) {
+            $instance->filtered['bootstrap'] = $instance->bootstrap;
+        }
+
+        if ($instance->configuration !== null) {
+            $instance->filtered['configuration'] = $instance->configuration->filename();
+        }
+
+        if (count($instance->group) !== 0) {
+            $instance->filtered['group'] = implode(',', $instance->group);
+        }
+
+        if (count($instance->excludeGroup) !== 0) {
+            $instance->filtered['exclude-group'] = implode(',', $instance->excludeGroup);
+        }
+
+        $instance->initAnnotations();
+
+        return $instance;
     }
 
-    /**
-     * Public read accessibility.
-     *
-     * @return mixed
-     */
-    public function __get(string $var)
+    public function hasCoverage(): bool
     {
-        return $this->{$var};
+        return $this->coverageClover !== null
+            || $this->coverageCrap4j !== null
+            || $this->coverageHtml !== null
+            || $this->coverageText
+            || $this->coveragePhp !== null
+            || $this->coverageXml !== null;
     }
 
-    /**
-     * Public read accessibility
-     * (e.g. to make empty($options->property) work as expected).
-     */
-    public function __isset(string $var): bool
+    public static function setInputDefinition(InputDefinition $inputDefinition): void
     {
-        return isset($this->{$var});
-    }
+        $inputDefinition->setDefinition([
+            // Arguments
+            new InputArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'The path to a directory or file containing tests.'
+            ),
 
-    /**
-     * Returns a collection of ParaTest's default
-     * option values.
-     *
-     * @return array<string, string|string[]|bool|int|null>
-     */
-    private static function defaults(): array
-    {
-        return [
-            'processes' => 'auto',
-            'path' => '',
-            'phpunit' => static::phpunit(),
-            'functional' => false,
-            'stop-on-failure' => false,
-            'runner' => 'Runner',
-            'no-test-tokens' => false,
-            'colors' => false,
-            'testsuite' => [],
-            'max-batch-size' => 0,
-            'filter' => null,
-            'parallel-suite' => false,
-            'passthru' => null,
-            'passthru-php' => null,
-            'verbose' => 0,
-            'coverage-test-limit' => 0,
-        ];
+            // Options
+            new InputOption(
+                'bootstrap',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The bootstrap file to be used by PHPUnit.'
+            ),
+            new InputOption(
+                'colors',
+                null,
+                InputOption::VALUE_NONE,
+                'Displays a colored bar as a test result.'
+            ),
+            new InputOption(
+                'configuration',
+                'c',
+                InputOption::VALUE_REQUIRED,
+                'The PHPUnit configuration file to use.'
+            ),
+            new InputOption(
+                'coverage-clover',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in Clover XML format.'
+            ),
+            new InputOption(
+                'coverage-crap4j',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in Crap4J XML format.'
+            ),
+            new InputOption(
+                'coverage-html',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in HTML format.'
+            ),
+            new InputOption(
+                'coverage-php',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Serialize PHP_CodeCoverage object to file.'
+            ),
+            new InputOption(
+                'coverage-test-limit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of ' .
+                'coverage reports.'
+            ),
+            new InputOption(
+                'coverage-text',
+                null,
+                InputOption::VALUE_NONE,
+                'Generate code coverage report in text format.',
+            ),
+            new InputOption(
+                'coverage-xml',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in PHPUnit XML format.'
+            ),
+            new InputOption(
+                'exclude-group',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Don\'t run tests from the specified group(s).'
+            ),
+            new InputOption(
+                'filter',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Filter (only for functional mode).'
+            ),
+            new InputOption(
+                'functional',
+                'f',
+                InputOption::VALUE_NONE,
+                'Run test methods instead of classes in separate processes.'
+            ),
+            new InputOption(
+                'group',
+                'g',
+                InputOption::VALUE_REQUIRED,
+                'Only runs tests from the specified group(s).'
+            ),
+            new InputOption(
+                'help',
+                'h',
+                InputOption::VALUE_NONE,
+                'Display this help message.'
+            ),
+            new InputOption(
+                'log-junit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Log test execution in JUnit XML format to file.'
+            ),
+            new InputOption(
+                'max-batch-size',
+                'm',
+                InputOption::VALUE_REQUIRED,
+                'Max batch size (only for functional mode).',
+                0
+            ),
+            new InputOption(
+                'no-test-tokens',
+                null,
+                InputOption::VALUE_NONE,
+                'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'
+            ),
+            new InputOption(
+                'parallel-suite',
+                null,
+                InputOption::VALUE_NONE,
+                'Run the suites of the config in parallel.'
+            ),
+            new InputOption(
+                'passthru',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Pass the given arguments verbatim to the underlying test framework. Example: ' .
+                '--passthru="\'--prepend\' \'xdebug-filter.php\'"'
+            ),
+            new InputOption(
+                'passthru-php',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' ' .
+                '\'zend_extension=xdebug.so\'"'
+            ),
+            new InputOption(
+                'path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'An alias for the path argument.'
+            ),
+            new InputOption(
+                'phpunit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The PHPUnit binary to execute.',
+                self::getPhpunitBinary()
+            ),
+            new InputOption(
+                'processes',
+                'p',
+                InputOption::VALUE_REQUIRED,
+                'The number of test processes to run.',
+                'auto'
+            ),
+            new InputOption(
+                'runner',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Runner, WrapperRunner or SqliteRunner.',
+                Runner::class
+            ),
+            new InputOption(
+                'stop-on-failure',
+                null,
+                InputOption::VALUE_NONE,
+                'Don\'t start any more processes after a failure.'
+            ),
+            new InputOption(
+                'testsuite',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Filter which testsuite to run'
+            ),
+            new InputOption(
+                'verbose',
+                'v',
+                InputOption::VALUE_REQUIRED,
+                'If given, debug output is printed. Example: --verbose=1',
+                0
+            ),
+            new InputOption(
+                'whitelist',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Directory to add to the coverage whitelist.'
+            ),
+        ]);
     }
 
     /**
@@ -293,7 +500,7 @@ final class Options
      *
      * @return string $phpunit the path to phpunit
      */
-    private static function phpunit(): string
+    private static function getPhpunitBinary(): string
     {
         $vendor = static::vendorDir();
 
@@ -322,78 +529,37 @@ final class Options
     }
 
     /**
-     * Filter options to distinguish between paratest
-     * internal options and any other options.
-     *
-     * @param array<string, (string|bool|int|string[]|null)> $options
-     *
-     * @return array<string, (string|bool|int|Configuration|string[]|null)>
-     */
-    private function filterOptions(array $options): array
-    {
-        $filtered = array_diff_key($options, [
-            'processes' => $this->processes,
-            'path' => $this->path,
-            'phpunit' => $this->phpunit,
-            'functional' => $this->functional,
-            'stop-on-failure' => $this->stopOnFailure,
-            'runner' => $this->runner,
-            'no-test-tokens' => $this->noTestTokens,
-            'colors' => $this->colors,
-            'testsuite' => $this->testsuite,
-            'max-batch-size' => $this->maxBatchSize,
-            'filter' => $this->filter,
-            'parallel-suite' => $this->parallelSuite,
-            'passthru' => $this->passthru,
-            'passthru-php' => $this->passthruPhp,
-            'verbose' => $this->verbose,
-            'coverage-test-limit' => $this->coverageTestLimit,
-        ]);
-        if (($configuration = $this->getConfigurationPath($filtered)) !== null) {
-            $filtered['configuration'] = (new Loader())->load($configuration);
-        }
-
-        return $filtered;
-    }
-
-    /**
-     * Take an array of filtered options and return a
-     * configuration path.
-     *
-     * @param array<string, (string|bool|int|string[]|null)> $filtered
-     */
-    private function getConfigurationPath(array $filtered): ?string
-    {
-        if (isset($filtered['configuration'])) {
-            return $this->getDefaultConfigurationForPath($filtered['configuration'], $filtered['configuration']);
-        }
-
-        return $this->getDefaultConfigurationForPath();
-    }
-
-    /**
      * Retrieve the default configuration given a path (directory or file).
      * This will search into the directory, if a directory is specified.
-     *
-     * @param string $path    The path to search into
-     * @param string $default The default value to give back
      */
-    private function getDefaultConfigurationForPath(string $path = '.', ?string $default = null): ?string
+    private function guessConfigurationFile(?string $configuration, string $cwd): ?string
     {
-        if ($this->isFile($path)) {
-            return realpath($path);
+        if ($configuration !== null && ! $this->isAbsolutePath($configuration)) {
+            $configuration = $cwd . DIRECTORY_SEPARATOR . $configuration;
         }
 
-        $path     = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if ($configuration !== null) {
+            if (! is_dir($configuration)) {
+                return $configuration;
+            }
+
+            $cwd = $configuration;
+        }
+
         $suffixes = ['phpunit.xml', 'phpunit.xml.dist'];
 
         foreach ($suffixes as $suffix) {
-            if ($this->isFile($path . $suffix)) {
-                return realpath($path . $suffix);
+            if (is_file($fileFound = $cwd . DIRECTORY_SEPARATOR . $suffix)) {
+                return realpath($fileFound);
             }
         }
 
-        return $default;
+        return null;
+    }
+
+    private function isAbsolutePath(string $path): bool
+    {
+        return $path[0] === DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0;
     }
 
     /**
@@ -408,14 +574,8 @@ final class Options
                 continue;
             }
 
-            assert(is_string($value));
             $this->annotations[$key] = $value;
         }
-    }
-
-    private function isFile(string $file): bool
-    {
-        return file_exists($file) && ! is_dir($file);
     }
 
     /**
@@ -476,5 +636,162 @@ final class Options
         }
 
         return $passthruAsArguments;
+    }
+
+    public function bootstrap(): ?string
+    {
+        return $this->bootstrap;
+    }
+
+    public function processes(): int
+    {
+        return $this->processes;
+    }
+
+    public function path(): ?string
+    {
+        return $this->path;
+    }
+
+    public function phpunit(): string
+    {
+        return $this->phpunit;
+    }
+
+    public function functional(): bool
+    {
+        return $this->functional;
+    }
+
+    public function stopOnFailure(): bool
+    {
+        return $this->stopOnFailure;
+    }
+
+    /** @return array<string, string> */
+    public function filtered(): array
+    {
+        return $this->filtered;
+    }
+
+    public function runner(): string
+    {
+        return $this->runner;
+    }
+
+    public function noTestTokens(): bool
+    {
+        return $this->noTestTokens;
+    }
+
+    public function colors(): bool
+    {
+        return $this->colors;
+    }
+
+    /** @return string[] */
+    public function testsuite(): array
+    {
+        return $this->testsuite;
+    }
+
+    public function maxBatchSize(): ?int
+    {
+        return $this->maxBatchSize;
+    }
+
+    public function filter(): ?string
+    {
+        return $this->filter;
+    }
+
+    /** @return string[] */
+    public function group(): array
+    {
+        return $this->group;
+    }
+
+    /** @return string[] */
+    public function excludeGroup(): array
+    {
+        return $this->excludeGroup;
+    }
+
+    /** @return array<string, string> */
+    public function annotations(): array
+    {
+        return $this->annotations;
+    }
+
+    public function parallelSuite(): bool
+    {
+        return $this->parallelSuite;
+    }
+
+    /** @return string[]|null */
+    public function passthru(): ?array
+    {
+        return $this->passthru;
+    }
+
+    /** @return string[]|null */
+    public function passthruPhp(): ?array
+    {
+        return $this->passthruPhp;
+    }
+
+    public function verbose(): int
+    {
+        return $this->verbose;
+    }
+
+    public function coverageTestLimit(): int
+    {
+        return $this->coverageTestLimit;
+    }
+
+    public function configuration(): ?Configuration
+    {
+        return $this->configuration;
+    }
+
+    public function coverageClover(): ?string
+    {
+        return $this->coverageClover;
+    }
+
+    public function coverageCrap4j(): ?string
+    {
+        return $this->coverageCrap4j;
+    }
+
+    public function coverageHtml(): ?string
+    {
+        return $this->coverageHtml;
+    }
+
+    public function coveragePhp(): ?string
+    {
+        return $this->coveragePhp;
+    }
+
+    public function coverageText(): bool
+    {
+        return $this->coverageText;
+    }
+
+    public function coverageXml(): ?string
+    {
+        return $this->coverageXml;
+    }
+
+    public function logJunit(): ?string
+    {
+        return $this->logJunit;
+    }
+
+    public function whitelist(): ?string
+    {
+        return $this->whitelist;
     }
 }

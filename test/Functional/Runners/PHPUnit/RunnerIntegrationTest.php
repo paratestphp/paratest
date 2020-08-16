@@ -10,10 +10,7 @@ use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function count;
-use function file_exists;
 use function glob;
-use function ob_end_clean;
-use function ob_start;
 use function simplexml_load_file;
 use function sys_get_temp_dir;
 use function unlink;
@@ -33,26 +30,23 @@ final class RunnerIntegrationTest extends TestBase
     {
         static::skipIfCodeCoverageNotEnabled();
 
-        $this->bareOptions = [
-            'path' => FIXTURES . DS . 'failing-tests',
-            'phpunit' => PHPUNIT,
-            'coverage-php' => sys_get_temp_dir() . DS . 'testcoverage.php',
-            'bootstrap' => BOOTSTRAP,
-            'whitelist' => FIXTURES . DS . 'failing-tests',
-        ];
-        $this->options     = new Options($this->bareOptions);
-        $this->output      = new BufferedOutput();
-        $this->runner      = new Runner($this->options, $this->output);
-    }
-
-    protected function tearDown(): void
-    {
-        $testcoverageFile = sys_get_temp_dir() . DS . 'testcoverage.php';
-        if (file_exists($testcoverageFile)) {
-            unlink($testcoverageFile);
+        $testcoverageFiles = sys_get_temp_dir() . DS . 'coverage-runner-integration*';
+        foreach (glob($testcoverageFiles) as $file) {
+            unlink($file);
         }
 
-        parent::tearDown();
+        $this->bareOptions = [
+            '--path' => FIXTURES . DS . 'failing-tests',
+            '--phpunit' => PHPUNIT,
+            '--coverage-clover' => sys_get_temp_dir() . DS . 'coverage-runner-integration.clover',
+            '--coverage-crap4j' => sys_get_temp_dir() . DS . 'coverage-runner-integration.crap4j',
+            '--coverage-php' => sys_get_temp_dir() . DS . 'coverage-runner-integration.php',
+            '--bootstrap' => BOOTSTRAP,
+            '--whitelist' => FIXTURES . DS . 'failing-tests',
+        ];
+        $this->options     = $this->createOptionsFromArgv($this->bareOptions);
+        $this->output      = new BufferedOutput();
+        $this->runner      = new Runner($this->options, $this->output);
     }
 
     /**
@@ -63,14 +57,25 @@ final class RunnerIntegrationTest extends TestBase
         return glob(sys_get_temp_dir() . DS . $pattern);
     }
 
+    public function testGeneratesCoverageTypes(): void
+    {
+        static::assertFileDoesNotExist($this->bareOptions['--coverage-clover']);
+        static::assertFileDoesNotExist($this->bareOptions['--coverage-crap4j']);
+        static::assertFileDoesNotExist($this->bareOptions['--coverage-php']);
+
+        $this->runner->run();
+
+        static::assertFileExists($this->bareOptions['--coverage-clover']);
+        static::assertFileExists($this->bareOptions['--coverage-crap4j']);
+        static::assertFileExists($this->bareOptions['--coverage-php']);
+    }
+
     public function testRunningTestsShouldLeaveNoTempFiles(): void
     {
         $countBefore         = count($this->globTempDir('PT_*'));
         $countCoverageBefore = count($this->globTempDir('CV_*'));
 
-        ob_start();
         $this->runner->run();
-        ob_end_clean();
 
         $countAfter         = count($this->globTempDir('PT_*'));
         $countCoverageAfter = count($this->globTempDir('CV_*'));
@@ -89,20 +94,16 @@ final class RunnerIntegrationTest extends TestBase
 
     public function testLogJUnitCreatesXmlFile(): void
     {
-        $outputPath                     = FIXTURES . DS . 'logs' . DS . 'test-output.xml';
-        $this->bareOptions['log-junit'] = $outputPath;
-        $runner                         = new Runner(new Options($this->bareOptions), $this->output);
+        $outputPath = FIXTURES . DS . 'logs' . DS . 'test-output.xml';
 
-        ob_start();
+        $this->bareOptions['--log-junit'] = $outputPath;
+
+        $runner = new Runner($this->createOptionsFromArgv($this->bareOptions), $this->output);
+
         $runner->run();
-        ob_end_clean();
 
         static::assertFileExists($outputPath);
         $this->assertJunitXmlIsCorrect($outputPath);
-        if (! file_exists($outputPath)) {
-            return;
-        }
-
         unlink($outputPath);
     }
 

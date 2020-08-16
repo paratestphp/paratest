@@ -11,7 +11,7 @@ final class TestMethodTest extends TestBase
 {
     public function testConstructor(): void
     {
-        $testMethod = new TestMethod('pathToFile', ['methodName']);
+        $testMethod = new TestMethod('pathToFile', ['methodName'], false);
         static::assertEquals('pathToFile', $this->getObjectValue($testMethod, 'path'));
     }
 }

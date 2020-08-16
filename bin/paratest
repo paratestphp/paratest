@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+$cwd = getcwd();
+
 $files = array(
     dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
     dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
@@ -31,7 +33,5 @@ if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
     exit(1);
 }
 
-use ParaTest\Console\Commands\ParaTestCommand;
-use ParaTest\Console\Testers\PHPUnit;
-
-ParaTestCommand::applicationFactory(new PHPUnit())->run();
+assert(is_string($cwd));
+\ParaTest\Console\Commands\ParaTestCommand::applicationFactory($cwd)->run();
