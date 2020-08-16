@@ -126,7 +126,7 @@ final class LogInterpreter extends MetaProvider
         $dict = [];
         foreach ($this->getCases() as $case) {
             if (! isset($dict[$case->file])) {
-                $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0, 0);
+                $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0, 0, $case->file);
             }
 
             $dict[$case->file]->cases[] = $case;

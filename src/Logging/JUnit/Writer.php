@@ -64,7 +64,7 @@ final class Writer
         'time' => 0,
     ];
 
-    public function __construct(LogInterpreter $interpreter, string $name = '')
+    public function __construct(LogInterpreter $interpreter, string $name)
     {
         $this->name                   = $name;
         $this->interpreter            = $interpreter;

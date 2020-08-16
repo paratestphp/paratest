@@ -127,11 +127,11 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param mixed[]|null $args
+     * @param mixed[] $args
      *
      * @return mixed
      */
-    final protected static function callMethod(object $object, string $methodName, ?array $args = null)
+    final protected static function callMethod(object $object, string $methodName, array $args)
     {
         $class = get_class($object);
 

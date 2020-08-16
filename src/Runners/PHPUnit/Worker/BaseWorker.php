@@ -150,6 +150,7 @@ abstract class BaseWorker
             return false;
         }
 
+        assert($this->proc !== null);
         $status = proc_get_status($this->proc);
         assert($status !== false);
 

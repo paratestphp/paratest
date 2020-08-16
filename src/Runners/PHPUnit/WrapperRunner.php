@@ -147,7 +147,10 @@ final class WrapperRunner extends BaseWrapperRunner
     private function flushWorker(WrapperWorker $worker): void
     {
         if ($this->hasCoverage()) {
-            $this->getCoverage()->addCoverageFromFile($worker->getCoverageFileName());
+            $coverageMerger = $this->getCoverage();
+            assert($coverageMerger !== null);
+
+            $coverageMerger->addCoverageFromFile($worker->getCoverageFileName());
         }
 
         $worker->printFeedback($this->printer);

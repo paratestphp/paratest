@@ -39,7 +39,7 @@ final class ParaTestCommand extends Command
         $command     = new self($cwd, self::COMMAND_NAME);
 
         $application->add($command);
-        $application->setDefaultCommand($command->getName(), true);
+        $application->setDefaultCommand((string) $command->getName(), true);
 
         return $application;
     }
@@ -82,7 +82,9 @@ final class ParaTestCommand extends Command
      */
     private function displayHelp(InputInterface $input, OutputInterface $output): int
     {
-        $help  = $this->getApplication()->find('help');
+        $app = $this->getApplication();
+        assert($app !== null);
+        $help  = $app->find('help');
         $input = new ArrayInput(['command_name' => $this->getName()]);
 
         return $help->run($input, $output);

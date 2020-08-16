@@ -10,6 +10,7 @@ use ParaTest\Logging\LogInterpreter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
+use function assert;
 
 abstract class BaseRunner implements RunnerInterface
 {
@@ -94,7 +95,10 @@ abstract class BaseRunner implements RunnerInterface
         }
 
         $output = $this->options->logJunit();
-        $writer = new Writer($this->interpreter, $this->options->path());
+        $path   = $this->options->path();
+        assert($path !== null);
+
+        $writer = new Writer($this->interpreter, $path);
         $writer->write($output);
     }
 
@@ -107,7 +111,9 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $reporter = $this->getCoverage()->getReporter();
+        $coverageMerger = $this->getCoverage();
+        assert($coverageMerger !== null);
+        $reporter = $coverageMerger->getReporter();
 
         if ($this->options->coverageClover() !== null) {
             $reporter->clover($this->options->coverageClover());
@@ -127,6 +133,10 @@ abstract class BaseRunner implements RunnerInterface
 
         if ($this->options->coverageXml() !== null) {
             $reporter->xml($this->options->coverageXml());
+        }
+
+        if ($this->options->coveragePhp() === null) {
+            return;
         }
 
         $reporter->php($this->options->coveragePhp());

@@ -14,6 +14,7 @@ use Throwable;
 use function array_filter;
 use function array_keys;
 use function array_shift;
+use function assert;
 use function count;
 use function sprintf;
 use function uniqid;
@@ -120,7 +121,9 @@ final class Runner extends BaseRunner
 
             $env += Habitat::getAll();
 
-            $executebleTest                     = array_shift($this->pending);
+            $executebleTest = array_shift($this->pending);
+            assert($executebleTest !== null);
+
             $this->running[$tokenData['token']] = new RunnerWorker($executebleTest);
             $this->running[$tokenData['token']]->run(
                 $this->options->phpunit(),
@@ -185,7 +188,7 @@ final class Runner extends BaseRunner
     private function setExitCode(RunnerWorker $test): void
     {
         $exit = $test->getExitCode();
-        if ($exit <= $this->exitcode) {
+        if ($exit === null || $exit <= $this->exitcode) {
             return;
         }
 
@@ -251,8 +254,10 @@ final class Runner extends BaseRunner
 
     private function addCoverage(ExecutableTest $test): void
     {
-        $coverageFile = $test->getCoverageFileName();
-        $this->getCoverage()->addCoverageFromFile($coverageFile);
+        $coverageFile   = $test->getCoverageFileName();
+        $coverageMerger = $this->getCoverage();
+        assert($coverageMerger !== null);
+        $coverageMerger->addCoverageFromFile($coverageFile);
     }
 
     protected function beforeLoadChecks(): void

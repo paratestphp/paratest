@@ -1,5 +1,5 @@
 includes:
-    - phar://phpstan.phar/conf/config.level7.neon
+    - phar://phpstan.phar/conf/config.levelmax.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
@@ -154,3 +154,9 @@ parameters:
             message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"
             count: 1
             path: test/Unit/Runners/PHPUnit/SuiteLoaderTest.php
+
+        # Level MAX
+        -
+            message: "#^Parameter \\#1 \\$process of function proc_get_status expects resource, resource\\|null given\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/Worker/WrapperWorker.php

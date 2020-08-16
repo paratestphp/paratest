@@ -59,7 +59,7 @@ final class TestSuite
         int $errors,
         int $skipped,
         float $time,
-        ?string $file = null
+        string $file
     ) {
         $this->name       = $name;
         $this->tests      = $tests;

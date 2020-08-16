@@ -130,7 +130,7 @@ final class SuiteLoader
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
             $testSuiteCollection = $this->configuration->testSuite()->asArray();
-            if (count($this->options->testsuite()) > 0) {
+            if ($this->options !== null && count($this->options->testsuite()) > 0) {
                 $suitesName = array_map(static function (TestSuite $testSuite): string {
                     return $testSuite->name();
                 }, $testSuiteCollection);
@@ -170,6 +170,7 @@ final class SuiteLoader
     private function initSuites(): void
     {
         if (is_array($this->suitesName)) {
+            assert($this->configuration !== null);
             foreach ($this->suitesName as $suiteName) {
                 $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->filename());
             }
@@ -220,7 +221,9 @@ final class SuiteLoader
     {
         $classMethods = $class->getMethods($this->options !== null ? $this->options->annotations() : []);
         $maxBatchSize = $this->options !== null && $this->options->functional() ? $this->options->maxBatchSize() : 0;
-        $batches      = [];
+        assert($maxBatchSize !== null);
+
+        $batches = [];
         foreach ($classMethods as $method) {
             $tests = $this->getMethodTests($class, $method);
             // if filter passed to paratest then method tests can be blank if not match to filter

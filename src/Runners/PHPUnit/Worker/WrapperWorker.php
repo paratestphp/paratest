@@ -129,6 +129,7 @@ final class WrapperWorker extends BaseWorker
      */
     public function waitForStop(): void
     {
+        assert($this->proc !== null);
         $status = proc_get_status($this->proc);
         assert($status !== false);
         while ($status['running']) {
