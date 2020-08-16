@@ -136,6 +136,8 @@ final class WrapperRunner extends BaseWrapperRunner
                 }
             }
 
+            assert($found !== null);
+
             $result[$found] = $this->workers[$found];
         }
 

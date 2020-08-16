@@ -171,13 +171,17 @@ final class Parser
             }
 
             if ($this->classNameMatchesFileName($filename, $className)) {
-                return $className;
+                /** @var class-string<TestCase> $foundClassName  */
+                $foundClassName = $className;
+
+                return $foundClassName;
             }
 
             if ($matchingClassName !== null) {
                 continue;
             }
 
+            /** @var class-string<TestCase> $matchingClassName */
             $matchingClassName = $className;
         }
 

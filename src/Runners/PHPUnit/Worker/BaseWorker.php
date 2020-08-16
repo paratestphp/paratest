@@ -88,8 +88,8 @@ abstract class BaseWorker
         assert($phpExecutable !== false);
 
         $bin = escapeshellarg($phpExecutable);
-        if ($options !== null && $options->passthruPhp() !== null) {
-            $bin .= ' ' . implode(' ', $options->passthruPhp()) . ' ';
+        if ($options !== null && ($passthruPhp = $options->passthruPhp()) !== null) {
+                $bin .= ' ' . implode(' ', $passthruPhp) . ' ';
         }
 
         $bin .= ' ' . escapeshellarg($wrapperBinary);

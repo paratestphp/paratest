@@ -41,22 +41,18 @@ parameters:
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
             count: 2
             path: bin/paratest
-
         -
             message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
             count: 1
             path: bin/paratest
-
         -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
             count: 1
             path: bin/phpunit-sqlite-wrapper.php
-
         -
             message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
             count: 4
             path: bin/phpunit-wrapper.php
-
         -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
             count: 3
@@ -67,7 +63,6 @@ parameters:
             message: "#^Should not use function \"proc_open\", please change the code\\.$#"
             count: 1
             path: src/Runners/PHPUnit/Worker/BaseWorker.php
-
         -
             message: "#^Should not use function \"proc_open\", please change the code\\.$#"
             count: 1
@@ -89,47 +84,38 @@ parameters:
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/excluded-tests/excluded/ExcludedFailingTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/failing-tests/FailingTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/failing-tests/FailingTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/failing-tests/StopOnFailureTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/failing-tests/StopOnFailureTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php
-
         -
             message: "#^Unreachable statement \\- code above always terminates\\.$#"
             count: 1
             path: test/fixtures/failing-tests/UnitTestWithErrorTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/slow-tests/LongRunningTest.php
-
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
@@ -140,16 +126,6 @@ parameters:
             message: "#^Cannot call method fetch\\(\\) on PDOStatement\\|false\\.$#"
             count: 1
             path: bin/phpunit-sqlite-wrapper.php
-        -
-            message: "#^Method ParaTest\\\\Parser\\\\Parser\\:\\:searchForUnitTestClass\\(\\) should return class\\-string\\<PHPUnit\\\\Framework\\\\TestCase\\>\\|null but returns class\\-string\\.$#"
-            count: 1
-            path: src/Parser/Parser.php
-
-        -
-            message: "#^Method ParaTest\\\\Parser\\\\Parser\\:\\:searchForUnitTestClass\\(\\) should return class\\-string\\<PHPUnit\\\\Framework\\\\TestCase\\>\\|null but returns class\\-string\\|null\\.$#"
-            count: 1
-            path: src/Parser/Parser.php
-
         -
             message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"
             count: 1

@@ -342,13 +342,13 @@ final class SuiteLoader
 
     private function testMatchFilterOptions(string $className, string $name): bool
     {
-        if ($this->options === null || $this->options->filter() === null) {
+        if ($this->options === null || ($filter = $this->options->filter()) === null) {
             return true;
         }
 
-        $re       = substr($this->options->filter(), 0, 1) === '/'
-            ? $this->options->filter()
-            : '/' . $this->options->filter() . '/';
+        $re       = substr($filter, 0, 1) === '/'
+            ? $filter
+            : '/' . $filter . '/';
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;

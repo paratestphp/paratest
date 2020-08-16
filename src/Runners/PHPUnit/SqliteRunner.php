@@ -33,7 +33,7 @@ final class SqliteRunner extends BaseWrapperRunner
     private $db;
 
     /** @var string */
-    private $dbFileName = null;
+    private $dbFileName;
 
     public function __construct(Options $opts, OutputInterface $output)
     {

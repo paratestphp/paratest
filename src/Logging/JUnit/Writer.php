@@ -91,7 +91,7 @@ final class Writer
         foreach ($suites as $suite) {
             $snode = $this->appendSuite($root, $suite);
             foreach ($suite->cases as $case) {
-                $cnode = $this->appendCase($snode, $case);
+                $this->appendCase($snode, $case);
             }
         }
 

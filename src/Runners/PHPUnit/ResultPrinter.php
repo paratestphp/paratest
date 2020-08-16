@@ -136,10 +136,10 @@ final class ResultPrinter
             $options->phpunit(),
             $options->functional() ? '. Functional mode is ON.' : ''
         ));
-        if ($options->configuration() !== null) {
+        if (($configuration = $options->configuration()) !== null) {
             $this->output->write(sprintf(
                 "Configuration read from %s\n\n",
-                $options->configuration()->filename()
+                $configuration->filename()
             ));
         }
 

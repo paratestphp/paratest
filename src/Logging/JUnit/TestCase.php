@@ -31,7 +31,7 @@ final class TestCase
     /** @var int */
     public $assertions;
 
-    /** @var string|float (a stringified float, from phpunit XML output) */
+    /** @var float */
     public $time;
 
     /** @var array<int, array{type: string, text: string}> */
@@ -52,7 +52,7 @@ final class TestCase
         string $file,
         int $line,
         int $assertions,
-        string $time
+        float $time
     ) {
         $this->name       = $name;
         $this->class      = $class;
@@ -89,7 +89,7 @@ final class TestCase
             (string) $node['file'],
             (int) $node['line'],
             (int) $node['assertions'],
-            (string) $node['time']
+            (float) $node['time']
         );
 
         $system_output = $node->{'system-out'};
