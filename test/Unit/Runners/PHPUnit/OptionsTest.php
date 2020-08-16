@@ -53,7 +53,9 @@ final class OptionsTest extends TestBase
 
     private function cleanUpGeneratedFiles(): void
     {
-        foreach (glob($this->testCwd . DS . '*') as $file) {
+        $glob = glob($this->testCwd . DS . '*');
+        self::assertNotFalse($glob);
+        foreach ($glob as $file) {
             unlink($file);
         }
     }
@@ -179,10 +181,12 @@ final class OptionsTest extends TestBase
             $this->unfiltered['--configuration'] = $configurationParameter;
         }
 
-        $options = $this->createOptionsFromArgv($this->unfiltered, $this->testCwd);
+        $options       = $this->createOptionsFromArgv($this->unfiltered, $this->testCwd);
+        $configuration = $options->configuration();
+        static::assertNotNull($configuration);
         static::assertEquals(
             $this->testCwd . DS . $configFileName,
-            $options->configuration()->filename()
+            $configuration->filename()
         );
     }
 

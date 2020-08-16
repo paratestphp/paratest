@@ -9,6 +9,7 @@ use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+use function assert;
 use function count;
 use function glob;
 use function simplexml_load_file;
@@ -31,7 +32,9 @@ final class RunnerIntegrationTest extends TestBase
         static::skipIfCodeCoverageNotEnabled();
 
         $testcoverageFiles = sys_get_temp_dir() . DS . 'coverage-runner-integration*';
-        foreach (glob($testcoverageFiles) as $file) {
+        $glob              = glob($testcoverageFiles);
+        assert($glob !== false);
+        foreach ($glob as $file) {
             unlink($file);
         }
 
@@ -54,7 +57,10 @@ final class RunnerIntegrationTest extends TestBase
      */
     private function globTempDir(string $pattern): array
     {
-        return glob(sys_get_temp_dir() . DS . $pattern);
+        $glob = glob(sys_get_temp_dir() . DS . $pattern);
+        assert($glob !== false);
+
+        return $glob;
     }
 
     public function testGeneratesCoverageTypes(): void
@@ -109,7 +115,8 @@ final class RunnerIntegrationTest extends TestBase
 
     public function assertJunitXmlIsCorrect(string $path): void
     {
-        $doc      = simplexml_load_file($path);
+        $doc = simplexml_load_file($path);
+        assert($doc !== false);
         $suites   = $doc->xpath('//testsuite');
         $cases    = $doc->xpath('//testcase');
         $failures = $doc->xpath('//failure');
@@ -117,9 +124,13 @@ final class RunnerIntegrationTest extends TestBase
 
         // these numbers represent the tests in fixtures/failing-tests
         // so will need to be updated when tests are added or removed
+        static::assertNotFalse($suites);
         static::assertCount(6, $suites);
+        static::assertNotFalse($cases);
         static::assertCount(16, $cases);
+        static::assertNotFalse($failures);
         static::assertCount(6, $failures);
+        static::assertNotFalse($errors);
         static::assertCount(1, $errors);
     }
 }

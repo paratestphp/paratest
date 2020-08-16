@@ -9,6 +9,7 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use RuntimeException;
 
+use function assert;
 use function fgets;
 use function fwrite;
 use function implode;
@@ -107,7 +108,7 @@ final class WrapperWorker extends BaseWorker
         $tellsUsItHasFinished = false;
         stream_set_blocking($this->pipes[1], true);
         while ($line = fgets($this->pipes[1])) {
-            if (strstr($line, "FINISHED\n")) {
+            if (strstr($line, "FINISHED\n") !== false) {
                 $tellsUsItHasFinished = true;
                 --$this->inExecution;
                 break;
@@ -128,10 +129,13 @@ final class WrapperWorker extends BaseWorker
      */
     public function waitForStop(): void
     {
+        assert($this->proc !== null);
         $status = proc_get_status($this->proc);
+        assert($status !== false);
         while ($status['running']) {
             $status = proc_get_status($this->proc);
-            $this->setExitCode($status);
+            assert($status !== false);
+            $this->setExitCode($status['running'], $status['exitcode']);
         }
     }
 

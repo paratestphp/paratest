@@ -135,7 +135,9 @@ final class CoverageReporterTest extends TestBase
 
         $reportXml = (new Xml\Loader())->loadFile($target);
         static::assertTrue($reportXml->hasChildNodes(), 'Incorrect crap4j report xml was generated');
-        static::assertEquals('crap_result', $reportXml->documentElement->tagName);
+        $documentElement = $reportXml->documentElement;
+        static::assertNotNull($documentElement);
+        static::assertEquals('crap_result', $documentElement->tagName);
     }
 
     /**

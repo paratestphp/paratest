@@ -269,7 +269,7 @@ final class SuiteLoaderTest extends TestBase
     private function suiteByPath(string $path, array $paraSuites): Suite
     {
         foreach ($paraSuites as $completePath => $suite) {
-            if (strstr($completePath, $path)) {
+            if (strstr($completePath, $path) !== false) {
                 static::assertInstanceOf(Suite::class, $suite);
 
                 return $suite;

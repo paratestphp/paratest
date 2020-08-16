@@ -95,7 +95,9 @@ final class WrapperRunnerTest extends FunctionalTestBase
             mkdir($testDir);
         }
 
-        foreach (glob($testDir . DS . '*') as $file) {
+        $glob = glob($testDir . DS . '*');
+        self::assertNotFalse($glob);
+        foreach ($glob as $file) {
             unlink($file);
         }
 

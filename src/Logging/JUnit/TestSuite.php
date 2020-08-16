@@ -59,7 +59,7 @@ final class TestSuite
         int $errors,
         int $skipped,
         float $time,
-        ?string $file = null
+        string $file
     ) {
         $this->name       = $name;
         $this->tests      = $tests;
@@ -75,7 +75,7 @@ final class TestSuite
      * Create a TestSuite from an associative
      * array.
      *
-     * @param array<string, int|string|float> $arr
+     * @param array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $arr
      *
      * @return TestSuite
      */

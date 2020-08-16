@@ -11,6 +11,7 @@ use SplFileObject;
 
 use function array_map;
 use function array_slice;
+use function assert;
 use function extension_loaded;
 use function file_exists;
 use function function_exists;
@@ -22,8 +23,8 @@ use const PHP_SAPI;
 
 final class CoverageMerger
 {
-    /** @var CodeCoverage */
-    private $coverage = null;
+    /** @var CodeCoverage|null */
+    private $coverage;
     /** @var int */
     private $test_limit;
 
@@ -73,7 +74,7 @@ final class CoverageMerger
 
             $xdebug = function_exists('xdebug_get_code_coverage');
             $phpdbg = PHP_SAPI === 'phpdbg';
-            $pcov   = extension_loaded('pcov') && ini_get('pcov.enabled');
+            $pcov   = extension_loaded('pcov') && (bool) ini_get('pcov.enabled');
 
             if (! $xdebug && ! $phpdbg && ! $pcov) {
                 $extra = 'No coverage driver found! Enable one of Xdebug, PHPDBG or PCOV for coverage.';
@@ -86,7 +87,7 @@ final class CoverageMerger
 
         $this->addCoverage($this->getCoverageObject($file));
 
-        unlink($file->getRealPath());
+        unlink($coverageFile);
     }
 
     /**
@@ -94,6 +95,8 @@ final class CoverageMerger
      */
     public function getReporter(): CoverageReporterInterface
     {
+        assert($this->coverage !== null);
+
         return new CoverageReporter($this->coverage);
     }
 

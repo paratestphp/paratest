@@ -42,7 +42,7 @@ final class WriterTest extends TestBase
     {
         $this->addPassingReader();
         $xml = $this->writer->getXml();
-        static::assertXmlStringEqualsXmlString(file_get_contents($this->passing), $xml);
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
     }
 
     public function testMixedFileLog(): void
@@ -52,7 +52,7 @@ final class WriterTest extends TestBase
         $this->interpreter->addReader($reader);
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml    = $writer->getXml();
-        static::assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
     }
 
     public function testDataProviderWithSpecialCharacters(): void
@@ -62,7 +62,7 @@ final class WriterTest extends TestBase
         $this->interpreter->addReader($reader);
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
         $xml    = $writer->getXml();
-        static::assertXmlStringEqualsXmlString(file_get_contents($mixed), $xml);
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
     }
 
     public function testWrite(): void
@@ -70,7 +70,7 @@ final class WriterTest extends TestBase
         $output = FIXTURES . DS . 'logs' . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
-        static::assertXmlStringEqualsXmlString(file_get_contents($this->passing), file_get_contents($output));
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), (string) file_get_contents($output));
         if (! file_exists($output)) {
             return;
         }

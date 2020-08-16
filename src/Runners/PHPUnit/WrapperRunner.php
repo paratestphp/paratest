@@ -11,6 +11,7 @@ use Throwable;
 
 use function array_keys;
 use function array_shift;
+use function assert;
 use function count;
 use function defined;
 use function dirname;
@@ -49,6 +50,7 @@ final class WrapperRunner extends BaseWrapperRunner
         $wrapper = realpath(
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
         );
+        assert($wrapper !== false);
         for ($i = 1; $i <= $this->options->processes(); ++$i) {
             $worker = new WrapperWorker($this->output);
             if ($this->options->noTestTokens()) {
@@ -134,6 +136,8 @@ final class WrapperRunner extends BaseWrapperRunner
                 }
             }
 
+            assert($found !== null);
+
             $result[$found] = $this->workers[$found];
         }
 
@@ -145,7 +149,10 @@ final class WrapperRunner extends BaseWrapperRunner
     private function flushWorker(WrapperWorker $worker): void
     {
         if ($this->hasCoverage()) {
-            $this->getCoverage()->addCoverageFromFile($worker->getCoverageFileName());
+            $coverageMerger = $this->getCoverage();
+            assert($coverageMerger !== null);
+
+            $coverageMerger->addCoverageFromFile($worker->getCoverageFileName());
         }
 
         $worker->printFeedback($this->printer);

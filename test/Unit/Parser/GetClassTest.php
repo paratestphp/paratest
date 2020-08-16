@@ -65,8 +65,10 @@ final class GetClassTest extends TestBase
      */
     private function parseFile($path): ParsedClass
     {
-        $parser = new Parser($path);
+        $parser      = new Parser($path);
+        $parserClass = $parser->getClass();
+        static::assertNotNull($parserClass);
 
-        return $parser->getClass();
+        return $parserClass;
     }
 }

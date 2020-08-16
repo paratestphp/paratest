@@ -10,6 +10,7 @@ use ParaTest\Logging\LogInterpreter;
 
 use function array_merge;
 use function array_reduce;
+use function assert;
 use function count;
 use function file_put_contents;
 use function get_object_vars;
@@ -63,7 +64,7 @@ final class Writer
         'time' => 0,
     ];
 
-    public function __construct(LogInterpreter $interpreter, string $name = '')
+    public function __construct(LogInterpreter $interpreter, string $name)
     {
         $this->name                   = $name;
         $this->interpreter            = $interpreter;
@@ -90,11 +91,14 @@ final class Writer
         foreach ($suites as $suite) {
             $snode = $this->appendSuite($root, $suite);
             foreach ($suite->cases as $case) {
-                $cnode = $this->appendCase($snode, $case);
+                $this->appendCase($snode, $case);
             }
         }
 
-        return $this->document->saveXML();
+        $xml = $this->document->saveXML();
+        assert($xml !== false);
+
+        return $xml;
     }
 
     /**
@@ -114,7 +118,9 @@ final class Writer
         $suiteNode = $this->document->createElement('testsuite');
         $vars      = get_object_vars($suite);
         foreach ($vars as $name => $value) {
-            if (! preg_match(static::$suiteAttrs, $name)) {
+            $match = preg_match(static::$suiteAttrs, $name);
+            assert($match !== false);
+            if ($match === 0) {
                 continue;
             }
 
@@ -135,7 +141,9 @@ final class Writer
         $caseNode = $this->document->createElement('testcase');
         $vars     = get_object_vars($case);
         foreach ($vars as $name => $value) {
-            if (! preg_match(static::$caseAttrs, $name)) {
+            $match = preg_match(static::$caseAttrs, $name);
+            assert($match !== false);
+            if ($match === 0) {
                 continue;
             }
 

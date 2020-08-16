@@ -14,7 +14,6 @@ use RecursiveIteratorIterator;
 use ReflectionClass;
 use ReflectionObject;
 use ReflectionProperty;
-use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
 use SplFileObject;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -23,10 +22,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use function copy;
 use function file_exists;
 use function get_class;
-use function getcwd;
 use function is_dir;
-use function is_object;
-use function is_string;
 use function preg_match;
 use function rmdir;
 use function str_replace;
@@ -45,7 +41,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
 
         $input = new ArrayInput($argv, $inputDefinition);
 
-        return Options::fromConsoleInput($input, $cwd ?? getcwd());
+        return Options::fromConsoleInput($input, $cwd ?? PARATEST_ROOT);
     }
 
     /**
@@ -75,7 +71,9 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         $it    = new RecursiveIteratorIterator($it);
         $files = [];
         foreach ($it as $file) {
-            if (! preg_match('/Test\.php$/', $file->getPathname())) {
+            $match = preg_match('/Test\.php$/', $file->getPathname());
+            self::assertNotFalse($match);
+            if ($match === 0) {
                 continue;
             }
 
@@ -129,37 +127,13 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * Calls a class method even if it is protected or private.
-     *
-     * @param string $class      the class to call a method on
-     * @param string $methodName the method name to be called
-     * @param mixed  $args       0 or more arguments passed in the function
-     *
-     * @return mixed returns what the object's method call will return
-     */
-    final public function callStatic(string $class, string $methodName, ...$args)
-    {
-        return self::callMethod($class, $methodName, $args);
-    }
-
-    /**
-     * @param string|object $objectOrClassName
-     * @param mixed[]|null  $args
+     * @param mixed[] $args
      *
      * @return mixed
      */
-    final protected static function callMethod($objectOrClassName, string $methodName, ?array $args = null)
+    final protected static function callMethod(object $object, string $methodName, array $args)
     {
-        $isStatic = is_string($objectOrClassName);
-
-        if (! $isStatic) {
-            if (! is_object($objectOrClassName)) {
-                throw new RuntimeException('Method call on non existent object or class');
-            }
-        }
-
-        $class  = $isStatic ? $objectOrClassName : get_class($objectOrClassName);
-        $object = $isStatic ? null : $objectOrClassName;
+        $class = get_class($object);
 
         $reflectionClass = new ReflectionClass($class);
         $method          = $reflectionClass->getMethod($methodName);
@@ -205,9 +179,9 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         );
         foreach ($iterator as $file) {
             if ($file->isDir()) {
-                rmdir($file->getRealPath());
+                rmdir($file->getPathname());
             } else {
-                unlink($file->getRealPath());
+                unlink($file->getPathname());
             }
         }
 

@@ -8,8 +8,6 @@ use ParaTest\Console\Commands\ParaTestCommand;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
-use function getcwd;
-
 final class ParaTestInvoker
 {
     /** @var string|null  */
@@ -23,11 +21,11 @@ final class ParaTestInvoker
     /**
      * Runs the command, returns the proc after it's done.
      *
-     * @param array<string, string|int|true> $options
+     * @param array<string, string|bool|int> $options
      */
     public function execute(array $options, ?string $cwd = null): RunnerResult
     {
-        $application = ParaTestCommand::applicationFactory($cwd ?? getcwd());
+        $application = ParaTestCommand::applicationFactory($cwd ?? PARATEST_ROOT);
         $application->add(new HelpCommand());
 
         $commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));

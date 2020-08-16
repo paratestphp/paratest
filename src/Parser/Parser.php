@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace ParaTest\Parser;
 
 use InvalidArgumentException;
-use PHPStan\Testing\TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 
 use function array_diff;
 use function array_values;
+use function assert;
 use function file_exists;
 use function get_declared_classes;
 use function preg_match;
@@ -51,6 +52,9 @@ final class Parser
         if (! file_exists($srcPath)) {
             throw new InvalidArgumentException('file not found: ' . $srcPath);
         }
+
+        $srcPath = realpath($srcPath);
+        assert($srcPath !== false);
 
         $this->path      = $srcPath;
         $declaredClasses = get_declared_classes();
@@ -105,9 +109,9 @@ final class Parser
         $tests   = [];
         $methods = $this->refl->getMethods(ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
-            $hasTestName       = preg_match(self::$testName, $method->getName());
+            $hasTestName       = preg_match(self::$testName, $method->getName()) > 0;
             $docComment        = $method->getDocComment();
-            $hasTestAnnotation = $docComment !== false && preg_match(self::$testAnnotation, $docComment);
+            $hasTestAnnotation = $docComment !== false && preg_match(self::$testAnnotation, $docComment) > 0;
             $isTestMethod      = $hasTestName || $hasTestAnnotation;
             if (! $isTestMethod) {
                 continue;
@@ -123,11 +127,12 @@ final class Parser
      * Return the class name of the class contained
      * in the file.
      *
-     * @param string[] $previousDeclaredClasses
+     * @param class-string[] $previousDeclaredClasses
+     *
+     * @return class-string<TestCase>|null
      */
     private function getClassName(string $filename, array $previousDeclaredClasses): ?string
     {
-        $filename   = realpath($filename);
         $classes    = get_declared_classes();
         $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
@@ -147,7 +152,9 @@ final class Parser
     /**
      * Search for the name of the unit test.
      *
-     * @param string[] $classes
+     * @param class-string[] $classes
+     *
+     * @return class-string<TestCase>|null
      */
     private function searchForUnitTestClass(array $classes, string $filename): ?string
     {
@@ -159,18 +166,22 @@ final class Parser
                 continue;
             }
 
-            if (! $class->isSubclassOf('PHPUnit\Framework\TestCase')) {
+            if (! $class->isSubclassOf(TestCase::class)) {
                 continue;
             }
 
             if ($this->classNameMatchesFileName($filename, $className)) {
-                return $className;
+                /** @var class-string<TestCase> $foundClassName  */
+                $foundClassName = $className;
+
+                return $foundClassName;
             }
 
             if ($matchingClassName !== null) {
                 continue;
             }
 
+            /** @var class-string<TestCase> $matchingClassName */
             $matchingClassName = $className;
         }
 

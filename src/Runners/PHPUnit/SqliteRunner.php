@@ -9,6 +9,7 @@ use PDO;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function assert;
 use function count;
 use function dirname;
 use function implode;
@@ -32,7 +33,7 @@ final class SqliteRunner extends BaseWrapperRunner
     private $db;
 
     /** @var string */
-    private $dbFileName = null;
+    private $dbFileName;
 
     public function __construct(Options $opts, OutputInterface $output)
     {
@@ -71,6 +72,7 @@ final class SqliteRunner extends BaseWrapperRunner
         $wrapper = realpath(
             dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-sqlite-wrapper.php'
         );
+        assert($wrapper !== false);
 
         for ($i = 1; $i <= $this->options->processes(); ++$i) {
             $worker = new SqliteWorker($this->output, $this->dbFileName);
@@ -148,7 +150,11 @@ final class SqliteRunner extends BaseWrapperRunner
      */
     private function printOutput(): void
     {
-        foreach ($this->db->query('SELECT id, file_name FROM tests WHERE completed = 1')->fetchAll() as $test) {
+        $stmt = $this->db->query('SELECT id, file_name FROM tests WHERE completed = 1');
+        assert($stmt !== false);
+        $tests = $stmt->fetchAll();
+        assert($tests !== false);
+        foreach ($tests as $test) {
             $this->printer->printFeedback($this->pending[$test['file_name']]);
             $this->db->prepare('DELETE FROM tests WHERE id = :id')->execute([
                 'id' => $test['id'],
@@ -161,9 +167,14 @@ final class SqliteRunner extends BaseWrapperRunner
      */
     private function checkIfWorkersCrashed(): void
     {
-        if ($this->db->query('SELECT COUNT(id) FROM tests')->fetchColumn(0) === '0') {
+        $countStmt = $this->db->query('SELECT COUNT(id) FROM tests');
+        assert($countStmt !== false);
+        if ($countStmt->fetchColumn(0) === '0') {
             return;
         }
+
+        $commandStmt = $this->db->query('SELECT command FROM tests');
+        assert($commandStmt !== false);
 
         throw new RuntimeException(
             'Some workers have crashed.' . PHP_EOL
@@ -173,7 +184,7 @@ final class SqliteRunner extends BaseWrapperRunner
             . '----------------------' . PHP_EOL
             . 'Failed test command(s):' . PHP_EOL
             . '----------------------' . PHP_EOL
-            . implode(PHP_EOL, $this->db->query('SELECT command FROM tests')->fetchAll(PDO::FETCH_COLUMN))
+            . implode(PHP_EOL, (array) $commandStmt->fetchAll(PDO::FETCH_COLUMN))
         );
     }
 }

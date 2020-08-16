@@ -28,15 +28,19 @@ final class ParserTest extends TestBase
 
     public function testPrefersClassByFileName(): void
     {
-        $filename = FIXTURES . DS . 'special-classes' . DS . 'SomeNamespace' . DS . 'ParserTestClass.php';
-        $parser   = new Parser($filename);
-        static::assertEquals('SomeNamespace\\ParserTestClass', $parser->getClass()->getName());
+        $filename    = FIXTURES . DS . 'special-classes' . DS . 'SomeNamespace' . DS . 'ParserTestClass.php';
+        $parser      = new Parser($filename);
+        $parserClass = $parser->getClass();
+        static::assertNotNull($parserClass);
+        static::assertEquals('SomeNamespace\\ParserTestClass', $parserClass->getName());
     }
 
     public function testClassFallsBackOnExisting(): void
     {
-        $filename = FIXTURES . DS . 'special-classes' . DS . 'NameDoesNotMatch.php';
-        $parser   = new Parser($filename);
-        static::assertEquals('ParserTestClassFallsBack', $parser->getClass()->getName());
+        $filename    = FIXTURES . DS . 'special-classes' . DS . 'NameDoesNotMatch.php';
+        $parser      = new Parser($filename);
+        $parserClass = $parser->getClass();
+        static::assertNotNull($parserClass);
+        static::assertEquals('ParserTestClassFallsBack', $parserClass->getName());
     }
 }

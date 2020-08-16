@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 use function array_map;
+use function assert;
 use function count;
 use function end;
 use function escapeshellarg;
@@ -84,9 +85,11 @@ abstract class BaseWorker
 
         $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
-        $bin           = escapeshellarg($phpExecutable);
-        if ($options !== null && $options->passthruPhp() !== null) {
-            $bin .= ' ' . implode(' ', $options->passthruPhp()) . ' ';
+        assert($phpExecutable !== false);
+
+        $bin = escapeshellarg($phpExecutable);
+        if ($options !== null && ($passthruPhp = $options->passthruPhp()) !== null) {
+                $bin .= ' ' . implode(' ', $passthruPhp) . ' ';
         }
 
         $bin .= ' ' . escapeshellarg($wrapperBinary);
@@ -147,11 +150,13 @@ abstract class BaseWorker
             return false;
         }
 
+        assert($this->proc !== null);
         $status = proc_get_status($this->proc);
+        assert($status !== false);
 
         $this->updateStateFromAvailableOutput();
 
-        $this->setExitCode($status);
+        $this->setExitCode($status['running'], $status['exitcode']);
         if ($this->exitCode === null) {
             return false;
         }
@@ -186,12 +191,9 @@ abstract class BaseWorker
 
     abstract protected function doStop(): void;
 
-    /**
-     * @param array<string, bool|int|string> $status
-     */
-    final protected function setExitCode(array $status): void
+    final protected function setExitCode(bool $running, int $exitcode): void
     {
-        if ($status['running']) {
+        if ($running) {
             return;
         }
 
@@ -199,12 +201,15 @@ abstract class BaseWorker
             return;
         }
 
-        $this->exitCode = $status['exitcode'];
+        $this->exitCode = $exitcode;
     }
 
     private function readAllStderr(): string
     {
-        return stream_get_contents($this->pipes[2]);
+        $data = stream_get_contents($this->pipes[2]);
+        assert($data !== false);
+
+        return $data;
     }
 
     /**
@@ -232,7 +237,7 @@ abstract class BaseWorker
         // delivering complete lines to this Worker
         foreach ($lines as $line) {
             $line .= "\n";
-            if (! strstr($line, "FINISHED\n")) {
+            if (strstr($line, "FINISHED\n") === false) {
                 continue;
             }
 

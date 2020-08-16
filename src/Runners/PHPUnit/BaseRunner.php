@@ -10,6 +10,7 @@ use ParaTest\Logging\LogInterpreter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
+use function assert;
 
 abstract class BaseRunner implements RunnerInterface
 {
@@ -41,7 +42,7 @@ abstract class BaseRunner implements RunnerInterface
     /**
      * CoverageMerger to hold track of the accumulated coverage.
      *
-     * @var CoverageMerger
+     * @var CoverageMerger|null
      */
     protected $coverage = null;
 
@@ -89,13 +90,15 @@ abstract class BaseRunner implements RunnerInterface
      */
     final protected function log(): void
     {
-        if ($this->options->logJunit() === null) {
+        if (($logJunit = $this->options->logJunit()) === null) {
             return;
         }
 
-        $output = $this->options->logJunit();
-        $writer = new Writer($this->interpreter, $this->options->path());
-        $writer->write($output);
+        $path = $this->options->path();
+        assert($path !== null);
+
+        $writer = new Writer($this->interpreter, $path);
+        $writer->write($logJunit);
     }
 
     /**
@@ -107,29 +110,35 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $reporter = $this->getCoverage()->getReporter();
+        $coverageMerger = $this->getCoverage();
+        assert($coverageMerger !== null);
+        $reporter = $coverageMerger->getReporter();
 
-        if ($this->options->coverageClover() !== null) {
-            $reporter->clover($this->options->coverageClover());
+        if (($coverageClover = $this->options->coverageClover()) !== null) {
+            $reporter->clover($coverageClover);
         }
 
-        if ($this->options->coverageCrap4j() !== null) {
-            $reporter->crap4j($this->options->coverageCrap4j());
+        if (($coverageCrap4j = $this->options->coverageCrap4j()) !== null) {
+            $reporter->crap4j($coverageCrap4j);
         }
 
-        if ($this->options->coverageHtml() !== null) {
-            $reporter->html($this->options->coverageHtml());
+        if (($coverageHtml = $this->options->coverageHtml()) !== null) {
+            $reporter->html($coverageHtml);
         }
 
         if ($this->options->coverageText()) {
             $this->output->write($reporter->text());
         }
 
-        if ($this->options->coverageXml() !== null) {
-            $reporter->xml($this->options->coverageXml());
+        if (($coverageXml = $this->options->coverageXml()) !== null) {
+            $reporter->xml($coverageXml);
         }
 
-        $reporter->php($this->options->coveragePhp());
+        if (($coveragePhp = $this->options->coveragePhp()) === null) {
+            return;
+        }
+
+        $reporter->php($coveragePhp);
     }
 
     private function initCoverage(): void

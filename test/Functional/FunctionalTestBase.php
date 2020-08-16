@@ -40,7 +40,7 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param array<string, string|int|true> $options
+     * @param array<string, string|bool|int> $options
      */
     final protected function invokeParatest(
         ?string $path,

@@ -8,8 +8,14 @@ use function array_filter;
 use function count;
 use function explode;
 
+/**
+ * @method class-string getName()
+ */
 final class ParsedClass extends ParsedObject
 {
+    /** @var class-string */
+    protected $name;
+
     /** @var string */
     private $namespace;
 

@@ -14,7 +14,9 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function assert;
 use function class_exists;
+use function is_string;
 use function is_subclass_of;
 use function sprintf;
 
@@ -37,7 +39,7 @@ final class ParaTestCommand extends Command
         $command     = new self($cwd, self::COMMAND_NAME);
 
         $application->add($command);
-        $application->setDefaultCommand($command->getName(), true);
+        $application->setDefaultCommand((string) $command->getName(), true);
 
         return $application;
     }
@@ -80,7 +82,9 @@ final class ParaTestCommand extends Command
      */
     private function displayHelp(InputInterface $input, OutputInterface $output): int
     {
-        $help  = $this->getApplication()->find('help');
+        $app = $this->getApplication();
+        assert($app !== null);
+        $help  = $app->find('help');
         $input = new ArrayInput(['command_name' => $this->getName()]);
 
         return $help->run($input, $output);
@@ -94,6 +98,7 @@ final class ParaTestCommand extends Command
         $runnerClass = Runner::class;
         $runner      = $input->getOption('runner');
         if ($runner !== null) {
+            assert(is_string($runner));
             $runnerClass = $runner;
             $runnerClass = class_exists($runnerClass)
                 ? $runnerClass
