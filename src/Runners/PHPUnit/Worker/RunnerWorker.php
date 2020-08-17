@@ -10,6 +10,7 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
 use function array_merge;
+use function assert;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
@@ -18,7 +19,7 @@ final class RunnerWorker
 {
     /** @var ExecutableTest */
     private $executableTest;
-    /** @var Process */
+    /** @var Process|null */
     private $process;
 
     public function __construct(ExecutableTest $executableTest)
@@ -36,6 +37,8 @@ final class RunnerWorker
      */
     public function getStderr(): string
     {
+        assert($this->process !== null);
+
         return $this->process->getErrorOutput();
     }
 
@@ -45,6 +48,8 @@ final class RunnerWorker
      */
     public function stop(): ?int
     {
+        assert($this->process !== null);
+
         return $this->process->stop();
     }
 
@@ -53,6 +58,8 @@ final class RunnerWorker
      */
     public function isDoneRunning(): bool
     {
+        assert($this->process !== null);
+
         return $this->process->isTerminated();
     }
 
@@ -61,6 +68,8 @@ final class RunnerWorker
      */
     public function getExitCode(): ?int
     {
+        assert($this->process !== null);
+
         return $this->process->getExitCode();
     }
 
@@ -128,6 +137,8 @@ final class RunnerWorker
      */
     public function getStdout(): string
     {
+        assert($this->process !== null);
+
         return $this->process->getOutput();
     }
 

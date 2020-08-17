@@ -28,6 +28,7 @@ use function in_array;
 use function intdiv;
 use function is_dir;
 use function is_file;
+use function is_string;
 use function pclose;
 use function popen;
 use function preg_match;
@@ -190,8 +191,77 @@ final class Options
     /** @var string|null */
     private $whitelist;
 
-    private function __construct()
-    {
+    /**
+     * @param array<string, string> $annotations
+     * @param array<string, string> $filtered
+     * @param string[]              $testsuite
+     * @param string[]              $group
+     * @param string[]              $excludeGroup
+     * @param string[]|null         $passthru
+     * @param string[]|null         $passthruPhp
+     */
+    private function __construct(
+        array $annotations,
+        ?string $bootstrap,
+        bool $colors,
+        ?Configuration $configuration,
+        ?string $coverageClover,
+        ?string $coverageCrap4j,
+        ?string $coverageHtml,
+        ?string $coveragePhp,
+        int $coverageTestLimit,
+        bool $coverageText,
+        ?string $coverageXml,
+        array $excludeGroup,
+        ?string $filter,
+        array $filtered,
+        bool $functional,
+        array $group,
+        ?string $logJunit,
+        ?int $maxBatchSize,
+        bool $noTestTokens,
+        bool $parallelSuite,
+        ?array $passthru,
+        ?array $passthruPhp,
+        ?string $path,
+        string $phpunit,
+        int $processes,
+        string $runner,
+        bool $stopOnFailure,
+        array $testsuite,
+        int $verbose,
+        ?string $whitelist
+    ) {
+        $this->annotations       = $annotations;
+        $this->bootstrap         = $bootstrap;
+        $this->colors            = $colors;
+        $this->configuration     = $configuration;
+        $this->coverageClover    = $coverageClover;
+        $this->coverageCrap4j    = $coverageCrap4j;
+        $this->coverageHtml      = $coverageHtml;
+        $this->coveragePhp       = $coveragePhp;
+        $this->coverageTestLimit = $coverageTestLimit;
+        $this->coverageText      = $coverageText;
+        $this->coverageXml       = $coverageXml;
+        $this->excludeGroup      = $excludeGroup;
+        $this->filter            = $filter;
+        $this->filtered          = $filtered;
+        $this->functional        = $functional;
+        $this->group             = $group;
+        $this->logJunit          = $logJunit;
+        $this->maxBatchSize      = $maxBatchSize;
+        $this->noTestTokens      = $noTestTokens;
+        $this->parallelSuite     = $parallelSuite;
+        $this->passthru          = $passthru;
+        $this->passthruPhp       = $passthruPhp;
+        $this->path              = $path;
+        $this->phpunit           = $phpunit;
+        $this->processes         = $processes;
+        $this->runner            = $runner;
+        $this->stopOnFailure     = $stopOnFailure;
+        $this->testsuite         = $testsuite;
+        $this->verbose           = $verbose;
+        $this->whitelist         = $whitelist;
     }
 
     public static function fromConsoleInput(InputInterface $input, string $cwd): self
@@ -201,89 +271,95 @@ final class Options
             $options['path'] = $input->getArgument('path');
         }
 
+        assert($options['path'] === null || is_string($options['path']));
+
         if ($options['processes'] === 'auto') {
             $options['processes'] = self::getNumberOfCPUCores();
         } elseif ($options['processes'] === 'half') {
             $options['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
         }
 
-        $instance = new self();
-
-        $instance->bootstrap      = $options['bootstrap'];
-        $instance->coverageClover = $options['coverage-clover'];
-        $instance->coverageCrap4j = $options['coverage-crap4j'];
-        $instance->coverageHtml   = $options['coverage-html'];
-        $instance->coveragePhp    = $options['coverage-php'];
-        $instance->coverageText   = $options['coverage-text'];
-        $instance->coverageXml    = $options['coverage-xml'];
-        $instance->logJunit       = $options['log-junit'];
-        $instance->processes      = (int) $options['processes'];
-        $instance->path           = $options['path'];
-        $instance->phpunit        = $options['phpunit'];
-        $instance->functional     = $options['functional'];
-        $instance->stopOnFailure  = $options['stop-on-failure'];
-        $instance->runner         = $options['runner'];
-        $instance->noTestTokens   = $options['no-test-tokens'];
-        $instance->colors         = $options['colors'];
-        $instance->testsuite      = [];
+        $testsuite = [];
         if ($options['testsuite'] !== null) {
-            $instance->testsuite = Str::explodeWithCleanup(
+            $testsuite = Str::explodeWithCleanup(
                 self::TEST_SUITE_FILTER_SEPARATOR,
                 $options['testsuite']
             );
         }
-
-        $instance->maxBatchSize      = (int) $options['max-batch-size'];
-        $instance->filter            = $options['filter'];
-        $instance->parallelSuite     = $options['parallel-suite'];
-        $instance->passthru          = $instance->parsePassthru($options['passthru'] ?? null);
-        $instance->passthruPhp       = $instance->parsePassthru($options['passthru-php'] ?? null);
-        $instance->verbose           = (int) $options['verbose'];
-        $instance->coverageTestLimit = (int) $options['coverage-test-limit'];
-        $instance->whitelist         = $options['whitelist'];
 
         // we need to register that options if they are blank but do not get them as
         // key with null value in $this->filtered as it will create problems for
         // phpunit command line generation (it will add them in command line with no value
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
-        $instance->group        = isset($options['group']) && $options['group'] !== ''
+        $group        = isset($options['group']) && $options['group'] !== ''
             ? explode(',', $options['group'])
             : [];
-        $instance->excludeGroup = isset($options['exclude-group']) && $options['exclude-group'] !== ''
+        $excludeGroup = isset($options['exclude-group']) && $options['exclude-group'] !== ''
             ? explode(',', $options['exclude-group'])
             : [];
 
-        if (isset($options['filter']) && strlen($options['filter']) > 0 && ! $instance->functional) {
+        if (isset($options['filter']) && strlen($options['filter']) > 0 && ! $options['functional']) {
             throw new RuntimeException('Option --filter is not implemented for non functional mode');
         }
 
-        $instance->configuration = null;
-        $configurationFile       = $instance->guessConfigurationFile($options['configuration'], $cwd);
+        $configuration     = null;
+        $configurationFile = self::guessConfigurationFile($options['configuration'], $cwd);
         if ($configurationFile !== null) {
-            $instance->configuration = (new Loader())->load($configurationFile);
+            $configuration = (new Loader())->load($configurationFile);
         }
 
-        $instance->filtered = [];
-        if ($instance->bootstrap !== null) {
-            $instance->filtered['bootstrap'] = $instance->bootstrap;
+        $filtered = [];
+        if ($options['bootstrap'] !== null) {
+            $filtered['bootstrap'] = $options['bootstrap'];
         }
 
-        if ($instance->configuration !== null) {
-            $instance->filtered['configuration'] = $instance->configuration->filename();
+        if ($configuration !== null) {
+            $filtered['configuration'] = $configuration->filename();
         }
 
-        if (count($instance->group) !== 0) {
-            $instance->filtered['group'] = implode(',', $instance->group);
+        if (count($group) !== 0) {
+            $filtered['group'] = implode(',', $group);
         }
 
-        if (count($instance->excludeGroup) !== 0) {
-            $instance->filtered['exclude-group'] = implode(',', $instance->excludeGroup);
+        if (count($excludeGroup) !== 0) {
+            $filtered['exclude-group'] = implode(',', $excludeGroup);
         }
 
-        $instance->initAnnotations();
+        $annotations = self::initAnnotations($filtered);
 
-        return $instance;
+        return new self(
+            $annotations,
+            $options['bootstrap'],
+            $options['colors'],
+            $configuration,
+            $options['coverage-clover'],
+            $options['coverage-crap4j'],
+            $options['coverage-html'],
+            $options['coverage-php'],
+            (int) $options['coverage-test-limit'],
+            $options['coverage-text'],
+            $options['coverage-xml'],
+            $excludeGroup,
+            $options['filter'],
+            $filtered,
+            $options['functional'],
+            $group,
+            $options['log-junit'],
+            (int) $options['max-batch-size'],
+            $options['no-test-tokens'],
+            $options['parallel-suite'],
+            self::parsePassthru($options['passthru'] ?? null),
+            self::parsePassthru($options['passthru-php'] ?? null),
+            $options['path'],
+            $options['phpunit'],
+            (int) $options['processes'],
+            $options['runner'],
+            $options['stop-on-failure'],
+            $testsuite,
+            (int) $options['verbose'],
+            $options['whitelist']
+        );
     }
 
     public function hasCoverage(): bool
@@ -533,9 +609,9 @@ final class Options
      * Retrieve the default configuration given a path (directory or file).
      * This will search into the directory, if a directory is specified.
      */
-    private function guessConfigurationFile(?string $configuration, string $cwd): ?string
+    private static function guessConfigurationFile(?string $configuration, string $cwd): ?string
     {
-        if ($configuration !== null && ! $this->isAbsolutePath($configuration)) {
+        if ($configuration !== null && ! self::isAbsolutePath($configuration)) {
             $configuration = $cwd . DIRECTORY_SEPARATOR . $configuration;
         }
 
@@ -559,7 +635,7 @@ final class Options
         return null;
     }
 
-    private function isAbsolutePath(string $path): bool
+    private static function isAbsolutePath(string $path): bool
     {
         return $path[0] === DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0;
     }
@@ -567,17 +643,24 @@ final class Options
     /**
      * Load options that are represented by annotations
      * inside of tests i.e @group group1 = --group group1.
+     *
+     * @param array<string, string> $filtered
+     *
+     * @return array<string, string>
      */
-    private function initAnnotations(): void
+    private static function initAnnotations(array $filtered): array
     {
+        $annotations      = [];
         $annotatedOptions = ['group'];
-        foreach ($this->filtered as $key => $value) {
+        foreach ($filtered as $key => $value) {
             if (! in_array($key, $annotatedOptions, true)) {
                 continue;
             }
 
-            $this->annotations[$key] = $value;
+            $annotations[$key] = $value;
         }
+
+        return $annotations;
     }
 
     /**
@@ -615,7 +698,7 @@ final class Options
     /**
      * @return string[]|null
      */
-    private function parsePassthru(?string $param): ?array
+    private static function parsePassthru(?string $param): ?array
     {
         if ($param === null) {
             return null;

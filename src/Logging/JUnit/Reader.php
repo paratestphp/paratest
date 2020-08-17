@@ -269,8 +269,8 @@ final class Reader extends MetaProvider
         foreach ($suites as $suite) {
             $messages = array_merge(
                 $messages,
-                array_reduce($suite->cases, static function ($result, TestCase $case) use ($type): array {
-                    return array_merge($result, array_reduce($case->$type, static function ($msgs, $msg): array {
+                array_reduce($suite->cases, static function (array $result, TestCase $case) use ($type): array {
+                    return array_merge($result, array_reduce($case->$type, static function (array $msgs, array $msg): array {
                         $msgs[] = $msg['text'];
 
                         return $msgs;

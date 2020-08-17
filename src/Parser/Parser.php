@@ -58,7 +58,10 @@ final class Parser
 
         $this->path      = $srcPath;
         $declaredClasses = get_declared_classes();
+
+        /** @psalm-suppress UnresolvableInclude **/
         require_once $this->path;
+
         $class = $this->getClassName($this->path, $declaredClasses);
         if ($class === null) {
             throw new NoClassInFileException();

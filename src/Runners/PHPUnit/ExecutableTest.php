@@ -27,14 +27,14 @@ abstract class ExecutableTest
      * A path to the temp file created
      * for this test.
      *
-     * @var string
+     * @var string|null
      */
     protected $temp;
 
     /**
      * Path where the coveragereport is stored.
      *
-     * @var string
+     * @var string|null
      */
     protected $coverageFileName;
 

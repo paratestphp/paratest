@@ -122,6 +122,7 @@ final class Runner extends BaseRunner
             $env += Habitat::getAll();
 
             $executebleTest = array_shift($this->pending);
+            /** @psalm-suppress RedundantConditionGivenDocblockType **/
             assert($executebleTest !== null);
 
             $this->running[$tokenData['token']] = new RunnerWorker($executebleTest);

@@ -10,7 +10,7 @@ final class EmptyRunnerStub extends BaseRunner
 
     public function run(): void
     {
-        $this->printer->start($this->options);
+        $this->printer->start();
         $this->output->write(self::OUTPUT);
     }
 

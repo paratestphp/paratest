@@ -7,16 +7,16 @@ namespace ParaTest\Coverage;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData;
-use SplFileObject;
 
 use function array_map;
 use function array_slice;
 use function assert;
 use function extension_loaded;
-use function file_exists;
+use function filesize;
 use function function_exists;
 use function ini_get;
 use function is_array;
+use function is_file;
 use function unlink;
 
 use const PHP_SAPI;
@@ -45,31 +45,19 @@ final class CoverageMerger
     }
 
     /**
-     * Returns coverage object from file.
-     *
-     * @param SplFileObject $coverageFile coverage file
-     */
-    private function getCoverageObject(SplFileObject $coverageFile): CodeCoverage
-    {
-        return include $coverageFile->getRealPath();
-    }
-
-    /**
      * Adds the coverage contained in $coverageFile and deletes the file afterwards.
      *
      * @param string $coverageFile Code coverage file
      *
      * @throws RuntimeException When coverage file is empty.
      */
-    public function addCoverageFromFile(?string $coverageFile = null): void
+    public function addCoverageFromFile(?string $coverageFile): void
     {
-        if ($coverageFile === null || ! file_exists($coverageFile)) {
+        if ($coverageFile === null || ! is_file($coverageFile)) {
             return;
         }
 
-        $file = new SplFileObject($coverageFile);
-
-        if ($file->getSize() === 0) {
+        if (filesize($coverageFile) === 0) {
             $extra = 'This means a PHPUnit process has crashed.';
 
             $xdebug = function_exists('xdebug_get_code_coverage');
@@ -81,11 +69,12 @@ final class CoverageMerger
             }
 
             throw new RuntimeException(
-                "Coverage file {$file->getRealPath()} is empty. " . $extra
+                "Coverage file $coverageFile is empty. " . $extra
             );
         }
 
-        $this->addCoverage($this->getCoverageObject($file));
+        /** @psalm-suppress UnresolvableInclude **/
+        $this->addCoverage(include $coverageFile);
 
         unlink($coverageFile);
     }
@@ -114,15 +103,17 @@ final class CoverageMerger
             return;
         }
 
+        $testLimit     = $this->test_limit;
         $data          = $coverage->getData(true);
         $newData       = array_map(
-            function (array $lines): array {
-                return array_map(function ($value) {
+            static function (array $lines) use ($testLimit): array {
+                /** @psalm-suppress MissingClosureReturnType **/
+                return array_map(static function ($value) use ($testLimit) {
                     if (! is_array($value)) {
                         return $value;
                     }
 
-                    return array_slice($value, 0, $this->test_limit);
+                    return array_slice($value, 0, $testLimit);
                 }, $lines);
             },
             $data->lineCoverage(),
