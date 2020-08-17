@@ -31,6 +31,12 @@ Failed asserting that true is false.
 </failure>
       </testcase>
       <testcase name="testArrayLength" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="25" assertions="1" time="0.000376"/>
+      <testcase name="testWarning" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="30" assertions="1" time="0.000402">
+          <warning type="PHPUnit\Framework\Warning">WARNING</warning>
+      </testcase>
+      <testcase name="testSkipped" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="30" assertions="1" time="0.000402">
+          <skipped type="PHPUnit\Framework\SkippedTest">SKIPPED</skipped>
+      </testcase>
     </testsuite>
   </testsuite>
 </testsuites>

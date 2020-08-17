@@ -32,18 +32,6 @@ final class Reader extends MetaProvider
     /** @var string */
     protected $logFile;
 
-    /** @var array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} */
-    private static $defaultSuite = [
-        'name' => '',
-        'file' => '',
-        'tests' => 0,
-        'assertions' => 0,
-        'failures' => 0,
-        'errors' => 0,
-        'skipped' => 0,
-        'time' => 0.0,
-    ];
-
     public function __construct(string $logFile)
     {
         if (! file_exists($logFile)) {
@@ -144,10 +132,10 @@ final class Reader extends MetaProvider
      */
     private function initSuiteFromCases(array $nodeArray): void
     {
-        $testCases  = [];
-        $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
+        $testCases = [];
+        $testSuite = $this->caseNodesToSuite($nodeArray, $testCases);
         if (! $this->isSingle) {
-            $this->addSuite($properties, $testCases);
+            $this->addSuite($testSuite, $testCases);
         } else {
             $suite        = $this->suites[0];
             $suite->cases = array_merge($suite->cases, $testCases);
@@ -158,12 +146,10 @@ final class Reader extends MetaProvider
      * Creates and adds a TestSuite based on the given
      * suite properties and collection of test cases.
      *
-     * @param array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $properties
-     * @param TestCase[]                                                                                                            $testCases
+     * @param TestCase[] $testCases
      */
-    private function addSuite(array $properties, array $testCases): void
+    private function addSuite(TestSuite $suite, array $testCases): void
     {
-        $suite                     = TestSuite::suiteFromArray($properties);
         $suite->cases              = $testCases;
         $this->suites[0]->suites[] = $suite;
     }
@@ -173,31 +159,26 @@ final class Reader extends MetaProvider
      *
      * @param SimpleXMLElement[] $nodeArray an array of testcase nodes
      * @param TestCase[]         $testCases an array reference. Individual testcases will be placed here.
-     *
-     * @return array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float}
      */
-    private function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = []): array
+    private function caseNodesToSuite(array $nodeArray, array &$testCases = []): TestSuite
     {
-        /** @var array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $result */
-        $result = array_reduce(
-            $nodeArray,
-            static function (array $result, SimpleXMLElement $xmlElement) use (&$testCases): array {
-                $testCases[]    = TestCase::caseFromNode($xmlElement);
-                $result['name'] = (string) $xmlElement['class'];
-                $result['file'] = (string) $xmlElement['file'];
-                ++$result['tests'];
-                $result['assertions'] += (int) $xmlElement['assertions'];
-                $result['failures']   += ($failues = $xmlElement->xpath('failure')) !== false ? count($failues) : 0;
-                $result['errors']     += ($error = $xmlElement->xpath('error')) !== false ? count($error) : 0;
-                $result['skipped']    += ($skipped = $xmlElement->xpath('skipped')) !== false ? count($skipped) : 0;
-                $result['time']       += (float) $xmlElement['time'];
+        $testSuite = TestSuite::empty();
+        foreach ($nodeArray as $simpleXMLElement) {
+            $testCase    = TestCase::caseFromNode($simpleXMLElement);
+            $testCases[] = $testCase;
 
-                return $result;
-            },
-            static::$defaultSuite
-        );
+            $testSuite->name = $testCase->class;
+            $testSuite->file = $testCase->file;
+            ++$testSuite->tests;
+            $testSuite->assertions += $testCase->assertions;
+            $testSuite->failures   += count($testCase->failures);
+            $testSuite->errors     += count($testCase->errors);
+            $testSuite->warnings   += count($testCase->warnings);
+            $testSuite->skipped    += count($testCase->skipped);
+            $testSuite->time       += $testCase->time;
+        }
 
-        return $result;
+        return $testSuite;
     }
 
     /**
@@ -239,9 +220,19 @@ final class Reader extends MetaProvider
         $node = current($node);
 
         if ($node !== false) {
-            $this->suites[] = TestSuite::suiteFromNode($node);
+            $this->suites[] = new TestSuite(
+                (string) $node['name'],
+                (int) $node['tests'],
+                (int) $node['assertions'],
+                (int) $node['failures'],
+                (int) $node['errors'],
+                (int) $node['warnings'],
+                (int) $node['skipped'],
+                (float) $node['time'],
+                (string) $node['file']
+            );
         } else {
-            $this->suites[] = TestSuite::suiteFromArray(self::$defaultSuite);
+            $this->suites[] = TestSuite::empty();
         }
     }
 

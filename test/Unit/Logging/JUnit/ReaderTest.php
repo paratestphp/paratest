@@ -15,7 +15,9 @@ use function file_get_contents;
 use function file_put_contents;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Logging\JUnit\Reader
+ * @covers \ParaTest\Logging\JUnit\TestCase
+ * @covers \ParaTest\Logging\JUnit\TestSuite
  */
 final class ReaderTest extends TestBase
 {
@@ -307,7 +309,7 @@ final class ReaderTest extends TestBase
     public function testMixedGetFeedback(): void
     {
         $feedback = $this->mixed->getFeedback();
-        static::assertEquals(['.', 'F', '.', 'E', '.', 'F', '.'], $feedback);
+        static::assertSame(['.', 'F', '.', 'E', '.', 'F', '.', 'W', 'S'], $feedback);
     }
 
     public function testRemoveLog(): void

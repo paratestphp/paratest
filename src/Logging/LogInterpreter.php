@@ -126,9 +126,11 @@ final class LogInterpreter extends MetaProvider
         $dict = [];
         foreach ($this->getCases() as $case) {
             if (! isset($dict[$case->file])) {
-                $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0, 0, $case->file);
+                $dict[$case->file] = TestSuite::empty();
             }
 
+            $dict[$case->file]->name    = $case->class;
+            $dict[$case->file]->file    = $case->file;
             $dict[$case->file]->cases[] = $case;
             ++$dict[$case->file]->tests;
             $dict[$case->file]->assertions += $case->assertions;
@@ -136,7 +138,6 @@ final class LogInterpreter extends MetaProvider
             $dict[$case->file]->errors     += count($case->errors);
             $dict[$case->file]->skipped    += count($case->skipped);
             $dict[$case->file]->time       += $case->time;
-            $dict[$case->file]->file        = $case->file;
         }
 
         return array_values($dict);

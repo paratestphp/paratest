@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
-use SimpleXMLElement;
-
 /**
  * A simple data structure for tracking
  * data associated with a testsuite node
@@ -27,6 +25,9 @@ final class TestSuite
 
     /** @var int */
     public $errors;
+
+    /** @var int */
+    public $warnings;
 
     /** @var int */
     public $skipped;
@@ -57,6 +58,7 @@ final class TestSuite
         int $assertions,
         int $failures,
         int $errors,
+        int $warnings,
         int $skipped,
         float $time,
         string $file
@@ -67,48 +69,23 @@ final class TestSuite
         $this->failures   = $failures;
         $this->skipped    = $skipped;
         $this->errors     = $errors;
+        $this->warnings   = $warnings;
         $this->time       = $time;
         $this->file       = $file;
     }
 
-    /**
-     * Create a TestSuite from an associative
-     * array.
-     *
-     * @param array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $arr
-     *
-     * @return TestSuite
-     */
-    public static function suiteFromArray(array $arr): self
+    public static function empty(): self
     {
         return new self(
-            $arr['name'],
-            $arr['tests'],
-            $arr['assertions'],
-            $arr['failures'],
-            $arr['errors'],
-            $arr['skipped'],
-            $arr['time'],
-            $arr['file']
-        );
-    }
-
-    /**
-     * Create a TestSuite from a SimpleXMLElement.
-     *
-     * @return TestSuite
-     */
-    public static function suiteFromNode(SimpleXMLElement $node): self
-    {
-        return new self(
-            (string) $node['name'],
-            (int) $node['tests'],
-            (int) $node['assertions'],
-            (int) $node['failures'],
-            (int) $node['errors'],
-            (int) $node['skipped'],
-            (float) $node['time'],
-            (string) $node['file']
+            '',
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.0,
+            '',
         );
     }
 }
