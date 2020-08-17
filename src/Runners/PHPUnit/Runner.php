@@ -62,7 +62,7 @@ final class Runner extends BaseRunner
                     }
                 } catch (Throwable $e) {
                     if ($this->options->verbose() > 0) {
-                        $this->output->writeln("An error for $key: {$e->getMessage()}");
+                        $this->output->writeln("An error for {$key}: {$e->getMessage()}");
                         $this->output->writeln("Command: {$test->getExecutableTest()->getLastCommand()}");
                         $this->output->writeln('StdErr: ' . $test->getStderr());
                         $this->output->writeln('StdOut: ' . $test->getStdout());

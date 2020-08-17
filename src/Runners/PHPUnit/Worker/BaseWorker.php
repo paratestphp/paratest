@@ -101,7 +101,7 @@ abstract class BaseWorker
 
         $pipes = [];
         if ($options !== null && $options->verbose() > 0) {
-            $this->output->writeln("Starting WrapperWorker via: $bin");
+            $this->output->writeln("Starting WrapperWorker via: {$bin}");
         }
 
         // Taken from \Symfony\Component\Process\Process::prepareWindowsCommandLine

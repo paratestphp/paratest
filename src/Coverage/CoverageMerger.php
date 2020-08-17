@@ -69,7 +69,7 @@ final class CoverageMerger
             }
 
             throw new RuntimeException(
-                "Coverage file $coverageFile is empty. " . $extra
+                "Coverage file {$coverageFile} is empty. " . $extra
             );
         }
 

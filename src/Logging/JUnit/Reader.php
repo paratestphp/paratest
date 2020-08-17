@@ -47,13 +47,13 @@ final class Reader extends MetaProvider
     public function __construct(string $logFile)
     {
         if (! file_exists($logFile)) {
-            throw new InvalidArgumentException("Log file $logFile does not exist");
+            throw new InvalidArgumentException("Log file {$logFile} does not exist");
         }
 
         $this->logFile = $logFile;
         if (filesize($logFile) === 0) {
             throw new InvalidArgumentException(
-                "Log file $logFile is empty. This means a PHPUnit process has crashed."
+                "Log file {$logFile} is empty. This means a PHPUnit process has crashed."
             );
         }
 

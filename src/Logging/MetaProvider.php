@@ -58,7 +58,7 @@ abstract class MetaProvider
             return $this->getMessages($type);
         }
 
-        throw new RuntimeException("Method $method uknown");
+        throw new RuntimeException("Method {$method} uknown");
     }
 
     /**

@@ -118,7 +118,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
         static::assertEquals(
             $n,
             $numberOfS,
-            "The test should have skipped $n tests, instead it skipped $numberOfS, $matches[1]"
+            "The test should have skipped {$n} tests, instead it skipped {$numberOfS}, {$matches[1]}"
         );
     }
 }

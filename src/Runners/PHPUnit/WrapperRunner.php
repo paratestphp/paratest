@@ -89,7 +89,7 @@ final class WrapperRunner extends BaseWrapperRunner
                     if ($this->options->verbose() > 0) {
                         $worker->stop();
                         $this->output->writeln(
-                            "Error while assigning pending tests for worker $key: {$e->getMessage()}"
+                            "Error while assigning pending tests for worker {$key}: {$e->getMessage()}"
                         );
                         $this->output->write($worker->getCrashReport());
                     }
@@ -182,7 +182,7 @@ final class WrapperRunner extends BaseWrapperRunner
                     if ($this->options->verbose() > 0) {
                         $worker->stop();
                         unset($toStop[$index]);
-                        $this->output->writeln("Error while waiting to finish for worker $index: {$e->getMessage()}");
+                        $this->output->writeln("Error while waiting to finish for worker {$index}: {$e->getMessage()}");
                         $this->output->write($worker->getCrashReport());
                     }
 

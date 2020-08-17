@@ -56,7 +56,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
-            throw new InvalidArgumentException("Fixture $fixture not found");
+            throw new InvalidArgumentException("Fixture {$fixture} not found");
         }
 
         return $fixture;

@@ -136,7 +136,7 @@ final class SuiteLoader
                 }, $testSuiteCollection);
                 foreach ($this->options->testsuite() as $testSuiteName) {
                     if (! in_array($testSuiteName, $suitesName, true)) {
-                        throw new RuntimeException("Suite path $testSuiteName could not be found");
+                        throw new RuntimeException("Suite path {$testSuiteName} could not be found");
                     }
                 }
 

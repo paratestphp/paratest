@@ -597,9 +597,9 @@ final class Options
      */
     private static function vendorDir(): string
     {
-        $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
+        $vendor = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'vendor';
         if (! file_exists($vendor)) {
-            $vendor = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
+            $vendor = dirname(__DIR__, 5);
         }
 
         return $vendor;

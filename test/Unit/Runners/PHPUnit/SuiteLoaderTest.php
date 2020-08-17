@@ -276,7 +276,7 @@ final class SuiteLoaderTest extends TestBase
             }
         }
 
-        throw new RuntimeException("Suite $path not found.");
+        throw new RuntimeException("Suite {$path} not found.");
     }
 
     /**

@@ -43,7 +43,7 @@ final class TestGenerator
     {
         $namespace = sprintf('Generated%s', basename($this->path));
         $php       = '<'
-            . "?php\n\nnamespace $namespace;\n\nclass $testName extends \\PHPUnit\\Framework\\TestCase\n{\n";
+            . "?php\n\nnamespace {$namespace};\n\nclass {$testName} extends \\PHPUnit\\Framework\\TestCase\n{\n";
 
         for ($i = 0; $i < $methods; ++$i) {
             $php .= "\tpublic function testMethod{$i}(): void{";

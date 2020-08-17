@@ -14,7 +14,7 @@ final class ParsedObjectTest extends TestBase
 
     public function setUp(): void
     {
-        $this->parsedClass = new ParsedClass("/**\n * @test\n @group group1\n*\/", 'MyClass', 'My\\Name\\Space');
+        $this->parsedClass = new ParsedClass("/**\n * @test\n @group group1\n*\\/", 'MyClass', 'My\\Name\\Space');
     }
 
     public function testHasAnnotationReturnsTrueWhenAnnotationPresent(): void

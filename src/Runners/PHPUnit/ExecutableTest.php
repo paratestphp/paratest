@@ -131,7 +131,7 @@ abstract class ExecutableTest
         }
 
         foreach ($options as $key => $value) {
-            $arguments[] = "--$key";
+            $arguments[] = "--{$key}";
             if ($value === null) {
                 continue;
             }

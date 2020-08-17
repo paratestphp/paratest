@@ -47,7 +47,7 @@ abstract class ParsedObject
         $pattern = sprintf(
             '/@%s%s/',
             $annotation,
-            $value !== null ? "[\s]+$value" : '\b'
+            $value !== null ? "[\\s]+{$value}" : '\b'
         );
 
         return preg_match($pattern, $this->docBlock) === 1;

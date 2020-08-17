@@ -176,7 +176,7 @@ final class ResultPrinterTest extends ResultTester
         static::assertMatchesRegularExpression(
             "/\n\nTime: ([.:]?[0-9]{1,3})+ ?" .
             '(minute|minutes|second|seconds|ms|)?,' .
-            " Memory:[\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
+            " Memory:[\\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
             $header
         );
     }

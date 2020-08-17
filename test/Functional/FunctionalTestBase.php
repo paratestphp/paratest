@@ -17,7 +17,7 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
-            throw new InvalidArgumentException("Fixture $fixture not found");
+            throw new InvalidArgumentException("Fixture {$fixture} not found");
         }
 
         return $fixture;
@@ -66,6 +66,6 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
             return;
         }
 
-        static::markTestSkipped("Skipping test: Extension '$sqliteExtension' not found.");
+        static::markTestSkipped("Skipping test: Extension '{$sqliteExtension}' not found.");
     }
 }

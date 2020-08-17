@@ -54,12 +54,12 @@ while (true) {
 
     $arguments = unserialize($command);
     $command   = implode(' ', $arguments);
-    echo "Executing: $command\n";
+    echo "Executing: {$command}\n";
 
     $info     = [];
     $info[]   = 'Time: ' . (new DateTime())->format(DateTime::RFC3339);
-    $info[]   = "Iteration: $i";
-    $info[]   = "Command: $command";
+    $info[]   = "Iteration: {$i}";
+    $info[]   = "Command: {$command}";
     $info[]   = PHP_EOL;
     $infoText = implode(PHP_EOL, $info) . PHP_EOL;
     $logInfo($infoText);
