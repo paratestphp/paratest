@@ -31,12 +31,15 @@ final class ResultPrinterTest extends ResultTester
 
     /** @var Suite */
     private $passingSuiteWithWrongTestCountEstimation;
+    /** @var Options */
+    private $options;
 
     protected function setUpInterpreter(): void
     {
         $this->interpreter = new LogInterpreter();
         $this->output      = new BufferedOutput();
-        $this->printer     = new ResultPrinter($this->interpreter, $this->output);
+        $this->options     = $this->createOptionsFromArgv([]);
+        $this->printer     = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $pathToConfig      = $this->getPathToConfig();
         if (file_exists($pathToConfig)) {
             unlink($pathToConfig);
@@ -79,12 +82,11 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfo(): void
     {
-        $options  = $this->createOptionsFromArgv([]);
-        $contents = $this->getStartOutput($options);
+        $contents = $this->getStartOutput();
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit()
+            $this->options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
     }
@@ -98,7 +100,7 @@ final class ResultPrinterTest extends ResultTester
 
         $suite = new Suite('/path', $funcs, false);
         $this->printer->addTest($suite);
-        $this->getStartOutput($this->createOptionsFromArgv([]));
+        $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
         static::assertEquals(3, $numTestsWidth);
         $maxExpectedColumun = 63;
@@ -114,12 +116,12 @@ final class ResultPrinterTest extends ResultTester
     {
         $pathToConfig = $this->getPathToConfig();
         file_put_contents($pathToConfig, '<root />');
-        $options  = $this->createOptionsFromArgv(['--configuration' => $pathToConfig]);
-        $contents = $this->getStartOutput($options);
-        $expected = sprintf(
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--configuration' => $pathToConfig]));
+        $contents      = $this->getStartOutput();
+        $expected      = sprintf(
             "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit(),
+            $this->options->phpunit(),
             $pathToConfig
         );
         static::assertStringStartsWith($expected, $contents);
@@ -127,21 +129,21 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithFunctionalMode(): void
     {
-        $options  = $this->createOptionsFromArgv(['--functional' => true]);
-        $contents = $this->getStartOutput($options);
-        $expected = sprintf(
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--functional' => true]));
+        $contents      = $this->getStartOutput();
+        $expected      = sprintf(
             "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
             Options::getNumberOfCPUCores(),
-            $options->phpunit()
+            $this->options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
     {
-        $options  = $this->createOptionsFromArgv(['--processes' => 1]);
-        $contents = $this->getStartOutput($options);
-        $expected = sprintf("\nRunning phpunit in 1 process with %s\n\n", $options->phpunit());
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--processes' => 1]));
+        $contents      = $this->getStartOutput();
+        $expected      = sprintf("\nRunning phpunit in 1 process with %s\n\n", $this->options->phpunit());
         static::assertStringStartsWith($expected, $contents);
     }
 
@@ -278,7 +280,7 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuite);
         }
 
-        $this->printer->start($this->createOptionsFromArgv([]));
+        $this->printer->start();
         $this->output->fetch();
 
         for ($i = 0; $i < 40; ++$i) {
@@ -315,7 +317,7 @@ final class ResultPrinterTest extends ResultTester
             $this->printer->addTest($this->passingSuiteWithWrongTestCountEstimation);
         }
 
-        $this->printer->start($this->createOptionsFromArgv([]));
+        $this->printer->start();
         $this->output->fetch();
 
         for ($i = 0; $i < 22; ++$i) {
@@ -345,9 +347,9 @@ final class ResultPrinterTest extends ResultTester
         static::assertEquals($expected, $feedback);
     }
 
-    private function getStartOutput(Options $options): string
+    private function getStartOutput(): string
     {
-        $this->printer->start($options);
+        $this->printer->start();
 
         return $this->output->fetch();
     }

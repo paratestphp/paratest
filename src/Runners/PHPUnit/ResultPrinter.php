@@ -40,14 +40,14 @@ final class ResultPrinter
      *
      * @var int
      */
-    private $numTestsWidth;
+    private $numTestsWidth = 0;
 
     /**
      * Used for formatting results to a given width.
      *
      * @var int
      */
-    private $maxColumn;
+    private $maxColumn = 0;
 
     /**
      * The total number of cases to be run.
@@ -69,13 +69,6 @@ final class ResultPrinter
      * @var int
      */
     private $casesProcessed = 0;
-
-    /**
-     * Whether to display a red or green bar.
-     *
-     * @var bool
-     */
-    private $colors;
 
     /**
      * Number of columns.
@@ -100,11 +93,14 @@ final class ResultPrinter
 
     /** @var OutputInterface */
     private $output;
+    /** @var Options */
+    private $options;
 
-    public function __construct(LogInterpreter $results, OutputInterface $output)
+    public function __construct(LogInterpreter $results, OutputInterface $output, Options $options)
     {
         $this->results = $results;
         $this->output  = $output;
+        $this->options = $options;
     }
 
     /**
@@ -123,7 +119,7 @@ final class ResultPrinter
      * Initializes printing constraints, prints header
      * information and starts the test timer.
      */
-    public function start(Options $options): void
+    public function start(): void
     {
         $this->numTestsWidth = strlen((string) $this->totalCases);
         $this->maxColumn     = $this->numberOfColumns
@@ -131,20 +127,19 @@ final class ResultPrinter
                          - strlen($this->getProgress());
         $this->output->write(sprintf(
             "\nRunning phpunit in %d process%s with %s%s\n\n",
-            $options->processes(),
-            $options->processes() > 1 ? 'es' : '',
-            $options->phpunit(),
-            $options->functional() ? '. Functional mode is ON.' : ''
+            $this->options->processes(),
+            $this->options->processes() > 1 ? 'es' : '',
+            $this->options->phpunit(),
+            $this->options->functional() ? '. Functional mode is ON.' : ''
         ));
-        if (($configuration = $options->configuration()) !== null) {
+        if (($configuration = $this->options->configuration()) !== null) {
             $this->output->write(sprintf(
                 "Configuration read from %s\n\n",
                 $configuration->filename()
             ));
         }
 
-        $this->colors         = $options->colors();
-        $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($options);
+        $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($this->options);
     }
 
     public function println(string $string = ''): void
@@ -365,7 +360,7 @@ final class ResultPrinter
     private function printFeedbackItemColor(string $item): void
     {
         $format = '%s';
-        if ($this->colors) {
+        if ($this->options->colors()) {
             switch ($item) {
                 case 'E':
                     // fg-red
@@ -492,7 +487,7 @@ final class ResultPrinter
 
     private function green(string $text): string
     {
-        if ($this->colors) {
+        if ($this->options->colors()) {
             return "\x1b[30;42m\x1b[2K"
                 . $text
                 . "\x1b[0m\x1b[2K";
@@ -503,7 +498,7 @@ final class ResultPrinter
 
     private function red(string $text): string
     {
-        if ($this->colors) {
+        if ($this->options->colors()) {
             return "\x1b[37;41m\x1b[2K"
                 . $text
                 . "\x1b[0m\x1b[2K";

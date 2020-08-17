@@ -42,7 +42,7 @@ abstract class BaseWorker
     /** @var resource|null */
     protected $proc;
     /** @var resource[] */
-    protected $pipes;
+    protected $pipes = [];
     /** @var int */
     protected $inExecution = 0;
     /** @var OutputInterface */
@@ -141,7 +141,7 @@ abstract class BaseWorker
 
     final public function isStarted(): bool
     {
-        return $this->proc !== null && $this->pipes !== null;
+        return $this->proc !== null && $this->pipes !== [];
     }
 
     final public function isCrashed(): bool
@@ -173,7 +173,7 @@ abstract class BaseWorker
 
     final public function getCrashReport(): string
     {
-        $lastCommand = isset($this->commands) ? ' Last executed command: ' . end($this->commands) : '';
+        $lastCommand = count($this->commands) !== 0 ? ' Last executed command: ' . end($this->commands) : '';
 
         return 'This worker has crashed.' . $lastCommand . PHP_EOL
             . 'Output:' . PHP_EOL

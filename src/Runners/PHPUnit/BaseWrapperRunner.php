@@ -13,10 +13,10 @@ abstract class BaseWrapperRunner extends BaseRunner
     private const PHPUNIT_ERRORS = 2;
 
     /** @var resource[] */
-    protected $streams;
+    protected $streams = [];
 
     /** @var resource[] */
-    protected $modified;
+    protected $modified = [];
 
     final protected function beforeLoadChecks(): void
     {

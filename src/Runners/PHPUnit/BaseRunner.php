@@ -49,11 +49,11 @@ abstract class BaseRunner implements RunnerInterface
     /** @var OutputInterface */
     protected $output;
 
-    public function __construct(Options $opts, OutputInterface $output)
+    public function __construct(Options $options, OutputInterface $output)
     {
-        $this->options     = $opts;
+        $this->options     = $options;
         $this->interpreter = new LogInterpreter();
-        $this->printer     = new ResultPrinter($this->interpreter, $output);
+        $this->printer     = new ResultPrinter($this->interpreter, $output, $options);
         $this->output      = $output;
     }
 
@@ -164,6 +164,6 @@ abstract class BaseRunner implements RunnerInterface
     {
         $this->initCoverage();
         $this->load(new SuiteLoader($this->options));
-        $this->printer->start($this->options);
+        $this->printer->start();
     }
 }

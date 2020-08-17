@@ -24,7 +24,7 @@ use const DIRECTORY_SEPARATOR;
 final class WrapperRunner extends BaseWrapperRunner
 {
     /** @var WrapperWorker[] */
-    private $workers;
+    private $workers = [];
 
     public function __construct(Options $opts, OutputInterface $output)
     {

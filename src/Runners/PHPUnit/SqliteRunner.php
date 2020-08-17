@@ -27,7 +27,7 @@ use const PHP_EOL;
 final class SqliteRunner extends BaseWrapperRunner
 {
     /** @var SqliteWorker[] */
-    private $workers;
+    private $workers = [];
 
     /** @var PDO */
     private $db;
@@ -45,10 +45,6 @@ final class SqliteRunner extends BaseWrapperRunner
 
     public function __destruct()
     {
-        if ($this->db === null) {
-            return;
-        }
-
         unset($this->db);
         unlink($this->dbFileName);
     }
