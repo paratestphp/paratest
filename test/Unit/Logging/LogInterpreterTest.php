@@ -11,6 +11,9 @@ use ParaTest\Tests\Unit\ResultTester;
 
 use function array_pop;
 
+/**
+ * @coversNothing
+ */
 final class LogInterpreterTest extends ResultTester
 {
     /** @var LogInterpreter */

@@ -7,30 +7,24 @@ namespace ParaTest\Coverage;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData;
+use SebastianBergmann\Environment\Runtime;
 
 use function array_map;
 use function array_slice;
-use function assert;
-use function extension_loaded;
 use function filesize;
-use function function_exists;
-use function ini_get;
-use function is_array;
 use function is_file;
 use function unlink;
-
-use const PHP_SAPI;
 
 final class CoverageMerger
 {
     /** @var CodeCoverage|null */
     private $coverage;
     /** @var int */
-    private $test_limit;
+    private $testLimit;
 
-    public function __construct(int $test_limit = 0)
+    public function __construct(int $testLimit)
     {
-        $this->test_limit = $test_limit;
+        $this->testLimit = $testLimit;
     }
 
     private function addCoverage(CodeCoverage $coverage): void
@@ -51,26 +45,15 @@ final class CoverageMerger
      *
      * @throws RuntimeException When coverage file is empty.
      */
-    public function addCoverageFromFile(?string $coverageFile): void
+    public function addCoverageFromFile(string $coverageFile): void
     {
-        if ($coverageFile === null || ! is_file($coverageFile)) {
-            return;
-        }
-
-        if (filesize($coverageFile) === 0) {
+        if (! is_file($coverageFile) || filesize($coverageFile) === 0) {
             $extra = 'This means a PHPUnit process has crashed.';
-
-            $xdebug = function_exists('xdebug_get_code_coverage');
-            $phpdbg = PHP_SAPI === 'phpdbg';
-            $pcov   = extension_loaded('pcov') && (bool) ini_get('pcov.enabled');
-
-            if (! $xdebug && ! $phpdbg && ! $pcov) {
+            if (! (new Runtime())->canCollectCodeCoverage()) {
                 $extra = 'No coverage driver found! Enable one of Xdebug, PHPDBG or PCOV for coverage.';
             }
 
-            throw new RuntimeException(
-                "Coverage file {$coverageFile} is empty. " . $extra
-            );
+            throw new RuntimeException("Coverage file {$coverageFile} is empty. " . $extra);
         }
 
         /** @psalm-suppress UnresolvableInclude **/
@@ -79,19 +62,6 @@ final class CoverageMerger
         unlink($coverageFile);
     }
 
-    /**
-     * Get coverage report generator.
-     */
-    public function getReporter(): CoverageReporterInterface
-    {
-        assert($this->coverage !== null);
-
-        return new CoverageReporter($this->coverage);
-    }
-
-    /**
-     * Get CodeCoverage object.
-     */
     public function getCodeCoverageObject(): ?CodeCoverage
     {
         return $this->coverage;
@@ -99,20 +69,15 @@ final class CoverageMerger
 
     private function limitCoverageTests(CodeCoverage $coverage): void
     {
-        if ($this->test_limit === 0) {
+        if ($this->testLimit === 0) {
             return;
         }
 
-        $testLimit     = $this->test_limit;
+        $testLimit     = $this->testLimit;
         $data          = $coverage->getData(true);
         $newData       = array_map(
             static function (array $lines) use ($testLimit): array {
-                /** @psalm-suppress MissingClosureReturnType **/
-                return array_map(static function ($value) use ($testLimit) {
-                    if (! is_array($value)) {
-                        return $value;
-                    }
-
+                return array_map(static function (array $value) use ($testLimit): array {
                     return array_slice($value, 0, $testLimit);
                 }, $lines);
             },

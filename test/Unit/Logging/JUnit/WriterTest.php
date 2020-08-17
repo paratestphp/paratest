@@ -13,6 +13,9 @@ use function file_exists;
 use function file_get_contents;
 use function unlink;
 
+/**
+ * @coversNothing
+ */
 final class WriterTest extends TestBase
 {
     /** @var Writer  */
@@ -22,7 +25,7 @@ final class WriterTest extends TestBase
     /** @var string  */
     protected $passing;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->interpreter = new LogInterpreter();
         $this->writer      = new Writer($this->interpreter, 'test/fixtures/tests/');

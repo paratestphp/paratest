@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function getcwd;
 use function uniqid;
 
+/**
+ * @coversNothing
+ */
 final class RunnerTest extends TestBase
 {
     /** @var Runner  */
@@ -21,7 +24,7 @@ final class RunnerTest extends TestBase
     /** @var BufferedOutput  */
     private $output;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->output = new BufferedOutput();
         $this->runner = new Runner($this->createOptionsFromArgv([]), $this->output);

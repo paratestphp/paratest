@@ -14,12 +14,15 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 use function sprintf;
 
+/**
+ * @covers \ParaTest\Console\Commands\ParaTestCommand
+ */
 final class ParaTestCommandTest extends TestBase
 {
     /** @var CommandTester */
     private $commandTester;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $application = ParaTestCommand::applicationFactory(PARATEST_ROOT);
         $application->add(new HelpCommand());

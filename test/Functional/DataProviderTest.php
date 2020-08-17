@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
+/**
+ * @coversNothing
+ */
 final class DataProviderTest extends FunctionalTestBase
 {
     /** @var ParaTestInvoker */

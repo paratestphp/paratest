@@ -19,6 +19,9 @@ use function proc_open;
 use function sys_get_temp_dir;
 use function unlink;
 
+/**
+ * @coversNothing
+ */
 final class WorkerTest extends TestBase
 {
     /** @var string[][]  */
@@ -34,9 +37,8 @@ final class WorkerTest extends TestBase
     /** @var BufferedOutput */
     private $output;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
-        parent::setUp();
         $this->bootstrap      = PARATEST_ROOT . DS . 'test' . DS . 'bootstrap.php';
         $this->phpunitWrapper = PARATEST_ROOT . DS . 'bin' . DS . 'phpunit-wrapper.php';
         $this->output         = new BufferedOutput();

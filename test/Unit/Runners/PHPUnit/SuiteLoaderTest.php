@@ -16,6 +16,9 @@ use function count;
 use function strstr;
 use function uniqid;
 
+/**
+ * @coversNothing
+ */
 final class SuiteLoaderTest extends TestBase
 {
     public function testConstructor(): void

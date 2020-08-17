@@ -7,12 +7,15 @@ namespace ParaTest\Tests\Unit\Parser;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Tests\TestBase;
 
+/**
+ * @coversNothing
+ */
 final class ParsedObjectTest extends TestBase
 {
     /** @var ParsedClass  */
     protected $parsedClass;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->parsedClass = new ParsedClass("/**\n * @test\n @group group1\n*\\/", 'MyClass', 'My\\Name\\Space');
     }

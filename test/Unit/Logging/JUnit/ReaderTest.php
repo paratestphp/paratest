@@ -14,6 +14,9 @@ use stdClass;
 use function file_get_contents;
 use function file_put_contents;
 
+/**
+ * @coversNothing
+ */
 final class ReaderTest extends TestBase
 {
     /** @var string  */
@@ -27,7 +30,7 @@ final class ReaderTest extends TestBase
     /** @var Reader  */
     private $multi_errors;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->mixedPath    = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
         $this->mixed        = new Reader($this->mixedPath);

@@ -19,6 +19,9 @@ use function is_dir;
 use function sprintf;
 use function unlink;
 
+/**
+ * @coversNothing
+ */
 final class PHPUnitTest extends FunctionalTestBase
 {
     public function testWithJustBootstrap(): void

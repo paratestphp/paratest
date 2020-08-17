@@ -13,7 +13,7 @@ use SebastianBergmann\CodeCoverage\Report\Text;
 use SebastianBergmann\CodeCoverage\Report\Xml\Facade as XmlReport;
 use SebastianBergmann\CodeCoverage\Version;
 
-final class CoverageReporter implements CoverageReporterInterface
+final class CoverageReporter
 {
     /** @var CodeCoverage */
     private $coverage;

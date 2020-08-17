@@ -10,6 +10,8 @@ namespace ParaTest\Tests\Functional;
  * PHPUnit deprecated method calls, mocking non-existent methods and some other cases produce warnings that are output
  * slightly different. Now the paratest doesn't parse the output directly but relies on the JUnit XML logs.
  * This test checks whether the parates recognizes those warnings.
+ *
+ * @coversNothing
  */
 final class PHPUnitOtherWarningsTest extends FunctionalTestBase
 {

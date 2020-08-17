@@ -9,6 +9,9 @@ use ParaTest\Tests\TestBase;
 use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @coversNothing
+ */
 final class WrapperRunnerTest extends TestBase
 {
     /**

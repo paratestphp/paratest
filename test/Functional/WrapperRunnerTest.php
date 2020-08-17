@@ -14,6 +14,7 @@ use function unlink;
 
 /**
  * @requires OSFAMILY Linux
+ * @coversNothing
  */
 final class WrapperRunnerTest extends FunctionalTestBase
 {

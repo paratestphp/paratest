@@ -6,6 +6,9 @@ namespace ParaTest\Tests\Functional;
 
 use ParaTest\Runners\PHPUnit\SqliteRunner;
 
+/**
+ * @coversNothing
+ */
 final class SqliteRunnerTest extends FunctionalTestBase
 {
     private const TEST_METHODS_PER_CLASS = 5;

@@ -9,6 +9,9 @@ use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\Parser;
 use ParaTest\Tests\TestBase;
 
+/**
+ * @coversNothing
+ */
 final class ParserTest extends TestBase
 {
     public function testConstructorThrowsExceptionIfFileNotFound(): void

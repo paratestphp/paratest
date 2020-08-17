@@ -8,6 +8,9 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Tests\TestBase;
 
+/**
+ * @coversNothing
+ */
 final class ParsedClassTest extends TestBase
 {
     /** @var ParsedClass  */
@@ -15,7 +18,7 @@ final class ParsedClassTest extends TestBase
     /** @var ParsedFunction[]  */
     protected $methods;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->methods = [
             new ParsedFunction(

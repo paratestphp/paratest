@@ -16,6 +16,9 @@ use function simplexml_load_file;
 use function sys_get_temp_dir;
 use function unlink;
 
+/**
+ * @coversNothing
+ */
 final class RunnerIntegrationTest extends TestBase
 {
     /** @var Runner $runner */
@@ -27,7 +30,7 @@ final class RunnerIntegrationTest extends TestBase
     /** @var Options */
     private $options;
 
-    protected function setUp(): void
+    protected function setUpTest(): void
     {
         static::skipIfCodeCoverageNotEnabled();
 

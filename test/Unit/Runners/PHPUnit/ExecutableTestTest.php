@@ -9,12 +9,15 @@ use ParaTest\Tests\TestBase;
 use function defined;
 use function unlink;
 
+/**
+ * @coversNothing
+ */
 final class ExecutableTestTest extends TestBase
 {
     /** @var ExecutableTestChild */
     protected $executableTestChild;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->executableTestChild = new ExecutableTestChild('pathToFile', true);
     }

@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 use function array_values;
 
+/**
+ * @coversNothing
+ */
 final class StrTest extends TestCase
 {
     /**

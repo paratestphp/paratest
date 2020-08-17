@@ -15,22 +15,34 @@ use ReflectionClass;
 use ReflectionObject;
 use ReflectionProperty;
 use SebastianBergmann\Environment\Runtime;
-use SplFileObject;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Filesystem\Filesystem;
 
 use function copy;
 use function file_exists;
 use function get_class;
-use function is_dir;
+use function glob;
 use function preg_match;
-use function rmdir;
 use function str_replace;
 use function uniqid;
-use function unlink;
 
 abstract class TestBase extends PHPUnit\Framework\TestCase
 {
+    final protected function setUp(): void
+    {
+        $glob = glob(TMP_DIR . DS . '*');
+        static::assertNotFalse($glob);
+
+        (new Filesystem())->remove($glob);
+
+        $this->setUpTest();
+    }
+
+    protected function setUpTest(): void
+    {
+    }
+
     /**
      * @param array<string, string|bool|int> $argv
      */
@@ -157,35 +169,6 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         }
 
         static::markTestSkipped('No code coverage driver available');
-    }
-
-    /**
-     * Remove dir and its files.
-     */
-    final protected function removeDirectory(string $dirname): void
-    {
-        if (! file_exists($dirname) || ! is_dir($dirname)) {
-            return;
-        }
-
-        $directory = new RecursiveDirectoryIterator(
-            $dirname,
-            RecursiveDirectoryIterator::SKIP_DOTS
-        );
-        /** @var SplFileObject[] $iterator */
-        $iterator = new RecursiveIteratorIterator(
-            $directory,
-            RecursiveIteratorIterator::CHILD_FIRST
-        );
-        foreach ($iterator as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getPathname());
-            } else {
-                unlink($file->getPathname());
-            }
-        }
-
-        rmdir($dirname);
     }
 
     /**

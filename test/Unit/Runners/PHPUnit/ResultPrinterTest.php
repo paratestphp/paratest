@@ -18,6 +18,9 @@ use function file_put_contents;
 use function sprintf;
 use function unlink;
 
+/**
+ * @coversNothing
+ */
 final class ResultPrinterTest extends ResultTester
 {
     /** @var ResultPrinter */

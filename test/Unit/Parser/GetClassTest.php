@@ -8,6 +8,9 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\Parser;
 use ParaTest\Tests\TestBase;
 
+/**
+ * @coversNothing
+ */
 final class GetClassTest extends TestBase
 {
     public function testPreviouslyLoadedTestClassCanBeParsed(): void

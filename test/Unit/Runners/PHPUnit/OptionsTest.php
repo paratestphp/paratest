@@ -17,6 +17,9 @@ use function mkdir;
 use function sort;
 use function unlink;
 
+/**
+ * @coversNothing
+ */
 final class OptionsTest extends TestBase
 {
     /** @var Options */
@@ -26,7 +29,7 @@ final class OptionsTest extends TestBase
     /** @var string */
     private $testCwd;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->unfiltered = [
             '--processes' => 5,

@@ -23,7 +23,7 @@ abstract class ResultTester extends TestBase
     /** @var Suite */
     protected $errorSuite;
 
-    final public function setUp(): void
+    final public function setUpTest(): void
     {
         $this->errorSuite        = $this->getSuiteWithResult('single-werror.xml', 1);
         $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);

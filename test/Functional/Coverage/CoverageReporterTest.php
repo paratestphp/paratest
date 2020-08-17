@@ -15,6 +15,9 @@ use function str_replace;
 use function sys_get_temp_dir;
 use function uniqid;
 
+/**
+ * @coversNothing
+ */
 final class CoverageReporterTest extends TestBase
 {
     /**
@@ -24,10 +27,8 @@ final class CoverageReporterTest extends TestBase
      */
     private $targetDir;
 
-    protected function setUp(): void
+    protected function setUpTest(): void
     {
-        parent::setUp();
-
         static::skipIfCodeCoverageNotEnabled();
 
         $this->targetDir = str_replace('.', '_', sys_get_temp_dir() . DS . uniqid('paratest-', true));
