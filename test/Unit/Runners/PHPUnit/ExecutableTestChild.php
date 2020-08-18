@@ -6,9 +6,6 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 
-/**
- * @coversNothing
- */
 final class ExecutableTestChild extends ExecutableTest
 {
     /**

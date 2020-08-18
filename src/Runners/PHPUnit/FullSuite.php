@@ -9,17 +9,13 @@ use function array_merge;
 final class FullSuite extends ExecutableTest
 {
     /** @var string */
-    protected $suiteName;
+    private $suiteName;
 
-    /** @var string */
-    protected $configPath;
-
-    public function __construct(string $suiteName, string $configPath, bool $needsCoverage, string $tmpDir)
+    public function __construct(string $suiteName, bool $needsCoverage, string $tmpDir)
     {
         parent::__construct('', $needsCoverage, $tmpDir);
 
-        $this->suiteName  = $suiteName;
-        $this->configPath = $configPath;
+        $this->suiteName = $suiteName;
     }
 
     /**

@@ -165,9 +165,8 @@ final class SuiteLoader
     private function initSuites(): void
     {
         if (is_array($this->suitesName)) {
-            assert($this->configuration !== null);
             foreach ($this->suitesName as $suiteName) {
-                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->filename());
+                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName);
             }
         } else {
             foreach ($this->files as $path) {
@@ -363,11 +362,10 @@ final class SuiteLoader
         );
     }
 
-    private function createFullSuite(string $suiteName, string $configPath): FullSuite
+    private function createFullSuite(string $suiteName): FullSuite
     {
         return new FullSuite(
             $suiteName,
-            $configPath,
             $this->options->hasCoverage(),
             $this->options->tmpDir()
         );

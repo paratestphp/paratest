@@ -6,8 +6,8 @@ namespace ParaTest\Tests\Unit\Console\Commands;
 
 use InvalidArgumentException;
 use ParaTest\Console\Commands\ParaTestCommand;
-use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Tests\TestBase;
+use ParaTest\Tests\Unit\Runners\PHPUnit\EmptyRunnerStub;
 use PHPUnit\TextUI\XmlConfiguration\Exception;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;

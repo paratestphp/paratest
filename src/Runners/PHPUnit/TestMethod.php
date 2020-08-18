@@ -24,7 +24,7 @@ final class TestMethod extends ExecutableTest
      *
      * @var string[]
      */
-    protected $filters;
+    private $filters;
 
     /**
      * Passed filters must be unescaped and must represent test name, optionally including
@@ -39,16 +39,6 @@ final class TestMethod extends ExecutableTest
         // for compatibility with other code (tests), which can pass string (one filter)
         // instead of array of filters
         $this->filters = $filters;
-    }
-
-    /**
-     * Returns the test method's filters.
-     *
-     * @return string[]
-     */
-    public function getFilters(): array
-    {
-        return $this->filters;
     }
 
     /**

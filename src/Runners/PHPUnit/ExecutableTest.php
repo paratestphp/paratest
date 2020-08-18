@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use Symfony\Component\Process\Process;
-
 use function array_map;
 use function array_merge;
 use function assert;
@@ -19,7 +17,7 @@ abstract class ExecutableTest
      *
      * @var string
      */
-    protected $path;
+    private $path;
 
     /**
      * A path to the temp file created
@@ -27,21 +25,21 @@ abstract class ExecutableTest
      *
      * @var string|null
      */
-    protected $temp;
+    private $temp;
 
     /**
      * Path where the coveragereport is stored.
      *
      * @var string|null
      */
-    protected $coverageFileName;
+    private $coverageFileName;
 
     /**
      * Last executed process command.
      *
      * @var string
      */
-    protected $lastCommand = '';
+    private $lastCommand = '';
 
     /** @var bool */
     private $needsCoverage;
@@ -147,20 +145,6 @@ abstract class ExecutableTest
     }
 
     /**
-     * Generate command line with passed options suitable to handle through paratest.
-     *
-     * @param string                $binary   executable binary name
-     * @param array<string, string> $options  command line options
-     * @param string[]|null         $passthru
-     *
-     * @return string command line
-     */
-    final public function command(string $binary, array $options = [], ?array $passthru = null): string
-    {
-        return (new Process($this->commandArguments($binary, $options, $passthru)))->getCommandLine();
-    }
-
-    /**
      * Get coverage filename.
      */
     final public function getCoverageFileName(): string
@@ -173,14 +157,6 @@ abstract class ExecutableTest
         }
 
         return $this->coverageFileName;
-    }
-
-    /**
-     * Set process temporary filename.
-     */
-    final public function setTempFile(string $temp): void
-    {
-        $this->temp = $temp;
     }
 
     /**

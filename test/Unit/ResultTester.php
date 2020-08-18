@@ -8,6 +8,9 @@ use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\TestBase;
 
+use function file_get_contents;
+use function file_put_contents;
+
 abstract class ResultTester extends TestBase
 {
     /** @var Suite */
@@ -39,14 +42,13 @@ abstract class ResultTester extends TestBase
 
     final protected function getSuiteWithResult(string $result, int $methodCount): Suite
     {
-        $result    = FIXTURES . DS . 'results' . DS . $result;
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
             $functions[] = new TestMethod((string) $i, [], false, TMP_DIR);
         }
 
         $suite = new Suite('', $functions, false, TMP_DIR);
-        $suite->setTempFile($result);
+        file_put_contents($suite->getTempFile(), (string) file_get_contents(FIXTURES . DS . 'results' . DS . $result));
 
         return $suite;
     }

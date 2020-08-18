@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use ParaTest\Runners\PHPUnit\EmptyRunnerStub;
 use ParaTest\Runners\PHPUnit\SqliteRunner;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
+use ParaTest\Tests\Unit\Runners\PHPUnit\EmptyRunnerStub;
 use ParseError;
 
 use function array_merge;
