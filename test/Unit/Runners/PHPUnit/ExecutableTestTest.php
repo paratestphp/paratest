@@ -53,13 +53,13 @@ final class ExecutableTestTest extends TestBase
     public function testGetTempFileShouldCreateTempFile(): void
     {
         $logFile = $this->executableTestChild->getTempFile();
-        $ccFile  = $this->executableTestChild->getCoverageFileName();
         static::assertFileExists($logFile);
-        static::assertFileExists($ccFile);
-
         $this->executableTestChild->deleteFile();
-
         static::assertFileDoesNotExist($logFile);
+
+        $ccFile = $this->executableTestChild->getCoverageFileName();
+        static::assertFileExists($ccFile);
+        $this->executableTestChild->deleteFile();
         static::assertFileDoesNotExist($ccFile);
     }
 

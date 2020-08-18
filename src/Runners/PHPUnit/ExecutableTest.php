@@ -90,6 +90,7 @@ abstract class ExecutableTest
     {
         if ($this->temp !== null) {
             unlink($this->temp);
+            $this->temp = null;
         }
 
         if ($this->coverageFileName === null) {
@@ -97,6 +98,7 @@ abstract class ExecutableTest
         }
 
         unlink($this->coverageFileName);
+        $this->coverageFileName = null;
     }
 
     /**
