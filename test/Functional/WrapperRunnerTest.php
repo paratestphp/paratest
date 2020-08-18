@@ -9,7 +9,6 @@ use ParaTest\Runners\PHPUnit\WrapperRunner;
 use function glob;
 use function is_dir;
 use function mkdir;
-use function sys_get_temp_dir;
 use function unlink;
 
 /**
@@ -91,7 +90,7 @@ final class WrapperRunnerTest extends FunctionalTestBase
 
     public function testParallelSuiteOption(): void
     {
-        $testDir = sys_get_temp_dir() . DS . 'parallel-suite';
+        $testDir = TMP_DIR . DS . 'parallel-suite';
         if (! is_dir($testDir)) {
             mkdir($testDir);
         }

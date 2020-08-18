@@ -232,7 +232,7 @@ final class ReaderTest extends TestBase
         static::assertSame(19, $this->mixed->getTotalTests());
         static::assertSame(10, $this->mixed->getTotalAssertions());
         static::assertSame(3, $this->mixed->getTotalFailures());
-        static::assertSame(2, $this->mixed->getTotalWarning());
+        static::assertSame(2, $this->mixed->getTotalWarnings());
         static::assertSame(3, $this->mixed->getTotalErrors());
         static::assertSame(0.001489, $this->mixed->getTotalTime());
     }
@@ -242,7 +242,7 @@ final class ReaderTest extends TestBase
         static::assertSame(3, $this->single->getTotalTests());
         static::assertSame(3, $this->single->getTotalAssertions());
         static::assertSame(1, $this->single->getTotalFailures());
-        static::assertSame(0, $this->single->getTotalWarning());
+        static::assertSame(0, $this->single->getTotalWarnings());
         static::assertSame(0, $this->single->getTotalErrors());
         static::assertSame(0.005895, $this->single->getTotalTime());
     }

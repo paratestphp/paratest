@@ -36,6 +36,7 @@ use function preg_match_all;
 use function realpath;
 use function sprintf;
 use function strlen;
+use function sys_get_temp_dir;
 use function unserialize;
 
 use const DIRECTORY_SEPARATOR;
@@ -190,6 +191,8 @@ final class Options
     private $logJunit;
     /** @var string|null */
     private $whitelist;
+    /** @var string */
+    private $tmpDir;
 
     /**
      * @param array<string, string> $annotations
@@ -229,6 +232,7 @@ final class Options
         string $runner,
         bool $stopOnFailure,
         array $testsuite,
+        string $tmpDir,
         int $verbose,
         ?string $whitelist
     ) {
@@ -260,6 +264,7 @@ final class Options
         $this->runner            = $runner;
         $this->stopOnFailure     = $stopOnFailure;
         $this->testsuite         = $testsuite;
+        $this->tmpDir            = $tmpDir;
         $this->verbose           = $verbose;
         $this->whitelist         = $whitelist;
     }
@@ -357,6 +362,7 @@ final class Options
             $options['runner'],
             $options['stop-on-failure'],
             $testsuite,
+            $options['tmp-dir'],
             (int) $options['verbose'],
             $options['whitelist']
         );
@@ -551,6 +557,13 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Filter which testsuite to run'
+            ),
+            new InputOption(
+                'tmp-dir',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Temporary directory for internal ParaTest files',
+                sys_get_temp_dir()
             ),
             new InputOption(
                 'verbose',
@@ -874,6 +887,11 @@ final class Options
     public function logJunit(): ?string
     {
         return $this->logJunit;
+    }
+
+    public function tmpDir(): string
+    {
+        return $this->tmpDir;
     }
 
     public function whitelist(): ?string

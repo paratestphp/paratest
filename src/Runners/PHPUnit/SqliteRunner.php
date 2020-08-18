@@ -15,7 +15,6 @@ use function dirname;
 use function implode;
 use function realpath;
 use function serialize;
-use function sys_get_temp_dir;
 use function tempnam;
 use function uniqid;
 use function unlink;
@@ -39,7 +38,7 @@ final class SqliteRunner extends BaseWrapperRunner
     {
         parent::__construct($opts, $output);
 
-        $this->dbFileName = (string) ($opts->filtered()['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
+        $this->dbFileName = (string) ($opts->filtered()['database'] ?? tempnam($opts->tmpDir(), 'paratest_db_'));
         $this->db         = new PDO('sqlite:' . $this->dbFileName);
     }
 

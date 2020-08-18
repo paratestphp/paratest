@@ -16,7 +16,6 @@ use function file_get_contents;
 use function get_class;
 use function proc_get_status;
 use function proc_open;
-use function sys_get_temp_dir;
 use function unlink;
 
 /**
@@ -46,8 +45,8 @@ final class WorkerTest extends TestBase
 
     public function tearDown(): void
     {
-        $this->deleteIfExists(sys_get_temp_dir() . DS . 'test.xml');
-        $this->deleteIfExists(sys_get_temp_dir() . DS . 'test2.xml');
+        $this->deleteIfExists(TMP_DIR . DS . 'test.xml');
+        $this->deleteIfExists(TMP_DIR . DS . 'test2.xml');
     }
 
     private function deleteIfExists(string $file): void
@@ -64,7 +63,7 @@ final class WorkerTest extends TestBase
      */
     public function testReadsAPHPUnitCommandFromStdInAndExecutesItItsOwnProcess(): void
     {
-        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
@@ -81,7 +80,7 @@ final class WorkerTest extends TestBase
      */
     public function testKnowsWhenAJobIsFinished(): void
     {
-        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
@@ -96,7 +95,7 @@ final class WorkerTest extends TestBase
      */
     public function testTellsWhenItsFree(): void
     {
-        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
@@ -177,11 +176,11 @@ final class WorkerTest extends TestBase
         $worker = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper);
 
-        $testLog = sys_get_temp_dir() . DS . 'test.xml';
+        $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker->execute($testCmd);
 
-        $testLog2 = sys_get_temp_dir() . DS . 'test2.xml';
+        $testLog2 = TMP_DIR . DS . 'test2.xml';
         $testCmd2 = $this->getCommand('failing-tests' . DS . 'UnitTestWithErrorTest.php', $testLog2);
         $worker->execute($testCmd2);
 

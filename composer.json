@@ -30,6 +30,7 @@
         "phpunit/php-file-iterator": "^3.0",
         "phpunit/php-timer": "^5.0",
         "phpunit/phpunit": "^9.3.5",
+        "sebastian/environment": "^5.1",
         "symfony/console": "^4.4 || ^5.1",
         "symfony/process": "^4.4 || ^5.1"
     },

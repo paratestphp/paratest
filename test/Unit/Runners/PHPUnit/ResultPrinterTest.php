@@ -67,7 +67,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldAddTest(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false, TMP_DIR);
 
         $this->printer->addTest($suite);
 
@@ -76,7 +76,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestReturnsSelf(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false, TMP_DIR);
 
         $self = $this->printer->addTest($suite);
 
@@ -98,10 +98,10 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, [], false);
+            $funcs[] = new TestMethod((string) $i, [], false, TMP_DIR);
         }
 
-        $suite = new Suite('/path', $funcs, false);
+        $suite = new Suite('/path', $funcs, false, TMP_DIR);
         $this->printer->addTest($suite);
         $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
@@ -153,16 +153,16 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new TestMethod('funcOne', [], false),
-            new TestMethod('funcTwo', [], false),
-        ], false);
+            new TestMethod('funcOne', [], false, TMP_DIR),
+            new TestMethod('funcTwo', [], false, TMP_DIR),
+        ], false, TMP_DIR);
         $this->printer->addTest($suite);
         static::assertSame(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod'], false);
+        $method = new TestMethod('/path', ['testThisMethod'], false, TMP_DIR);
         $this->printer->addTest($method);
         static::assertSame(1, $this->printer->getTotalCases());
     }

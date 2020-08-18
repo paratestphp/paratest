@@ -42,10 +42,10 @@ abstract class ResultTester extends TestBase
         $result    = FIXTURES . DS . 'results' . DS . $result;
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
-            $functions[] = new TestMethod((string) $i, [], false);
+            $functions[] = new TestMethod((string) $i, [], false, TMP_DIR);
         }
 
-        $suite = new Suite('', $functions, false);
+        $suite = new Suite('', $functions, false, TMP_DIR);
         $suite->setTempFile($result);
 
         return $suite;

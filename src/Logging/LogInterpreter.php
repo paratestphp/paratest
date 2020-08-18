@@ -12,7 +12,6 @@ use function array_merge;
 use function array_reduce;
 use function array_values;
 use function count;
-use function reset;
 
 final class LogInterpreter implements MetaProvider
 {
@@ -22,28 +21,15 @@ final class LogInterpreter implements MetaProvider
      *
      * @var Reader[]
      */
-    protected $readers = [];
-
-    /**
-     * Reset the array pointer of the internal
-     * readers collection.
-     */
-    public function rewind(): void
-    {
-        reset($this->readers);
-    }
+    private $readers = [];
 
     /**
      * Add a new Reader to be included
      * in the final results.
-     *
-     * @return $this
      */
-    public function addReader(Reader $reader): self
+    public function addReader(Reader $reader): void
     {
         $this->readers[] = $reader;
-
-        return $this;
     }
 
     /**
@@ -168,10 +154,10 @@ final class LogInterpreter implements MetaProvider
         }, 0);
     }
 
-    public function getTotalWarning(): int
+    public function getTotalWarnings(): int
     {
         return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalWarning();
+            return $result + $reader->getTotalWarnings();
         }, 0);
     }
 

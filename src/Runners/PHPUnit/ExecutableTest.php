@@ -10,7 +10,6 @@ use Symfony\Component\Process\Process;
 use function array_map;
 use function array_merge;
 use function assert;
-use function sys_get_temp_dir;
 use function tempnam;
 use function unlink;
 
@@ -47,11 +46,14 @@ abstract class ExecutableTest
 
     /** @var bool */
     private $needsCoverage;
+    /** @var string */
+    private $tmpDir;
 
-    public function __construct(string $path, bool $needsCoverage)
+    public function __construct(string $path, bool $needsCoverage, string $tmpDir)
     {
         $this->path          = $path;
         $this->needsCoverage = $needsCoverage;
+        $this->tmpDir        = $tmpDir;
     }
 
     /**
@@ -75,7 +77,7 @@ abstract class ExecutableTest
     final public function getTempFile(): string
     {
         if ($this->temp === null) {
-            $temp = tempnam(sys_get_temp_dir(), 'PT_');
+            $temp = tempnam($this->tmpDir, 'PT_');
             assert($temp !== false);
 
             $this->temp = $temp;
@@ -165,7 +167,7 @@ abstract class ExecutableTest
     final public function getCoverageFileName(): string
     {
         if ($this->coverageFileName === null) {
-            $coverageFileName = tempnam(sys_get_temp_dir(), 'CV_');
+            $coverageFileName = tempnam($this->tmpDir, 'CV_');
             assert($coverageFileName !== false);
 
             $this->coverageFileName = $coverageFileName;

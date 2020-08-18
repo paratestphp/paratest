@@ -28,26 +28,22 @@ final class SuiteLoaderTest extends TestBase
         static::assertEquals($options, $this->getObjectValue($loader, 'options'));
     }
 
-    public function testOptionsCanBeNull(): void
-    {
-        $loader = new SuiteLoader();
-        static::assertNull($this->getObjectValue($loader, 'options'));
-    }
-
     public function testLoadThrowsExceptionWithInvalidPath(): void
     {
+        $loader = new SuiteLoader($this->createOptionsFromArgv([]));
+
         $this->expectException(RuntimeException::class);
 
-        $loader = new SuiteLoader();
         $loader->load('/path/to/nowhere');
     }
 
     public function testLoadBarePathWithNoPathAndNoConfiguration(): void
     {
+        $loader = new SuiteLoader($this->createOptionsFromArgv([], __DIR__));
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('No path or configuration provided (tests must end with Test.php)');
 
-        $loader = new SuiteLoader();
         $loader->load();
     }
 
@@ -217,7 +213,7 @@ final class SuiteLoaderTest extends TestBase
      */
     private function getLoadedPaths(string $path, ?SuiteLoader $loader = null): array
     {
-        $loader = $loader ?? new SuiteLoader();
+        $loader = $loader ?? new SuiteLoader($this->createOptionsFromArgv([]));
         $loader->load($path);
         $loaded = $this->getObjectValue($loader, 'loadedSuites');
 
@@ -239,7 +235,7 @@ final class SuiteLoaderTest extends TestBase
         $fixturePath = $this->fixture('passing-tests');
         $files       = $this->findTests($fixturePath);
 
-        $loader = new SuiteLoader();
+        $loader = new SuiteLoader($this->createOptionsFromArgv([]));
         $loader->load($fixturePath);
         $loaded = $this->getObjectValue($loader, 'loadedSuites');
         foreach ($loaded as $path => $test) {
@@ -329,7 +325,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadIgnoresFilesWithoutClasses(): void
     {
-        $loader           = new SuiteLoader();
+        $loader           = new SuiteLoader($this->createOptionsFromArgv([]));
         $fileWithoutClass = $this->fixture('special-classes/FileWithoutClass.php');
         $loader->load($fileWithoutClass);
         static::assertCount(0, $loader->getTestMethods());
@@ -338,7 +334,7 @@ final class SuiteLoaderTest extends TestBase
     public function testExecutableTestsForFunctionalModeUse(): void
     {
         $path   = $this->fixture('passing-tests/DependsOnChain.php');
-        $loader = new SuiteLoader();
+        $loader = new SuiteLoader($this->createOptionsFromArgv([]));
         $loader->load($path);
         $tests = $loader->getTestMethods();
         static::assertCount(2, $tests);

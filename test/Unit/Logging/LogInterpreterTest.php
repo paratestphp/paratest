@@ -12,7 +12,7 @@ use ParaTest\Tests\Unit\ResultTester;
 use function array_pop;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Logging\LogInterpreter
  */
 final class LogInterpreterTest extends ResultTester
 {
@@ -22,9 +22,8 @@ final class LogInterpreterTest extends ResultTester
     protected function setUpInterpreter(): void
     {
         $this->interpreter = new LogInterpreter();
-        $this->interpreter
-            ->addReader(new Reader($this->mixedSuite->getTempFile()))
-            ->addReader(new Reader($this->passingSuite->getTempFile()));
+        $this->interpreter->addReader(new Reader($this->mixedSuite->getTempFile()));
+        $this->interpreter->addReader(new Reader($this->passingSuite->getTempFile()));
     }
 
     public function testConstructor(): void
@@ -40,12 +39,6 @@ final class LogInterpreterTest extends ResultTester
         static::assertCount(3, $this->getObjectValue($this->interpreter, 'readers'));
     }
 
-    public function testAddReaderReturnsSelf(): void
-    {
-        $self = $this->interpreter->addReader(new Reader($this->failureSuite->getTempFile()));
-        static::assertSame($self, $this->interpreter);
-    }
-
     public function testGetReaders(): void
     {
         $reader = new Reader($this->failureSuite->getTempFile());
@@ -56,24 +49,14 @@ final class LogInterpreterTest extends ResultTester
         static::assertSame($reader, $last);
     }
 
-    public function testGetTotalTests(): void
+    public function testGetTotals(): void
     {
         static::assertSame(22, $this->interpreter->getTotalTests());
-    }
-
-    public function testGetTotalAssertions(): void
-    {
         static::assertSame(13, $this->interpreter->getTotalAssertions());
-    }
-
-    public function testGetTotalFailures(): void
-    {
         static::assertSame(3, $this->interpreter->getTotalFailures());
-    }
-
-    public function testGetTotalErrors(): void
-    {
+        static::assertSame(2, $this->interpreter->getTotalWarnings());
         static::assertSame(3, $this->interpreter->getTotalErrors());
+        static::assertSame(0.006784, $this->interpreter->getTotalTime());
     }
 
     public function testIsSuccessfulReturnsFalseIfFailuresPresentAndNoErrors(): void
@@ -111,6 +94,15 @@ final class LogInterpreterTest extends ResultTester
             'Risky Test',
         ];
         static::assertSame($errors, $this->interpreter->getErrors());
+    }
+
+    public function testGetWarningsReturnsArrayOfErrorMessages(): void
+    {
+        $errors = [
+            "UnitTestWithErrorTest::testWarning\nFunction 1 deprecated",
+            "UnitTestWithMethodAnnotationsTest::testWarning\nFunction 2 deprecated",
+        ];
+        static::assertSame($errors, $this->interpreter->getWarnings());
     }
 
     public function testGetFailuresReturnsArrayOfFailureMessages(): void

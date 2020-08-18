@@ -88,7 +88,6 @@ final class Runner extends BaseRunner
     private function complete(): void
     {
         $this->printer->printResults();
-        $this->interpreter->rewind();
         $this->log();
         $this->logCoverage();
         $readers = $this->interpreter->getReaders();

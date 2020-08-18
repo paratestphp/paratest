@@ -13,7 +13,6 @@ use function assert;
 use function count;
 use function glob;
 use function simplexml_load_file;
-use function sys_get_temp_dir;
 use function unlink;
 
 /**
@@ -34,7 +33,7 @@ final class RunnerIntegrationTest extends TestBase
     {
         static::skipIfCodeCoverageNotEnabled();
 
-        $testcoverageFiles = sys_get_temp_dir() . DS . 'coverage-runner-integration*';
+        $testcoverageFiles = TMP_DIR . DS . 'coverage-runner-integration*';
         $glob              = glob($testcoverageFiles);
         assert($glob !== false);
         foreach ($glob as $file) {
@@ -44,9 +43,9 @@ final class RunnerIntegrationTest extends TestBase
         $this->bareOptions = [
             '--path' => FIXTURES . DS . 'failing-tests',
             '--phpunit' => PHPUNIT,
-            '--coverage-clover' => sys_get_temp_dir() . DS . 'coverage-runner-integration.clover',
-            '--coverage-crap4j' => sys_get_temp_dir() . DS . 'coverage-runner-integration.crap4j',
-            '--coverage-php' => sys_get_temp_dir() . DS . 'coverage-runner-integration.php',
+            '--coverage-clover' => TMP_DIR . DS . 'coverage-runner-integration.clover',
+            '--coverage-crap4j' => TMP_DIR . DS . 'coverage-runner-integration.crap4j',
+            '--coverage-php' => TMP_DIR . DS . 'coverage-runner-integration.php',
             '--bootstrap' => BOOTSTRAP,
             '--whitelist' => FIXTURES . DS . 'failing-tests',
         ];
@@ -60,7 +59,7 @@ final class RunnerIntegrationTest extends TestBase
      */
     private function globTempDir(string $pattern): array
     {
-        $glob = glob(sys_get_temp_dir() . DS . $pattern);
+        $glob = glob(TMP_DIR . DS . $pattern);
         assert($glob !== false);
 
         return $glob;
@@ -92,12 +91,12 @@ final class RunnerIntegrationTest extends TestBase
         static::assertEquals(
             $countAfter,
             $countBefore,
-            "Test Runner failed to clean up the 'PT_*' file in " . sys_get_temp_dir()
+            "Test Runner failed to clean up the 'PT_*' file in " . TMP_DIR
         );
         static::assertEquals(
             $countCoverageAfter,
             $countCoverageBefore,
-            "Test Runner failed to clean up the 'CV_*' file in " . sys_get_temp_dir()
+            "Test Runner failed to clean up the 'CV_*' file in " . TMP_DIR
         );
     }
 

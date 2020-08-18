@@ -14,7 +14,7 @@ interface MetaProvider
 
     public function getTotalErrors(): int;
 
-    public function getTotalWarning(): int;
+    public function getTotalWarnings(): int;
 
     public function getTotalTime(): float;
 

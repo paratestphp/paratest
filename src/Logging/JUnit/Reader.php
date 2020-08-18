@@ -255,7 +255,7 @@ final class Reader implements MetaProvider
         return $this->suites[0]->errors;
     }
 
-    public function getTotalWarning(): int
+    public function getTotalWarnings(): int
     {
         return $this->suites[0]->warnings;
     }

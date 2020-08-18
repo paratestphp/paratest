@@ -32,7 +32,6 @@ abstract class BaseWrapperRunner extends BaseRunner
     {
         $this->setExitCode();
         $this->printer->printResults();
-        $this->interpreter->rewind();
         $this->log();
         $this->logCoverage();
         $readers = $this->interpreter->getReaders();
