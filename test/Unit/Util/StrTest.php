@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 use function array_values;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Util\Str
  */
 final class StrTest extends TestCase
 {
