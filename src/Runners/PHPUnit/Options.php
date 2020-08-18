@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use InvalidArgumentException;
 use ParaTest\Util\Str;
 use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
-use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -293,7 +293,7 @@ final class Options
             : [];
 
         if (isset($options['filter']) && strlen($options['filter']) > 0 && ! $options['functional']) {
-            throw new RuntimeException('Option --filter is not implemented for non functional mode');
+            throw new InvalidArgumentException('Option --filter is not implemented for non functional mode');
         }
 
         $configuration     = null;
@@ -585,7 +585,7 @@ final class Options
             return $phpunit;
         }
 
-        return 'phpunit';
+        return 'phpunit'; // @codeCoverageIgnore
     }
 
     /**
@@ -597,7 +597,7 @@ final class Options
     {
         $vendor = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'vendor';
         if (! file_exists($vendor)) {
-            $vendor = dirname(__DIR__, 5);
+            $vendor = dirname(__DIR__, 5); // @codeCoverageIgnore
         }
 
         return $vendor;
@@ -654,6 +654,7 @@ final class Options
             assert($cpuinfo !== false);
             preg_match_all('/^processor/m', $cpuinfo, $matches);
             $cores = count($matches[0]);
+        // @codeCoverageIgnoreStart
         } elseif (DIRECTORY_SEPARATOR === '\\') {
             // Windows
             if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
@@ -666,6 +667,8 @@ final class Options
             $cores = (int) fgets($process);
             pclose($process);
         }
+
+        // @codeCoverageIgnoreEnd
 
         return $cores;
     }
