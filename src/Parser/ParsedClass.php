@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Parser;
 
-use function array_filter;
-use function count;
-
 /**
  * @method class-string getName()
  */
@@ -41,32 +38,11 @@ final class ParsedClass extends ParsedObject
      * optionally filtering on annotations present
      * on a method.
      *
-     * @param string[] $groups
-     *
      * @return ParsedFunction[]
      */
-    public function getMethods(array $groups): array
+    public function getMethods(): array
     {
-        if (count($groups) === 0) {
-            return $this->methods;
-        }
-
-        $groupAnnotation = 'group';
-        foreach ($groups as $group) {
-            if ($this->hasAnnotation($groupAnnotation, $group)) {
-                return $this->methods;
-            }
-        }
-
-        return array_filter($this->methods, static function (ParsedFunction $method) use ($groupAnnotation, $groups): bool {
-            foreach ($groups as $group) {
-                if ($method->hasAnnotation($groupAnnotation, $group)) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return $this->methods;
     }
 
     /**

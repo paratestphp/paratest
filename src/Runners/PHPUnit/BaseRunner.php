@@ -67,7 +67,7 @@ abstract class BaseRunner implements RunnerInterface
     private function load(SuiteLoader $loader): void
     {
         $this->beforeLoadChecks();
-        $loader->load($this->options->path());
+        $loader->load();
         $executables   = $this->options->functional() ? $loader->getTestMethods() : $loader->getSuites();
         $this->pending = array_merge($this->pending, $executables);
         foreach ($this->pending as $pending) {

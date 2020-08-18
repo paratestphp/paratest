@@ -29,28 +29,4 @@ final class ParsedObjectTest extends TestBase
         static::assertSame(self::class, $this->parsedClass->getName());
         static::assertSame($this->docBlock, $this->parsedClass->getDocBlock());
     }
-
-    public function testHasAnnotationReturnsTrueWhenAnnotationPresent(): void
-    {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('test');
-        static::assertTrue($hasAnnotation);
-    }
-
-    public function testHasAnnotationReturnsFalseWhenAnnotationNotPresent(): void
-    {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('pizza');
-        static::assertFalse($hasAnnotation);
-    }
-
-    public function testHasAnnotationReturnsTrueWhenAnnotationAndValueMatch(): void
-    {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group1');
-        static::assertTrue($hasAnnotation);
-    }
-
-    public function testHasAnnotationReturnsFalseWhenAnnotationAndValueDontMatch(): void
-    {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group2');
-        static::assertFalse($hasAnnotation);
-    }
 }

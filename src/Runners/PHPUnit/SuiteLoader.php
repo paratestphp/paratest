@@ -30,6 +30,7 @@ use function preg_match;
 use function sprintf;
 use function strrpos;
 use function substr;
+use function trim;
 use function version_compare;
 
 use const PHP_VERSION;
@@ -103,11 +104,11 @@ final class SuiteLoader
      *
      * @throws RuntimeException
      */
-    public function load(?string $path = null): void
+    public function load(): void
     {
         $this->loadConfiguration();
 
-        if ($path !== null) {
+        if (($path = $this->options->path()) !== null) {
             $this->files = array_merge(
                 $this->files,
                 (new Facade())->getFilesAsArray($path, ['Test.php'])
@@ -214,7 +215,7 @@ final class SuiteLoader
      */
     private function getMethodBatches(ParsedClass $class): array
     {
-        $classMethods = $class->getMethods($this->options->group());
+        $classMethods = $class->getMethods();
         $maxBatchSize = $this->options->functional() ? $this->options->maxBatchSize() : 0;
         assert($maxBatchSize !== null);
 
@@ -341,9 +342,7 @@ final class SuiteLoader
             return true;
         }
 
-        $re       = substr($filter, 0, 1) === '/'
-            ? $filter
-            : '/' . $filter . '/';
+        $re       = '/' . trim($filter, '/') . '/';
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;
@@ -384,7 +383,7 @@ final class SuiteLoader
                     $directory->phpVersionOperator()->asString()
                 )
             ) {
-                continue;
+                continue; // @codeCoverageIgnore
             }
 
             $exclude = [];
@@ -409,7 +408,7 @@ final class SuiteLoader
                     $file->phpVersionOperator()->asString()
                 )
             ) {
-                continue;
+                continue; // @codeCoverageIgnore
             }
 
             $this->files[] = $file->path();

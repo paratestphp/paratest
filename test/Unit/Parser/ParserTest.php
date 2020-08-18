@@ -91,13 +91,13 @@ final class ParserTest extends TestBase
     public function testParsedClassHasCorrectNumberOfTestMethods(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests' . DS . 'UnitTestWithClassAnnotationTest.php'));
-        static::assertCount(4, $class->getMethods([]));
+        static::assertCount(4, $class->getMethods());
     }
 
     public function testParsedClassWithParentHasCorrectNumberOfTestMethods(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests' . DS . 'UnitTestWithErrorTest.php'));
-        static::assertCount(8, $class->getMethods([]));
+        static::assertCount(8, $class->getMethods());
     }
 
     /**
