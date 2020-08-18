@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use Symfony\Component\Process\Process;
 
 use function array_map;
@@ -114,9 +113,9 @@ abstract class ExecutableTest
     /**
      * Generate command line arguments with passed options suitable to handle through paratest.
      *
-     * @param string                $binary   executable binary name
-     * @param array<string, string> $options  command line options
-     * @param string[]|null         $passthru
+     * @param string                     $binary   executable binary name
+     * @param array<string, string|null> $options  command line options
+     * @param string[]|null              $passthru
      *
      * @return string[] command line arguments
      */
@@ -187,9 +186,9 @@ abstract class ExecutableTest
     /**
      * A template method that can be overridden to add necessary options for a test.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param array<string, string|null> $options
      *
-     * @return array<string, (string|bool|int|Configuration|string[]|null)>
+     * @return array<string, string|null>
      */
     abstract protected function prepareOptions(array $options): array;
 }

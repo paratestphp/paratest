@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
-
 use function array_reduce;
 use function count;
 use function implode;
@@ -69,9 +67,9 @@ final class TestMethod extends ExecutableTest
      * This sets up the --filter switch used to run a single PHPUnit test method.
      * This method also provide escaping for method name to be used as filter regexp.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param array<string, string|null> $options
      *
-     * @return array<string, (string|bool|int|Configuration|string[]|null)>
+     * @return array<string, string|null>
      */
     protected function prepareOptions(array $options): array
     {

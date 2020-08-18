@@ -8,16 +8,26 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Tests\TestBase;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Parser\ParsedObject
+ * @covers \ParaTest\Parser\ParsedFunction
  */
 final class ParsedObjectTest extends TestBase
 {
     /** @var ParsedClass  */
-    protected $parsedClass;
+    private $parsedClass;
+    /** @var string */
+    private $docBlock;
 
     public function setUpTest(): void
     {
-        $this->parsedClass = new ParsedClass("/**\n * @test\n @group group1\n*\\/", 'MyClass', 'My\\Name\\Space');
+        $this->docBlock    = "/**\n * @test\n @group group1\n*\\/";
+        $this->parsedClass = new ParsedClass($this->docBlock, self::class, 'My\\Name\\Space', []);
+    }
+
+    public function testGetters(): void
+    {
+        static::assertSame(self::class, $this->parsedClass->getName());
+        static::assertSame($this->docBlock, $this->parsedClass->getDocBlock());
     }
 
     public function testHasAnnotationReturnsTrueWhenAnnotationPresent(): void

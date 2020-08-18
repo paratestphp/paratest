@@ -95,19 +95,6 @@ final class OptionsTest extends TestBase
         static::assertEquals([$this->unfiltered['--group']], $this->options->group());
     }
 
-    public function testAnnotationsReturnsAnnotations(): void
-    {
-        static::assertCount(1, $this->options->annotations());
-        static::assertEquals('group1', $this->options->annotations()['group']);
-    }
-
-    public function testAnnotationsDefaultsToEmptyArray(): void
-    {
-        $options = $this->createOptionsFromArgv([]);
-
-        static::assertEmpty($options->annotations());
-    }
-
     public function testHalfProcessesMode(): void
     {
         $options = $this->createOptionsFromArgv(['--processes' => 'half']);

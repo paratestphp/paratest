@@ -50,7 +50,9 @@ final class CoverageMerger
         if (! is_file($coverageFile) || filesize($coverageFile) === 0) {
             $extra = 'This means a PHPUnit process has crashed.';
             if (! (new Runtime())->canCollectCodeCoverage()) {
+                // @codeCoverageIgnoreStart
                 $extra = 'No coverage driver found! Enable one of Xdebug, PHPDBG or PCOV for coverage.';
+                // @codeCoverageIgnoreEnd
             }
 
             throw new RuntimeException("Coverage file {$coverageFile} is empty. " . $extra);

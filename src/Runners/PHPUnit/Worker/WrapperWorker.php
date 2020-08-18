@@ -50,7 +50,7 @@ final class WrapperWorker extends BaseWorker
     }
 
     /**
-     * @param array<string, string> $phpunitOptions
+     * @param array<string, string|null> $phpunitOptions
      */
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {

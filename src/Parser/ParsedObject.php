@@ -10,10 +10,10 @@ use function sprintf;
 abstract class ParsedObject
 {
     /** @var string */
-    protected $docBlock;
+    protected $name;
 
     /** @var string */
-    protected $name;
+    private $docBlock;
 
     public function __construct(string $doc, string $name)
     {

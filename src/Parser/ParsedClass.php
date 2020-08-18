@@ -6,7 +6,6 @@ namespace ParaTest\Parser;
 
 use function array_filter;
 use function count;
-use function explode;
 
 /**
  * @method class-string getName()
@@ -30,7 +29,7 @@ final class ParsedClass extends ParsedObject
     /**
      * @param ParsedFunction[] $methods
      */
-    public function __construct(string $doc, string $name, string $namespace, array $methods = [])
+    public function __construct(string $doc, string $name, string $namespace, array $methods)
     {
         parent::__construct($doc, $name);
         $this->namespace = $namespace;
@@ -42,25 +41,32 @@ final class ParsedClass extends ParsedObject
      * optionally filtering on annotations present
      * on a method.
      *
-     * @param array<string, string> $annotations
+     * @param string[] $groups
      *
      * @return ParsedFunction[]
      */
-    public function getMethods(array $annotations = []): array
+    public function getMethods(array $groups): array
     {
-        $methods = array_filter($this->methods, static function (ParsedFunction $method) use ($annotations): bool {
-            foreach ($annotations as $a => $v) {
-                foreach (explode(',', $v) as $subValue) {
-                    if ($method->hasAnnotation($a, $subValue)) {
-                        return true;
-                    }
+        if (count($groups) === 0) {
+            return $this->methods;
+        }
+
+        $groupAnnotation = 'group';
+        foreach ($groups as $group) {
+            if ($this->hasAnnotation($groupAnnotation, $group)) {
+                return $this->methods;
+            }
+        }
+
+        return array_filter($this->methods, static function (ParsedFunction $method) use ($groupAnnotation, $groups): bool {
+            foreach ($groups as $group) {
+                if ($method->hasAnnotation($groupAnnotation, $group)) {
+                    return true;
                 }
             }
 
             return false;
         });
-
-        return count($methods) > 0 ? $methods : $this->methods;
     }
 
     /**

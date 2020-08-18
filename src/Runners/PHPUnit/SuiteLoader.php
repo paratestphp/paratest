@@ -215,7 +215,7 @@ final class SuiteLoader
      */
     private function getMethodBatches(ParsedClass $class): array
     {
-        $classMethods = $class->getMethods($this->options->annotations());
+        $classMethods = $class->getMethods($this->options->group());
         $maxBatchSize = $this->options->functional() ? $this->options->maxBatchSize() : 0;
         assert($maxBatchSize !== null);
 

@@ -38,7 +38,10 @@ final class SqliteRunner extends BaseWrapperRunner
     {
         parent::__construct($opts, $output);
 
-        $this->dbFileName = (string) ($opts->filtered()['database'] ?? tempnam($opts->tmpDir(), 'paratest_db_'));
+        $dbFileName = tempnam($opts->tmpDir(), 'paratest_db_');
+        assert($dbFileName !== false);
+
+        $this->dbFileName = $dbFileName;
         $this->db         = new PDO('sqlite:' . $this->dbFileName);
     }
 

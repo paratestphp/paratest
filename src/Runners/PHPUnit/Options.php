@@ -24,7 +24,6 @@ use function fgets;
 use function file_exists;
 use function file_get_contents;
 use function implode;
-use function in_array;
 use function intdiv;
 use function is_dir;
 use function is_file;
@@ -96,7 +95,7 @@ final class Options
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options.
      *
-     * @var array<string, string>
+     * @var array<string, string|null>
      */
     private $filtered;
 
@@ -127,14 +126,6 @@ final class Options
 
     /** @var string[] */
     private $excludeGroup;
-
-    /**
-     * A collection of option values directly corresponding
-     * to certain annotations - i.e group.
-     *
-     * @var array<string, string>
-     */
-    private $annotations = [];
 
     /**
      * Running the suite defined in the config in parallel.
@@ -195,16 +186,14 @@ final class Options
     private $tmpDir;
 
     /**
-     * @param array<string, string> $annotations
-     * @param array<string, string> $filtered
-     * @param string[]              $testsuite
-     * @param string[]              $group
-     * @param string[]              $excludeGroup
-     * @param string[]|null         $passthru
-     * @param string[]|null         $passthruPhp
+     * @param array<string, string|null> $filtered
+     * @param string[]                   $testsuite
+     * @param string[]                   $group
+     * @param string[]                   $excludeGroup
+     * @param string[]|null              $passthru
+     * @param string[]|null              $passthruPhp
      */
     private function __construct(
-        array $annotations,
         ?string $bootstrap,
         bool $colors,
         ?Configuration $configuration,
@@ -236,7 +225,6 @@ final class Options
         int $verbose,
         ?string $whitelist
     ) {
-        $this->annotations       = $annotations;
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
         $this->configuration     = $configuration;
@@ -331,10 +319,7 @@ final class Options
             $filtered['exclude-group'] = implode(',', $excludeGroup);
         }
 
-        $annotations = self::initAnnotations($filtered);
-
         return new self(
-            $annotations,
             $options['bootstrap'],
             $options['colors'],
             $configuration,
@@ -654,29 +639,6 @@ final class Options
     }
 
     /**
-     * Load options that are represented by annotations
-     * inside of tests i.e @group group1 = --group group1.
-     *
-     * @param array<string, string> $filtered
-     *
-     * @return array<string, string>
-     */
-    private static function initAnnotations(array $filtered): array
-    {
-        $annotations      = [];
-        $annotatedOptions = ['group'];
-        foreach ($filtered as $key => $value) {
-            if (! in_array($key, $annotatedOptions, true)) {
-                continue;
-            }
-
-            $annotations[$key] = $value;
-        }
-
-        return $annotations;
-    }
-
-    /**
      * Return number of (logical) CPU cores, use 2 as fallback.
      *
      * Used to set number of processes if argument is set to "auto", allows for portable defaults for doc and scripting.
@@ -767,7 +729,7 @@ final class Options
         return $this->stopOnFailure;
     }
 
-    /** @return array<string, string> */
+    /** @return array<string, string|null> */
     public function filtered(): array
     {
         return $this->filtered;
@@ -814,12 +776,6 @@ final class Options
     public function excludeGroup(): array
     {
         return $this->excludeGroup;
-    }
-
-    /** @return array<string, string> */
-    public function annotations(): array
-    {
-        return $this->annotations;
     }
 
     public function parallelSuite(): bool
