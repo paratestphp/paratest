@@ -25,6 +25,8 @@ abstract class ResultTester extends TestBase
     protected $dataProviderSuite;
     /** @var Suite */
     protected $errorSuite;
+    /** @var Suite */
+    protected $skipped;
 
     final public function setUpTest(): void
     {
@@ -32,6 +34,7 @@ abstract class ResultTester extends TestBase
         $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);
         $this->failureSuite      = $this->getSuiteWithResult('single-wfailure.xml', 3);
         $this->mixedSuite        = $this->getSuiteWithResult('mixed-results.xml', 7);
+        $this->skipped           = $this->getSuiteWithResult('single-skipped.xml', 1);
         $this->passingSuite      = $this->getSuiteWithResult('single-passing.xml', 3);
         $this->dataProviderSuite = $this->getSuiteWithResult('data-provider-result.xml', 50);
 

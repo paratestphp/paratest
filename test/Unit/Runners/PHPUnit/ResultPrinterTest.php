@@ -10,16 +10,16 @@ use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\Unit\ResultTester;
+use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function defined;
-use function file_exists;
 use function file_put_contents;
 use function sprintf;
-use function unlink;
+use function uniqid;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Runners\PHPUnit\ResultPrinter
  */
 final class ResultPrinterTest extends ResultTester
 {
@@ -43,17 +43,8 @@ final class ResultPrinterTest extends ResultTester
         $this->output      = new BufferedOutput();
         $this->options     = $this->createOptionsFromArgv([]);
         $this->printer     = new ResultPrinter($this->interpreter, $this->output, $this->options);
-        $pathToConfig      = $this->getPathToConfig();
-        if (file_exists($pathToConfig)) {
-            unlink($pathToConfig);
-        }
 
         $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);
-    }
-
-    private function getPathToConfig(): string
-    {
-        return __DIR__ . DS . 'phpunit-myconfig.xml';
     }
 
     public function testConstructor(): void
@@ -117,7 +108,8 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void
     {
-        $pathToConfig = $this->getPathToConfig();
+        $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
+
         file_put_contents($pathToConfig, '<root />');
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--configuration' => $pathToConfig]));
         $contents      = $this->getStartOutput();
@@ -351,6 +343,74 @@ final class ResultPrinterTest extends ResultTester
         }
 
         static::assertSame($expected, $feedback);
+    }
+
+    public function testColors(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->mixedSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->mixedSuite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('FAILURES', $this->output->fetch());
+    }
+
+    public function testColorsForSkipped(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->skipped);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->skipped);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('OK', $this->output->fetch());
+    }
+
+    public function testColorsForPassing(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->passingSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->passingSuite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('OK', $this->output->fetch());
+    }
+
+    /**
+     * This test ensure Code Coverage over printSkippedAndIncomplete
+     * but the real case for this test case is missing at the time of writing
+     *
+     * @see \ParaTest\Runners\PHPUnit\ResultPrinter::printSkippedAndIncomplete
+     */
+    public function testParallelSuiteProgressOverhead(): void
+    {
+        $suite = $this->getSuiteWithResult('mixed-results.xml', 100);
+        $this->printer->addTest($suite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($suite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('FAILURES', $this->output->fetch());
+    }
+
+    public function testEmptyLogFileRaiseExceptionWithLastCommand(): void
+    {
+        $test = new ExecutableTestChild(uniqid(), false, TMP_DIR);
+        $test->setLastCommand(uniqid());
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches(sprintf('/%s/', $test->getLastCommand()));
+
+        $this->printer->printFeedback($test);
     }
 
     private function getStartOutput(): string

@@ -152,15 +152,6 @@ final class ResultPrinter
      * Prints all results and removes any log files
      * used for aggregating results.
      */
-    public function flush(): void
-    {
-        $this->printResults();
-        $this->clearLogs();
-    }
-
-    /**
-     * Print final results.
-     */
     public function printResults(): void
     {
         $this->output->write($this->getHeader());
@@ -505,16 +496,5 @@ final class ResultPrinter
         }
 
         return $text;
-    }
-
-    /**
-     * Deletes all the temporary log files for ExecutableTest objects
-     * being printed.
-     */
-    private function clearLogs(): void
-    {
-        foreach ($this->suites as $suite) {
-            $suite->deleteFile();
-        }
     }
 }

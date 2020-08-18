@@ -88,8 +88,15 @@ abstract class ExecutableTest
      */
     final public function deleteFile(): void
     {
-        $outputFile = $this->getTempFile();
-        unlink($outputFile);
+        if ($this->temp !== null) {
+            unlink($this->temp);
+        }
+
+        if ($this->coverageFileName === null) {
+            return;
+        }
+
+        unlink($this->coverageFileName);
     }
 
     /**
