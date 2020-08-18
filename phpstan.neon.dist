@@ -70,8 +70,11 @@ parameters:
     
         # Known errors
         - "#^Variable property access on .+$#"
-        - "#^Variable method call on .+$#"
         - "#^.+ has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
+        -
+            message: "#^Method ParaTest\\\\Tests\\\\TestBase\\:\\:setUpTest\\(\\) is not final, but since the containing class is abstract, it should be\\.$#"
+            count: 1
+            path: test/TestBase.php
         -
             message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
             count: 2

@@ -123,6 +123,8 @@ final class RunnerIntegrationTest extends TestBase
         $suites   = $doc->xpath('//testsuite');
         $cases    = $doc->xpath('//testcase');
         $failures = $doc->xpath('//failure');
+        $warnings = $doc->xpath('//warning');
+        $skipped  = $doc->xpath('//skipped');
         $errors   = $doc->xpath('//error');
 
         // these numbers represent the tests in fixtures/failing-tests
@@ -130,10 +132,14 @@ final class RunnerIntegrationTest extends TestBase
         static::assertNotFalse($suites);
         static::assertCount(6, $suites);
         static::assertNotFalse($cases);
-        static::assertCount(16, $cases);
+        static::assertCount(24, $cases);
         static::assertNotFalse($failures);
         static::assertCount(6, $failures);
+        static::assertNotFalse($warnings);
+        static::assertCount(2, $warnings);
+        static::assertNotFalse($skipped);
+        static::assertCount(4, $skipped);
         static::assertNotFalse($errors);
-        static::assertCount(1, $errors);
+        static::assertCount(3, $errors);
     }
 }

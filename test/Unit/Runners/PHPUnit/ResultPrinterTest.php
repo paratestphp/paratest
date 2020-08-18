@@ -58,7 +58,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testConstructor(): void
     {
-        static::assertEquals([], $this->getObjectValue($this->printer, 'suites'));
+        static::assertSame([], $this->getObjectValue($this->printer, 'suites'));
         static::assertInstanceOf(
             LogInterpreter::class,
             $this->getObjectValue($this->printer, 'results')
@@ -71,7 +71,7 @@ final class ResultPrinterTest extends ResultTester
 
         $this->printer->addTest($suite);
 
-        static::assertEquals([$suite], $this->getObjectValue($this->printer, 'suites'));
+        static::assertSame([$suite], $this->getObjectValue($this->printer, 'suites'));
     }
 
     public function testAddTestReturnsSelf(): void
@@ -105,14 +105,14 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->addTest($suite);
         $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
-        static::assertEquals(3, $numTestsWidth);
+        static::assertSame(3, $numTestsWidth);
         $maxExpectedColumun = 63;
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $maxExpectedColumun -= 1;
         }
 
         $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
-        static::assertEquals($maxExpectedColumun, $maxColumn);
+        static::assertSame($maxExpectedColumun, $maxColumn);
     }
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void
@@ -157,14 +157,14 @@ final class ResultPrinterTest extends ResultTester
             new TestMethod('funcTwo', [], false),
         ], false);
         $this->printer->addTest($suite);
-        static::assertEquals(2, $this->printer->getTotalCases());
+        static::assertSame(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
         $method = new TestMethod('/path', ['testThisMethod'], false);
         $this->printer->addTest($method);
-        static::assertEquals(1, $this->printer->getTotalCases());
+        static::assertSame(1, $this->printer->getTotalCases());
     }
 
     public function testGetHeader(): void
@@ -198,7 +198,7 @@ final class ResultPrinterTest extends ResultTester
         $eq .= "Exception: Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
 
-        static::assertEquals($eq, $errors);
+        static::assertSame($eq, $errors);
     }
 
     public function testGetErrorsMultipleErrors(): void
@@ -218,7 +218,7 @@ final class ResultPrinterTest extends ResultTester
         $eq .= "Exception: Another Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php:12\n";
 
-        static::assertEquals($eq, $errors);
+        static::assertSame($eq, $errors);
     }
 
     public function testGetFailures(): void
@@ -229,15 +229,18 @@ final class ResultPrinterTest extends ResultTester
 
         $failures = $this->printer->getFailures();
 
-        $eq  = "There were 2 failures:\n\n";
-        $eq .= "1) UnitTestWithClassAnnotationTest::testFalsehood\n";
+        $eq  = "There were 3 failures:\n\n";
+        $eq .= "1) Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20\n";
-        $eq .= "\n2) UnitTestWithMethodAnnotationsTest::testFalsehood\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php:32\n";
+        $eq .= "\n2) UnitTestWithErrorTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20\n";
+        $eq .= "\n3) UnitTestWithMethodAnnotationsTest::testFalsehood\n";
+        $eq .= "Failed asserting that true is false.\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20\n";
 
-        static::assertEquals($eq, $failures);
+        static::assertSame($eq, $failures);
     }
 
     public function testGetFooterWithFailures(): void
@@ -250,9 +253,9 @@ final class ResultPrinterTest extends ResultTester
         $footer = $this->printer->getFooter();
 
         $eq  = "\nFAILURES!\n";
-        $eq .= "Tests: 8, Assertions: 6, Failures: 2, Errors: 2.\n";
+        $eq .= "Tests: 20, Assertions: 10, Failures: 3, Errors: 4.\n";
 
-        static::assertEquals($eq, $footer);
+        static::assertSame($eq, $footer);
     }
 
     public function testGetFooterWithSuccess(): void
@@ -265,7 +268,7 @@ final class ResultPrinterTest extends ResultTester
 
         $eq = "OK (3 tests, 3 assertions)\n";
 
-        static::assertEquals($eq, $footer);
+        static::assertSame($eq, $footer);
     }
 
     public function testPrintFeedbackForMixed(): void
@@ -273,7 +276,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->addTest($this->mixedSuite);
         $this->printer->printFeedback($this->mixedSuite);
         $contents = $this->output->fetch();
-        static::assertEquals('.F.E.F.', $contents);
+        static::assertSame('.F..E.F.WSSE.F.WSSE', $contents);
     }
 
     public function testPrintFeedbackForMoreThan100Suites(): void
@@ -310,7 +313,7 @@ final class ResultPrinterTest extends ResultTester
             $expected .= '.';
         }
 
-        static::assertEquals($expected, $feedback);
+        static::assertSame($expected, $feedback);
     }
 
     public function testResultPrinterAdjustsTotalCountForDataProviders(): void
@@ -347,7 +350,7 @@ final class ResultPrinterTest extends ResultTester
             $expected .= '.';
         }
 
-        static::assertEquals($expected, $feedback);
+        static::assertSame($expected, $feedback);
     }
 
     private function getStartOutput(): string

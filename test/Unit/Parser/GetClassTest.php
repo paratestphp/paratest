@@ -58,7 +58,7 @@ final class GetClassTest extends TestBase
     public function testParsedClassWithParentHasCorrectNumberOfTestMethods(): void
     {
         $class = $this->parseFile($this->fixture('failing-tests/UnitTestWithErrorTest.php'));
-        static::assertCount(4, $class->getMethods());
+        static::assertCount(8, $class->getMethods());
     }
 
     /**

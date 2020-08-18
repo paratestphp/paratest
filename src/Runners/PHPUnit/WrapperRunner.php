@@ -151,8 +151,10 @@ final class WrapperRunner extends BaseWrapperRunner
         if ($this->hasCoverage()) {
             $coverageMerger = $this->getCoverage();
             assert($coverageMerger !== null);
+            $coverageFileName = $worker->getCoverageFileName();
+            assert($coverageFileName !== null);
 
-            $coverageMerger->addCoverageFromFile($worker->getCoverageFileName());
+            $coverageMerger->addCoverageFromFile($coverageFileName);
         }
 
         $worker->printFeedback($this->printer);

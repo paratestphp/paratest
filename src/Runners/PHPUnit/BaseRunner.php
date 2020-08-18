@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Coverage\CoverageMerger;
+use ParaTest\Coverage\CoverageReporter;
 use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -112,7 +113,9 @@ abstract class BaseRunner implements RunnerInterface
 
         $coverageMerger = $this->getCoverage();
         assert($coverageMerger !== null);
-        $reporter = $coverageMerger->getReporter();
+        $codeCoverage = $coverageMerger->getCodeCoverageObject();
+        assert($codeCoverage !== null);
+        $reporter = new CoverageReporter($codeCoverage);
 
         if (($coverageClover = $this->options->coverageClover()) !== null) {
             $reporter->clover($coverageClover);

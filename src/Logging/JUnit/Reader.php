@@ -9,7 +9,6 @@ use ParaTest\Logging\MetaProvider;
 use SimpleXMLElement;
 
 use function array_merge;
-use function array_reduce;
 use function assert;
 use function count;
 use function current;
@@ -18,7 +17,7 @@ use function file_get_contents;
 use function filesize;
 use function unlink;
 
-final class Reader extends MetaProvider
+final class Reader implements MetaProvider
 {
     /** @var SimpleXMLElement */
     private $xml;
@@ -236,38 +235,85 @@ final class Reader extends MetaProvider
         }
     }
 
-    /**
-     * Return a value as a float or integer.
-     *
-     * @return float|int
-     */
-    protected function getNumericValue(string $property)
+    public function getTotalTests(): int
     {
-        return $property === 'time'
-            ? (float) $this->suites[0]->$property
-            : (int) $this->suites[0]->$property;
+        return $this->suites[0]->tests;
+    }
+
+    public function getTotalAssertions(): int
+    {
+        return $this->suites[0]->assertions;
+    }
+
+    public function getTotalFailures(): int
+    {
+        return $this->suites[0]->failures;
+    }
+
+    public function getTotalErrors(): int
+    {
+        return $this->suites[0]->errors;
+    }
+
+    public function getTotalWarning(): int
+    {
+        return $this->suites[0]->warnings;
+    }
+
+    public function getTotalTime(): float
+    {
+        return $this->suites[0]->time;
     }
 
     /**
-     * Return messages for a given type.
-     *
-     * @return string[]
+     * {@inheritDoc}
      */
-    protected function getMessages(string $type): array
+    public function getErrors(): array
     {
         $messages = [];
         $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach ($suites as $suite) {
-            $messages = array_merge(
-                $messages,
-                array_reduce($suite->cases, static function (array $result, TestCase $case) use ($type): array {
-                    return array_merge($result, array_reduce($case->$type, static function (array $msgs, array $msg): array {
-                        $msgs[] = $msg['text'];
+            foreach ($suite->cases as $case) {
+                foreach ($case->errors as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
+        }
 
-                        return $msgs;
-                    }, []));
-                }, [])
-            );
+        return $messages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getWarnings(): array
+    {
+        $messages = [];
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach ($suites as $suite) {
+            foreach ($suite->cases as $case) {
+                foreach ($case->warnings as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
+        }
+
+        return $messages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFailures(): array
+    {
+        $messages = [];
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach ($suites as $suite) {
+            foreach ($suite->cases as $case) {
+                foreach ($case->failures as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
         }
 
         return $messages;
