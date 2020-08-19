@@ -63,10 +63,6 @@ parameters:
             message: "#^Should not use function \"proc_open\", please change the code\\.$#"
             count: 1
             path: src/Runners/PHPUnit/Worker/BaseWorker.php
-        -
-            message: "#^Should not use function \"proc_open\", please change the code\\.$#"
-            count: 1
-            path: test/Functional/Runners/PHPUnit/WorkerTest.php
     
         # Known errors
         - "#^Variable property access on .+$#"

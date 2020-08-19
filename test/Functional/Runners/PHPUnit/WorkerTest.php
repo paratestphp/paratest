@@ -6,16 +6,14 @@ namespace ParaTest\Tests\Functional\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
+use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use ParaTest\Tests\TestBase;
-use ReflectionProperty;
 use SimpleXMLElement;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function count;
 use function file_get_contents;
-use function get_class;
-use function proc_get_status;
-use function proc_open;
+use function uniqid;
 
 /**
  * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
@@ -112,42 +110,13 @@ final class WorkerTest extends TestBase
     {
         // fake state: process has already exited (with non-zero exit code) but worker did not yet notice
         $worker = new WrapperWorker($this->output);
-        $this->setPerReflection($worker, 'proc', $this->createSomeClosedProcess());
-        $this->setPerReflection($worker, 'pipes', [0 => true]);
-        static::assertTrue($worker->isCrashed());
-    }
+        $worker->start(uniqid('thisCommandHasAnExitcodeNotEqualZero'), $this->createOptionsFromArgv([]), 1);
+        $worker->waitForStop();
 
-    /**
-     * @return resource
-     */
-    private function createSomeClosedProcess()
-    {
-        $descriptorspec = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ];
+        static::expectException(WorkerCrashedException::class);
+        static::expectExceptionMessageMatches('/thisCommandHasAnExitcodeNotEqualZero/');
 
-        $proc = proc_open('thisCommandHasAnExitcodeNotEqualZero', $descriptorspec, $pipes, '/tmp');
-        static::assertIsResource($proc);
-        $running = true;
-        while ($running) {
-            $status = proc_get_status($proc);
-            static::assertNotFalse($status);
-            $running = $status['running'];
-        }
-
-        return $proc;
-    }
-
-    /**
-     * @param mixed $value
-     */
-    private function setPerReflection(object $instance, string $property, $value): void
-    {
-        $reflectionProperty = new ReflectionProperty(get_class($instance), $property);
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($instance, $value);
+        $worker->checkNotCrashed();
     }
 
     public function testCanExecuteMultiplePHPUnitCommands(): void

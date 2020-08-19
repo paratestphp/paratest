@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\Options;
-use RuntimeException;
+use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
@@ -125,17 +125,8 @@ abstract class BaseWorker
         return $status !== false ? $status['running'] : false;
     }
 
-    final public function isStarted(): bool
+    final public function checkNotCrashed(): void
     {
-        return $this->proc !== null && $this->pipes !== [];
-    }
-
-    final public function isCrashed(): bool
-    {
-        if (! $this->isStarted()) {
-            return false;
-        }
-
         assert($this->proc !== null);
         $status = proc_get_status($this->proc);
         assert($status !== false);
@@ -143,18 +134,11 @@ abstract class BaseWorker
         $this->updateStateFromAvailableOutput();
 
         $this->setExitCode($status['running'], $status['exitcode']);
-        if ($this->exitCode === null) {
-            return false;
+        if ($this->exitCode === null || $this->exitCode === 0) {
+            return;
         }
 
-        return $this->exitCode !== 0;
-    }
-
-    final public function checkNotCrashed(): void
-    {
-        if ($this->isCrashed()) {
-            throw new RuntimeException($this->getCrashReport());
-        }
+        throw new WorkerCrashedException($this->getCrashReport());
     }
 
     final public function getCrashReport(): string
