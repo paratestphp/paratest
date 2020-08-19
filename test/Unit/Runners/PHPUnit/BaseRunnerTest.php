@@ -2,56 +2,35 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Tests\Functional\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Tests\TestBase;
-use Symfony\Component\Console\Output\BufferedOutput;
 
 use function assert;
 use function count;
 use function glob;
 use function simplexml_load_file;
-use function unlink;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Runners\PHPUnit\BaseRunner
  */
-final class RunnerIntegrationTest extends TestBase
+final class BaseRunnerTest extends TestBase
 {
-    /** @var Runner $runner */
-    private $runner;
-    /** @var BufferedOutput */
-    private $output;
-    /** @var array<string, string> */
-    private $bareOptions;
-    /** @var Options */
-    private $options;
-
     protected function setUpTest(): void
     {
         static::skipIfCodeCoverageNotEnabled();
 
-        $testcoverageFiles = TMP_DIR . DS . 'coverage-runner-integration*';
-        $glob              = glob($testcoverageFiles);
-        assert($glob !== false);
-        foreach ($glob as $file) {
-            unlink($file);
-        }
-
         $this->bareOptions = [
             '--path' => FIXTURES . DS . 'failing-tests',
-            '--phpunit' => PHPUNIT,
-            '--coverage-clover' => TMP_DIR . DS . 'coverage-runner-integration.clover',
-            '--coverage-crap4j' => TMP_DIR . DS . 'coverage-runner-integration.crap4j',
-            '--coverage-php' => TMP_DIR . DS . 'coverage-runner-integration.php',
+            '--coverage-clover' => TMP_DIR . DS . 'coverage.clover',
+            '--coverage-crap4j' => TMP_DIR . DS . 'coverage.crap4j',
+            '--coverage-html' => TMP_DIR . DS . 'coverage.html',
+            '--coverage-php' => TMP_DIR . DS . 'coverage.php',
+            '--coverage-text' => true,
+            '--coverage-xml' => TMP_DIR . DS . 'coverage.xml',
             '--bootstrap' => BOOTSTRAP,
             '--whitelist' => FIXTURES . DS . 'failing-tests',
         ];
-        $this->options     = $this->createOptionsFromArgv($this->bareOptions);
-        $this->output      = new BufferedOutput();
-        $this->runner      = new Runner($this->options, $this->output);
     }
 
     /**
@@ -67,33 +46,42 @@ final class RunnerIntegrationTest extends TestBase
 
     public function testGeneratesCoverageTypes(): void
     {
-        static::assertFileDoesNotExist($this->bareOptions['--coverage-clover']);
-        static::assertFileDoesNotExist($this->bareOptions['--coverage-crap4j']);
-        static::assertFileDoesNotExist($this->bareOptions['--coverage-php']);
+        static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-clover']);
+        static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-crap4j']);
+        static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-html']);
+        static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-php']);
+        static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-xml']);
 
-        $this->runner->run();
+        $runnerResult = $this->runRunner();
 
-        static::assertFileExists($this->bareOptions['--coverage-clover']);
-        static::assertFileExists($this->bareOptions['--coverage-crap4j']);
-        static::assertFileExists($this->bareOptions['--coverage-php']);
+        static::assertFileExists((string) $this->bareOptions['--coverage-clover']);
+        static::assertFileExists((string) $this->bareOptions['--coverage-crap4j']);
+        static::assertFileExists((string) $this->bareOptions['--coverage-html']);
+        static::assertFileExists((string) $this->bareOptions['--coverage-php']);
+        static::assertFileExists((string) $this->bareOptions['--coverage-xml']);
+
+        static::assertStringContainsString('Code Coverage Report:', $runnerResult->getOutput());
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles(): void
     {
+        // Needed for one line coverage on early exit CS Fix :\
+        unset($this->bareOptions['--coverage-php']);
+
         $countBefore         = count($this->globTempDir('PT_*'));
         $countCoverageBefore = count($this->globTempDir('CV_*'));
 
-        $this->runner->run();
+        $this->runRunner();
 
         $countAfter         = count($this->globTempDir('PT_*'));
         $countCoverageAfter = count($this->globTempDir('CV_*'));
 
-        static::assertEquals(
+        static::assertSame(
             $countAfter,
             $countBefore,
             "Test Runner failed to clean up the 'PT_*' file in " . TMP_DIR
         );
-        static::assertEquals(
+        static::assertSame(
             $countCoverageAfter,
             $countCoverageBefore,
             "Test Runner failed to clean up the 'CV_*' file in " . TMP_DIR
@@ -102,17 +90,14 @@ final class RunnerIntegrationTest extends TestBase
 
     public function testLogJUnitCreatesXmlFile(): void
     {
-        $outputPath = FIXTURES . DS . 'logs' . DS . 'test-output.xml';
+        $outputPath = TMP_DIR . DS . 'test-output.xml';
 
         $this->bareOptions['--log-junit'] = $outputPath;
 
-        $runner = new Runner($this->createOptionsFromArgv($this->bareOptions), $this->output);
-
-        $runner->run();
+        $this->runRunner();
 
         static::assertFileExists($outputPath);
         $this->assertJunitXmlIsCorrect($outputPath);
-        unlink($outputPath);
     }
 
     public function assertJunitXmlIsCorrect(string $path): void

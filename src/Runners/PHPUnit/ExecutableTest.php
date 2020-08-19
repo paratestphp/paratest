@@ -126,7 +126,7 @@ abstract class ExecutableTest
      *
      * @return string[] command line arguments
      */
-    final public function commandArguments(string $binary, array $options = [], ?array $passthru = null): array
+    final public function commandArguments(string $binary, array $options, ?array $passthru): array
     {
         $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         if ($this->needsCoverage) {

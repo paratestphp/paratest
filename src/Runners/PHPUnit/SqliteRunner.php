@@ -130,7 +130,8 @@ final class SqliteRunner extends BaseWrapperRunner
                 ->execute([
                     ':command' => serialize($test->commandArguments(
                         $this->options->phpunit(),
-                        $this->options->filtered()
+                        $this->options->filtered(),
+                        $this->options->passthru()
                     )),
                     ':fileName' => $fileName,
                 ]);
@@ -147,7 +148,14 @@ final class SqliteRunner extends BaseWrapperRunner
         $tests = $stmt->fetchAll();
         assert($tests !== false);
         foreach ($tests as $test) {
-            $this->printer->printFeedback($this->pending[$test['file_name']]);
+            $executableTest = $this->pending[$test['file_name']];
+            if ($this->hasCoverage()) {
+                $coverageMerger = $this->getCoverage();
+                assert($coverageMerger !== null);
+                $coverageMerger->addCoverageFromFile($executableTest->getCoverageFileName());
+            }
+
+            $this->printer->printFeedback($executableTest);
             $this->db->prepare('DELETE FROM tests WHERE id = :id')->execute([
                 'id' => $test['id'],
             ]);
@@ -172,7 +180,7 @@ final class SqliteRunner extends BaseWrapperRunner
             return implode(' ', array_map('escapeshellarg', unserialize($serializedCommand)));
         }, $commands);
 
-        throw new RuntimeException(
+        throw new WorkerCrashedException(
             'Some workers have crashed.' . PHP_EOL
             . '----------------------' . PHP_EOL
             . 'All workers have quit, but some tests are still to be executed.' . PHP_EOL

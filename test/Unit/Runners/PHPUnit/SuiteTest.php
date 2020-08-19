@@ -23,7 +23,7 @@ final class SuiteTest extends TestBase
         $testMethods = [$testMethod1, $testMethod2];
         $suite       = new Suite($file, $testMethods, false, TMP_DIR);
 
-        $commandArguments = $suite->commandArguments(uniqid());
+        $commandArguments = $suite->commandArguments(uniqid(), [], null);
 
         static::assertNotContains('--filter', $commandArguments);
         static::assertContains($file, $commandArguments);

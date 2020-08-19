@@ -6,6 +6,6 @@ final class UnitTestThatExitsLoudlyTest extends \PHPUnit\Framework\TestCase
 {
     public function testExit(): void
     {
-        exit(1);
+        exit(255);
     }
 }

@@ -6,6 +6,8 @@ namespace ParaTest\Tests;
 
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Tests\Functional\RunnerResult;
 use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
@@ -18,6 +20,7 @@ use ReflectionProperty;
 use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Filesystem;
 
 use function copy;
@@ -31,6 +34,11 @@ use function uniqid;
 
 abstract class TestBase extends PHPUnit\Framework\TestCase
 {
+    /** @var class-string<RunnerInterface> */
+    protected $runnerClass = Runner::class;
+    /** @var array<string, string|bool|int> */
+    protected $bareOptions = [];
+
     final protected function setUp(): void
     {
         $glob = glob(TMP_DIR . DS . '*');
@@ -56,6 +64,21 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         $input = new ArrayInput($argv, $inputDefinition);
 
         return Options::fromConsoleInput($input, $cwd ?? PARATEST_ROOT);
+    }
+
+    final protected function runRunner(?string $runnerClass = null): RunnerResult
+    {
+        if ($runnerClass === null) {
+            $runnerClass = $this->runnerClass;
+        }
+
+        $bareOptions              = $this->bareOptions;
+        $bareOptions['--tmp-dir'] = TMP_DIR;
+        $output                   = new BufferedOutput();
+        $wrapperRunner            = new $runnerClass($this->createOptionsFromArgv($this->bareOptions), $output);
+        $wrapperRunner->run();
+
+        return new RunnerResult($wrapperRunner->getExitCode(), $output->fetch());
     }
 
     final protected function assertTestsPassed(

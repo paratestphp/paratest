@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use Exception;
+use ParaTest\Coverage\EmptyCoverageFileException;
 use ParaTest\Runners\PHPUnit\Worker\RunnerWorker;
-use RuntimeException;
+use PHPUnit\TextUI\TestRunner;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 
 use function array_filter;
 use function array_keys;
@@ -17,13 +17,10 @@ use function array_shift;
 use function assert;
 use function count;
 use function getenv;
-use function sprintf;
 use function usleep;
 
 final class Runner extends BaseRunner
 {
-    private const PHPUNIT_FATAL_ERROR = 255;
-
     /**
      * A collection of ExecutableTest objects that have processes
      * currently running.
@@ -53,21 +50,12 @@ final class Runner extends BaseRunner
     {
         while (count($this->running) > 0 || count($this->pending) > 0) {
             foreach ($this->running as $key => $test) {
-                try {
-                    if (! $this->testIsStillRunning($test)) {
-                        unset($this->running[$key]);
-                        $this->releaseToken($key);
-                    }
-                } catch (Throwable $e) {
-                    if ($this->options->verbose() > 0) {
-                        $this->output->writeln("An error for {$key}: {$e->getMessage()}");
-                        $this->output->writeln("Command: {$test->getExecutableTest()->getLastCommand()}");
-                        $this->output->writeln('StdErr: ' . $test->getStderr());
-                        $this->output->writeln('StdOut: ' . $test->getStdout());
-                    }
-
-                    throw $e;
+                if ($this->testIsStillRunning($test)) {
+                    continue;
                 }
+
+                unset($this->running[$key]);
+                $this->releaseToken($key);
             }
 
             $this->fillRunQueue();
@@ -82,12 +70,11 @@ final class Runner extends BaseRunner
      */
     private function fillRunQueue(): void
     {
-        while (count($this->pending) > 0 && count($this->running) < $this->options->processes()) {
-            $tokenData = $this->getNextAvailableToken();
-            if ($tokenData === false) {
-                continue;
-            }
-
+        while (
+            count($this->pending) > 0
+            && count($this->running) < $this->options->processes()
+            && ($tokenData = $this->getNextAvailableToken()) !== false
+        ) {
             $this->acquireToken($tokenData['token']);
             $env = array_merge(getenv(), $this->options->fillEnvWithTokens($tokenData['token']));
 
@@ -134,19 +121,25 @@ final class Runner extends BaseRunner
         }
 
         $executableTest = $worker->getExecutableTest();
-        if ($worker->getExitCode() === self::PHPUNIT_FATAL_ERROR) {
-            $errorOutput = $worker->getStderr();
-            if ($errorOutput === '') {
-                $errorOutput = $worker->getStdout();
-            }
+        if (
+            $worker->getExitCode() > 0
+            && $worker->getExitCode() !== TestRunner::FAILURE_EXIT
+            && $worker->getExitCode() !== TestRunner::EXCEPTION_EXIT
+        ) {
+            throw new WorkerCrashedException($worker->getCrashReport());
+        }
 
-            throw new RuntimeException(sprintf("Fatal error in %s:\n%s", $executableTest->getPath(), $errorOutput));
+        if ($this->hasCoverage()) {
+            $coverageMerger = $this->getCoverage();
+            assert($coverageMerger !== null);
+            try {
+                $coverageMerger->addCoverageFromFile($executableTest->getCoverageFileName());
+            } catch (EmptyCoverageFileException $emptyCoverageFileException) {
+                throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyCoverageFileException);
+            }
         }
 
         $this->printer->printFeedback($executableTest);
-        if ($this->hasCoverage()) {
-            $this->addCoverage($executableTest);
-        }
 
         return false;
     }
@@ -224,14 +217,6 @@ final class Runner extends BaseRunner
         $keys = array_keys($filtered);
 
         $this->tokens[$keys[0]]['available'] = false;
-    }
-
-    private function addCoverage(ExecutableTest $test): void
-    {
-        $coverageFile   = $test->getCoverageFileName();
-        $coverageMerger = $this->getCoverage();
-        assert($coverageMerger !== null);
-        $coverageMerger->addCoverageFromFile($coverageFile);
     }
 
     protected function beforeLoadChecks(): void

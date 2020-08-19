@@ -19,7 +19,7 @@ final class FullSuiteTest extends TestBase
         $name      = uniqid('Suite_');
         $fullSuite = new FullSuite($name, false, TMP_DIR);
 
-        $commandArguments = $fullSuite->commandArguments(uniqid());
+        $commandArguments = $fullSuite->commandArguments(uniqid(), [], null);
 
         static::assertContains('--testsuite', $commandArguments);
         static::assertContains($name, $commandArguments);

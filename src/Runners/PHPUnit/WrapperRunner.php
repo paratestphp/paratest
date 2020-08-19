@@ -73,7 +73,7 @@ final class WrapperRunner extends BaseWrapperRunner
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $key => $worker) {
                 if (! $worker->isFree()) {
-                    continue;
+                    continue; // @codeCoverageIgnore
                 }
 
                 $this->flushWorker($worker);
@@ -138,7 +138,7 @@ final class WrapperRunner extends BaseWrapperRunner
                 try {
                     $coverageMerger->addCoverageFromFile($coverageFileName);
                 } catch (EmptyCoverageFileException $emptyCoverageFileException) {
-                    throw new RuntimeException($worker->getCrashReport(), 0, $emptyCoverageFileException);
+                    throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyCoverageFileException);
                 }
             }
         }

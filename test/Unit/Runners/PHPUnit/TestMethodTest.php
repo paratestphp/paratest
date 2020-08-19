@@ -19,7 +19,7 @@ final class TestMethodTest extends TestBase
         $file       = uniqid('pathToFile_');
         $testMethod = new TestMethod($file, ['method1', 'method2'], false, TMP_DIR);
 
-        $commandArguments = $testMethod->commandArguments(uniqid());
+        $commandArguments = $testMethod->commandArguments(uniqid(), [], null);
 
         static::assertContains('--filter', $commandArguments);
         static::assertContains($file, $commandArguments);
