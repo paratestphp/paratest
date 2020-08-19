@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use ParaTest\Tests\TestBase;
 use ReflectionProperty;
@@ -23,24 +24,21 @@ use function unlink;
  */
 final class WorkerTest extends TestBase
 {
-    /** @var string[][]  */
-    protected static $descriptorspec = [
-        0 => ['pipe', 'r'],
-        1 => ['pipe', 'w'],
-        2 => ['pipe', 'w'],
-    ];
     /** @var string */
-    protected $bootstrap;
+    private $bootstrap;
     /** @var string */
     private $phpunitWrapper;
     /** @var BufferedOutput */
     private $output;
+    /** @var Options */
+    private $options;
 
     public function setUpTest(): void
     {
         $this->bootstrap      = PARATEST_ROOT . DS . 'test' . DS . 'bootstrap.php';
         $this->phpunitWrapper = PARATEST_ROOT . DS . 'bin' . DS . 'phpunit-wrapper.php';
         $this->output         = new BufferedOutput();
+        $this->options        = $this->createOptionsFromArgv([]);
     }
 
     public function tearDown(): void
@@ -66,7 +64,7 @@ final class WorkerTest extends TestBase
         $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
-        $worker->start($this->phpunitWrapper);
+        $worker->start($this->phpunitWrapper, $this->options, 1);
         $worker->execute($testCmd);
 
         $worker->stop();
@@ -83,7 +81,7 @@ final class WorkerTest extends TestBase
         $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
-        $worker->start($this->phpunitWrapper);
+        $worker->start($this->phpunitWrapper, $this->options, 1);
         $worker->execute($testCmd);
         $worker->waitForFinishedJob();
 
@@ -98,7 +96,7 @@ final class WorkerTest extends TestBase
         $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
-        $worker->start($this->phpunitWrapper);
+        $worker->start($this->phpunitWrapper, $this->options, 1);
         static::assertTrue($worker->isFree());
 
         $worker->execute($testCmd);
@@ -116,7 +114,7 @@ final class WorkerTest extends TestBase
         $worker = new WrapperWorker($this->output);
         static::assertFalse($worker->isRunning());
 
-        $worker->start($this->phpunitWrapper);
+        $worker->start($this->phpunitWrapper, $this->options, 1);
         static::assertTrue($worker->isRunning());
 
         $worker->stop();
@@ -171,10 +169,8 @@ final class WorkerTest extends TestBase
 
     public function testCanExecuteMultiplePHPUnitCommands(): void
     {
-        $bin = 'bin/phpunit-wrapper.php';
-
         $worker = new WrapperWorker($this->output);
-        $worker->start($this->phpunitWrapper);
+        $worker->start($this->phpunitWrapper, $this->options, 1);
 
         $testLog = TMP_DIR . DS . 'test.xml';
         $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);

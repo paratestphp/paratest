@@ -4,20 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use PHPUnit\TextUI\TestRunner;
 use RuntimeException;
 
 abstract class BaseWrapperRunner extends BaseRunner
 {
-    private const PHPUNIT_FAILURES = 1;
-
-    private const PHPUNIT_ERRORS = 2;
-
-    /** @var resource[] */
-    protected $streams = [];
-
-    /** @var resource[] */
-    protected $modified = [];
-
     final protected function beforeLoadChecks(): void
     {
         if ($this->options->functional()) {
@@ -28,38 +19,13 @@ abstract class BaseWrapperRunner extends BaseRunner
         }
     }
 
-    final protected function complete(): void
+    final protected function setExitCode(): void
     {
-        $this->setExitCode();
-        $this->printer->printResults();
-        $this->log();
-        $this->logCoverage();
-        $readers = $this->interpreter->getReaders();
-        foreach ($readers as $reader) {
-            $reader->removeLog();
-        }
-    }
-
-    private function setExitCode(): void
-    {
+        $this->exitcode = TestRunner::SUCCESS_EXIT;
         if ($this->interpreter->getTotalErrors() > 0) {
-            $this->exitcode = self::PHPUNIT_ERRORS;
+            $this->exitcode = TestRunner::EXCEPTION_EXIT;
         } elseif ($this->interpreter->getTotalFailures() > 0) {
-            $this->exitcode = self::PHPUNIT_FAILURES;
-        } else {
-            $this->exitcode = 0;
+            $this->exitcode = TestRunner::FAILURE_EXIT;
         }
     }
-
-    /*
-    private function testIsStillRunning($test)
-    {
-        if(!$test->isDoneRunning()) return true;
-        $this->setExitCode($test);
-        $test->stop();
-        if (static::PHPUNIT_FATAL_ERROR === $test->getExitCode())
-            throw new \Exception($test->getStderr(), $test->getExitCode());
-        return false;
-    }
-     */
 }

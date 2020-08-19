@@ -65,15 +65,6 @@ final class ResultPrinterTest extends ResultTester
         static::assertSame([$suite], $this->getObjectValue($this->printer, 'suites'));
     }
 
-    public function testAddTestReturnsSelf(): void
-    {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false, TMP_DIR);
-
-        $self = $this->printer->addTest($suite);
-
-        static::assertSame($this->printer, $self);
-    }
-
     public function testStartPrintsOptionInfo(): void
     {
         $contents = $this->getStartOutput();
@@ -161,8 +152,8 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetHeader(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->failureSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->failureSuite);
 
         $this->prepareReaders();
 
@@ -178,8 +169,8 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetErrorsSingleError(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->failureSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->failureSuite);
 
         $this->prepareReaders();
 
@@ -195,8 +186,8 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetErrorsMultipleErrors(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->otherErrorSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->otherErrorSuite);
 
         $this->prepareReaders();
 
@@ -237,8 +228,8 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetFooterWithFailures(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->mixedSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->mixedSuite);
 
         $this->prepareReaders();
 

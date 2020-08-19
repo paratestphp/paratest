@@ -36,6 +36,7 @@ use function realpath;
 use function sprintf;
 use function strlen;
 use function sys_get_temp_dir;
+use function uniqid;
 use function unserialize;
 
 use const DIRECTORY_SEPARATOR;
@@ -47,6 +48,9 @@ use const PHP_BINARY;
  */
 final class Options
 {
+    public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
+    public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
+
     /**
      * @see \PHPUnit\Util\Configuration
      * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
@@ -856,5 +860,19 @@ final class Options
     public function whitelist(): ?string
     {
         return $this->whitelist;
+    }
+
+    /**
+     * @return array{PARATEST: int, TEST_TOKEN?: int, UNIQUE_TEST_TOKEN?: string}
+     */
+    public function fillEnvWithTokens(int $inc): array
+    {
+        $env = ['PARATEST' => 1];
+        if (! $this->noTestTokens()) {
+            $env[self::ENV_KEY_TOKEN]        = $inc;
+            $env[self::ENV_KEY_UNIQUE_TOKEN] = uniqid($inc . '_');
+        }
+
+        return $env;
     }
 }

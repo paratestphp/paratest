@@ -10,16 +10,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 use function array_map;
+use function array_merge;
 use function assert;
 use function count;
 use function end;
 use function escapeshellarg;
 use function explode;
-use function fclose;
 use function fread;
 use function getenv;
 use function implode;
-use function is_numeric;
 use function is_resource;
 use function proc_get_status;
 use function proc_open;
@@ -33,12 +32,6 @@ use const PHP_EOL;
 
 abstract class BaseWorker
 {
-    /** @var string[][] */
-    protected static $descriptorspec = [
-        0 => ['pipe', 'r'],
-        1 => ['pipe', 'w'],
-        2 => ['pipe', 'w'],
-    ];
     /** @var resource|null */
     protected $proc;
     /** @var resource[] */
@@ -50,6 +43,12 @@ abstract class BaseWorker
     /** @var string[] */
     protected $commands = [];
 
+    /** @var string[][] */
+    private static $descriptorspec = [
+        0 => ['pipe', 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w'],
+    ];
     /** @var int|null */
     private $exitCode = null;
     /** @var string */
@@ -62,45 +61,32 @@ abstract class BaseWorker
         $this->output = $output;
     }
 
-    /**
-     * @param string[] $parameters
-     */
     final public function start(
         string $wrapperBinary,
-        ?int $token = 1,
-        ?string $uniqueToken = null,
-        array $parameters = [],
-        ?Options $options = null
+        Options $options,
+        int $token
     ): void {
-        $env             = getenv();
-        $env['PARATEST'] = 1;
-        if (is_numeric($token)) {
-            $env['XDEBUG_CONFIG'] = 'true';
-            $env['TEST_TOKEN']    = $token;
-        }
-
-        if ($uniqueToken !== null) {
-            $env['UNIQUE_TEST_TOKEN'] = $uniqueToken;
-        }
+        $env = array_merge(getenv(), $options->fillEnvWithTokens($token));
 
         $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
         assert($phpExecutable !== false);
 
         $bin = escapeshellarg($phpExecutable);
-        if ($options !== null && ($passthruPhp = $options->passthruPhp()) !== null) {
-                $bin .= ' ' . implode(' ', $passthruPhp) . ' ';
+        if (($passthruPhp = $options->passthruPhp()) !== null) {
+            $bin .= ' ' . implode(' ', $passthruPhp) . ' ';
         }
 
         $bin .= ' ' . escapeshellarg($wrapperBinary);
 
+        $parameters = [];
         $this->configureParameters($parameters);
         if (count($parameters) > 0) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
 
         $pipes = [];
-        if ($options !== null && $options->verbose() > 0) {
+        if ($options->verbose() > 0) {
             $this->output->writeln("Starting WrapperWorker via: {$bin}");
         }
 
@@ -182,14 +168,6 @@ abstract class BaseWorker
             . '----------------------' . PHP_EOL
             . $this->readAllStderr();
     }
-
-    final public function stop(): void
-    {
-        $this->doStop();
-        fclose($this->pipes[0]);
-    }
-
-    abstract protected function doStop(): void;
 
     final protected function setExitCode(bool $running, int $exitcode): void
     {

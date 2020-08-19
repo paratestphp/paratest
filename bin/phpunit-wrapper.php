@@ -46,8 +46,7 @@ while (true) {
         exit($lastExitCode);
     }
 
-    $command = rtrim($command);
-    if ($command === 'EXIT') {
+    if ($command === \ParaTest\Runners\PHPUnit\Worker\WrapperWorker::COMMAND_EXIT) {
         echo "EXITED\n";
         exit($lastExitCode);
     }
@@ -57,7 +56,7 @@ while (true) {
     echo "Executing: {$command}\n";
 
     $info     = [];
-    $info[]   = 'Time: ' . (new DateTime())->format(DateTime::RFC3339);
+    $info[]   = 'Time: ' . (new DateTimeImmutable())->format(DateTime::RFC3339);
     $info[]   = "Iteration: {$i}";
     $info[]   = "Command: {$command}";
     $info[]   = PHP_EOL;
@@ -73,5 +72,5 @@ while (true) {
 
     $logInfo($infoText);
 
-    echo "FINISHED\n";
+    echo \ParaTest\Runners\PHPUnit\Worker\WrapperWorker::COMMAND_FINISHED;
 }

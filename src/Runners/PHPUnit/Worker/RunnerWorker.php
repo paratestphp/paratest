@@ -20,7 +20,7 @@ final class RunnerWorker
     /** @var ExecutableTest */
     private $executableTest;
     /** @var Process|null */
-    private $process;
+    public $process;
 
     public function __construct(ExecutableTest $executableTest)
     {
@@ -76,12 +76,10 @@ final class RunnerWorker
     /**
      * Executes the test by creating a separate process.
      *
-     * @param array<string, string|null> $options
-     * @param array<string, string|int>  $environmentVariables
-     * @param string[]|null              $passthru
-     * @param string[]|null              $passthruPhp
-     *
-     * @return $this
+     * @param array<string, string|null>    $options
+     * @param array<string|int, string|int> $environmentVariables
+     * @param string[]|null                 $passthru
+     * @param string[]|null                 $passthruPhp
      */
     public function run(
         string $binary,
@@ -89,7 +87,7 @@ final class RunnerWorker
         array $environmentVariables = [],
         ?array $passthru = null,
         ?array $passthruPhp = null
-    ) {
+    ): void {
         $process = $this->getProcess($binary, $options, $environmentVariables, $passthru, $passthruPhp);
         $cmd     = $process->getCommandLine();
 
@@ -98,18 +96,16 @@ final class RunnerWorker
 
         $this->process = $process;
         $this->process->start();
-
-        return $this;
     }
 
     /**
      * Build the full executable as we would do on the command line, e.g.
      * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
-     * @param array<string, string|null> $options
-     * @param array<string, string|int>  $environmentVariables
-     * @param string[]|null              $passthru
-     * @param string[]|null              $passthruPhp
+     * @param array<string, string|null>    $options
+     * @param array<string|int, string|int> $environmentVariables
+     * @param string[]|null                 $passthru
+     * @param string[]|null                 $passthruPhp
      */
     private function getProcess(
         string $binary,
@@ -126,8 +122,6 @@ final class RunnerWorker
         }
 
         $args = array_merge($args, $this->executableTest->commandArguments($binary, $options, $passthru));
-
-        $environmentVariables['PARATEST'] = 1;
 
         return new Process($args, null, $environmentVariables);
     }

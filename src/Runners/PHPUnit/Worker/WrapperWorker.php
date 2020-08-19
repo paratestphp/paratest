@@ -10,6 +10,7 @@ use ParaTest\Runners\PHPUnit\ResultPrinter;
 use RuntimeException;
 
 use function assert;
+use function fclose;
 use function fgets;
 use function fwrite;
 use function implode;
@@ -20,6 +21,9 @@ use function strstr;
 
 final class WrapperWorker extends BaseWorker
 {
+    public const COMMAND_EXIT     = "EXIT\n";
+    public const COMMAND_FINISHED = "FINISHED\n";
+
     /** @var ExecutableTest|null */
     private $currentlyExecuting;
 
@@ -90,9 +94,10 @@ final class WrapperWorker extends BaseWorker
         }
     }
 
-    protected function doStop(): void
+    public function stop(): void
     {
-        fwrite($this->pipes[0], "EXIT\n");
+        fwrite($this->pipes[0], self::COMMAND_EXIT);
+        fclose($this->pipes[0]);
     }
 
     /**
@@ -108,7 +113,7 @@ final class WrapperWorker extends BaseWorker
         $tellsUsItHasFinished = false;
         stream_set_blocking($this->pipes[1], true);
         while ($line = fgets($this->pipes[1])) {
-            if (strstr($line, "FINISHED\n") !== false) {
+            if (strstr($line, self::COMMAND_FINISHED) !== false) {
                 $tellsUsItHasFinished = true;
                 --$this->inExecution;
                 break;

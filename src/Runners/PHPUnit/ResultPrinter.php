@@ -106,13 +106,10 @@ final class ResultPrinter
     /**
      * Adds an ExecutableTest to the tracked results.
      */
-    public function addTest(ExecutableTest $suite): self
+    public function addTest(ExecutableTest $suite): void
     {
         $this->suites[]    = $suite;
-        $increment         = $suite->getTestCount();
-        $this->totalCases += $increment;
-
-        return $this;
+        $this->totalCases += $suite->getTestCount();
     }
 
     /**

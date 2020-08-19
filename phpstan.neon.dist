@@ -123,6 +123,18 @@ parameters:
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
             path: test/fixtures/wrapper-runner-exit-code-tests/FailureTest.php
+        -
+            message: "#^Offset 'TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'TEST_TOKEN' \\=\\> int, \\?'UNIQUE_TEST_TOKEN' \\=\\> string\\)\\.$#"
+            count: 1
+            path: test/Unit/Runners/PHPUnit/OptionsTest.php
+        -
+            message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertIsString\\(\\) with string will always evaluate to true\\.$#"
+            count: 1
+            path: test/Unit/Runners/PHPUnit/OptionsTest.php
+        -
+            message: "#^Offset 'UNIQUE_TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'UNIQUE_TEST_TOKEN' \\=\\> string, 'TEST_TOKEN' \\=\\> int\\)\\.$#"
+            count: 1
+            path: test/Unit/Runners/PHPUnit/OptionsTest.php
 
         # Level 7
         -

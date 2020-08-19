@@ -24,8 +24,4 @@ final class SqliteWorker extends BaseWorker
     {
         $parameters[] = $this->dbFileName;
     }
-
-    protected function doStop(): void
-    {
-    }
 }

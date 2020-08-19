@@ -15,7 +15,7 @@ use function getcwd;
 use function uniqid;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Runners\PHPUnit\Runner
  */
 final class RunnerTest extends TestBase
 {

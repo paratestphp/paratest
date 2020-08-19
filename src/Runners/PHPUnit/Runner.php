@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use Exception;
-use Habitat\Habitat;
 use ParaTest\Runners\PHPUnit\Worker\RunnerWorker;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,11 +12,12 @@ use Throwable;
 
 use function array_filter;
 use function array_keys;
+use function array_merge;
 use function array_shift;
 use function assert;
 use function count;
+use function getenv;
 use function sprintf;
-use function uniqid;
 use function usleep;
 
 final class Runner extends BaseRunner
@@ -36,7 +36,7 @@ final class Runner extends BaseRunner
      * A collection of available tokens based on the number
      * of processes specified in $options.
      *
-     * @var array<int, array{token: int, unique: string, available: bool}>
+     * @var array<int, array{token: int, available: bool}>
      */
     private $tokens = [];
 
@@ -49,10 +49,8 @@ final class Runner extends BaseRunner
     /**
      * The money maker. Runs all ExecutableTest objects in separate processes.
      */
-    public function run(): void
+    protected function doRun(): void
     {
-        $this->initialize();
-
         while (count($this->running) > 0 || count($this->pending) > 0) {
             foreach ($this->running as $key => $test) {
                 try {
@@ -75,25 +73,6 @@ final class Runner extends BaseRunner
             $this->fillRunQueue();
             usleep(10000);
         }
-
-        $this->complete();
-    }
-
-    /**
-     * Finalizes the run process. This method
-     * prints all results, rewinds the log interpreter,
-     * logs any results to JUnit, and cleans up temporary
-     * files.
-     */
-    private function complete(): void
-    {
-        $this->printer->printResults();
-        $this->log();
-        $this->logCoverage();
-        $readers = $this->interpreter->getReaders();
-        foreach ($readers as $reader) {
-            $reader->removeLog();
-        }
     }
 
     /**
@@ -110,15 +89,7 @@ final class Runner extends BaseRunner
             }
 
             $this->acquireToken($tokenData['token']);
-            $env = [];
-            if (! $this->options->noTestTokens()) {
-                $env = [
-                    'TEST_TOKEN' => $tokenData['token'],
-                    'UNIQUE_TEST_TOKEN' => $tokenData['unique'],
-                ];
-            }
-
-            $env += Habitat::getAll();
+            $env = array_merge(getenv(), $this->options->fillEnvWithTokens($tokenData['token']));
 
             $executebleTest = array_shift($this->pending);
             /** @psalm-suppress RedundantConditionGivenDocblockType **/
@@ -203,7 +174,10 @@ final class Runner extends BaseRunner
     {
         $this->tokens = [];
         for ($i = 1; $i <= $this->options->processes(); ++$i) {
-            $this->tokens[$i] = ['token' => $i, 'unique' => uniqid(sprintf('%s_', $i)), 'available' => true];
+            $this->tokens[$i] = [
+                'token' => $i,
+                'available' => true,
+            ];
         }
     }
 
@@ -211,7 +185,7 @@ final class Runner extends BaseRunner
      * Gets the next token that is available to be acquired
      * from a finished process.
      *
-     * @return false|array{token: int, unique: string, available: bool}
+     * @return false|array{token: int, available: bool}
      */
     private function getNextAvailableToken()
     {

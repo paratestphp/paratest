@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use function defined;
 use function file_put_contents;
 use function intdiv;
+use function mt_rand;
 use function sort;
 use function sys_get_temp_dir;
 
@@ -269,5 +270,29 @@ final class OptionsTest extends TestBase
         static::assertSame('WHITELIST', $options->whitelist());
 
         static::assertTrue($options->hasCoverage());
+    }
+
+    public function testFillEnvWithTokens(): void
+    {
+        $options = $this->createOptionsFromArgv(['--no-test-tokens' => false]);
+
+        $inc = mt_rand(10, 99);
+        $env = $options->fillEnvWithTokens($inc);
+
+        static::assertSame(1, $env['PARATEST']);
+        static::assertArrayHasKey(Options::ENV_KEY_TOKEN, $env);
+        static::assertSame($inc, $env[Options::ENV_KEY_TOKEN]);
+        static::assertArrayHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
+        static::assertIsString($env[Options::ENV_KEY_UNIQUE_TOKEN]);
+        static::assertStringContainsString($inc . '_', $env[Options::ENV_KEY_UNIQUE_TOKEN]);
+
+        $options = $this->createOptionsFromArgv(['--no-test-tokens' => true]);
+
+        $inc = mt_rand(10, 99);
+        $env = $options->fillEnvWithTokens($inc);
+
+        static::assertSame(1, $env['PARATEST']);
+        static::assertArrayNotHasKey(Options::ENV_KEY_TOKEN, $env);
+        static::assertArrayNotHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
     }
 }

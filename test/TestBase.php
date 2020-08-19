@@ -6,6 +6,7 @@ namespace ParaTest\Tests;
 
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Tests\Functional\RunnerResult;
 use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Runner\Version;
@@ -24,6 +25,7 @@ use function file_exists;
 use function get_class;
 use function glob;
 use function preg_match;
+use function sprintf;
 use function str_replace;
 use function uniqid;
 
@@ -54,6 +56,22 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         $input = new ArrayInput($argv, $inputDefinition);
 
         return Options::fromConsoleInput($input, $cwd ?? PARATEST_ROOT);
+    }
+
+    final protected function assertTestsPassed(
+        RunnerResult $proc,
+        ?string $testPattern = null,
+        ?string $assertionPattern = null
+    ): void {
+        static::assertMatchesRegularExpression(
+            sprintf(
+                '/OK \(%s tests?, %s assertions?\)/',
+                $testPattern ?? '\d+',
+                $assertionPattern ?? '\d+'
+            ),
+            $proc->getOutput(),
+        );
+        static::assertEquals(0, $proc->getExitCode());
     }
 
     /**

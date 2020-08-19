@@ -17,7 +17,6 @@ use function defined;
 use function dirname;
 use function realpath;
 use function stream_select;
-use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -25,6 +24,12 @@ final class WrapperRunner extends BaseWrapperRunner
 {
     /** @var WrapperWorker[] */
     private $workers = [];
+
+    /** @var resource[] */
+    private $streams = [];
+
+    /** @var resource[] */
+    private $modified = [];
 
     public function __construct(Options $opts, OutputInterface $output)
     {
@@ -35,14 +40,13 @@ final class WrapperRunner extends BaseWrapperRunner
         parent::__construct($opts, $output);
     }
 
-    public function run(): void
+    protected function doRun(): void
     {
-        $this->initialize();
         $this->startWorkers();
         $this->assignAllPendingTests();
         $this->sendStopMessages();
         $this->waitForAllToFinish();
-        $this->complete();
+        $this->setExitCode();
     }
 
     private function startWorkers(): void
@@ -53,15 +57,8 @@ final class WrapperRunner extends BaseWrapperRunner
         assert($wrapper !== false);
         for ($i = 1; $i <= $this->options->processes(); ++$i) {
             $worker = new WrapperWorker($this->output);
-            if ($this->options->noTestTokens()) {
-                $token       = null;
-                $uniqueToken = null;
-            } else {
-                $token       = $i;
-                $uniqueToken = uniqid();
-            }
 
-            $worker->start($wrapper, $token, $uniqueToken, [], $this->options);
+            $worker->start($wrapper, $this->options, $i);
             $this->streams[] = $worker->stdout();
             $this->workers[] = $worker;
         }
@@ -71,7 +68,7 @@ final class WrapperRunner extends BaseWrapperRunner
     {
         $phpunit        = $this->options->phpunit();
         $phpunitOptions = $this->options->filtered();
-        // $phpunitOptions['no-globals-backup'] = null;  // removed in phpunit 6.0
+
         while (count($this->pending)) {
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $key => $worker) {
@@ -105,7 +102,7 @@ final class WrapperRunner extends BaseWrapperRunner
      *
      * @param resource[] $modified
      */
-    private function waitForStreamsToChange(array $modified): int
+    private function waitForStreamsToChange(array $modified): void
     {
         $write  = [];
         $except = [];
@@ -115,8 +112,6 @@ final class WrapperRunner extends BaseWrapperRunner
         }
 
         $this->modified = $modified;
-
-        return $result;
     }
 
     /**
@@ -173,7 +168,7 @@ final class WrapperRunner extends BaseWrapperRunner
         $toStop = $this->workers;
         while (count($toStop) > 0) {
             $toCheck = $this->streamsOf($toStop);
-            $new     = $this->waitForStreamsToChange($toCheck);
+            $this->waitForStreamsToChange($toCheck);
             foreach ($this->progressedWorkers() as $index => $worker) {
                 try {
                     if (! $worker->isRunning()) {

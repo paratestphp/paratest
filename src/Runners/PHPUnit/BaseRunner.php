@@ -40,23 +40,41 @@ abstract class BaseRunner implements RunnerInterface
      */
     protected $exitcode = -1;
 
+    /** @var OutputInterface */
+    protected $output;
+
     /**
      * CoverageMerger to hold track of the accumulated coverage.
      *
      * @var CoverageMerger|null
      */
-    protected $coverage = null;
-
-    /** @var OutputInterface */
-    protected $output;
+    private $coverage = null;
 
     public function __construct(Options $options, OutputInterface $output)
     {
         $this->options     = $options;
+        $this->output      = $output;
         $this->interpreter = new LogInterpreter();
         $this->printer     = new ResultPrinter($this->interpreter, $output, $options);
-        $this->output      = $output;
+
+        if (! $this->options->hasCoverage()) {
+            return;
+        }
+
+        $this->coverage = new CoverageMerger($this->options->coverageTestLimit());
     }
+
+    final public function run(): void
+    {
+        $this->load(new SuiteLoader($this->options));
+        $this->printer->start();
+
+        $this->doRun();
+
+        $this->complete();
+    }
+
+    abstract protected function doRun(): void;
 
     /**
      * Builds the collection of pending ExecutableTest objects
@@ -76,6 +94,23 @@ abstract class BaseRunner implements RunnerInterface
     }
 
     abstract protected function beforeLoadChecks(): void;
+
+    /**
+     * Finalizes the run process. This method
+     * prints all results, rewinds the log interpreter,
+     * logs any results to JUnit, and cleans up temporary
+     * files.
+     */
+    private function complete(): void
+    {
+        $this->printer->printResults();
+        $this->log();
+        $this->logCoverage();
+        $readers = $this->interpreter->getReaders();
+        foreach ($readers as $reader) {
+            $reader->removeLog();
+        }
+    }
 
     /**
      * Returns the highest exit code encountered
@@ -144,15 +179,6 @@ abstract class BaseRunner implements RunnerInterface
         $reporter->php($coveragePhp);
     }
 
-    private function initCoverage(): void
-    {
-        if (! $this->options->hasCoverage()) {
-            return;
-        }
-
-        $this->coverage = new CoverageMerger($this->options->coverageTestLimit());
-    }
-
     final protected function hasCoverage(): bool
     {
         return $this->options->hasCoverage();
@@ -161,12 +187,5 @@ abstract class BaseRunner implements RunnerInterface
     final protected function getCoverage(): ?CoverageMerger
     {
         return $this->coverage;
-    }
-
-    final protected function initialize(): void
-    {
-        $this->initCoverage();
-        $this->load(new SuiteLoader($this->options));
-        $this->printer->start();
     }
 }
