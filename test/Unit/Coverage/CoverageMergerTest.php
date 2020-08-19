@@ -6,24 +6,29 @@ namespace ParaTest\Tests\Unit\Coverage;
 
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Tests\TestBase;
+use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\CodeCoverage\RawCodeCoverageData;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
+use function touch;
+
+/**
+ * @covers \ParaTest\Coverage\CoverageMerger
+ */
 final class CoverageMergerTest extends TestBase
 {
-    protected function setUp(): void
+    protected function setUpTest(): void
     {
         static::skipIfCodeCoverageNotEnabled();
     }
 
     /**
-     * Test merge for code coverage library 4 version.
-     *
-     * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
+     * @dataProvider provideTestLimit
      */
-    public function testSimpleMerge(): void
+    public function testMerge(int $testLimit): void
     {
         $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
         $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
@@ -55,69 +60,57 @@ final class CoverageMergerTest extends TestBase
             'Test2'
         );
 
-        $merger = new CoverageMerger();
-        $this->call($merger, 'addCoverage', $coverage1);
-        $this->call($merger, 'addCoverage', $coverage2);
+        $target1   = TMP_DIR . DS . 'coverage1.php';
+        $target2   = TMP_DIR . DS . 'coverage2.php';
+        $phpReport = new PHP();
+        $phpReport->process($coverage1, $target1);
+        $phpReport->process($coverage2, $target2);
 
-        $coverage = $this->getObjectValue($merger, 'coverage');
-        static::assertInstanceOf(CodeCoverage::class, $coverage);
+        $merger = new CoverageMerger($testLimit);
+        $merger->addCoverageFromFile($target1);
+        $merger->addCoverageFromFile($target2);
 
+        static::assertFileDoesNotExist($target1);
+        static::assertFileDoesNotExist($target2);
+
+        $coverage = $merger->getCodeCoverageObject();
+        static::assertNotNull($coverage);
         $data = $coverage->getData()->lineCoverage();
 
-        static::assertCount(2, $data[$firstFile][$firstFileFirstLine]);
-        static::assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
-        static::assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);
+        if ($testLimit === 0) {
+            static::assertCount(2, $data[$firstFile][$firstFileFirstLine]);
+            static::assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
+            static::assertEquals('Test2', $data[$firstFile][$firstFileFirstLine][1]);
+        } else {
+            static::assertCount(1, $data[$firstFile][$firstFileFirstLine]);
+            static::assertEquals('Test1', $data[$firstFile][$firstFileFirstLine][0]);
+        }
 
         static::assertCount(1, $data[$secondFile][$secondFileFirstLine]);
         static::assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);
     }
 
     /**
-     * Test merge with limits
-     *
-     * @requires function \SebastianBergmann\CodeCoverage\CodeCoverage::merge
+     * @return array<string, int[]>
      */
-    public function testSimpleMergeLimited(): void
+    public function provideTestLimit(): array
     {
-        $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
+        return [
+            'unlimited' => [0],
+            'limited' => [1],
+        ];
+    }
 
-        // Every time the two above files are changed, the line numbers
-        // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine  = 45;
-        $secondFileFirstLine = 53;
+    public function testCoverageFileIsEmpty(): void
+    {
+        $filename = TMP_DIR . DS . 'coverage.php';
+        touch($filename);
+        $coverageMerger = new CoverageMerger(0);
 
-        $filter = new Filter();
-        $filter->includeFiles([$firstFile, $secondFile]);
+        $this->expectException(RuntimeException::class);
+        $regex = '/Coverage file .*? is empty. This means a PHPUnit process has crashed./';
+        $this->expectExceptionMessageMatches($regex);
 
-        $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
-            $firstFile => [$firstFileFirstLine => 1],
-            $secondFile => [$secondFileFirstLine => 1],
-        ]);
-        $coverage1 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
-        $coverage1->append(
-            $data,
-            'Test1'
-        );
-
-        $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
-            $firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
-        ]);
-        $coverage2 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
-        $coverage2->append(
-            $data,
-            'Test2'
-        );
-
-        $merger = new CoverageMerger($test_limit = 1);
-        $this->call($merger, 'addCoverage', $coverage1);
-        $this->call($merger, 'addCoverage', $coverage2);
-
-        $coverage = $this->getObjectValue($merger, 'coverage');
-        static::assertInstanceOf(CodeCoverage::class, $coverage);
-        $data = $coverage->getData()->lineCoverage();
-
-        static::assertCount(1, $data[$firstFile][$firstFileFirstLine]);
-        static::assertCount(1, $data[$secondFile][$secondFileFirstLine]);
+        $coverageMerger->addCoverageFromFile($filename);
     }
 }

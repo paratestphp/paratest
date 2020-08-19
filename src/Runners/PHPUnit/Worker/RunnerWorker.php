@@ -11,6 +11,7 @@ use Symfony\Component\Process\Process;
 
 use function array_merge;
 use function assert;
+use function sprintf;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
@@ -30,16 +31,6 @@ final class RunnerWorker
     public function getExecutableTest(): ExecutableTest
     {
         return $this->executableTest;
-    }
-
-    /**
-     * Return the test process' stderr contents.
-     */
-    public function getStderr(): string
-    {
-        assert($this->process !== null);
-
-        return $this->process->getErrorOutput();
     }
 
     /**
@@ -76,12 +67,10 @@ final class RunnerWorker
     /**
      * Executes the test by creating a separate process.
      *
-     * @param array<string, string>     $options
-     * @param array<string, string|int> $environmentVariables
-     * @param string[]|null             $passthru
-     * @param string[]|null             $passthruPhp
-     *
-     * @return $this
+     * @param array<string, string|null>    $options
+     * @param array<string|int, string|int> $environmentVariables
+     * @param string[]|null                 $passthru
+     * @param string[]|null                 $passthruPhp
      */
     public function run(
         string $binary,
@@ -89,7 +78,7 @@ final class RunnerWorker
         array $environmentVariables = [],
         ?array $passthru = null,
         ?array $passthruPhp = null
-    ) {
+    ): void {
         $process = $this->getProcess($binary, $options, $environmentVariables, $passthru, $passthruPhp);
         $cmd     = $process->getCommandLine();
 
@@ -98,18 +87,16 @@ final class RunnerWorker
 
         $this->process = $process;
         $this->process->start();
-
-        return $this;
     }
 
     /**
      * Build the full executable as we would do on the command line, e.g.
      * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
      *
-     * @param array<string, string>     $options
-     * @param array<string, string|int> $environmentVariables
-     * @param string[]|null             $passthru
-     * @param string[]|null             $passthruPhp
+     * @param array<string, string|null>    $options
+     * @param array<string|int, string|int> $environmentVariables
+     * @param string[]|null                 $passthru
+     * @param string[]|null                 $passthruPhp
      */
     private function getProcess(
         string $binary,
@@ -127,19 +114,7 @@ final class RunnerWorker
 
         $args = array_merge($args, $this->executableTest->commandArguments($binary, $options, $passthru));
 
-        $environmentVariables['PARATEST'] = 1;
-
         return new Process($args, null, $environmentVariables);
-    }
-
-    /**
-     * Get process stdout content.
-     */
-    public function getStdout(): string
-    {
-        assert($this->process !== null);
-
-        return $this->process->getOutput();
     }
 
     /**
@@ -155,12 +130,15 @@ final class RunnerWorker
      */
     private function assertValidCommandLineLength(string $cmd): void
     {
-        if (DIRECTORY_SEPARATOR === '\\') { // windows
+        if (DIRECTORY_SEPARATOR === '\\') {
+            // @codeCoverageIgnoreStart
             // symfony's process wrapper
             $cmd = 'cmd /V:ON /E:ON /C "(' . $cmd . ')';
             if (strlen($cmd) > 32767) {
                 throw new RuntimeException('Command line is too long, try to decrease max batch size');
             }
+
+            // @codeCoverageIgnoreEnd
         }
 
         /*
@@ -169,5 +147,28 @@ final class RunnerWorker
          *         - linux: echo | xargs --show-limits
          *         - osx/linux: getconf ARG_MAX
          */
+    }
+
+    public function getCrashReport(): string
+    {
+        assert($this->process !== null);
+
+        $error = sprintf(
+            'The command "%s" failed.' . "\n\nExit Code: %s(%s)\n\nWorking directory: %s",
+            $this->process->getCommandLine(),
+            (string) $this->process->getExitCode(),
+            (string) $this->process->getExitCodeText(),
+            (string) $this->process->getWorkingDirectory()
+        );
+
+        if (! $this->process->isOutputDisabled()) {
+            $error .= sprintf(
+                "\n\nOutput:\n================\n%s\n\nError Output:\n================\n%s",
+                $this->process->getOutput(),
+                $this->process->getErrorOutput()
+            );
+        }
+
+        return $error;
     }
 }

@@ -6,49 +6,61 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Tests\TestBase;
 
-use function defined;
-use function unlink;
+use function uniqid;
 
+/**
+ * @covers \ParaTest\Runners\PHPUnit\ExecutableTest
+ */
 final class ExecutableTestTest extends TestBase
 {
     /** @var ExecutableTestChild */
     protected $executableTestChild;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile', true);
+        $this->executableTestChild = new ExecutableTestChild('pathToFile', true, TMP_DIR);
     }
 
     public function testConstructor(): void
     {
-        static::assertEquals('pathToFile', $this->getObjectValue($this->executableTestChild, 'path'));
+        static::assertEquals('pathToFile', $this->executableTestChild->getPath());
     }
 
     public function testCommandRedirectsCoverage(): void
     {
-        $options = ['a' => 'b'];
-        $binary  = '/usr/bin/phpunit';
+        $binary   = uniqid('phpunit');
+        $options  = ['a' => 'b', 'no-coverage' => null];
+        $passthru = ['--no-extensions'];
 
-        $command = $this->executableTestChild->command($binary, $options);
+        $commandArguments = $this->executableTestChild->commandArguments($binary, $options, $passthru);
 
-        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            static::assertMatchesRegularExpression(
-                '#^"/usr/bin/phpunit" --a b .+#',
-                $command
-            );
-        } else {
-            static::assertMatchesRegularExpression(
-                "#^'/usr/bin/phpunit' '--a' 'b' .+#",
-                $command
-            );
-        }
+        $expected = [
+            $binary,
+            '--no-extensions',
+            '--a',
+            'b',
+            '--no-coverage',
+            '--log-junit',
+            $this->executableTestChild->getTempFile(),
+            '--coverage-php',
+            $this->executableTestChild->getCoverageFileName(),
+            'pathToFile',
+        ];
+
+        static::assertSame($expected, $commandArguments);
     }
 
     public function testGetTempFileShouldCreateTempFile(): void
     {
-        $file = $this->executableTestChild->getTempFile();
-        static::assertFileExists($file);
-        unlink($file);
+        $logFile = $this->executableTestChild->getTempFile();
+        static::assertFileExists($logFile);
+        $this->executableTestChild->deleteFile();
+        static::assertFileDoesNotExist($logFile);
+
+        $ccFile = $this->executableTestChild->getCoverageFileName();
+        static::assertFileExists($ccFile);
+        $this->executableTestChild->deleteFile();
+        static::assertFileDoesNotExist($ccFile);
     }
 
     public function testGetTempFileShouldReturnSameFileIfAlreadyCalled(): void
@@ -56,6 +68,14 @@ final class ExecutableTestTest extends TestBase
         $file      = $this->executableTestChild->getTempFile();
         $fileAgain = $this->executableTestChild->getTempFile();
         static::assertEquals($file, $fileAgain);
-        unlink($file);
+    }
+
+    public function testStoreLastCommand(): void
+    {
+        static::assertEmpty($this->executableTestChild->getLastCommand());
+
+        $this->executableTestChild->setLastCommand($lastCommand = uniqid());
+
+        static::assertSame($lastCommand, $this->executableTestChild->getLastCommand());
     }
 }

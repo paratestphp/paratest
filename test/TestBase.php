@@ -6,6 +6,9 @@ namespace ParaTest\Tests;
 
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\Runner;
+use ParaTest\Runners\PHPUnit\RunnerInterface;
+use ParaTest\Tests\Functional\RunnerResult;
 use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Runner\Version;
@@ -15,22 +18,41 @@ use ReflectionClass;
 use ReflectionObject;
 use ReflectionProperty;
 use SebastianBergmann\Environment\Runtime;
-use SplFileObject;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Filesystem\Filesystem;
 
 use function copy;
 use function file_exists;
 use function get_class;
-use function is_dir;
+use function glob;
 use function preg_match;
-use function rmdir;
+use function sprintf;
 use function str_replace;
 use function uniqid;
-use function unlink;
 
 abstract class TestBase extends PHPUnit\Framework\TestCase
 {
+    /** @var class-string<RunnerInterface> */
+    protected $runnerClass = Runner::class;
+    /** @var array<string, string|bool|int> */
+    protected $bareOptions = [];
+
+    final protected function setUp(): void
+    {
+        $glob = glob(TMP_DIR . DS . '*');
+        static::assertNotFalse($glob);
+
+        (new Filesystem())->remove($glob);
+
+        $this->setUpTest();
+    }
+
+    protected function setUpTest(): void
+    {
+    }
+
     /**
      * @param array<string, string|bool|int> $argv
      */
@@ -42,6 +64,37 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         $input = new ArrayInput($argv, $inputDefinition);
 
         return Options::fromConsoleInput($input, $cwd ?? PARATEST_ROOT);
+    }
+
+    final protected function runRunner(?string $runnerClass = null): RunnerResult
+    {
+        if ($runnerClass === null) {
+            $runnerClass = $this->runnerClass;
+        }
+
+        $bareOptions              = $this->bareOptions;
+        $bareOptions['--tmp-dir'] = TMP_DIR;
+        $output                   = new BufferedOutput();
+        $wrapperRunner            = new $runnerClass($this->createOptionsFromArgv($this->bareOptions), $output);
+        $wrapperRunner->run();
+
+        return new RunnerResult($wrapperRunner->getExitCode(), $output->fetch());
+    }
+
+    final protected function assertTestsPassed(
+        RunnerResult $proc,
+        ?string $testPattern = null,
+        ?string $assertionPattern = null
+    ): void {
+        static::assertMatchesRegularExpression(
+            sprintf(
+                '/OK \(%s tests?, %s assertions?\)/',
+                $testPattern ?? '\d+',
+                $assertionPattern ?? '\d+'
+            ),
+            $proc->getOutput(),
+        );
+        static::assertEquals(0, $proc->getExitCode());
     }
 
     /**
@@ -56,7 +109,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
     {
         $fixture = FIXTURES . DS . $fixture;
         if (! file_exists($fixture)) {
-            throw new InvalidArgumentException("Fixture $fixture not found");
+            throw new InvalidArgumentException("Fixture {$fixture} not found");
         }
 
         return $fixture;
@@ -157,35 +210,6 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         }
 
         static::markTestSkipped('No code coverage driver available');
-    }
-
-    /**
-     * Remove dir and its files.
-     */
-    final protected function removeDirectory(string $dirname): void
-    {
-        if (! file_exists($dirname) || ! is_dir($dirname)) {
-            return;
-        }
-
-        $directory = new RecursiveDirectoryIterator(
-            $dirname,
-            RecursiveDirectoryIterator::SKIP_DOTS
-        );
-        /** @var SplFileObject[] $iterator */
-        $iterator = new RecursiveIteratorIterator(
-            $directory,
-            RecursiveIteratorIterator::CHILD_FIRST
-        );
-        foreach ($iterator as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getPathname());
-            } else {
-                unlink($file->getPathname());
-            }
-        }
-
-        rmdir($dirname);
     }
 
     /**

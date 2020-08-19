@@ -63,19 +63,6 @@ final class TestCase
     }
 
     /**
-     * Add a defect type (error or failure).
-     *
-     * @param string $collName the name of the collection to add to
-     */
-    private function addDefect(string $collName, string $type, string $text): void
-    {
-        $this->{$collName}[] = [
-            'type' => $type,
-            'text' => trim($text),
-        ];
-    }
-
-    /**
      * Factory method that creates a TestCase object
      * from a SimpleXMLElement.
      *
@@ -106,7 +93,11 @@ final class TestCase
 
                 $message  = (string) $defect;
                 $message .= (string) $system_output;
-                $case->addDefect($group, (string) $defect['type'], $message);
+
+                $case->{$group}[] = [
+                    'type' => (string) $defect['type'],
+                    'text' => trim($message),
+                ];
             }
         }
 

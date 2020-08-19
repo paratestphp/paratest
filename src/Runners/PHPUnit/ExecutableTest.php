@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
-use Symfony\Component\Process\Process;
-
 use function array_map;
 use function array_merge;
 use function assert;
-use function sys_get_temp_dir;
 use function tempnam;
 use function unlink;
 
@@ -21,7 +17,7 @@ abstract class ExecutableTest
      *
      * @var string
      */
-    protected $path;
+    private $path;
 
     /**
      * A path to the temp file created
@@ -29,29 +25,32 @@ abstract class ExecutableTest
      *
      * @var string|null
      */
-    protected $temp;
+    private $temp;
 
     /**
      * Path where the coveragereport is stored.
      *
      * @var string|null
      */
-    protected $coverageFileName;
+    private $coverageFileName;
 
     /**
      * Last executed process command.
      *
      * @var string
      */
-    protected $lastCommand = '';
+    private $lastCommand = '';
 
     /** @var bool */
     private $needsCoverage;
+    /** @var string */
+    private $tmpDir;
 
-    public function __construct(string $path, bool $needsCoverage)
+    public function __construct(string $path, bool $needsCoverage, string $tmpDir)
     {
         $this->path          = $path;
         $this->needsCoverage = $needsCoverage;
+        $this->tmpDir        = $tmpDir;
     }
 
     /**
@@ -75,7 +74,7 @@ abstract class ExecutableTest
     final public function getTempFile(): string
     {
         if ($this->temp === null) {
-            $temp = tempnam(sys_get_temp_dir(), 'PT_');
+            $temp = tempnam($this->tmpDir, 'PT_');
             assert($temp !== false);
 
             $this->temp = $temp;
@@ -89,8 +88,17 @@ abstract class ExecutableTest
      */
     final public function deleteFile(): void
     {
-        $outputFile = $this->getTempFile();
-        unlink($outputFile);
+        if ($this->temp !== null) {
+            unlink($this->temp);
+            $this->temp = null;
+        }
+
+        if ($this->coverageFileName === null) {
+            return;
+        }
+
+        unlink($this->coverageFileName);
+        $this->coverageFileName = null;
     }
 
     /**
@@ -112,13 +120,13 @@ abstract class ExecutableTest
     /**
      * Generate command line arguments with passed options suitable to handle through paratest.
      *
-     * @param string                $binary   executable binary name
-     * @param array<string, string> $options  command line options
-     * @param string[]|null         $passthru
+     * @param string                     $binary   executable binary name
+     * @param array<string, string|null> $options  command line options
+     * @param string[]|null              $passthru
      *
      * @return string[] command line arguments
      */
-    final public function commandArguments(string $binary, array $options = [], ?array $passthru = null): array
+    final public function commandArguments(string $binary, array $options, ?array $passthru): array
     {
         $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
         if ($this->needsCoverage) {
@@ -131,7 +139,7 @@ abstract class ExecutableTest
         }
 
         foreach ($options as $key => $value) {
-            $arguments[] = "--$key";
+            $arguments[] = "--{$key}";
             if ($value === null) {
                 continue;
             }
@@ -146,26 +154,12 @@ abstract class ExecutableTest
     }
 
     /**
-     * Generate command line with passed options suitable to handle through paratest.
-     *
-     * @param string                $binary   executable binary name
-     * @param array<string, string> $options  command line options
-     * @param string[]|null         $passthru
-     *
-     * @return string command line
-     */
-    final public function command(string $binary, array $options = [], ?array $passthru = null): string
-    {
-        return (new Process($this->commandArguments($binary, $options, $passthru)))->getCommandLine();
-    }
-
-    /**
      * Get coverage filename.
      */
     final public function getCoverageFileName(): string
     {
         if ($this->coverageFileName === null) {
-            $coverageFileName = tempnam(sys_get_temp_dir(), 'CV_');
+            $coverageFileName = tempnam($this->tmpDir, 'CV_');
             assert($coverageFileName !== false);
 
             $this->coverageFileName = $coverageFileName;
@@ -175,19 +169,11 @@ abstract class ExecutableTest
     }
 
     /**
-     * Set process temporary filename.
-     */
-    final public function setTempFile(string $temp): void
-    {
-        $this->temp = $temp;
-    }
-
-    /**
      * A template method that can be overridden to add necessary options for a test.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param array<string, string|null> $options
      *
-     * @return array<string, (string|bool|int|Configuration|string[]|null)>
+     * @return array<string, string|null>
      */
     abstract protected function prepareOptions(array $options): array;
 }

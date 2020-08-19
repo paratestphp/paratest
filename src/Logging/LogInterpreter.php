@@ -12,10 +12,8 @@ use function array_merge;
 use function array_reduce;
 use function array_values;
 use function count;
-use function reset;
-use function ucfirst;
 
-final class LogInterpreter extends MetaProvider
+final class LogInterpreter implements MetaProvider
 {
     /**
      * A collection of Reader objects
@@ -23,28 +21,15 @@ final class LogInterpreter extends MetaProvider
      *
      * @var Reader[]
      */
-    protected $readers = [];
-
-    /**
-     * Reset the array pointer of the internal
-     * readers collection.
-     */
-    public function rewind(): void
-    {
-        reset($this->readers);
-    }
+    private $readers = [];
 
     /**
      * Add a new Reader to be included
      * in the final results.
-     *
-     * @return $this
      */
-    public function addReader(Reader $reader): self
+    public function addReader(Reader $reader): void
     {
         $this->readers[] = $reader;
-
-        return $this;
     }
 
     /**
@@ -65,10 +50,7 @@ final class LogInterpreter extends MetaProvider
      */
     public function isSuccessful(): bool
     {
-        $failures = $this->getNumericValue('failures');
-        $errors   = $this->getNumericValue('errors');
-
-        return $failures === 0 && $errors === 0;
+        return $this->getTotalFailures() === 0 && $this->getTotalErrors() === 0;
     }
 
     /**
@@ -119,80 +101,109 @@ final class LogInterpreter extends MetaProvider
     /**
      * Flattens all cases into their respective suites.
      *
-     * @return TestSuite[] $suites a collection of suites and their cases
+     * @return TestSuite[] A collection of suites and their cases
      */
     public function flattenCases(): array
     {
         $dict = [];
         foreach ($this->getCases() as $case) {
             if (! isset($dict[$case->file])) {
-                $dict[$case->file] = new TestSuite($case->class, 0, 0, 0, 0, 0, 0, $case->file);
+                $dict[$case->file] = TestSuite::empty();
             }
 
+            $dict[$case->file]->name    = $case->class;
+            $dict[$case->file]->file    = $case->file;
             $dict[$case->file]->cases[] = $case;
             ++$dict[$case->file]->tests;
             $dict[$case->file]->assertions += $case->assertions;
             $dict[$case->file]->failures   += count($case->failures);
             $dict[$case->file]->errors     += count($case->errors);
+            $dict[$case->file]->warnings   += count($case->warnings);
             $dict[$case->file]->skipped    += count($case->skipped);
             $dict[$case->file]->time       += $case->time;
-            $dict[$case->file]->file        = $case->file;
         }
 
         return array_values($dict);
     }
 
-    /**
-     * Returns a value as either a float or int.
-     *
-     * @return float|int
-     */
-    protected function getNumericValue(string $property)
+    public function getTotalTests(): int
     {
-        return $property === 'time'
-               ? (float) $this->accumulate('getTotalTime')
-               : (int) $this->accumulate('getTotal' . ucfirst($property));
+        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
+            return $result + $reader->getTotalTests();
+        }, 0);
+    }
+
+    public function getTotalAssertions(): int
+    {
+        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
+            return $result + $reader->getTotalAssertions();
+        }, 0);
+    }
+
+    public function getTotalFailures(): int
+    {
+        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
+            return $result + $reader->getTotalFailures();
+        }, 0);
+    }
+
+    public function getTotalErrors(): int
+    {
+        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
+            return $result + $reader->getTotalErrors();
+        }, 0);
+    }
+
+    public function getTotalWarnings(): int
+    {
+        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
+            return $result + $reader->getTotalWarnings();
+        }, 0);
+    }
+
+    public function getTotalTime(): float
+    {
+        return array_reduce($this->readers, static function (float $result, Reader $reader): float {
+            return $result + $reader->getTotalTime();
+        }, 0.0);
     }
 
     /**
-     * Gets messages of a given type and
-     * merges them into a single collection.
-     *
-     * @return string[]
+     * {@inheritDoc}
      */
-    protected function getMessages(string $type): array
-    {
-        return $this->mergeMessages('get' . ucfirst($type));
-    }
-
-    /**
-     * Flatten messages into a single collection
-     * based on an accessor method.
-     *
-     * @return string[]
-     */
-    private function mergeMessages(string $method): array
+    public function getErrors(): array
     {
         $messages = [];
         foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->{$method}());
+            $messages = array_merge($messages, $reader->getErrors());
         }
 
         return $messages;
     }
 
     /**
-     * Reduces a collection of readers down to a single
-     * result based on an accessor.
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
-    private function accumulate(string $method)
+    public function getWarnings(): array
     {
-        return array_reduce($this->readers, static function (int $result, Reader $reader) use ($method): int {
-            $result += $reader->$method();
+        $messages = [];
+        foreach ($this->readers as $reader) {
+            $messages = array_merge($messages, $reader->getWarnings());
+        }
 
-            return $result;
-        }, 0);
+        return $messages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFailures(): array
+    {
+        $messages = [];
+        foreach ($this->readers as $reader) {
+            $messages = array_merge($messages, $reader->getFailures());
+        }
+
+        return $messages;
     }
 }

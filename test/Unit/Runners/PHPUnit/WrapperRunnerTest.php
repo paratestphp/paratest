@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
-use ParaTest\Tests\TestBase;
-use RuntimeException;
-use Symfony\Component\Console\Output\BufferedOutput;
 
-final class WrapperRunnerTest extends TestBase
+/**
+ * @requires OSFAMILY Linux
+ * @covers \ParaTest\Runners\PHPUnit\BaseWrapperRunner
+ * @covers \ParaTest\Runners\PHPUnit\WrapperRunner
+ * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
+ * @covers \ParaTest\Runners\PHPUnit\Worker\WrapperWorker
+ */
+final class WrapperRunnerTest extends RunnerTestCase
 {
-    /**
-     * @requires OSFAMILY Windows
-     */
-    public function testWrapperRunnerCannotBeUsedOnWindows(): void
+    /** {@inheritdoc } */
+    protected $runnerClass = WrapperRunner::class;
+
+    public function testWrapperRunnerNotAvailableInFunctionalMode(): void
     {
-        $options = $this->createOptionsFromArgv([]);
-        $output  = new BufferedOutput();
+        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--functional'] = true;
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
 
-        new WrapperRunner($options, $output);
+        $this->runRunner();
     }
 }

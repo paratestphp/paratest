@@ -106,13 +106,10 @@ final class ResultPrinter
     /**
      * Adds an ExecutableTest to the tracked results.
      */
-    public function addTest(ExecutableTest $suite): self
+    public function addTest(ExecutableTest $suite): void
     {
         $this->suites[]    = $suite;
-        $increment         = $suite->getTestCount();
-        $this->totalCases += $increment;
-
-        return $this;
+        $this->totalCases += $suite->getTestCount();
     }
 
     /**
@@ -151,15 +148,6 @@ final class ResultPrinter
     /**
      * Prints all results and removes any log files
      * used for aggregating results.
-     */
-    public function flush(): void
-    {
-        $this->printResults();
-        $this->clearLogs();
-    }
-
-    /**
-     * Print final results.
      */
     public function printResults(): void
     {
@@ -505,16 +493,5 @@ final class ResultPrinter
         }
 
         return $text;
-    }
-
-    /**
-     * Deletes all the temporary log files for ExecutableTest objects
-     * being printed.
-     */
-    private function clearLogs(): void
-    {
-        foreach ($this->suites as $suite) {
-            $suite->deleteFile();
-        }
     }
 }

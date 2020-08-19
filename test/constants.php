@@ -8,6 +8,7 @@ if (! defined('DS')) {
 
 //TEST CONSTANTS
 define('FIXTURES', __DIR__ . DS . 'fixtures');
+define('TMP_DIR', __DIR__ . DS . 'tmp');
 define('PARATEST_ROOT', dirname(__DIR__));
 define('PARA_BINARY', PARATEST_ROOT . DS . 'bin' . DS . 'paratest');
 define('PHPUNIT', PARATEST_ROOT . DS . 'vendor' . DS . 'phpunit' . DS . 'phpunit' . DS . 'phpunit');

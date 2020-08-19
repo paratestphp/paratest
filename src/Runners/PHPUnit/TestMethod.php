@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use PHPUnit\TextUI\XmlConfiguration\Configuration;
-
 use function array_reduce;
 use function count;
 use function implode;
@@ -26,7 +24,7 @@ final class TestMethod extends ExecutableTest
      *
      * @var string[]
      */
-    protected $filters;
+    private $filters;
 
     /**
      * Passed filters must be unescaped and must represent test name, optionally including
@@ -35,22 +33,12 @@ final class TestMethod extends ExecutableTest
      * @param string   $testPath path to phpunit test case file
      * @param string[] $filters  array of filters or single filter
      */
-    public function __construct(string $testPath, array $filters, bool $needsCoverage)
+    public function __construct(string $testPath, array $filters, bool $needsCoverage, string $tmpDir)
     {
-        parent::__construct($testPath, $needsCoverage);
+        parent::__construct($testPath, $needsCoverage, $tmpDir);
         // for compatibility with other code (tests), which can pass string (one filter)
         // instead of array of filters
         $this->filters = $filters;
-    }
-
-    /**
-     * Returns the test method's filters.
-     *
-     * @return string[]
-     */
-    public function getFilters(): array
-    {
-        return $this->filters;
     }
 
     /**
@@ -69,9 +57,9 @@ final class TestMethod extends ExecutableTest
      * This sets up the --filter switch used to run a single PHPUnit test method.
      * This method also provide escaping for method name to be used as filter regexp.
      *
-     * @param array<string, (string|bool|int|Configuration|string[]|null)> $options
+     * @param array<string, string|null> $options
      *
-     * @return array<string, (string|bool|int|Configuration|string[]|null)>
+     * @return array<string, string|null>
      */
     protected function prepareOptions(array $options): array
     {

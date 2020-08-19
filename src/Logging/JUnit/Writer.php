@@ -8,14 +8,14 @@ use DOMDocument;
 use DOMElement;
 use ParaTest\Logging\LogInterpreter;
 
-use function array_merge;
-use function array_reduce;
 use function assert;
 use function count;
 use function file_put_contents;
 use function get_object_vars;
 use function htmlspecialchars;
 use function preg_match;
+use function sprintf;
+use function str_replace;
 
 use const ENT_XML1;
 
@@ -40,7 +40,7 @@ final class Writer
      *
      * @var string
      */
-    private static $suiteAttrs = '/name|(?:test|assertion|failure|error)s|time|file/';
+    private static $suiteAttrs = '/name|(?:test|assertion|failure|error|warning)s|skipped|time|file/';
 
     /**
      * A pattern for matching testcase attrs.
@@ -48,21 +48,6 @@ final class Writer
      * @var string
      */
     private static $caseAttrs = '/name|class|file|line|assertions|time/';
-
-    /**
-     * A default suite to ease flattening of
-     * suite structures.
-     *
-     * @var array<string, int>
-     */
-    private static $defaultSuite = [
-        'tests' => 0,
-        'assertions' => 0,
-        'failures' => 0,
-        'skipped' => 0,
-        'errors' => 0,
-        'time' => 0,
-    ];
 
     public function __construct(LogInterpreter $interpreter, string $name)
     {
@@ -124,6 +109,10 @@ final class Writer
                 continue;
             }
 
+            if ($name === 'time') {
+                $value = sprintf('%F', $value);
+            }
+
             $suiteNode->setAttribute($name, (string) $value);
         }
 
@@ -141,9 +130,9 @@ final class Writer
         $caseNode = $this->document->createElement('testcase');
         $vars     = get_object_vars($case);
         foreach ($vars as $name => $value) {
-            $match = preg_match(static::$caseAttrs, $name);
-            assert($match !== false);
-            if ($match === 0) {
+            $matchCount = preg_match(static::$caseAttrs, $name);
+            assert($matchCount !== false);
+            if ($matchCount === 0) {
                 continue;
             }
 
@@ -151,12 +140,24 @@ final class Writer
                 continue;
             }
 
+            if ($name === 'time') {
+                $value = sprintf('%F', $value);
+            }
+
             $caseNode->setAttribute($name, (string) $value);
+
+            if ($name !== 'class') {
+                continue;
+            }
+
+            $caseNode->setAttribute('classname', str_replace('\\', '.', (string) $value));
         }
 
         $suiteNode->appendChild($caseNode);
         $this->appendDefects($caseNode, $case->failures, 'failure');
         $this->appendDefects($caseNode, $case->errors, 'error');
+        $this->appendDefects($caseNode, $case->warnings, 'warning');
+        $this->appendDefects($caseNode, $case->skipped, 'skipped');
 
         return $caseNode;
     }
@@ -169,8 +170,13 @@ final class Writer
     private function appendDefects(DOMElement $caseNode, array $defects, string $type): void
     {
         foreach ($defects as $defect) {
-            $defectNode = $this->document->createElement($type, htmlspecialchars($defect['text'], ENT_XML1) . "\n");
-            $defectNode->setAttribute('type', $defect['type']);
+            if ($type === 'skipped') {
+                $defectNode = $this->document->createElement($type);
+            } else {
+                $defectNode = $this->document->createElement($type, htmlspecialchars($defect['text'], ENT_XML1) . "\n");
+                $defectNode->setAttribute('type', $defect['type']);
+            }
+
             $caseNode->appendChild($defectNode);
         }
     }
@@ -203,22 +209,34 @@ final class Writer
      * Get the attributes used on the root testsuite
      * node.
      *
-     * @param array<string, TestSuite> $suites
+     * @param TestSuite[] $suites
      *
-     * @return mixed
+     * @return array<string, int|float|string>
      */
-    private function getSuiteRootAttributes(array $suites)
+    private function getSuiteRootAttributes(array $suites): array
     {
-        return array_reduce($suites, static function (array $result, TestSuite $suite): array {
+        $result = [
+            'name' => $this->name,
+            'tests' => 0,
+            'assertions' => 0,
+            'errors' => 0,
+            'warnings' => 0,
+            'failures' => 0,
+            'skipped' => 0,
+            'time' => 0,
+        ];
+
+        foreach ($suites as $suite) {
             $result['tests']      += $suite->tests;
             $result['assertions'] += $suite->assertions;
+            $result['errors']     += $suite->errors;
+            $result['warnings']   += $suite->warnings;
             $result['failures']   += $suite->failures;
             $result['skipped']    += $suite->skipped;
-            $result['errors']     += $suite->errors;
             $result['time']       += $suite->time;
+        }
 
-            return $result;
-        }, array_merge(['name' => $this->name], self::$defaultSuite));
+        return $result;
     }
 
     /**

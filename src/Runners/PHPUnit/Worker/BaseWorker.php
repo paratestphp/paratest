@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\Options;
-use RuntimeException;
+use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 use function array_map;
+use function array_merge;
 use function assert;
 use function count;
 use function end;
 use function escapeshellarg;
 use function explode;
-use function fclose;
 use function fread;
 use function getenv;
 use function implode;
-use function is_numeric;
 use function is_resource;
 use function proc_get_status;
 use function proc_open;
@@ -33,12 +32,6 @@ use const PHP_EOL;
 
 abstract class BaseWorker
 {
-    /** @var string[][] */
-    protected static $descriptorspec = [
-        0 => ['pipe', 'r'],
-        1 => ['pipe', 'w'],
-        2 => ['pipe', 'w'],
-    ];
     /** @var resource|null */
     protected $proc;
     /** @var resource[] */
@@ -50,6 +43,12 @@ abstract class BaseWorker
     /** @var string[] */
     protected $commands = [];
 
+    /** @var string[][] */
+    private static $descriptorspec = [
+        0 => ['pipe', 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w'],
+    ];
     /** @var int|null */
     private $exitCode = null;
     /** @var string */
@@ -62,52 +61,39 @@ abstract class BaseWorker
         $this->output = $output;
     }
 
-    /**
-     * @param string[] $parameters
-     */
     final public function start(
         string $wrapperBinary,
-        ?int $token = 1,
-        ?string $uniqueToken = null,
-        array $parameters = [],
-        ?Options $options = null
+        Options $options,
+        int $token
     ): void {
-        $env             = getenv();
-        $env['PARATEST'] = 1;
-        if (is_numeric($token)) {
-            $env['XDEBUG_CONFIG'] = 'true';
-            $env['TEST_TOKEN']    = $token;
-        }
-
-        if ($uniqueToken !== null) {
-            $env['UNIQUE_TEST_TOKEN'] = $uniqueToken;
-        }
+        $env = array_merge(getenv(), $options->fillEnvWithTokens($token));
 
         $finder        = new PhpExecutableFinder();
         $phpExecutable = $finder->find();
         assert($phpExecutable !== false);
 
         $bin = escapeshellarg($phpExecutable);
-        if ($options !== null && ($passthruPhp = $options->passthruPhp()) !== null) {
-                $bin .= ' ' . implode(' ', $passthruPhp) . ' ';
+        if (($passthruPhp = $options->passthruPhp()) !== null) {
+            $bin .= ' ' . implode(' ', $passthruPhp) . ' ';
         }
 
         $bin .= ' ' . escapeshellarg($wrapperBinary);
 
+        $parameters = [];
         $this->configureParameters($parameters);
         if (count($parameters) > 0) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
         }
 
         $pipes = [];
-        if ($options !== null && $options->verbose() > 0) {
-            $this->output->writeln("Starting WrapperWorker via: $bin");
+        if ($options->verbose() > 0) {
+            $this->output->writeln("Starting WrapperWorker via: {$bin}");
         }
 
         // Taken from \Symfony\Component\Process\Process::prepareWindowsCommandLine
         // Needed to handle spaces in the binary path, boring to test in CI
         if (DIRECTORY_SEPARATOR === '\\') {
-            $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin);
+            $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin); // @codeCoverageIgnore
         }
 
         $process     = proc_open($bin, self::$descriptorspec, $pipes, null, $env);
@@ -139,17 +125,8 @@ abstract class BaseWorker
         return $status !== false ? $status['running'] : false;
     }
 
-    final public function isStarted(): bool
+    final public function checkNotCrashed(): void
     {
-        return $this->proc !== null && $this->pipes !== [];
-    }
-
-    final public function isCrashed(): bool
-    {
-        if (! $this->isStarted()) {
-            return false;
-        }
-
         assert($this->proc !== null);
         $status = proc_get_status($this->proc);
         assert($status !== false);
@@ -157,25 +134,19 @@ abstract class BaseWorker
         $this->updateStateFromAvailableOutput();
 
         $this->setExitCode($status['running'], $status['exitcode']);
-        if ($this->exitCode === null) {
-            return false;
+        if ($this->exitCode === null || $this->exitCode === 0) {
+            return;
         }
 
-        return $this->exitCode !== 0;
-    }
-
-    final public function checkNotCrashed(): void
-    {
-        if ($this->isCrashed()) {
-            throw new RuntimeException($this->getCrashReport());
-        }
+        throw new WorkerCrashedException($this->getCrashReport());
     }
 
     final public function getCrashReport(): string
     {
-        $lastCommand = count($this->commands) !== 0 ? ' Last executed command: ' . end($this->commands) : '';
+        $lastCommand = count($this->commands) !== 0 ? 'Last executed command: ' . end($this->commands) : '';
 
-        return 'This worker has crashed.' . $lastCommand . PHP_EOL
+        return 'This worker has crashed.' . PHP_EOL
+            . $lastCommand . PHP_EOL
             . 'Output:' . PHP_EOL
             . '----------------------' . PHP_EOL
             . $this->alreadyReadOutput . PHP_EOL
@@ -183,21 +154,9 @@ abstract class BaseWorker
             . $this->readAllStderr();
     }
 
-    final public function stop(): void
-    {
-        $this->doStop();
-        fclose($this->pipes[0]);
-    }
-
-    abstract protected function doStop(): void;
-
     final protected function setExitCode(bool $running, int $exitcode): void
     {
-        if ($running) {
-            return;
-        }
-
-        if ($this->exitCode !== null) {
+        if ($running || $this->exitCode !== null) {
             return;
         }
 

@@ -7,37 +7,26 @@ namespace ParaTest\Tests\Unit\Parser;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Tests\TestBase;
 
+/**
+ * @covers \ParaTest\Parser\ParsedObject
+ * @covers \ParaTest\Parser\ParsedFunction
+ */
 final class ParsedObjectTest extends TestBase
 {
     /** @var ParsedClass  */
-    protected $parsedClass;
+    private $parsedClass;
+    /** @var string */
+    private $docBlock;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
-        $this->parsedClass = new ParsedClass("/**\n * @test\n @group group1\n*\/", 'MyClass', 'My\\Name\\Space');
+        $this->docBlock    = "/**\n * @test\n @group group1\n*\\/";
+        $this->parsedClass = new ParsedClass($this->docBlock, self::class, 'My\\Name\\Space', []);
     }
 
-    public function testHasAnnotationReturnsTrueWhenAnnotationPresent(): void
+    public function testGetters(): void
     {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('test');
-        static::assertTrue($hasAnnotation);
-    }
-
-    public function testHasAnnotationReturnsFalseWhenAnnotationNotPresent(): void
-    {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('pizza');
-        static::assertFalse($hasAnnotation);
-    }
-
-    public function testHasAnnotationReturnsTrueWhenAnnotationAndValueMatch(): void
-    {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group1');
-        static::assertTrue($hasAnnotation);
-    }
-
-    public function testHasAnnotationReturnsFalseWhenAnnotationAndValueDontMatch(): void
-    {
-        $hasAnnotation = $this->parsedClass->hasAnnotation('group', 'group2');
-        static::assertFalse($hasAnnotation);
+        static::assertSame(self::class, $this->parsedClass->getName());
+        static::assertSame($this->docBlock, $this->parsedClass->getDocBlock());
     }
 }

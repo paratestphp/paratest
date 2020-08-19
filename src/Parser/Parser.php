@@ -7,7 +7,6 @@ namespace ParaTest\Parser;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
 
 use function array_diff;
@@ -67,15 +66,7 @@ final class Parser
             throw new NoClassInFileException();
         }
 
-        try {
-            $this->refl = new ReflectionClass($class);
-        } catch (ReflectionException $reflectionException) {
-            throw new InvalidArgumentException(
-                'Unable to instantiate ReflectionClass. ' . $class . ' not found in: ' . $srcPath,
-                0,
-                $reflectionException
-            );
-        }
+        $this->refl = new ReflectionClass($class);
     }
 
     /**
@@ -140,16 +131,11 @@ final class Parser
         $newClasses = array_values(array_diff($classes, $previousDeclaredClasses));
 
         $className = $this->searchForUnitTestClass($newClasses, $filename);
-        if (isset($className)) {
+        if ($className !== null) {
             return $className;
         }
 
-        $className = $this->searchForUnitTestClass($classes, $filename);
-        if (isset($className)) {
-            return $className;
-        }
-
-        return null;
+        return $this->searchForUnitTestClass($classes, $filename);
     }
 
     /**

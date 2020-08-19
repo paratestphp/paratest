@@ -8,14 +8,17 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Tests\TestBase;
 
+/**
+ * @covers \ParaTest\Parser\ParsedClass
+ */
 final class ParsedClassTest extends TestBase
 {
     /** @var ParsedClass  */
-    protected $class;
+    private $class;
     /** @var ParsedFunction[]  */
-    protected $methods;
+    private $methods;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->methods = [
             new ParsedFunction(
@@ -32,43 +35,12 @@ final class ParsedClassTest extends TestBase
             ),
             new ParsedFunction('', 'testFunction3'),
         ];
-        $this->class   = new ParsedClass('', 'MyTestClass', '', $this->methods);
+        $this->class   = new ParsedClass('', 'MyTestClass', 'MyNamespace', $this->methods);
     }
 
-    public function testGetMethodsReturnsMethods(): void
+    public function testGetters(): void
     {
-        static::assertEquals($this->methods, $this->class->getMethods());
-    }
-
-    public function testGetMethodsMultipleAnnotationsReturnsMethods(): void
-    {
-        $goodMethod     = new ParsedFunction(
-            '/**
-              * @group group1
-              */',
-            'testFunction'
-        );
-        $goodMethod2    = new ParsedFunction(
-            '/**
-              * @group group2
-              */',
-            'testFunction2'
-        );
-        $badMethod      = new ParsedFunction(
-            '/**
-              * @group group3
-              */',
-            'testFunction2'
-        );
-        $annotatedClass = new ParsedClass('', 'MyTestClass', '', [$goodMethod, $goodMethod2, $badMethod]);
-        $methods        = $annotatedClass->getMethods(['group' => 'group1,group2']);
-        static::assertEquals([$goodMethod, $goodMethod2], $methods);
-    }
-
-    public function testGetMethodsExceptsAdditionalAnnotationFilter(): void
-    {
-        $group1 = $this->class->getMethods(['group' => 'group1']);
-        static::assertCount(1, $group1);
-        static::assertEquals($this->methods[0], $group1[0]);
+        static::assertSame('MyNamespace', $this->class->getNamespace());
+        static::assertSame($this->methods, $this->class->getMethods());
     }
 }

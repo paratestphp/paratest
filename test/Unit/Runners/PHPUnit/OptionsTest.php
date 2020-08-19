@@ -4,29 +4,30 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Input\InputDefinition;
 
 use function defined;
 use function file_put_contents;
-use function glob;
 use function intdiv;
-use function is_dir;
-use function mkdir;
+use function mt_rand;
 use function sort;
-use function unlink;
+use function str_replace;
+use function sys_get_temp_dir;
 
+/**
+ * @covers \ParaTest\Runners\PHPUnit\Options
+ */
 final class OptionsTest extends TestBase
 {
     /** @var Options */
     private $options;
     /** @var array<string, mixed>  */
     private $unfiltered;
-    /** @var string */
-    private $testCwd;
 
-    public function setUp(): void
+    public function setUpTest(): void
     {
         $this->unfiltered = [
             '--processes' => 5,
@@ -37,27 +38,8 @@ final class OptionsTest extends TestBase
             '--exclude-group' => 'group2',
             '--bootstrap' => '/path/to/bootstrap',
         ];
-        $this->options    = $this->createOptionsFromArgv($this->unfiltered);
-        $this->testCwd    = __DIR__ . DS . 'generated-configs';
-        if (! is_dir($this->testCwd)) {
-            mkdir($this->testCwd, 0777, true);
-        }
 
-        $this->cleanUpGeneratedFiles();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->cleanUpGeneratedFiles();
-    }
-
-    private function cleanUpGeneratedFiles(): void
-    {
-        $glob = glob($this->testCwd . DS . '*');
-        self::assertNotFalse($glob);
-        foreach ($glob as $file) {
-            unlink($file);
-        }
+        $this->options = $this->createOptionsFromArgv($this->unfiltered);
     }
 
     public function testOptionsAreOrdered(): void
@@ -91,17 +73,14 @@ final class OptionsTest extends TestBase
         static::assertEquals([$this->unfiltered['--group']], $this->options->group());
     }
 
-    public function testAnnotationsReturnsAnnotations(): void
+    public function testFilterOptionRequiresFunctionalMode(): void
     {
-        static::assertCount(1, $this->options->annotations());
-        static::assertEquals('group1', $this->options->annotations()['group']);
-    }
+        $this->expectException(InvalidArgumentException::class);
 
-    public function testAnnotationsDefaultsToEmptyArray(): void
-    {
-        $options = $this->createOptionsFromArgv([]);
-
-        static::assertEmpty($options->annotations());
+        $this->createOptionsFromArgv([
+            '--functional' => false,
+            '--filter' => 'testMe',
+        ]);
     }
 
     public function testHalfProcessesMode(): void
@@ -113,17 +92,17 @@ final class OptionsTest extends TestBase
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml', $this->testCwd);
+        $this->assertConfigurationFileFiltered('phpunit.xml', TMP_DIR);
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml.dist', $this->testCwd);
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', TMP_DIR);
     }
 
     public function testConfigurationShouldReturnSpecifiedConfigurationIfFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', $this->testCwd, 'phpunit-myconfig.xml');
+        $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', TMP_DIR, 'phpunit-myconfig.xml');
     }
 
     public function testConfigurationKeyIsNotPresentIfNoConfigGiven(): void
@@ -135,16 +114,13 @@ final class OptionsTest extends TestBase
 
     public function testPassthru(): void
     {
+        $argv = [
+            '--passthru' => "'--prepend' 'xdebug-filter.php'",
+            '--passthru-php' => "'-d' 'zend_extension=xdebug.so'",
+        ];
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $argv = [
-                '--passthru' => '"--prepend" "xdebug-filter.php"',
-                '--passthru-php' => '"-d" "zend_extension=xdebug.so"',
-            ];
-        } else {
-            $argv = [
-                '--passthru' => "'--prepend' 'xdebug-filter.php'",
-                '--passthru-php' => "'-d' 'zend_extension=xdebug.so'",
-            ];
+            $argv['--passthru']     = str_replace('\'', '"', $argv['--passthru']);
+            $argv['--passthru-php'] = str_replace('\'', '"', $argv['--passthru-php']);
         }
 
         $options = $this->createOptionsFromArgv($argv);
@@ -162,12 +138,12 @@ final class OptionsTest extends TestBase
 
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml', $this->testCwd, $this->testCwd);
+        $this->assertConfigurationFileFiltered('phpunit.xml', TMP_DIR, TMP_DIR);
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigSpecifiedAsDirectoryAndFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml.dist', $this->testCwd, $this->testCwd);
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', TMP_DIR, TMP_DIR);
     }
 
     private function assertConfigurationFileFiltered(
@@ -175,17 +151,17 @@ final class OptionsTest extends TestBase
         string $path,
         ?string $configurationParameter = null
     ): void {
-        file_put_contents($this->testCwd . DS . $configFileName, '<?xml version="1.0" encoding="UTF-8"?><phpunit />');
+        file_put_contents(TMP_DIR . DS . $configFileName, '<?xml version="1.0" encoding="UTF-8"?><phpunit />');
         $this->unfiltered['path'] = $path;
         if ($configurationParameter !== null) {
             $this->unfiltered['--configuration'] = $configurationParameter;
         }
 
-        $options       = $this->createOptionsFromArgv($this->unfiltered, $this->testCwd);
+        $options       = $this->createOptionsFromArgv($this->unfiltered, TMP_DIR);
         $configuration = $options->configuration();
         static::assertNotNull($configuration);
         static::assertEquals(
-            $this->testCwd . DS . $configFileName,
+            TMP_DIR . DS . $configFileName,
             $configuration->filename()
         );
     }
@@ -206,6 +182,7 @@ final class OptionsTest extends TestBase
         static::assertNull($options->coverageXml());
         static::assertEmpty($options->excludeGroup());
         static::assertNull($options->filter());
+        static::assertEmpty($options->filtered());
         static::assertFalse($options->functional());
         static::assertEmpty($options->group());
         static::assertNull($options->logJunit());
@@ -220,6 +197,8 @@ final class OptionsTest extends TestBase
         static::assertStringContainsString('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
         static::assertEmpty($options->testsuite());
+        static::assertSame(sys_get_temp_dir(), $options->tmpDir());
+        static::assertSame(0, $options->verbose());
         static::assertNull($options->whitelist());
     }
 
@@ -252,6 +231,8 @@ final class OptionsTest extends TestBase
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',
+            '--tmp-dir' => TMP_DIR,
+            '--verbose' => 1,
             '--whitelist' => 'WHITELIST',
         ];
 
@@ -283,6 +264,42 @@ final class OptionsTest extends TestBase
         static::assertSame('MYRUNNER', $options->runner());
         static::assertTrue($options->stopOnFailure());
         static::assertSame(['TESTSUITE'], $options->testsuite());
+        static::assertSame(TMP_DIR, $options->tmpDir());
+        static::assertSame(1, $options->verbose());
         static::assertSame('WHITELIST', $options->whitelist());
+
+        static::assertSame([
+            'bootstrap' => 'BOOTSTRAP',
+            'configuration' => $options->configuration()->filename(),
+            'group' => 'GROUP',
+            'exclude-group' => 'EXCLUDE-GROUP',
+            'whitelist' => 'WHITELIST',
+        ], $options->filtered());
+
+        static::assertTrue($options->hasCoverage());
+    }
+
+    public function testFillEnvWithTokens(): void
+    {
+        $options = $this->createOptionsFromArgv(['--no-test-tokens' => false]);
+
+        $inc = mt_rand(10, 99);
+        $env = $options->fillEnvWithTokens($inc);
+
+        static::assertSame(1, $env['PARATEST']);
+        static::assertArrayHasKey(Options::ENV_KEY_TOKEN, $env);
+        static::assertSame($inc, $env[Options::ENV_KEY_TOKEN]);
+        static::assertArrayHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
+        static::assertIsString($env[Options::ENV_KEY_UNIQUE_TOKEN]);
+        static::assertStringContainsString($inc . '_', $env[Options::ENV_KEY_UNIQUE_TOKEN]);
+
+        $options = $this->createOptionsFromArgv(['--no-test-tokens' => true]);
+
+        $inc = mt_rand(10, 99);
+        $env = $options->fillEnvWithTokens($inc);
+
+        static::assertSame(1, $env['PARATEST']);
+        static::assertArrayNotHasKey(Options::ENV_KEY_TOKEN, $env);
+        static::assertArrayNotHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
     }
 }

@@ -9,7 +9,6 @@ use ParaTest\Logging\MetaProvider;
 use SimpleXMLElement;
 
 use function array_merge;
-use function array_reduce;
 use function assert;
 use function count;
 use function current;
@@ -18,7 +17,7 @@ use function file_get_contents;
 use function filesize;
 use function unlink;
 
-final class Reader extends MetaProvider
+final class Reader implements MetaProvider
 {
     /** @var SimpleXMLElement */
     private $xml;
@@ -32,28 +31,16 @@ final class Reader extends MetaProvider
     /** @var string */
     protected $logFile;
 
-    /** @var array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} */
-    private static $defaultSuite = [
-        'name' => '',
-        'file' => '',
-        'tests' => 0,
-        'assertions' => 0,
-        'failures' => 0,
-        'errors' => 0,
-        'skipped' => 0,
-        'time' => 0.0,
-    ];
-
     public function __construct(string $logFile)
     {
         if (! file_exists($logFile)) {
-            throw new InvalidArgumentException("Log file $logFile does not exist");
+            throw new InvalidArgumentException("Log file {$logFile} does not exist");
         }
 
         $this->logFile = $logFile;
         if (filesize($logFile) === 0) {
             throw new InvalidArgumentException(
-                "Log file $logFile is empty. This means a PHPUnit process has crashed."
+                "Log file {$logFile} is empty. This means a PHPUnit process has crashed."
             );
         }
 
@@ -144,10 +131,10 @@ final class Reader extends MetaProvider
      */
     private function initSuiteFromCases(array $nodeArray): void
     {
-        $testCases  = [];
-        $properties = $this->caseNodesToSuiteProperties($nodeArray, $testCases);
+        $testCases = [];
+        $testSuite = $this->caseNodesToSuite($nodeArray, $testCases);
         if (! $this->isSingle) {
-            $this->addSuite($properties, $testCases);
+            $this->addSuite($testSuite, $testCases);
         } else {
             $suite        = $this->suites[0];
             $suite->cases = array_merge($suite->cases, $testCases);
@@ -158,12 +145,10 @@ final class Reader extends MetaProvider
      * Creates and adds a TestSuite based on the given
      * suite properties and collection of test cases.
      *
-     * @param array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $properties
-     * @param TestCase[]                                                                                                            $testCases
+     * @param TestCase[] $testCases
      */
-    private function addSuite(array $properties, array $testCases): void
+    private function addSuite(TestSuite $suite, array $testCases): void
     {
-        $suite                     = TestSuite::suiteFromArray($properties);
         $suite->cases              = $testCases;
         $this->suites[0]->suites[] = $suite;
     }
@@ -173,31 +158,26 @@ final class Reader extends MetaProvider
      *
      * @param SimpleXMLElement[] $nodeArray an array of testcase nodes
      * @param TestCase[]         $testCases an array reference. Individual testcases will be placed here.
-     *
-     * @return array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float}
      */
-    private function caseNodesToSuiteProperties(array $nodeArray, array &$testCases = []): array
+    private function caseNodesToSuite(array $nodeArray, array &$testCases = []): TestSuite
     {
-        /** @var array{name: string, file: string, assertions: int, tests: int, failures: int, errors: int, skipped: int, time: float} $result */
-        $result = array_reduce(
-            $nodeArray,
-            static function (array $result, SimpleXMLElement $xmlElement) use (&$testCases): array {
-                $testCases[]    = TestCase::caseFromNode($xmlElement);
-                $result['name'] = (string) $xmlElement['class'];
-                $result['file'] = (string) $xmlElement['file'];
-                ++$result['tests'];
-                $result['assertions'] += (int) $xmlElement['assertions'];
-                $result['failures']   += ($failues = $xmlElement->xpath('failure')) !== false ? count($failues) : 0;
-                $result['errors']     += ($error = $xmlElement->xpath('error')) !== false ? count($error) : 0;
-                $result['skipped']    += ($skipped = $xmlElement->xpath('skipped')) !== false ? count($skipped) : 0;
-                $result['time']       += (float) $xmlElement['time'];
+        $testSuite = TestSuite::empty();
+        foreach ($nodeArray as $simpleXMLElement) {
+            $testCase    = TestCase::caseFromNode($simpleXMLElement);
+            $testCases[] = $testCase;
 
-                return $result;
-            },
-            static::$defaultSuite
-        );
+            $testSuite->name = $testCase->class;
+            $testSuite->file = $testCase->file;
+            ++$testSuite->tests;
+            $testSuite->assertions += $testCase->assertions;
+            $testSuite->failures   += count($testCase->failures);
+            $testSuite->errors     += count($testCase->errors);
+            $testSuite->warnings   += count($testCase->warnings);
+            $testSuite->skipped    += count($testCase->skipped);
+            $testSuite->time       += $testCase->time;
+        }
 
-        return $result;
+        return $testSuite;
     }
 
     /**
@@ -239,44 +219,101 @@ final class Reader extends MetaProvider
         $node = current($node);
 
         if ($node !== false) {
-            $this->suites[] = TestSuite::suiteFromNode($node);
+            $this->suites[] = new TestSuite(
+                (string) $node['name'],
+                (int) $node['tests'],
+                (int) $node['assertions'],
+                (int) $node['failures'],
+                (int) $node['errors'],
+                (int) $node['warnings'],
+                (int) $node['skipped'],
+                (float) $node['time'],
+                (string) $node['file']
+            );
         } else {
-            $this->suites[] = TestSuite::suiteFromArray(self::$defaultSuite);
+            $this->suites[] = TestSuite::empty();
         }
     }
 
-    /**
-     * Return a value as a float or integer.
-     *
-     * @return float|int
-     */
-    protected function getNumericValue(string $property)
+    public function getTotalTests(): int
     {
-        return $property === 'time'
-            ? (float) $this->suites[0]->$property
-            : (int) $this->suites[0]->$property;
+        return $this->suites[0]->tests;
+    }
+
+    public function getTotalAssertions(): int
+    {
+        return $this->suites[0]->assertions;
+    }
+
+    public function getTotalFailures(): int
+    {
+        return $this->suites[0]->failures;
+    }
+
+    public function getTotalErrors(): int
+    {
+        return $this->suites[0]->errors;
+    }
+
+    public function getTotalWarnings(): int
+    {
+        return $this->suites[0]->warnings;
+    }
+
+    public function getTotalTime(): float
+    {
+        return $this->suites[0]->time;
     }
 
     /**
-     * Return messages for a given type.
-     *
-     * @return string[]
+     * {@inheritDoc}
      */
-    protected function getMessages(string $type): array
+    public function getErrors(): array
     {
         $messages = [];
         $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach ($suites as $suite) {
-            $messages = array_merge(
-                $messages,
-                array_reduce($suite->cases, static function (array $result, TestCase $case) use ($type): array {
-                    return array_merge($result, array_reduce($case->$type, static function (array $msgs, array $msg): array {
-                        $msgs[] = $msg['text'];
+            foreach ($suite->cases as $case) {
+                foreach ($case->errors as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
+        }
 
-                        return $msgs;
-                    }, []));
-                }, [])
-            );
+        return $messages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getWarnings(): array
+    {
+        $messages = [];
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach ($suites as $suite) {
+            foreach ($suite->cases as $case) {
+                foreach ($case->warnings as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
+        }
+
+        return $messages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFailures(): array
+    {
+        $messages = [];
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach ($suites as $suite) {
+            foreach ($suite->cases as $case) {
+                foreach ($case->failures as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
         }
 
         return $messages;

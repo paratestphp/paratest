@@ -4,75 +4,26 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging;
 
-use RuntimeException;
-
-use function preg_match;
-use function strtolower;
-
-/**
- * Adds __call behavior to a logging object
- * for aggregating totals and messages
- *
- * @method int getTotalTests()
- * @method int getTotalAssertions()
- * @method int getTotalFailures()
- * @method int getTotalErrors()
- * @method int getTotalWarning()
- * @method int getTotalTime()
- * @method string[] getFailures()
- * @method string[] getErrors()
- * @method string[] getWarnings()
- */
-abstract class MetaProvider
+interface MetaProvider
 {
-    /**
-     * This pattern is used to see whether a missing
-     * method is a "total" method or not.
-     *
-     * @var string
-     */
-    protected static $totalMethod = '/^getTotal([\w]+)$/';
+    public function getTotalTests(): int;
 
-    /**
-     * This pattern is used to add message retrieval for a given
-     * type - i.e getFailures() or getErrors().
-     *
-     * @var string
-     */
-    protected static $messageMethod = '/^get((Failure|Error|Warning)s)$/';
+    public function getTotalAssertions(): int;
 
-    /**
-     * Simplify aggregation of totals or messages.
-     *
-     * @param mixed[] $args
-     *
-     * @return float|int|string[]
-     */
-    final public function __call(string $method, array $args)
-    {
-        if (preg_match(self::$totalMethod, $method, $matches) > 0 && ($property = strtolower($matches[1])) !== '') {
-            return $this->getNumericValue($property);
-        }
+    public function getTotalFailures(): int;
 
-        if (preg_match(self::$messageMethod, $method, $matches) > 0 && ($type = strtolower($matches[1])) !== '') {
-            return $this->getMessages($type);
-        }
+    public function getTotalErrors(): int;
 
-        throw new RuntimeException("Method $method uknown");
-    }
+    public function getTotalWarnings(): int;
 
-    /**
-     * Returns a value as either a float or int.
-     *
-     * @return float|int
-     */
-    abstract protected function getNumericValue(string $property);
+    public function getTotalTime(): float;
 
-    /**
-     * Gets messages of a given type and
-     * merges them into a single collection.
-     *
-     * @return string[]
-     */
-    abstract protected function getMessages(string $type): array;
+    /** @return string[] */
+    public function getErrors(): array;
+
+    /** @return string[] */
+    public function getWarnings(): array;
+
+    /** @return string[] */
+    public function getFailures(): array;
 }

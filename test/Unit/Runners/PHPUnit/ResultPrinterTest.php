@@ -10,14 +10,17 @@ use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\Unit\ResultTester;
+use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function defined;
-use function file_exists;
 use function file_put_contents;
 use function sprintf;
-use function unlink;
+use function uniqid;
 
+/**
+ * @covers \ParaTest\Runners\PHPUnit\ResultPrinter
+ */
 final class ResultPrinterTest extends ResultTester
 {
     /** @var ResultPrinter */
@@ -40,22 +43,13 @@ final class ResultPrinterTest extends ResultTester
         $this->output      = new BufferedOutput();
         $this->options     = $this->createOptionsFromArgv([]);
         $this->printer     = new ResultPrinter($this->interpreter, $this->output, $this->options);
-        $pathToConfig      = $this->getPathToConfig();
-        if (file_exists($pathToConfig)) {
-            unlink($pathToConfig);
-        }
 
         $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);
     }
 
-    private function getPathToConfig(): string
-    {
-        return __DIR__ . DS . 'phpunit-myconfig.xml';
-    }
-
     public function testConstructor(): void
     {
-        static::assertEquals([], $this->getObjectValue($this->printer, 'suites'));
+        static::assertSame([], $this->getObjectValue($this->printer, 'suites'));
         static::assertInstanceOf(
             LogInterpreter::class,
             $this->getObjectValue($this->printer, 'results')
@@ -64,20 +58,11 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldAddTest(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false, TMP_DIR);
 
         $this->printer->addTest($suite);
 
-        static::assertEquals([$suite], $this->getObjectValue($this->printer, 'suites'));
-    }
-
-    public function testAddTestReturnsSelf(): void
-    {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false);
-
-        $self = $this->printer->addTest($suite);
-
-        static::assertSame($this->printer, $self);
+        static::assertSame([$suite], $this->getObjectValue($this->printer, 'suites'));
     }
 
     public function testStartPrintsOptionInfo(): void
@@ -95,26 +80,27 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, [], false);
+            $funcs[] = new TestMethod((string) $i, [], false, TMP_DIR);
         }
 
-        $suite = new Suite('/path', $funcs, false);
+        $suite = new Suite('/path', $funcs, false, TMP_DIR);
         $this->printer->addTest($suite);
         $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
-        static::assertEquals(3, $numTestsWidth);
+        static::assertSame(3, $numTestsWidth);
         $maxExpectedColumun = 63;
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $maxExpectedColumun -= 1;
         }
 
         $maxColumn = $this->getObjectValue($this->printer, 'maxColumn');
-        static::assertEquals($maxExpectedColumun, $maxColumn);
+        static::assertSame($maxExpectedColumun, $maxColumn);
     }
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void
     {
-        $pathToConfig = $this->getPathToConfig();
+        $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
+
         file_put_contents($pathToConfig, '<root />');
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--configuration' => $pathToConfig]));
         $contents      = $this->getStartOutput();
@@ -150,24 +136,24 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new TestMethod('funcOne', [], false),
-            new TestMethod('funcTwo', [], false),
-        ], false);
+            new TestMethod('funcOne', [], false, TMP_DIR),
+            new TestMethod('funcTwo', [], false, TMP_DIR),
+        ], false, TMP_DIR);
         $this->printer->addTest($suite);
-        static::assertEquals(2, $this->printer->getTotalCases());
+        static::assertSame(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod'], false);
+        $method = new TestMethod('/path', ['testThisMethod'], false, TMP_DIR);
         $this->printer->addTest($method);
-        static::assertEquals(1, $this->printer->getTotalCases());
+        static::assertSame(1, $this->printer->getTotalCases());
     }
 
     public function testGetHeader(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->failureSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->failureSuite);
 
         $this->prepareReaders();
 
@@ -176,15 +162,15 @@ final class ResultPrinterTest extends ResultTester
         static::assertMatchesRegularExpression(
             "/\n\nTime: ([.:]?[0-9]{1,3})+ ?" .
             '(minute|minutes|second|seconds|ms|)?,' .
-            " Memory:[\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
+            " Memory:[\\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
             $header
         );
     }
 
     public function testGetErrorsSingleError(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->failureSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->failureSuite);
 
         $this->prepareReaders();
 
@@ -195,13 +181,13 @@ final class ResultPrinterTest extends ResultTester
         $eq .= "Exception: Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12\n";
 
-        static::assertEquals($eq, $errors);
+        static::assertSame($eq, $errors);
     }
 
     public function testGetErrorsMultipleErrors(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->otherErrorSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->otherErrorSuite);
 
         $this->prepareReaders();
 
@@ -215,7 +201,7 @@ final class ResultPrinterTest extends ResultTester
         $eq .= "Exception: Another Error!!!\n\n";
         $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php:12\n";
 
-        static::assertEquals($eq, $errors);
+        static::assertSame($eq, $errors);
     }
 
     public function testGetFailures(): void
@@ -226,30 +212,33 @@ final class ResultPrinterTest extends ResultTester
 
         $failures = $this->printer->getFailures();
 
-        $eq  = "There were 2 failures:\n\n";
-        $eq .= "1) UnitTestWithClassAnnotationTest::testFalsehood\n";
+        $eq  = "There were 3 failures:\n\n";
+        $eq .= "1) Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20\n";
-        $eq .= "\n2) UnitTestWithMethodAnnotationsTest::testFalsehood\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php:32\n";
+        $eq .= "\n2) UnitTestWithErrorTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20\n";
+        $eq .= "\n3) UnitTestWithMethodAnnotationsTest::testFalsehood\n";
+        $eq .= "Failed asserting that true is false.\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20\n";
 
-        static::assertEquals($eq, $failures);
+        static::assertSame($eq, $failures);
     }
 
     public function testGetFooterWithFailures(): void
     {
-        $this->printer->addTest($this->errorSuite)
-            ->addTest($this->mixedSuite);
+        $this->printer->addTest($this->errorSuite);
+        $this->printer->addTest($this->mixedSuite);
 
         $this->prepareReaders();
 
         $footer = $this->printer->getFooter();
 
         $eq  = "\nFAILURES!\n";
-        $eq .= "Tests: 8, Assertions: 6, Failures: 2, Errors: 2.\n";
+        $eq .= "Tests: 20, Assertions: 10, Failures: 3, Errors: 4.\n";
 
-        static::assertEquals($eq, $footer);
+        static::assertSame($eq, $footer);
     }
 
     public function testGetFooterWithSuccess(): void
@@ -262,7 +251,7 @@ final class ResultPrinterTest extends ResultTester
 
         $eq = "OK (3 tests, 3 assertions)\n";
 
-        static::assertEquals($eq, $footer);
+        static::assertSame($eq, $footer);
     }
 
     public function testPrintFeedbackForMixed(): void
@@ -270,7 +259,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->addTest($this->mixedSuite);
         $this->printer->printFeedback($this->mixedSuite);
         $contents = $this->output->fetch();
-        static::assertEquals('.F.E.F.', $contents);
+        static::assertSame('.F..E.F.WSSE.F.WSSE', $contents);
     }
 
     public function testPrintFeedbackForMoreThan100Suites(): void
@@ -307,7 +296,7 @@ final class ResultPrinterTest extends ResultTester
             $expected .= '.';
         }
 
-        static::assertEquals($expected, $feedback);
+        static::assertSame($expected, $feedback);
     }
 
     public function testResultPrinterAdjustsTotalCountForDataProviders(): void
@@ -344,7 +333,75 @@ final class ResultPrinterTest extends ResultTester
             $expected .= '.';
         }
 
-        static::assertEquals($expected, $feedback);
+        static::assertSame($expected, $feedback);
+    }
+
+    public function testColors(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->mixedSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->mixedSuite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('FAILURES', $this->output->fetch());
+    }
+
+    public function testColorsForSkipped(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->skipped);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->skipped);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('OK', $this->output->fetch());
+    }
+
+    public function testColorsForPassing(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->passingSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->passingSuite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('OK', $this->output->fetch());
+    }
+
+    /**
+     * This test ensure Code Coverage over printSkippedAndIncomplete
+     * but the real case for this test case is missing at the time of writing
+     *
+     * @see \ParaTest\Runners\PHPUnit\ResultPrinter::printSkippedAndIncomplete
+     */
+    public function testParallelSuiteProgressOverhead(): void
+    {
+        $suite = $this->getSuiteWithResult('mixed-results.xml', 100);
+        $this->printer->addTest($suite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($suite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('FAILURES', $this->output->fetch());
+    }
+
+    public function testEmptyLogFileRaiseExceptionWithLastCommand(): void
+    {
+        $test = new ExecutableTestChild(uniqid(), false, TMP_DIR);
+        $test->setLastCommand(uniqid());
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches(sprintf('/%s/', $test->getLastCommand()));
+
+        $this->printer->printFeedback($test);
     }
 
     private function getStartOutput(): string

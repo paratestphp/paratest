@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use InvalidArgumentException;
 use ParaTest\Util\Str;
 use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
-use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,7 +24,6 @@ use function fgets;
 use function file_exists;
 use function file_get_contents;
 use function implode;
-use function in_array;
 use function intdiv;
 use function is_dir;
 use function is_file;
@@ -36,6 +35,8 @@ use function preg_match_all;
 use function realpath;
 use function sprintf;
 use function strlen;
+use function sys_get_temp_dir;
+use function uniqid;
 use function unserialize;
 
 use const DIRECTORY_SEPARATOR;
@@ -47,6 +48,9 @@ use const PHP_BINARY;
  */
 final class Options
 {
+    public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
+    public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
+
     /**
      * @see \PHPUnit\Util\Configuration
      * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
@@ -95,7 +99,7 @@ final class Options
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options.
      *
-     * @var array<string, string>
+     * @var array<string, string|null>
      */
     private $filtered;
 
@@ -126,14 +130,6 @@ final class Options
 
     /** @var string[] */
     private $excludeGroup;
-
-    /**
-     * A collection of option values directly corresponding
-     * to certain annotations - i.e group.
-     *
-     * @var array<string, string>
-     */
-    private $annotations = [];
 
     /**
      * Running the suite defined in the config in parallel.
@@ -190,18 +186,18 @@ final class Options
     private $logJunit;
     /** @var string|null */
     private $whitelist;
+    /** @var string */
+    private $tmpDir;
 
     /**
-     * @param array<string, string> $annotations
-     * @param array<string, string> $filtered
-     * @param string[]              $testsuite
-     * @param string[]              $group
-     * @param string[]              $excludeGroup
-     * @param string[]|null         $passthru
-     * @param string[]|null         $passthruPhp
+     * @param array<string, string|null> $filtered
+     * @param string[]                   $testsuite
+     * @param string[]                   $group
+     * @param string[]                   $excludeGroup
+     * @param string[]|null              $passthru
+     * @param string[]|null              $passthruPhp
      */
     private function __construct(
-        array $annotations,
         ?string $bootstrap,
         bool $colors,
         ?Configuration $configuration,
@@ -229,10 +225,10 @@ final class Options
         string $runner,
         bool $stopOnFailure,
         array $testsuite,
+        string $tmpDir,
         int $verbose,
         ?string $whitelist
     ) {
-        $this->annotations       = $annotations;
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
         $this->configuration     = $configuration;
@@ -260,6 +256,7 @@ final class Options
         $this->runner            = $runner;
         $this->stopOnFailure     = $stopOnFailure;
         $this->testsuite         = $testsuite;
+        $this->tmpDir            = $tmpDir;
         $this->verbose           = $verbose;
         $this->whitelist         = $whitelist;
     }
@@ -300,7 +297,7 @@ final class Options
             : [];
 
         if (isset($options['filter']) && strlen($options['filter']) > 0 && ! $options['functional']) {
-            throw new RuntimeException('Option --filter is not implemented for non functional mode');
+            throw new InvalidArgumentException('Option --filter is not implemented for non functional mode');
         }
 
         $configuration     = null;
@@ -326,10 +323,11 @@ final class Options
             $filtered['exclude-group'] = implode(',', $excludeGroup);
         }
 
-        $annotations = self::initAnnotations($filtered);
+        if ($options['whitelist'] !== null) {
+            $filtered['whitelist'] = $options['whitelist'];
+        }
 
         return new self(
-            $annotations,
             $options['bootstrap'],
             $options['colors'],
             $configuration,
@@ -357,6 +355,7 @@ final class Options
             $options['runner'],
             $options['stop-on-failure'],
             $testsuite,
+            $options['tmp-dir'],
             (int) $options['verbose'],
             $options['whitelist']
         );
@@ -553,6 +552,13 @@ final class Options
                 'Filter which testsuite to run'
             ),
             new InputOption(
+                'tmp-dir',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Temporary directory for internal ParaTest files',
+                sys_get_temp_dir()
+            ),
+            new InputOption(
                 'verbose',
                 'v',
                 InputOption::VALUE_REQUIRED,
@@ -587,7 +593,7 @@ final class Options
             return $phpunit;
         }
 
-        return 'phpunit';
+        return 'phpunit'; // @codeCoverageIgnore
     }
 
     /**
@@ -597,9 +603,9 @@ final class Options
      */
     private static function vendorDir(): string
     {
-        $vendor = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor';
+        $vendor = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'vendor';
         if (! file_exists($vendor)) {
-            $vendor = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
+            $vendor = dirname(__DIR__, 5); // @codeCoverageIgnore
         }
 
         return $vendor;
@@ -641,29 +647,6 @@ final class Options
     }
 
     /**
-     * Load options that are represented by annotations
-     * inside of tests i.e @group group1 = --group group1.
-     *
-     * @param array<string, string> $filtered
-     *
-     * @return array<string, string>
-     */
-    private static function initAnnotations(array $filtered): array
-    {
-        $annotations      = [];
-        $annotatedOptions = ['group'];
-        foreach ($filtered as $key => $value) {
-            if (! in_array($key, $annotatedOptions, true)) {
-                continue;
-            }
-
-            $annotations[$key] = $value;
-        }
-
-        return $annotations;
-    }
-
-    /**
      * Return number of (logical) CPU cores, use 2 as fallback.
      *
      * Used to set number of processes if argument is set to "auto", allows for portable defaults for doc and scripting.
@@ -679,6 +662,7 @@ final class Options
             assert($cpuinfo !== false);
             preg_match_all('/^processor/m', $cpuinfo, $matches);
             $cores = count($matches[0]);
+        // @codeCoverageIgnoreStart
         } elseif (DIRECTORY_SEPARATOR === '\\') {
             // Windows
             if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
@@ -691,6 +675,8 @@ final class Options
             $cores = (int) fgets($process);
             pclose($process);
         }
+
+        // @codeCoverageIgnoreEnd
 
         return $cores;
     }
@@ -754,7 +740,7 @@ final class Options
         return $this->stopOnFailure;
     }
 
-    /** @return array<string, string> */
+    /** @return array<string, string|null> */
     public function filtered(): array
     {
         return $this->filtered;
@@ -801,12 +787,6 @@ final class Options
     public function excludeGroup(): array
     {
         return $this->excludeGroup;
-    }
-
-    /** @return array<string, string> */
-    public function annotations(): array
-    {
-        return $this->annotations;
     }
 
     public function parallelSuite(): bool
@@ -876,8 +856,27 @@ final class Options
         return $this->logJunit;
     }
 
+    public function tmpDir(): string
+    {
+        return $this->tmpDir;
+    }
+
     public function whitelist(): ?string
     {
         return $this->whitelist;
+    }
+
+    /**
+     * @return array{PARATEST: int, TEST_TOKEN?: int, UNIQUE_TEST_TOKEN?: string}
+     */
+    public function fillEnvWithTokens(int $inc): array
+    {
+        $env = ['PARATEST' => 1];
+        if (! $this->noTestTokens()) {
+            $env[self::ENV_KEY_TOKEN]        = $inc;
+            $env[self::ENV_KEY_UNIQUE_TOKEN] = uniqid($inc . '_');
+        }
+
+        return $env;
     }
 }

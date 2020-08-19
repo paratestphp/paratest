@@ -9,16 +9,16 @@ use PDO;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function array_map;
 use function assert;
 use function count;
 use function dirname;
 use function implode;
 use function realpath;
 use function serialize;
-use function sys_get_temp_dir;
 use function tempnam;
-use function uniqid;
 use function unlink;
+use function unserialize;
 use function usleep;
 
 use const DIRECTORY_SEPARATOR;
@@ -39,7 +39,10 @@ final class SqliteRunner extends BaseWrapperRunner
     {
         parent::__construct($opts, $output);
 
-        $this->dbFileName = (string) ($opts->filtered()['database'] ?? tempnam(sys_get_temp_dir(), 'paratest_db_'));
+        $dbFileName = tempnam($opts->tmpDir(), 'paratest_db_');
+        assert($dbFileName !== false);
+
+        $this->dbFileName = $dbFileName;
         $this->db         = new PDO('sqlite:' . $this->dbFileName);
     }
 
@@ -49,15 +52,14 @@ final class SqliteRunner extends BaseWrapperRunner
         unlink($this->dbFileName);
     }
 
-    public function run(): void
+    protected function doRun(): void
     {
-        $this->initialize();
         $this->createTable();
         $this->assignAllPendingTests();
         $this->startWorkers();
         $this->waitForAllToFinish();
-        $this->complete();
         $this->checkIfWorkersCrashed();
+        $this->setExitCode();
     }
 
     /**
@@ -72,15 +74,8 @@ final class SqliteRunner extends BaseWrapperRunner
 
         for ($i = 1; $i <= $this->options->processes(); ++$i) {
             $worker = new SqliteWorker($this->output, $this->dbFileName);
-            if ($this->options->noTestTokens()) {
-                $token       = null;
-                $uniqueToken = null;
-            } else {
-                $token       = $i;
-                $uniqueToken = uniqid();
-            }
 
-            $worker->start($wrapper, $token, $uniqueToken);
+            $worker->start($wrapper, $this->options, $i);
             $this->workers[] = $worker;
         }
     }
@@ -111,17 +106,18 @@ final class SqliteRunner extends BaseWrapperRunner
      */
     private function createTable(): void
     {
-        $statement = 'CREATE TABLE tests (
-                          id INTEGER PRIMARY KEY,
-                          command TEXT NOT NULL UNIQUE,
-                          file_name TEXT NOT NULL,
-                          reserved_by_process_id INTEGER,
-                          completed INTEGER DEFAULT 0
-                        )';
+        $statement = '
+            CREATE TABLE tests (
+              id INTEGER PRIMARY KEY,
+              command TEXT NOT NULL UNIQUE,
+              file_name TEXT NOT NULL,
+              reserved_by_process_id INTEGER,
+              completed INTEGER DEFAULT 0
+            )
+        ';
 
-        if ($this->db->exec($statement) === false) {
-            throw new RuntimeException('Error while creating sqlite database table: ' . $this->db->errorCode());
-        }
+        $tableCreationResult = $this->db->exec($statement);
+        assert($tableCreationResult !== false);
     }
 
     /**
@@ -134,7 +130,8 @@ final class SqliteRunner extends BaseWrapperRunner
                 ->execute([
                     ':command' => serialize($test->commandArguments(
                         $this->options->phpunit(),
-                        $this->options->filtered()
+                        $this->options->filtered(),
+                        $this->options->passthru()
                     )),
                     ':fileName' => $fileName,
                 ]);
@@ -151,7 +148,14 @@ final class SqliteRunner extends BaseWrapperRunner
         $tests = $stmt->fetchAll();
         assert($tests !== false);
         foreach ($tests as $test) {
-            $this->printer->printFeedback($this->pending[$test['file_name']]);
+            $executableTest = $this->pending[$test['file_name']];
+            if ($this->hasCoverage()) {
+                $coverageMerger = $this->getCoverage();
+                assert($coverageMerger !== null);
+                $coverageMerger->addCoverageFromFile($executableTest->getCoverageFileName());
+            }
+
+            $this->printer->printFeedback($executableTest);
             $this->db->prepare('DELETE FROM tests WHERE id = :id')->execute([
                 'id' => $test['id'],
             ]);
@@ -171,8 +175,12 @@ final class SqliteRunner extends BaseWrapperRunner
 
         $commandStmt = $this->db->query('SELECT command FROM tests');
         assert($commandStmt !== false);
+        $commands = (array) $commandStmt->fetchAll(PDO::FETCH_COLUMN);
+        $commands = array_map(static function (string $serializedCommand): string {
+            return implode(' ', array_map('escapeshellarg', unserialize($serializedCommand)));
+        }, $commands);
 
-        throw new RuntimeException(
+        throw new WorkerCrashedException(
             'Some workers have crashed.' . PHP_EOL
             . '----------------------' . PHP_EOL
             . 'All workers have quit, but some tests are still to be executed.' . PHP_EOL
@@ -180,7 +188,7 @@ final class SqliteRunner extends BaseWrapperRunner
             . '----------------------' . PHP_EOL
             . 'Failed test command(s):' . PHP_EOL
             . '----------------------' . PHP_EOL
-            . implode(PHP_EOL, (array) $commandStmt->fetchAll(PDO::FETCH_COLUMN))
+            . implode(PHP_EOL, $commands)
         );
     }
 }

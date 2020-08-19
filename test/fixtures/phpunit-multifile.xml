@@ -4,6 +4,7 @@
         <testsuite name="ParaTest Fixtures">
             <file>./passing-tests/TestOfUnits.php</file>
             <file>./passing-tests/GroupsTest.php</file>
+            <file>./failing-tests/FailingTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

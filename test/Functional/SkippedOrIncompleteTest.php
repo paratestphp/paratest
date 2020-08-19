@@ -10,6 +10,7 @@ use function substr_count;
 /**
  * @todo SkippedOrIncompleteTest can't be used in default mode with group filter
  *       (not implemented yet) so we have to split tests per file.
+ * @coversNothing
  */
 final class SkippedOrIncompleteTest extends FunctionalTestBase
 {
@@ -118,7 +119,7 @@ final class SkippedOrIncompleteTest extends FunctionalTestBase
         static::assertEquals(
             $n,
             $numberOfS,
-            "The test should have skipped $n tests, instead it skipped $numberOfS, $matches[1]"
+            "The test should have skipped {$n} tests, instead it skipped {$numberOfS}, {$matches[1]}"
         );
     }
 }

@@ -30,6 +30,7 @@ use function preg_match;
 use function sprintf;
 use function strrpos;
 use function substr;
+use function trim;
 use function version_compare;
 
 use const PHP_VERSION;
@@ -60,16 +61,12 @@ final class SuiteLoader
      */
     private $configuration;
 
-    /** @var Options|null */
-    public $options;
+    /** @var Options */
+    private $options;
 
-    public function __construct(?Options $options = null)
+    public function __construct(Options $options)
     {
-        $this->options = $options;
-        if ($options === null) {
-            return;
-        }
-
+        $this->options       = $options;
         $this->configuration = $options->configuration();
     }
 
@@ -107,18 +104,17 @@ final class SuiteLoader
      *
      * @throws RuntimeException
      */
-    public function load(?string $path = null): void
+    public function load(): void
     {
         $this->loadConfiguration();
 
-        if ($path !== null) {
+        if (($path = $this->options->path()) !== null) {
             $this->files = array_merge(
                 $this->files,
                 (new Facade())->getFilesAsArray($path, ['Test.php'])
             );
         } elseif (
-            $this->options !== null
-            && $this->options->parallelSuite()
+            $this->options->parallelSuite()
             && $this->configuration !== null
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
@@ -130,13 +126,13 @@ final class SuiteLoader
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
             $testSuiteCollection = $this->configuration->testSuite()->asArray();
-            if ($this->options !== null && count($this->options->testsuite()) > 0) {
+            if (count($this->options->testsuite()) > 0) {
                 $suitesName = array_map(static function (TestSuite $testSuite): string {
                     return $testSuite->name();
                 }, $testSuiteCollection);
                 foreach ($this->options->testsuite() as $testSuiteName) {
                     if (! in_array($testSuiteName, $suitesName, true)) {
-                        throw new RuntimeException("Suite path $testSuiteName could not be found");
+                        throw new RuntimeException("Suite path {$testSuiteName} could not be found");
                     }
                 }
 
@@ -170,9 +166,8 @@ final class SuiteLoader
     private function initSuites(): void
     {
         if (is_array($this->suitesName)) {
-            assert($this->configuration !== null);
             foreach ($this->suitesName as $suiteName) {
-                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName, $this->configuration->filename());
+                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName);
             }
         } else {
             foreach ($this->files as $path) {
@@ -202,7 +197,8 @@ final class SuiteLoader
             $executableTests[] = new TestMethod(
                 $path,
                 $methodBatch,
-                $this->options !== null && $this->options->hasCoverage()
+                $this->options->hasCoverage(),
+                $this->options->tmpDir()
             );
         }
 
@@ -219,8 +215,8 @@ final class SuiteLoader
      */
     private function getMethodBatches(ParsedClass $class): array
     {
-        $classMethods = $class->getMethods($this->options !== null ? $this->options->annotations() : []);
-        $maxBatchSize = $this->options !== null && $this->options->functional() ? $this->options->maxBatchSize() : 0;
+        $classMethods = $class->getMethods();
+        $maxBatchSize = $this->options->functional() ? $this->options->maxBatchSize() : 0;
         assert($maxBatchSize !== null);
 
         $batches = [];
@@ -328,7 +324,7 @@ final class SuiteLoader
      */
     private function testMatchGroupOptions(array $groups): bool
     {
-        if ($this->options === null || count($this->options->group()) === 0) {
+        if (count($this->options->group()) === 0) {
             return true;
         }
 
@@ -342,13 +338,11 @@ final class SuiteLoader
 
     private function testMatchFilterOptions(string $className, string $name): bool
     {
-        if ($this->options === null || ($filter = $this->options->filter()) === null) {
+        if (($filter = $this->options->filter()) === null) {
             return true;
         }
 
-        $re       = substr($filter, 0, 1) === '/'
-            ? $filter
-            : '/' . $filter . '/';
+        $re       = '/' . trim($filter, '/') . '/';
         $fullName = $className . '::' . $name;
 
         return preg_match($re, $fullName) === 1;
@@ -362,16 +356,17 @@ final class SuiteLoader
                 $path,
                 $class
             ),
-            $this->options !== null && $this->options->hasCoverage()
+            $this->options->hasCoverage(),
+            $this->options->tmpDir()
         );
     }
 
-    private function createFullSuite(string $suiteName, string $configPath): FullSuite
+    private function createFullSuite(string $suiteName): FullSuite
     {
         return new FullSuite(
             $suiteName,
-            $configPath,
-            $this->options !== null && $this->options->hasCoverage()
+            $this->options->hasCoverage(),
+            $this->options->tmpDir()
         );
     }
 
@@ -388,7 +383,7 @@ final class SuiteLoader
                     $directory->phpVersionOperator()->asString()
                 )
             ) {
-                continue;
+                continue; // @codeCoverageIgnore
             }
 
             $exclude = [];
@@ -413,7 +408,7 @@ final class SuiteLoader
                     $file->phpVersionOperator()->asString()
                 )
             ) {
-                continue;
+                continue; // @codeCoverageIgnore
             }
 
             $this->files[] = $file->path();
@@ -427,7 +422,7 @@ final class SuiteLoader
         }
 
         $bootstrap = null;
-        if ($this->options !== null && $this->options->bootstrap() !== null) {
+        if ($this->options->bootstrap() !== null) {
             $bootstrap = $this->options->bootstrap();
         } elseif ($this->configuration !== null && $this->configuration->phpunit()->hasBootstrap()) {
             $bootstrap = $this->configuration->phpunit()->bootstrap();
