@@ -25,7 +25,6 @@
         "ext-pdo": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
-        "brianium/habitat": "^1.0",
         "phpunit/php-code-coverage": "^9.1.2",
         "phpunit/php-file-iterator": "^3.0",
         "phpunit/php-timer": "^5.0",
