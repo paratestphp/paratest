@@ -14,6 +14,7 @@ use function file_put_contents;
 use function intdiv;
 use function mt_rand;
 use function sort;
+use function str_replace;
 use function sys_get_temp_dir;
 
 /**
@@ -113,16 +114,13 @@ final class OptionsTest extends TestBase
 
     public function testPassthru(): void
     {
+        $argv = [
+            '--passthru' => "'--prepend' 'xdebug-filter.php'",
+            '--passthru-php' => "'-d' 'zend_extension=xdebug.so'",
+        ];
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $argv = [
-                '--passthru' => '"--prepend" "xdebug-filter.php"',
-                '--passthru-php' => '"-d" "zend_extension=xdebug.so"',
-            ];
-        } else {
-            $argv = [
-                '--passthru' => "'--prepend' 'xdebug-filter.php'",
-                '--passthru-php' => "'-d' 'zend_extension=xdebug.so'",
-            ];
+            $argv['--passthru']     = str_replace('\'', '"', $argv['--passthru']);
+            $argv['--passthru-php'] = str_replace('\'', '"', $argv['--passthru-php']);
         }
 
         $options = $this->createOptionsFromArgv($argv);

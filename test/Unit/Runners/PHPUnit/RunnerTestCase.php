@@ -10,7 +10,9 @@ use PHPUnit\TextUI\TestRunner;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 
 use function array_merge;
+use function defined;
 use function sprintf;
+use function str_replace;
 use function uniqid;
 
 abstract class RunnerTestCase extends TestBase
@@ -114,6 +116,10 @@ abstract class RunnerTestCase extends TestBase
 
         $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
         $this->bareOptions['--passthru']     = sprintf("'-d' 'highlight.string=%s'", self::PASSTHRU_PHPUNIT_CUSTOM);
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $this->bareOptions['--passthru']     = str_replace('\'', '"', (string) $this->bareOptions['--passthru']);
+            $this->bareOptions['--passthru-php'] = str_replace('\'', '"', (string) $this->bareOptions['--passthru-php']);
+        }
 
         $runnerResult = $this->runRunner();
         $this->assertTestsPassed($runnerResult);
