@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Coverage;
 
-use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData;
 use SebastianBergmann\Environment\Runtime;
@@ -42,8 +41,6 @@ final class CoverageMerger
      * Adds the coverage contained in $coverageFile and deletes the file afterwards.
      *
      * @param string $coverageFile Code coverage file
-     *
-     * @throws RuntimeException When coverage file is empty.
      */
     public function addCoverageFromFile(string $coverageFile): void
     {
@@ -55,7 +52,7 @@ final class CoverageMerger
                 // @codeCoverageIgnoreEnd
             }
 
-            throw new RuntimeException("Coverage file {$coverageFile} is empty. " . $extra);
+            throw new EmptyCoverageFileException("Coverage file {$coverageFile} is empty. " . $extra);
         }
 
         /** @psalm-suppress UnresolvableInclude **/

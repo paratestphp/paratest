@@ -14,7 +14,9 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function extension_loaded;
 
 /**
+ * @covers \ParaTest\Runners\PHPUnit\BaseWrapperRunner
  * @covers \ParaTest\Runners\PHPUnit\SqliteRunner
+ * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
  * @covers \ParaTest\Runners\PHPUnit\Worker\SqliteWorker
  */
 final class SqliteRunnerTest extends TestBase

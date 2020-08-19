@@ -323,6 +323,10 @@ final class Options
             $filtered['exclude-group'] = implode(',', $excludeGroup);
         }
 
+        if ($options['whitelist'] !== null) {
+            $filtered['whitelist'] = $options['whitelist'];
+        }
+
         return new self(
             $options['bootstrap'],
             $options['colors'],

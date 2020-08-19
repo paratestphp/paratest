@@ -12,15 +12,13 @@ use SimpleXMLElement;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function count;
-use function file_exists;
 use function file_get_contents;
 use function get_class;
 use function proc_get_status;
 use function proc_open;
-use function unlink;
 
 /**
- * @coversNothing
+ * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
  */
 final class WorkerTest extends TestBase
 {
@@ -39,21 +37,6 @@ final class WorkerTest extends TestBase
         $this->phpunitWrapper = PARATEST_ROOT . DS . 'bin' . DS . 'phpunit-wrapper.php';
         $this->output         = new BufferedOutput();
         $this->options        = $this->createOptionsFromArgv([]);
-    }
-
-    public function tearDown(): void
-    {
-        $this->deleteIfExists(TMP_DIR . DS . 'test.xml');
-        $this->deleteIfExists(TMP_DIR . DS . 'test2.xml');
-    }
-
-    private function deleteIfExists(string $file): void
-    {
-        if (! file_exists($file)) {
-            return;
-        }
-
-        unlink($file);
     }
 
     /**

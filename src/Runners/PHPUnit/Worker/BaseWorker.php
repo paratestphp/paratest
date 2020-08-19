@@ -93,7 +93,7 @@ abstract class BaseWorker
         // Taken from \Symfony\Component\Process\Process::prepareWindowsCommandLine
         // Needed to handle spaces in the binary path, boring to test in CI
         if (DIRECTORY_SEPARATOR === '\\') {
-            $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin);
+            $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin); // @codeCoverageIgnore
         }
 
         $process     = proc_open($bin, self::$descriptorspec, $pipes, null, $env);
@@ -159,9 +159,10 @@ abstract class BaseWorker
 
     final public function getCrashReport(): string
     {
-        $lastCommand = count($this->commands) !== 0 ? ' Last executed command: ' . end($this->commands) : '';
+        $lastCommand = count($this->commands) !== 0 ? 'Last executed command: ' . end($this->commands) : '';
 
-        return 'This worker has crashed.' . $lastCommand . PHP_EOL
+        return 'This worker has crashed.' . PHP_EOL
+            . $lastCommand . PHP_EOL
             . 'Output:' . PHP_EOL
             . '----------------------' . PHP_EOL
             . $this->alreadyReadOutput . PHP_EOL
@@ -171,11 +172,7 @@ abstract class BaseWorker
 
     final protected function setExitCode(bool $running, int $exitcode): void
     {
-        if ($running) {
-            return;
-        }
-
-        if ($this->exitCode !== null) {
+        if ($running || $this->exitCode !== null) {
             return;
         }
 

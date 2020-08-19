@@ -184,6 +184,7 @@ final class OptionsTest extends TestBase
         static::assertNull($options->coverageXml());
         static::assertEmpty($options->excludeGroup());
         static::assertNull($options->filter());
+        static::assertEmpty($options->filtered());
         static::assertFalse($options->functional());
         static::assertEmpty($options->group());
         static::assertNull($options->logJunit());
@@ -268,6 +269,14 @@ final class OptionsTest extends TestBase
         static::assertSame(TMP_DIR, $options->tmpDir());
         static::assertSame(1, $options->verbose());
         static::assertSame('WHITELIST', $options->whitelist());
+
+        static::assertSame([
+            'bootstrap' => 'BOOTSTRAP',
+            'configuration' => $options->configuration()->filename(),
+            'group' => 'GROUP',
+            'exclude-group' => 'EXCLUDE-GROUP',
+            'whitelist' => 'WHITELIST',
+        ], $options->filtered());
 
         static::assertTrue($options->hasCoverage());
     }

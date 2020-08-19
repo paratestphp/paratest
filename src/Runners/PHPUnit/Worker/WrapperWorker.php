@@ -9,6 +9,7 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use RuntimeException;
 
+use function array_map;
 use function assert;
 use function fclose;
 use function fgets;
@@ -47,8 +48,7 @@ final class WrapperWorker extends BaseWorker
      */
     public function execute(array $testCmdArguments): void
     {
-        $this->checkStarted();
-        $this->commands[] = implode(' ', $testCmdArguments);
+        $this->commands[] = implode(' ', array_map('escapeshellarg', $testCmdArguments));
         fwrite($this->pipes[0], serialize($testCmdArguments) . "\n");
         ++$this->inExecution;
     }
@@ -58,10 +58,7 @@ final class WrapperWorker extends BaseWorker
      */
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
-        if ($this->currentlyExecuting !== null) {
-            throw new RuntimeException('Worker already has a test assigned - did you forget to call reset()?');
-        }
-
+        assert($this->currentlyExecuting === null);
         $this->currentlyExecuting = $test;
         $commandArguments         = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
         $command                  = implode(' ', $commandArguments);
@@ -87,13 +84,6 @@ final class WrapperWorker extends BaseWorker
         $this->currentlyExecuting = null;
     }
 
-    private function checkStarted(): void
-    {
-        if (! $this->isStarted()) {
-            throw new RuntimeException('You have to start the Worker first!');
-        }
-    }
-
     public function stop(): void
     {
         fwrite($this->pipes[0], self::COMMAND_EXIT);
@@ -101,6 +91,10 @@ final class WrapperWorker extends BaseWorker
     }
 
     /**
+     * @internal
+     *
+     * @codeCoverageIgnore
+     *
      * This is an utility function for tests.
      * Refactor or write it only in the test case.
      */
@@ -127,6 +121,8 @@ final class WrapperWorker extends BaseWorker
 
     /**
      * @internal
+     *
+     * @codeCoverageIgnore
      *
      * This function consumes a lot of CPU while waiting for
      * the worker to finish. Use it only in testing paratest
