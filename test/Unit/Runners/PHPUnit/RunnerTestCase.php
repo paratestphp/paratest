@@ -131,7 +131,7 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testRaiseExceptionWhenATestCallsExitWithoutCoverageSingleProcess(): void
     {
-        $this->bareOptions['--path'] = $this->fixture('exit-tests');
+        $this->bareOptions['--path']      = $this->fixture('exit-tests');
         $this->bareOptions['--processes'] = 1;
 
         $this->expectException(WorkerCrashedException::class);

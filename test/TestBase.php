@@ -57,6 +57,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         if (! isset($argv['--processes'])) {
             $argv['--processes'] = PROCESSES_FOR_TESTS;
         }
+
         if (! isset($argv['--tmp-dir'])) {
             $argv['--tmp-dir'] = TMP_DIR;
         }
