@@ -131,16 +131,6 @@ final class PHPUnitTest extends FunctionalTestBase
         ));
     }
 
-    public function testTestTokenEnvVarIsPassed(): void
-    {
-        $proc = $this->invokeParatest(
-            'passing-tests',
-            ['--path' => 'test/fixtures/paratest-only-tests/TestTokenTest.php'],
-            PARATEST_ROOT
-        );
-        $this->assertTestsPassed($proc, '1', '1');
-    }
-
     public function testLoggingXmlOfSingleFile(): void
     {
         $output = FIXTURES . DS . 'logs' . DS . 'functional-file.xml';
