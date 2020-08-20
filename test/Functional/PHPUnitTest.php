@@ -91,45 +91,6 @@ final class PHPUnitTest extends FunctionalTestBase
         return $cases;
     }
 
-    /**
-     * @requires OSFAMILY Linux
-     */
-    public function testWithWrapperRunner(): void
-    {
-        $this->assertTestsPassed($this->invokeParatest(
-            'passing-tests',
-            [
-                '--configuration' => PHPUNIT_CONFIGURATION,
-                '--runner' => WrapperRunner::class,
-            ]
-        ));
-    }
-
-    public function testWithSqliteRunner(): void
-    {
-        $this->guardSqliteExtensionLoaded();
-
-        $this->assertTestsPassed($this->invokeParatest(
-            'passing-tests',
-            [
-                '--configuration' => PHPUNIT_CONFIGURATION,
-                '--runner' => SqliteRunner::class,
-            ]
-        ));
-    }
-
-    public function testWithCustomRunner(): void
-    {
-        $runnerResult = $this->invokeParatest(
-            'passing-tests',
-            [
-                '--configuration' => PHPUNIT_CONFIGURATION,
-                '--runner' => EmptyRunnerStub::class,
-            ]
-        );
-        static::assertStringContainsString(EmptyRunnerStub::OUTPUT, $runnerResult->getOutput());
-    }
-
     public function testWithColorsGreenBar(): void
     {
         $proc = $this->invokeParatest(
