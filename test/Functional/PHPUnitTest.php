@@ -86,30 +86,6 @@ final class PHPUnitTest extends FunctionalTestBase
         return $cases;
     }
 
-    public function testWithColorsGreenBar(): void
-    {
-        $proc = $this->invokeParatest(
-            'paratest-only-tests/EnvironmentTest.php',
-            ['--colors' => true]
-        );
-        static::assertStringContainsString(
-            '[30;42m[2KOK',
-            $proc->getOutput()
-        );
-    }
-
-    public function testWithColorsRedBar(): void
-    {
-        $proc = $this->invokeParatest(
-            'failing-tests/UnitTestWithErrorTest.php',
-            ['--colors' => true]
-        );
-        static::assertStringContainsString(
-            '[37;41m[2KFAILURES',
-            $proc->getOutput()
-        );
-    }
-
     public function testWithConfigurationInDirWithoutConfigFile(): void
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests', [], dirname(FIXTURES)));

@@ -336,7 +336,7 @@ final class ResultPrinterTest extends ResultTester
         static::assertSame($expected, $feedback);
     }
 
-    public function testColors(): void
+    public function testColorsForFailing(): void
     {
         $this->options = $this->createOptionsFromArgv(['--colors' => true]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
@@ -346,7 +346,10 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($this->mixedSuite);
         $this->printer->printResults();
 
-        static::assertStringContainsString('FAILURES', $this->output->fetch());
+        static::assertStringContainsString(
+            '[37;41m[2KFAILURES',
+            $this->output->fetch()
+        );
     }
 
     public function testColorsForSkipped(): void
@@ -372,7 +375,10 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($this->passingSuite);
         $this->printer->printResults();
 
-        static::assertStringContainsString('OK', $this->output->fetch());
+        static::assertStringContainsString(
+            '[30;42m[2KOK',
+            $this->output->fetch()
+        );
     }
 
     /**
