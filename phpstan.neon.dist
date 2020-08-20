@@ -94,14 +94,6 @@ parameters:
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
-            path: test/fixtures/failing-tests/StopOnFailureTest.php
-        -
-            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
-            count: 1
-            path: test/fixtures/failing-tests/StopOnFailureTest.php
-        -
-            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
-            count: 1
             path: test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php
         -
             message: "#^Unreachable statement \\- code above always terminates\\.$#"

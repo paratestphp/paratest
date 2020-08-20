@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use ParseError;
-
 use function array_merge;
 use function assert;
 use function basename;
@@ -187,30 +185,6 @@ final class PHPUnitTest extends FunctionalTestBase
         }
 
         unlink($output);
-    }
-
-    /**
-     * Paratest itself will throw a catchable exception while parsing the unit test before even opening a process and
-     * running it. In some PHP/library versions, the exception code would be 255. Otherwise, the exception code was 0
-     * and is manually converted to 1 inside the Symfony Console runner.
-     */
-    public function testRunWithFatalParseErrorsHasExitCode255or1(): void
-    {
-        self::expectException(ParseError::class);
-
-        $this->invokeParatest('fatal-tests/UnitTestWithFatalParseErrorTest.php');
-    }
-
-    public function testStopOnFailurePreventsStartingFurtherTestsAfterFailure(): void
-    {
-        $proc    = $this->invokeParatest('failing-tests/StopOnFailureTest.php', [
-            '--stop-on-failure' => true,
-            '--functional' => true,
-            '--processes' => 1,
-        ]);
-        $results = $proc->getOutput();
-        static::assertStringContainsString('Tests: 2,', $results);     // The suite actually has 4 tests
-        static::assertStringContainsString('Failures: 1,', $results);  // The suite actually has 2 failing tests
     }
 
     public function testFullyConfiguredRun(): void

@@ -9,6 +9,7 @@ use ParaTest\Runners\PHPUnit\FullSuite;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\SuiteLoader;
 use ParaTest\Tests\TestBase;
+use ParseError;
 use RuntimeException;
 
 use function array_keys;
@@ -413,5 +414,17 @@ final class SuiteLoaderTest extends TestBase
 
         static::assertInstanceOf(Suite::class, $suite);
         static::assertCount(20, $suite->getFunctions());
+    }
+
+    public function testRunWithFatalParseErrors(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--path' => $this->fixture('fatal-tests' . DS . 'UnitTestWithFatalParseErrorTest.php'),
+        ]);
+        $loader  = new SuiteLoader($options);
+
+        self::expectException(ParseError::class);
+
+        $loader->load();
     }
 }
