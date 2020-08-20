@@ -537,7 +537,7 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Runner, WrapperRunner or SqliteRunner.',
-                Runner::class
+                'Runner'
             ),
             new InputOption(
                 'stop-on-failure',

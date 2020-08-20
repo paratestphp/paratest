@@ -105,9 +105,7 @@ final class ParaTestCommand extends Command
     {
         $runnerClass = $input->getOption('runner');
         assert(is_string($runnerClass));
-        if (isset(self::KNOWN_RUNNERS[$runnerClass])) {
-            $runnerClass = self::KNOWN_RUNNERS[$runnerClass];
-        }
+        $runnerClass = self::KNOWN_RUNNERS[$runnerClass] ?? $runnerClass;
 
         if (! class_exists($runnerClass) || ! is_subclass_of($runnerClass, RunnerInterface::class)) {
             throw new InvalidArgumentException(sprintf(

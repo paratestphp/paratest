@@ -158,10 +158,7 @@ abstract class BaseWorker
     {
         assert($this->proc !== null);
         $status = proc_get_status($this->proc);
-
-        if ($status === false) {
-            return;
-        }
+        assert($status !== false);
 
         $this->running = $status['running'];
 
