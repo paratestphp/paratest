@@ -121,8 +121,7 @@ abstract class RunnerTestCase extends TestBase
             $this->bareOptions['--passthru-php'] = str_replace('\'', '"', (string) $this->bareOptions['--passthru-php']);
         }
 
-        $runnerResult = $this->runRunner();
-        $this->assertTestsPassed($runnerResult);
+        $this->assertTestsPassed($this->runRunner());
     }
 
     final public function testGroupAndExcludeGroupArePassedToPhpunitEvenForNonFunctionTests(): void
@@ -153,6 +152,24 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         static::assertStringContainsString('Warnings', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testParatestEnvironmentVariable(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('paratest-only-tests' . DS . 'EnvironmentTest.php');
+
+        $this->assertTestsPassed($this->runRunner());
+    }
+
+    final public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens(): void
+    {
+        $this->bareOptions['--path']           = $this->fixture('paratest-only-tests' . DS . 'EnvironmentTest.php');
+        $this->bareOptions['--no-test-tokens'] = true;
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
         static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
     }
 }

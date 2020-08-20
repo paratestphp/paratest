@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Functional;
 
-use ParaTest\Runners\PHPUnit\SqliteRunner;
-use ParaTest\Runners\PHPUnit\WrapperRunner;
-use ParaTest\Tests\Unit\Runners\PHPUnit\EmptyRunnerStub;
 use ParseError;
 
 use function array_merge;
@@ -115,53 +112,6 @@ final class PHPUnitTest extends FunctionalTestBase
         );
     }
 
-    public function testParatestEnvironmentVariable(): void
-    {
-        $this->assertTestsPassed($this->invokeParatest(
-            'paratest-only-tests/EnvironmentTest.php',
-            []
-        ));
-    }
-
-    /**
-     * @requires OSFAMILY Linux
-     */
-    public function testParatestEnvironmentVariableWithWrapperRunner(): void
-    {
-        $this->assertTestsPassed($this->invokeParatest(
-            'paratest-only-tests/EnvironmentTest.php',
-            [
-                '--runner' => WrapperRunner::class,
-            ]
-        ));
-    }
-
-    /**
-     * @requires OSFAMILY Linux
-     */
-    public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens(): void
-    {
-        $proc = $this->invokeParatest(
-            'paratest-only-tests/EnvironmentTest.php',
-            [
-                '--no-test-tokens' => true,
-                '--runner' => WrapperRunner::class,
-            ]
-        );
-        static::assertMatchesRegularExpression('/Failures: 1/', $proc->getOutput());
-    }
-
-    public function testParatestEnvironmentVariableWithSqliteRunner(): void
-    {
-        $this->guardSqliteExtensionLoaded();
-        $this->assertTestsPassed($this->invokeParatest(
-            'paratest-only-tests/EnvironmentTest.php',
-            [
-                '--runner' => SqliteRunner::class,
-            ]
-        ));
-    }
-
     public function testWithConfigurationInDirWithoutConfigFile(): void
     {
         $this->assertTestsPassed($this->invokeParatest('passing-tests', [], dirname(FIXTURES)));
@@ -237,24 +187,6 @@ final class PHPUnitTest extends FunctionalTestBase
         }
 
         unlink($output);
-    }
-
-    public function testSuccessfulRunHasExitCode0(): void
-    {
-        $proc = $this->invokeParatest('passing-tests/GroupsTest.php');
-        static::assertEquals(0, $proc->getExitCode());
-    }
-
-    public function testFailedRunHasExitCode1(): void
-    {
-        $proc = $this->invokeParatest('failing-tests/FailingTest.php');
-        static::assertEquals(1, $proc->getExitCode());
-    }
-
-    public function testRunWithErrorsHasExitCode2(): void
-    {
-        $proc = $this->invokeParatest('failing-tests/UnitTestWithErrorTest.php');
-        static::assertEquals(2, $proc->getExitCode());
     }
 
     /**
