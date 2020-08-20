@@ -22,13 +22,6 @@ use function uniqid;
  */
 final class SuiteLoaderTest extends TestBase
 {
-    public function testConstructor(): void
-    {
-        $options = $this->createOptionsFromArgv(['--group' => 'group1']);
-        $loader  = new SuiteLoader($options);
-        static::assertEquals($options, $this->getObjectValue($loader, 'options'));
-    }
-
     public function testLoadThrowsExceptionWithInvalidPath(): void
     {
         $loader = new SuiteLoader($this->createOptionsFromArgv(['--path' => '/path/to/nowhere']));
@@ -345,6 +338,28 @@ final class SuiteLoaderTest extends TestBase
         $loader  = new SuiteLoader($options);
         $loader->load();
         static::assertCount(0, $loader->getTestMethods());
+    }
+
+    public function testExcludeGroupSwitchDontExecuteThatGroup(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--exclude-group' => 'group1',
+            '--path' => $this->fixture('passing-tests/GroupsTest.php'),
+        ]);
+        $loader  = new SuiteLoader($options);
+        $loader->load();
+        static::assertCount(3, $loader->getTestMethods());
+    }
+
+    public function testGroupsSwitchExecutesMultipleGroups(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--group' => 'group1,group3',
+            '--path' => $this->fixture('passing-tests/GroupsTest.php'),
+        ]);
+        $loader  = new SuiteLoader($options);
+        $loader->load();
+        static::assertCount(3, $loader->getTestMethods());
     }
 
     public function testExecutableTestsForFunctionalModeUse(): void

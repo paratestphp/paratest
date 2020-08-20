@@ -124,4 +124,13 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
         $this->assertTestsPassed($runnerResult);
     }
+
+    final public function testGroupAndExcludeGroupArePassedToPhpunitEvenForNonFunctionTests(): void
+    {
+        $this->bareOptions['--path']          = $this->fixture('passing-tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--group']         = 'group1,group2';
+        $this->bareOptions['--exclude-group'] = 'group3';
+
+        $this->assertTestsPassed($this->runRunner(), '3', '3');
+    }
 }

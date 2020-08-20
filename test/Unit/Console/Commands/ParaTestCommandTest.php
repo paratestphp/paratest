@@ -24,7 +24,7 @@ final class ParaTestCommandTest extends TestBase
 
     public function setUpTest(): void
     {
-        $application = ParaTestCommand::applicationFactory(PARATEST_ROOT);
+        $application = ParaTestCommand::applicationFactory(TMP_DIR);
         $application->add(new HelpCommand());
 
         $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
@@ -32,7 +32,7 @@ final class ParaTestCommandTest extends TestBase
 
     public function testApplicationFactory(): void
     {
-        $application = ParaTestCommand::applicationFactory(PARATEST_ROOT);
+        $application = ParaTestCommand::applicationFactory(TMP_DIR);
         $commands    = $application->all();
 
         static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
@@ -42,17 +42,13 @@ final class ParaTestCommandTest extends TestBase
     public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
     {
         static::expectException(Exception::class);
-        static::expectExceptionMessage(sprintf('Could not read "%s%snope.xml"', PARATEST_ROOT, DS));
+        static::expectExceptionMessage(sprintf('Could not read "%s%snope.xml"', TMP_DIR, DS));
 
         $this->commandTester->execute(['--configuration' => 'nope.xml']);
     }
 
     public function testDisplayHelpWithoutConfigNorPath(): void
     {
-        $application = ParaTestCommand::applicationFactory(__DIR__);
-        $application->add(new HelpCommand());
-
-        $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
         $this->commandTester->execute([]);
 
         static::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
@@ -61,8 +57,12 @@ final class ParaTestCommandTest extends TestBase
     public function testCustomRunnerMustBeAValidRunner(): void
     {
         static::expectException(InvalidArgumentException::class);
+        static::expectExceptionMessageMatches('/stdClass/');
 
-        $this->commandTester->execute(['--runner' => 'stdClass']);
+        $this->commandTester->execute([
+            '--configuration' => $this->fixture('phpunit-file.xml'),
+            '--runner' => 'stdClass',
+        ]);
     }
 
     /**

@@ -8,6 +8,8 @@ use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
+use ParaTest\Runners\PHPUnit\SqliteRunner;
+use ParaTest\Runners\PHPUnit\WrapperRunner;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -23,6 +25,12 @@ use function sprintf;
 final class ParaTestCommand extends Command
 {
     public const COMMAND_NAME = 'paratest';
+
+    private const KNOWN_RUNNERS = [
+        'Runner' => Runner::class,
+        'WrapperRunner' => WrapperRunner::class,
+        'SqliteRunner' => SqliteRunner::class,
+    ];
 
     /** @var string */
     private $cwd;
@@ -95,14 +103,10 @@ final class ParaTestCommand extends Command
      */
     private function getRunnerClass(InputInterface $input): string
     {
-        $runnerClass = Runner::class;
-        $runner      = $input->getOption('runner');
-        if ($runner !== null) {
-            assert(is_string($runner));
-            $runnerClass = $runner;
-            $runnerClass = class_exists($runnerClass)
-                ? $runnerClass
-                : '\\ParaTest\\Runners\\PHPUnit\\' . $runnerClass;
+        $runnerClass = $input->getOption('runner');
+        assert(is_string($runnerClass));
+        if (isset(self::KNOWN_RUNNERS[$runnerClass])) {
+            $runnerClass = self::KNOWN_RUNNERS[$runnerClass];
         }
 
         if (! class_exists($runnerClass) || ! is_subclass_of($runnerClass, RunnerInterface::class)) {
