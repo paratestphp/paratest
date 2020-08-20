@@ -131,15 +131,6 @@ final class PHPUnitTest extends FunctionalTestBase
         ));
     }
 
-    public function testLoggingXmlOfDirectory(): void
-    {
-        $output = FIXTURES . DS . 'logs' . DS . 'functional-directory.xml';
-        $proc   = $this->invokeParatest('passing-tests', ['--log-junit' => $output], PARATEST_ROOT);
-        $this->assertTestsPassed($proc);
-        static::assertFileExists($output);
-        unlink($output);
-    }
-
     public function testTestTokenEnvVarIsPassed(): void
     {
         $proc = $this->invokeParatest(
