@@ -11,8 +11,10 @@ use SebastianBergmann\CodeCoverage\CodeCoverage;
 
 use function array_merge;
 use function defined;
+use function preg_match;
 use function sprintf;
 use function str_replace;
+use function substr_count;
 use function uniqid;
 
 abstract class RunnerTestCase extends TestBase
@@ -171,5 +173,53 @@ abstract class RunnerTestCase extends TestBase
 
         static::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
         static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testSkippedInDefaultMode(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('skipped-tests' . DS . 'SkippedTest.php');
+
+        $runnerResult = $this->runRunner();
+
+        $expected = "OK, but incomplete, skipped, or risky tests!\n"
+            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+        static::assertStringContainsString($expected, $runnerResult->getOutput());
+        $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
+    }
+
+    final public function testIncompleteInDefaultMode(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('skipped-tests' . DS . 'IncompleteTest.php');
+
+        $runnerResult = $this->runRunner();
+
+        $expected = "OK, but incomplete, skipped, or risky tests!\n"
+            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+        static::assertStringContainsString($expected, $runnerResult->getOutput());
+        $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
+    }
+
+    final public function testDataProviderWithSkippedInDefaultMode(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('skipped-tests' . DS . 'SkippedAndIncompleteDataProviderTest.php');
+
+        $runnerResult = $this->runRunner();
+
+        $expected = "OK, but incomplete, skipped, or risky tests!\n"
+            . 'Tests: 100, Assertions: 33, Incomplete: 67.';
+        static::assertStringContainsString($expected, $runnerResult->getOutput());
+        $this->assertContainsNSkippedTests(67, $runnerResult->getOutput());
+    }
+
+    final protected function assertContainsNSkippedTests(int $n, string $output): void
+    {
+        preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
+        static::assertCount(2, $matches);
+        $numberOfS = substr_count($matches[1], 'S');
+        static::assertEquals(
+            $n,
+            $numberOfS,
+            "The test should have skipped {$n} tests, instead it skipped {$numberOfS}, {$matches[1]}"
+        );
     }
 }

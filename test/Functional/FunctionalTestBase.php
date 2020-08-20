@@ -7,7 +7,6 @@ namespace ParaTest\Tests\Functional;
 use InvalidArgumentException;
 use PHPUnit;
 
-use function extension_loaded;
 use function file_exists;
 use function sprintf;
 
@@ -54,18 +53,5 @@ abstract class FunctionalTestBase extends PHPUnit\Framework\TestCase
         $invoker = new ParaTestInvoker($path);
 
         return $invoker->execute($options, $cwd);
-    }
-
-    /**
-     * Checks if the sqlite extension is loaded and skips the test if not.
-     */
-    final protected function guardSqliteExtensionLoaded(): void
-    {
-        $sqliteExtension = 'pdo_sqlite';
-        if (extension_loaded($sqliteExtension)) {
-            return;
-        }
-
-        static::markTestSkipped("Skipping test: Extension '{$sqliteExtension}' not found.");
     }
 }
