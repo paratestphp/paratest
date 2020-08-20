@@ -15,7 +15,7 @@ use function intdiv;
 use function mt_rand;
 use function sort;
 use function str_replace;
-use function sys_get_temp_dir;
+use function uniqid;
 
 /**
  * @covers \ParaTest\Runners\PHPUnit\Options
@@ -197,7 +197,7 @@ final class OptionsTest extends TestBase
         static::assertStringContainsString('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
         static::assertEmpty($options->testsuite());
-        static::assertSame(sys_get_temp_dir(), $options->tmpDir());
+        static::assertSame(TMP_DIR, $options->tmpDir());
         static::assertSame(0, $options->verbose());
         static::assertNull($options->whitelist());
     }
@@ -231,7 +231,7 @@ final class OptionsTest extends TestBase
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',
-            '--tmp-dir' => TMP_DIR,
+            '--tmp-dir' => ($tmpDir = uniqid(TMP_DIR . DS . 't')),
             '--verbose' => 1,
             '--whitelist' => 'WHITELIST',
         ];
@@ -264,7 +264,7 @@ final class OptionsTest extends TestBase
         static::assertSame('MYRUNNER', $options->runner());
         static::assertTrue($options->stopOnFailure());
         static::assertSame(['TESTSUITE'], $options->testsuite());
-        static::assertSame(TMP_DIR, $options->tmpDir());
+        static::assertSame($tmpDir, $options->tmpDir());
         static::assertSame(1, $options->verbose());
         static::assertSame('WHITELIST', $options->whitelist());
 

@@ -11,26 +11,19 @@ use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Tests\Functional\RunnerResult;
 use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
-use PHPUnit\Runner\Version;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use ReflectionClass;
 use ReflectionObject;
-use ReflectionProperty;
 use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Filesystem;
 
-use function copy;
 use function file_exists;
-use function get_class;
 use function glob;
 use function preg_match;
 use function sprintf;
-use function str_replace;
-use function uniqid;
 
 abstract class TestBase extends PHPUnit\Framework\TestCase
 {
@@ -61,6 +54,10 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         $inputDefinition = new InputDefinition();
         Options::setInputDefinition($inputDefinition);
 
+        if (! isset($argv['--tmp-dir'])) {
+            $argv['--tmp-dir'] = TMP_DIR;
+        }
+
         $input = new ArrayInput($argv, $inputDefinition);
 
         return Options::fromConsoleInput($input, $cwd ?? PARATEST_ROOT);
@@ -72,10 +69,8 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
             $runnerClass = $this->runnerClass;
         }
 
-        $bareOptions              = $this->bareOptions;
-        $bareOptions['--tmp-dir'] = TMP_DIR;
-        $output                   = new BufferedOutput();
-        $wrapperRunner            = new $runnerClass($this->createOptionsFromArgv($this->bareOptions), $output);
+        $output        = new BufferedOutput();
+        $wrapperRunner = new $runnerClass($this->createOptionsFromArgv($this->bareOptions), $output);
         $wrapperRunner->run();
 
         return new RunnerResult($wrapperRunner->getExitCode(), $output->fetch());
@@ -95,14 +90,6 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
             $proc->getOutput(),
         );
         static::assertEquals(0, $proc->getExitCode());
-    }
-
-    /**
-     * Get PHPUnit version.
-     */
-    final protected static function getPhpUnitVersion(): string
-    {
-        return Version::id();
     }
 
     final protected function fixture(string $fixture): string
@@ -141,58 +128,11 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
      */
     final protected function getObjectValue(object $object, string $property)
     {
-        $prop = $this->getAccessibleProperty($object, $property);
-
-        return $prop->getValue($object);
-    }
-
-    /**
-     * @param mixed $value
-     */
-    final protected function setObjectValue(object $object, string $property, $value): void
-    {
-        $prop = $this->getAccessibleProperty($object, $property);
-
-        $prop->setValue($object, $value);
-    }
-
-    private function getAccessibleProperty(object $object, string $property): ReflectionProperty
-    {
         $refl = new ReflectionObject($object);
         $prop = $refl->getProperty($property);
         $prop->setAccessible(true);
 
-        return $prop;
-    }
-
-    /**
-     * Calls an object method even if it is protected or private.
-     *
-     * @param object $object     the object to call a method on
-     * @param string $methodName the method name to be called
-     * @param mixed  $args       0 or more arguments passed in the function
-     *
-     * @return mixed returns what the object's method call will return
-     */
-    final public function call(object $object, string $methodName, ...$args)
-    {
-        return self::callMethod($object, $methodName, $args);
-    }
-
-    /**
-     * @param mixed[] $args
-     *
-     * @return mixed
-     */
-    final protected static function callMethod(object $object, string $methodName, array $args)
-    {
-        $class = get_class($object);
-
-        $reflectionClass = new ReflectionClass($class);
-        $method          = $reflectionClass->getMethod($methodName);
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($object, $args);
+        return $prop->getValue($object);
     }
 
     /**
@@ -210,21 +150,5 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         }
 
         static::markTestSkipped('No code coverage driver available');
-    }
-
-    /**
-     * Copy fixture file to tmp folder, cause coverage file will be deleted by merger.
-     *
-     * @param string $fixture Fixture coverage file name
-     *
-     * @return string Copied coverage file
-     */
-    final protected function copyCoverageFile(string $fixture, string $directory): string
-    {
-        $fixturePath = $this->fixture($fixture);
-        $filename    = str_replace('.', '_', $directory . DS . uniqid('cov-', true));
-        copy($fixturePath, $filename);
-
-        return $filename;
     }
 }
