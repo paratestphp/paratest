@@ -11,6 +11,7 @@
     <file>src</file>
     <file>test</file>
     <exclude-pattern>*/test/fixtures/*</exclude-pattern>
+    <exclude-pattern>*/test/tmp/*</exclude-pattern>
 
     <config name="php_version" value="70300"/>
 

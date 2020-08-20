@@ -35,6 +35,7 @@ parameters:
         - test/
     excludes_analyse:
         - test/fixtures/*
+        - test/tmp/*
     ignoreErrors:
         # Allowed forbidden calls
         -

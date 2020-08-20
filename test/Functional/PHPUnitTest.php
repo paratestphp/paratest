@@ -131,19 +131,6 @@ final class PHPUnitTest extends FunctionalTestBase
         ));
     }
 
-    public function testLoggingXmlOfSingleFile(): void
-    {
-        $output = FIXTURES . DS . 'logs' . DS . 'functional-file.xml';
-        $proc   = $this->invokeParatest('passing-tests/GroupsTest.php', ['--log-junit' => $output], PARATEST_ROOT);
-        $this->assertTestsPassed($proc, '5', '5');
-        static::assertFileExists($output);
-        if (! file_exists($output)) {
-            return;
-        }
-
-        unlink($output);
-    }
-
     public function testFullyConfiguredRun(): void
     {
         $output = FIXTURES . DS . 'logs' . DS . 'functional.xml';
