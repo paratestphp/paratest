@@ -8,6 +8,7 @@ if (! defined('DS')) {
 
 //TEST CONSTANTS
 define('FIXTURES', __DIR__ . DS . 'fixtures');
+define('PROCESSES_FOR_TESTS', 2); // We need exactly 2 to generate appropriate race conditions for complete coverage
 define('TMP_DIR', __DIR__ . DS . 'tmp');
 define('PARATEST_ROOT', dirname(__DIR__));
 define('PARA_BINARY', PARATEST_ROOT . DS . 'bin' . DS . 'paratest');

@@ -83,6 +83,13 @@ final class OptionsTest extends TestBase
         ]);
     }
 
+    public function testAutoProcessesMode(): void
+    {
+        $options = $this->createOptionsFromArgv(['--processes' => 'auto']);
+
+        static::assertEquals(Options::getNumberOfCPUCores(), $options->processes());
+    }
+
     public function testHalfProcessesMode(): void
     {
         $options = $this->createOptionsFromArgv(['--processes' => 'half']);
@@ -193,7 +200,7 @@ final class OptionsTest extends TestBase
         static::assertEmpty($options->passthruPhp());
         static::assertNull($options->path());
         static::assertEquals(PHPUNIT, $options->phpunit());
-        static::assertGreaterThan(0, $options->processes());
+        static::assertSame(PROCESSES_FOR_TESTS, $options->processes());
         static::assertSame('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
         static::assertEmpty($options->testsuite());
@@ -212,7 +219,7 @@ final class OptionsTest extends TestBase
             '--coverage-crap4j' => 'COVERAGE-CRAP4J',
             '--coverage-html' => 'COVERAGE-HTML',
             '--coverage-php' => 'COVERAGE-PHP',
-            '--coverage-test-limit' => '3',
+            '--coverage-test-limit' => 3,
             '--coverage-text' => true,
             '--coverage-xml' => 'COVERAGE-XML',
             '--exclude-group' => 'EXCLUDE-GROUP',
@@ -220,14 +227,14 @@ final class OptionsTest extends TestBase
             '--functional' => true,
             '--group' => 'GROUP',
             '--log-junit' => 'LOG-JUNIT',
-            '--max-batch-size' => '5',
+            '--max-batch-size' => 5,
             '--no-test-tokens' => true,
             '--parallel-suite' => true,
             '--passthru' => '-v',
             '--passthru-php' => '-d a=1',
             '--path' => 'PATH',
             '--phpunit' => 'PHPUNIT',
-            '--processes' => '999',
+            '--processes' => 999,
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',

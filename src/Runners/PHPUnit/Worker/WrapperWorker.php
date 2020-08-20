@@ -163,9 +163,7 @@ final class WrapperWorker extends BaseWorker
      */
     private function updateStateFromAvailableOutput(): void
     {
-        if (! isset($this->pipes[1])) {
-            return;
-        }
+        assert(isset($this->pipes[1]));
 
         stream_set_blocking($this->pipes[1], false);
         while ($chunk = fread($this->pipes[1], 4096)) {

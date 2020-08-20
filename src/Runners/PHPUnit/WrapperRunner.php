@@ -72,13 +72,17 @@ final class WrapperRunner extends BaseWrapperRunner
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $key => $worker) {
                 if (! $worker->isFree()) {
+                    // Happens randomly depending on concurrency and resource usage
+                    // Cannot be covered by tests reliably
                     continue; // @codeCoverageIgnore
                 }
 
                 $this->flushWorker($worker);
                 $pending = array_shift($this->pending);
                 if ($pending === null) {
-                    continue;
+                    // Happens randomly depending on concurrency and resource usage
+                    // Cannot be covered by tests reliably
+                    continue; // @codeCoverageIgnore
                 }
 
                 $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);

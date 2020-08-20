@@ -70,7 +70,7 @@ final class ResultPrinterTest extends ResultTester
         $contents = $this->getStartOutput();
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\n",
-            Options::getNumberOfCPUCores(),
+            PROCESSES_FOR_TESTS,
             $this->options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
@@ -106,7 +106,7 @@ final class ResultPrinterTest extends ResultTester
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
             "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
-            Options::getNumberOfCPUCores(),
+            PROCESSES_FOR_TESTS,
             $this->options->phpunit(),
             $pathToConfig
         );
@@ -119,7 +119,7 @@ final class ResultPrinterTest extends ResultTester
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
             "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
-            Options::getNumberOfCPUCores(),
+            PROCESSES_FOR_TESTS,
             $this->options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);

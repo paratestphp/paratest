@@ -129,6 +129,17 @@ abstract class RunnerTestCase extends TestBase
         $this->runRunner();
     }
 
+    final public function testRaiseExceptionWhenATestCallsExitWithoutCoverageSingleProcess(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('exit-tests');
+        $this->bareOptions['--processes'] = 1;
+
+        $this->expectException(WorkerCrashedException::class);
+        $this->expectExceptionMessageMatches('/UnitTestThatExits(Silently|Loudly)Test/');
+
+        $this->runRunner();
+    }
+
     final public function testPassthrus(): void
     {
         $this->bareOptions['--path'] = $this->fixture('passthru-tests' . DS . 'PassthruTest.php');
