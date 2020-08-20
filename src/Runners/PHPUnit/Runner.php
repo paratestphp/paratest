@@ -139,7 +139,11 @@ final class Runner extends BaseRunner
             }
         }
 
-        $this->printer->printFeedback($executableTest);
+        try {
+            $this->printer->printFeedback($executableTest);
+        } catch (EmptyLogFileException $emptyLogFileException) {
+            throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyLogFileException);
+        }
 
         return false;
     }

@@ -142,7 +142,12 @@ final class WrapperRunner extends BaseWrapperRunner
             }
         }
 
-        $worker->printFeedback($this->printer);
+        try {
+            $worker->printFeedback($this->printer);
+        } catch (EmptyLogFileException $emptyLogFileException) {
+            throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyLogFileException);
+        }
+
         $worker->reset();
     }
 

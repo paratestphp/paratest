@@ -16,8 +16,6 @@ use function assert;
 use function count;
 use function end;
 use function escapeshellarg;
-use function explode;
-use function fread;
 use function getenv;
 use function implode;
 use function is_resource;
@@ -25,8 +23,6 @@ use function proc_get_status;
 use function proc_open;
 use function sprintf;
 use function stream_get_contents;
-use function stream_set_blocking;
-use function strstr;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
@@ -54,9 +50,7 @@ abstract class BaseWorker
     /** @var int|null */
     private $exitCode = null;
     /** @var string */
-    private $chunks = '';
-    /** @var string */
-    private $alreadyReadOutput = '';
+    protected $alreadyReadOutput = '';
 
     public function __construct(OutputInterface $output)
     {
@@ -108,28 +102,16 @@ abstract class BaseWorker
      */
     abstract protected function configureParameters(array &$parameters): void;
 
-    final public function isFree(): bool
-    {
-        $this->checkNotCrashed();
-        $this->updateStateFromAvailableOutput();
-
-        return $this->inExecution === 0;
-    }
-
     final public function isRunning(): bool
     {
-        if ($this->proc === null) {
-            return false;
-        }
-
+        assert($this->proc !== null);
         $this->updateProcStatus();
 
         return $this->running;
     }
 
-    final public function checkNotCrashed(): void
+    final protected function checkNotCrashed(): void
     {
-        $this->updateStateFromAvailableOutput();
         $this->updateProcStatus();
 
         if (
@@ -154,6 +136,14 @@ abstract class BaseWorker
             . $this->readAllStderr();
     }
 
+    private function readAllStderr(): string
+    {
+        $data = stream_get_contents($this->pipes[2]);
+        assert($data !== false);
+
+        return $data;
+    }
+
     final protected function updateProcStatus(): void
     {
         assert($this->proc !== null);
@@ -176,48 +166,5 @@ abstract class BaseWorker
         assert($this->exitCode !== null);
 
         return $this->exitCode;
-    }
-
-    private function readAllStderr(): string
-    {
-        $data = stream_get_contents($this->pipes[2]);
-        assert($data !== false);
-
-        return $data;
-    }
-
-    /**
-     * Have to read even incomplete lines to play nice with stream_select()
-     * Otherwise it would continue to non-block because there are bytes to be read,
-     * but fgets() won't pick them up.
-     */
-    private function updateStateFromAvailableOutput(): void
-    {
-        if (! isset($this->pipes[1])) {
-            return;
-        }
-
-        stream_set_blocking($this->pipes[1], false);
-        while ($chunk = fread($this->pipes[1], 4096)) {
-            $this->chunks            .= $chunk;
-            $this->alreadyReadOutput .= $chunk;
-        }
-
-        $lines = explode("\n", $this->chunks);
-        // last element is not a complete line,
-        // becomes part of a line completed later
-        $this->chunks = $lines[count($lines) - 1];
-        unset($lines[count($lines) - 1]);
-        // delivering complete lines to this Worker
-        foreach ($lines as $line) {
-            $line .= "\n";
-            if (strstr($line, "FINISHED\n") === false) {
-                continue;
-            }
-
-            --$this->inExecution;
-        }
-
-        stream_set_blocking($this->pipes[1], true);
     }
 }

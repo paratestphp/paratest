@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Tests\Functional\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
-use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use ParaTest\Tests\TestBase;
 use SimpleXMLElement;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -17,7 +16,7 @@ use function file_get_contents;
 /**
  * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
  */
-final class WorkerTest extends TestBase
+final class BaseWorkerTest extends TestBase
 {
     /** @var string */
     private $bootstrap;
@@ -66,55 +65,6 @@ final class WorkerTest extends TestBase
         $worker->waitForFinishedJob();
 
         $this->assertJUnitLogIsValid($testLog);
-    }
-
-    /**
-     * @requires OSFAMILY Linux
-     */
-    public function testTellsWhenItsFree(): void
-    {
-        $testLog = TMP_DIR . DS . 'test.xml';
-        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
-        $worker  = new WrapperWorker($this->output);
-        $worker->start($this->phpunitWrapper, $this->options, 1);
-        static::assertTrue($worker->isFree());
-
-        $worker->execute($testCmd);
-        static::assertFalse($worker->isFree());
-
-        $worker->waitForFinishedJob();
-        static::assertTrue($worker->isFree());
-    }
-
-    /**
-     * @requires OSFAMILY Linux
-     */
-    public function testTellsWhenItsStopped(): void
-    {
-        $worker = new WrapperWorker($this->output);
-        static::assertFalse($worker->isRunning());
-
-        $worker->start($this->phpunitWrapper, $this->options, 1);
-        static::assertTrue($worker->isRunning());
-
-        $worker->stop();
-        $worker->waitForStop();
-        static::assertFalse($worker->isRunning());
-    }
-
-    /**
-     * @requires OSFAMILY Linux
-     */
-    public function testProcessIsMarkedAsCrashedWhenItFinishesWithNonZeroExitCode(): void
-    {
-        // fake state: process has already exited (with non-zero exit code) but worker did not yet notice
-        $worker = new WrapperWorker($this->output);
-        $worker->start('-r exit(255);', $this->createOptionsFromArgv([]), 1);
-        $worker->waitForStop();
-
-        static::expectException(WorkerCrashedException::class);
-
-        $worker->checkNotCrashed();
     }
 
     public function testCanExecuteMultiplePHPUnitCommands(): void
