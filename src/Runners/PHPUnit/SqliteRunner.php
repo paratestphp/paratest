@@ -59,7 +59,6 @@ final class SqliteRunner extends BaseWrapperRunner
         $this->startWorkers();
         $this->waitForAllToFinish();
         $this->checkIfWorkersCrashed();
-        $this->setExitCode();
     }
 
     /**
@@ -91,6 +90,7 @@ final class SqliteRunner extends BaseWrapperRunner
                     continue;
                 }
 
+                $this->setExitCode($worker->getExitCode());
                 unset($this->workers[$key]);
             }
 

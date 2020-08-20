@@ -15,7 +15,6 @@ use function fclose;
 use function fgets;
 use function fwrite;
 use function implode;
-use function proc_get_status;
 use function serialize;
 use function stream_set_blocking;
 use function strstr;
@@ -130,14 +129,9 @@ final class WrapperWorker extends BaseWorker
      */
     public function waitForStop(): void
     {
-        assert($this->proc !== null);
-        $status = proc_get_status($this->proc);
-        assert($status !== false);
-        while ($status['running']) {
-            $status = proc_get_status($this->proc);
-            assert($status !== false);
-            $this->setExitCode($status['running'], $status['exitcode']);
-        }
+        do {
+            $this->updateProcStatus();
+        } while ($this->running);
     }
 
     public function getCoverageFileName(): ?string

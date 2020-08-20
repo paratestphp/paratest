@@ -133,4 +133,26 @@ abstract class RunnerTestCase extends TestBase
 
         $this->assertTestsPassed($this->runRunner(), '3', '3');
     }
+
+    final public function testTestsWithWarningsResultInFailure(): void
+    {
+        $this->bareOptions['--path']          = $this->fixture('warning-tests' . DS . 'HasWarningsTest.php');
+        $this->bareOptions['--configuration'] = $this->fixture('warning-tests' . DS . 'phpunit.xml.dist');
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Warnings', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testTestsWithOtherWarningsResultInFailure(): void
+    {
+        $this->bareOptions['--path']          = $this->fixture('warning-tests' . DS . 'HasOtherWarningsTest.php');
+        $this->bareOptions['--configuration'] = $this->fixture('warning-tests' . DS . 'phpunit.xml.dist');
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Warnings', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+    }
 }

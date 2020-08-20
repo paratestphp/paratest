@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\WorkerCrashedException;
+use PHPUnit\TextUI\TestRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
@@ -42,7 +43,8 @@ abstract class BaseWorker
     protected $output;
     /** @var string[] */
     protected $commands = [];
-
+    /** @var bool */
+    protected $running = false;
     /** @var string[][] */
     private static $descriptorspec = [
         0 => ['pipe', 'r'],
@@ -120,25 +122,23 @@ abstract class BaseWorker
             return false;
         }
 
-        $status = proc_get_status($this->proc);
+        $this->updateProcStatus();
 
-        return $status !== false ? $status['running'] : false;
+        return $this->running;
     }
 
     final public function checkNotCrashed(): void
     {
-        assert($this->proc !== null);
-        $status = proc_get_status($this->proc);
-        assert($status !== false);
-
         $this->updateStateFromAvailableOutput();
+        $this->updateProcStatus();
 
-        $this->setExitCode($status['running'], $status['exitcode']);
-        if ($this->exitCode === null || $this->exitCode === 0) {
-            return;
+        if (
+            $this->exitCode > 0
+            && $this->exitCode !== TestRunner::FAILURE_EXIT
+            && $this->exitCode !== TestRunner::EXCEPTION_EXIT
+        ) {
+            throw new WorkerCrashedException($this->getCrashReport());
         }
-
-        throw new WorkerCrashedException($this->getCrashReport());
     }
 
     final public function getCrashReport(): string
@@ -154,13 +154,31 @@ abstract class BaseWorker
             . $this->readAllStderr();
     }
 
-    final protected function setExitCode(bool $running, int $exitcode): void
+    final protected function updateProcStatus(): void
     {
-        if ($running || $this->exitCode !== null) {
+        assert($this->proc !== null);
+        $status = proc_get_status($this->proc);
+
+        if ($status === false) {
             return;
         }
 
-        $this->exitCode = $exitcode;
+        $this->running = $status['running'];
+
+        // From PHP manual:
+        // Only first call of proc_get_status function return real value, next calls return -1.
+        if ($this->running || $this->exitCode !== null) {
+            return;
+        }
+
+        $this->exitCode = $status['exitcode'];
+    }
+
+    final public function getExitCode(): int
+    {
+        assert($this->exitCode !== null);
+
+        return $this->exitCode;
     }
 
     private function readAllStderr(): string

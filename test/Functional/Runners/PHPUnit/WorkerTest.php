@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 use function count;
 use function file_get_contents;
-use function uniqid;
 
 /**
  * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
@@ -110,11 +109,10 @@ final class WorkerTest extends TestBase
     {
         // fake state: process has already exited (with non-zero exit code) but worker did not yet notice
         $worker = new WrapperWorker($this->output);
-        $worker->start(uniqid('thisCommandHasAnExitcodeNotEqualZero'), $this->createOptionsFromArgv([]), 1);
+        $worker->start('-r exit(255);', $this->createOptionsFromArgv([]), 1);
         $worker->waitForStop();
 
         static::expectException(WorkerCrashedException::class);
-        static::expectExceptionMessageMatches('/thisCommandHasAnExitcodeNotEqualZero/');
 
         $worker->checkNotCrashed();
     }

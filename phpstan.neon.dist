@@ -47,7 +47,7 @@ parameters:
             path: bin/paratest
         -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 1
+            count: 2
             path: bin/phpunit-sqlite-wrapper.php
         -
             message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
@@ -141,9 +141,3 @@ parameters:
             message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"
             count: 1
             path: test/Unit/Runners/PHPUnit/SuiteLoaderTest.php
-
-        # Level MAX
-        -
-            message: "#^Parameter \\#1 \\$process of function proc_get_status expects resource, resource\\|null given\\.$#"
-            count: 1
-            path: src/Runners/PHPUnit/Worker/WrapperWorker.php

@@ -46,7 +46,6 @@ final class WrapperRunner extends BaseWrapperRunner
         $this->assignAllPendingTests();
         $this->sendStopMessages();
         $this->waitForAllToFinish();
-        $this->setExitCode();
     }
 
     private function startWorkers(): void
@@ -166,6 +165,7 @@ final class WrapperRunner extends BaseWrapperRunner
                 }
 
                 $this->flushWorker($worker);
+                $this->setExitCode($worker->getExitCode());
                 unset($toStop[$index]);
             }
         }

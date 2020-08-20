@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use InvalidArgumentException;
-use PHPUnit\TextUI\TestRunner;
+
+use function max;
 
 abstract class BaseWrapperRunner extends BaseRunner
 {
@@ -19,13 +20,8 @@ abstract class BaseWrapperRunner extends BaseRunner
         }
     }
 
-    final protected function setExitCode(): void
+    final protected function setExitCode(int $exitCode): void
     {
-        $this->exitcode = TestRunner::SUCCESS_EXIT;
-        if ($this->interpreter->getTotalErrors() > 0) {
-            $this->exitcode = TestRunner::EXCEPTION_EXIT;
-        } elseif ($this->interpreter->getTotalFailures() > 0) {
-            $this->exitcode = TestRunner::FAILURE_EXIT;
-        }
+        $this->exitcode = max($this->exitcode, $exitCode);
     }
 }
