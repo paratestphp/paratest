@@ -91,7 +91,7 @@ final class RunnerWorker
 
     /**
      * Build the full executable as we would do on the command line, e.g.
-     * php -d zend_extension=xdebug.so vendor/bin/phpunit --teststuite suite1 --prepend xdebug-filter.php.
+     * php -d zend_extension=xdebug.so vendor/bin/phpunit -_teststuite suite1 --prepend xdebug-filter.php.
      *
      * @param array<string, string|null>    $options
      * @param array<string|int, string|int> $environmentVariables

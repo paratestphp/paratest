@@ -8,11 +8,8 @@ use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
-use ParaTest\Tests\Functional\RunnerResult;
 use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use ReflectionObject;
 use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -22,7 +19,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 use function file_exists;
 use function glob;
-use function preg_match;
 use function sprintf;
 
 abstract class TestBase extends PHPUnit\Framework\TestCase
@@ -67,14 +63,11 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         return Options::fromConsoleInput($input, $cwd ?? PARATEST_ROOT);
     }
 
-    final protected function runRunner(?string $runnerClass = null): RunnerResult
+    final protected function runRunner(?string $cwd = null): RunnerResult
     {
-        if ($runnerClass === null) {
-            $runnerClass = $this->runnerClass;
-        }
-
         $output        = new BufferedOutput();
-        $wrapperRunner = new $runnerClass($this->createOptionsFromArgv($this->bareOptions), $output);
+        $runnerClass   = $this->runnerClass;
+        $wrapperRunner = new $runnerClass($this->createOptionsFromArgv($this->bareOptions, $cwd), $output);
         $wrapperRunner->run();
 
         return new RunnerResult($wrapperRunner->getExitCode(), $output->fetch());
@@ -104,27 +97,6 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         }
 
         return $fixture;
-    }
-
-    /**
-     * @return string[]
-     */
-    final protected function findTests(string $dir): array
-    {
-        $it    = new RecursiveDirectoryIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
-        $it    = new RecursiveIteratorIterator($it);
-        $files = [];
-        foreach ($it as $file) {
-            $match = preg_match('/Test\.php$/', $file->getPathname());
-            self::assertNotFalse($match);
-            if ($match === 0) {
-                continue;
-            }
-
-            $files[] = $file->getPathname();
-        }
-
-        return $files;
     }
 
     /**

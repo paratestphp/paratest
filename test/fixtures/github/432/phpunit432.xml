@@ -1,8 +1,0 @@
-<phpunit>
-    <testsuites>
-        <testsuite name="Github issue 432">
-            <file>Issue432FooTest.php</file>
-            <file>Issue432BarTest.php</file>
-        </testsuite>
-    </testsuites>
-</phpunit>

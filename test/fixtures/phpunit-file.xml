@@ -2,7 +2,7 @@
 <phpunit>
     <testsuites>
         <testsuite name="ParaTest Fixtures">
-            <file>./passing-tests/GroupsTest.php</file>
+            <file>./passing_tests/GroupsTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

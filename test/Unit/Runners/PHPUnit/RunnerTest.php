@@ -15,7 +15,7 @@ final class RunnerTest extends RunnerTestCase
 {
     public function testStopOnFailureEndsRunBeforeWholeTestSuite(): void
     {
-        $this->bareOptions['--path'] = $this->fixture('failing-tests');
+        $this->bareOptions['--path'] = $this->fixture('failing_tests');
         $runnerResult                = $this->runRunner();
 
         $regexp = '/Tests: \d+, Assertions: \d+, Failures: \d+, Errors: \d+\./';
@@ -31,7 +31,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testFunctionalMode(): void
     {
-        $this->bareOptions['--path']           = $this->fixture('dataprovider-tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
         $this->bareOptions['--functional']     = true;
         $this->bareOptions['--max-batch-size'] = 50;
 
@@ -40,7 +40,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testNumericDataSetInFunctionalModeWithMethodFilter(): void
     {
-        $this->bareOptions['--path']           = $this->fixture('dataprovider-tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
         $this->bareOptions['--functional']     = true;
         $this->bareOptions['--max-batch-size'] = 50;
         $this->bareOptions['--filter']         = 'testNumericDataProvider50';
@@ -50,7 +50,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testNumericDataSetInFunctionalModeWithCustomFilter(): void
     {
-        $this->bareOptions['--path']           = $this->fixture('dataprovider-tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
         $this->bareOptions['--functional']     = true;
         $this->bareOptions['--max-batch-size'] = 50;
         $this->bareOptions['--filter']         = 'testNumericDataProvider50.*1';
@@ -60,7 +60,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testNamedDataSetInFunctionalModeWithMethodFilter(): void
     {
-        $this->bareOptions['--path']           = $this->fixture('dataprovider-tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
         $this->bareOptions['--functional']     = true;
         $this->bareOptions['--max-batch-size'] = 50;
         $this->bareOptions['--filter']         = 'testNamedDataProvider50';
@@ -70,7 +70,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testNamedDataSetInFunctionalModeWithCustomFilter(): void
     {
-        $this->bareOptions['--path']           = $this->fixture('dataprovider-tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
         $this->bareOptions['--functional']     = true;
         $this->bareOptions['--max-batch-size'] = 50;
         $this->bareOptions['--filter']         = 'testNamedDataProvider50.*name_of_test_.*1';
@@ -80,7 +80,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testNumericDataSet1000InFunctionalModeWithFilterAndMaxBatchSize(): void
     {
-        $this->bareOptions['--path']           = $this->fixture('dataprovider-tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
         $this->bareOptions['--functional']     = true;
         $this->bareOptions['--max-batch-size'] = 50;
         $this->bareOptions['--filter']         = 'testNumericDataProvider1000';
@@ -90,7 +90,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testSkippedInFunctionalMode(): void
     {
-        $this->bareOptions['--path']       = $this->fixture('skipped-tests' . DS . 'SkippedOrIncompleteTest.php');
+        $this->bareOptions['--path']       = $this->fixture('skipped_tests' . DS . 'SkippedOrIncompleteTest.php');
         $this->bareOptions['--functional'] = true;
         $this->bareOptions['--filter']     = 'testSkipped';
 
@@ -104,7 +104,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testIncompleteInFunctionalMode(): void
     {
-        $this->bareOptions['--path']       = $this->fixture('skipped-tests' . DS . 'SkippedOrIncompleteTest.php');
+        $this->bareOptions['--path']       = $this->fixture('skipped_tests' . DS . 'SkippedOrIncompleteTest.php');
         $this->bareOptions['--functional'] = true;
         $this->bareOptions['--filter']     = 'testIncomplete';
 
@@ -118,7 +118,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testDataProviderWithSkippedInFunctionalMode(): void
     {
-        $this->bareOptions['--path']       = $this->fixture('skipped-tests' . DS . 'SkippedOrIncompleteTest.php');
+        $this->bareOptions['--path']       = $this->fixture('skipped_tests' . DS . 'SkippedOrIncompleteTest.php');
         $this->bareOptions['--functional'] = true;
         $this->bareOptions['--filter']     = 'testDataProviderWithSkipped';
 
@@ -132,7 +132,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testEachTestRunsExactlyOnceOnChainDependencyOnFunctionalMode(): void
     {
-        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'DependsOnChain.php');
+        $this->bareOptions['--path']       = $this->fixture('passing_tests' . DS . 'DependsOnChain.php');
         $this->bareOptions['--functional'] = true;
 
         $this->assertTestsPassed($this->runRunner(), '5', '5');
@@ -140,7 +140,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testEachTestRunsExactlyOnceOnSameDependencyOnFunctionalMode(): void
     {
-        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'DependsOnSame.php');
+        $this->bareOptions['--path']       = $this->fixture('passing_tests' . DS . 'DependsOnSame.php');
         $this->bareOptions['--functional'] = true;
 
         $this->assertTestsPassed($this->runRunner(), '3', '3');
@@ -148,7 +148,7 @@ final class RunnerTest extends RunnerTestCase
 
     public function testFunctionalModeEachTestCalledOnce(): void
     {
-        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'FunctionalModeEachTestCalledOnce.php');
+        $this->bareOptions['--path']       = $this->fixture('passing_tests' . DS . 'FunctionalModeEachTestCalledOnce.php');
         $this->bareOptions['--functional'] = true;
 
         $this->assertTestsPassed($this->runRunner(), '2', '2');

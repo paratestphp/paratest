@@ -21,7 +21,7 @@ final class WrapperRunnerTest extends RunnerTestCase
 
     public function testWrapperRunnerNotAvailableInFunctionalMode(): void
     {
-        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--path']       = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
         $this->bareOptions['--functional'] = true;
 
         $this->expectException(InvalidArgumentException::class);

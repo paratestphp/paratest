@@ -2,7 +2,7 @@
 <phpunit>
     <testsuites>
         <testsuite name="ParaTest Fixtures">
-            <file>./dataprovider-tests/DataProviderTest.php</file>
+            <file>./dataprovider_tests/DataProviderTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

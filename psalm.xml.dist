@@ -16,6 +16,7 @@
     </projectFiles>
 
     <issueHandlers>
+      <DeprecatedClass errorLevel="suppress" />
       <InternalClass errorLevel="suppress" />
       <InternalMethod errorLevel="suppress" />
     </issueHandlers>

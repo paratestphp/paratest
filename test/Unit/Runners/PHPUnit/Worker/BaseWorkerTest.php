@@ -41,7 +41,7 @@ final class BaseWorkerTest extends TestBase
     public function testReadsAPHPUnitCommandFromStdInAndExecutesItItsOwnProcess(): void
     {
         $testLog = TMP_DIR . DS . 'test.xml';
-        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
+        $testCmd = $this->getCommand('passing_tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper, $this->options, 1);
         $worker->execute($testCmd);
@@ -58,7 +58,7 @@ final class BaseWorkerTest extends TestBase
     public function testKnowsWhenAJobIsFinished(): void
     {
         $testLog = TMP_DIR . DS . 'test.xml';
-        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
+        $testCmd = $this->getCommand('passing_tests' . DS . 'TestOfUnits.php', $testLog);
         $worker  = new WrapperWorker($this->output);
         $worker->start($this->phpunitWrapper, $this->options, 1);
         $worker->execute($testCmd);
@@ -73,11 +73,11 @@ final class BaseWorkerTest extends TestBase
         $worker->start($this->phpunitWrapper, $this->options, 1);
 
         $testLog = TMP_DIR . DS . 'test.xml';
-        $testCmd = $this->getCommand('passing-tests' . DS . 'TestOfUnits.php', $testLog);
+        $testCmd = $this->getCommand('passing_tests' . DS . 'TestOfUnits.php', $testLog);
         $worker->execute($testCmd);
 
         $testLog2 = TMP_DIR . DS . 'test2.xml';
-        $testCmd2 = $this->getCommand('failing-tests' . DS . 'UnitTestWithErrorTest.php', $testLog2);
+        $testCmd2 = $this->getCommand('failing_tests' . DS . 'UnitTestWithErrorTest.php', $testLog2);
         $worker->execute($testCmd2);
 
         $worker->stop();

@@ -89,7 +89,7 @@ final class LogInterpreterTest extends ResultTester
     {
         $errors = [
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/" .
-            'test/fixtures/failing-tests/UnitTestWithErrorTest.php:17',
+            'test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
             'Risky Test',
             'Risky Test',
         ];
@@ -109,11 +109,11 @@ final class LogInterpreterTest extends ResultTester
     {
         $failures = [
             "Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/" .
-                'home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php:32',
+                'home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             "UnitTestWithErrorTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20',
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20',
             "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20',
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20',
         ];
 
         static::assertSame($failures, $this->interpreter->getFailures());
@@ -144,17 +144,17 @@ final class LogInterpreterTest extends ResultTester
             if ($case->name === 'testNumericDataProvider5 with data set #4') {
                 static::assertSame(
                     $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest1.php'
+                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest1.php'
                 );
             } elseif ($case->name === 'testNamedDataProvider5 with data set #4') {
                 static::assertSame(
                     $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest2.php'
+                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest2.php'
                 );
             } else {
                 static::assertSame(
                     $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider-tests/DataProviderTest.php'
+                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest.php'
                 );
             }
         }
@@ -181,7 +181,7 @@ final class LogInterpreterTest extends ResultTester
         $first = $suites[0];
         static::assertSame('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $first->name);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php',
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
         static::assertSame(4, $first->tests);

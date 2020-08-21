@@ -21,7 +21,7 @@ final class BaseRunnerTest extends TestBase
         static::skipIfCodeCoverageNotEnabled();
 
         $this->bareOptions = [
-            '--path' => FIXTURES . DS . 'failing-tests',
+            '--path' => FIXTURES . DS . 'failing_tests',
             '--coverage-clover' => TMP_DIR . DS . 'coverage.clover',
             '--coverage-crap4j' => TMP_DIR . DS . 'coverage.crap4j',
             '--coverage-html' => TMP_DIR . DS . 'coverage.html',
@@ -29,7 +29,7 @@ final class BaseRunnerTest extends TestBase
             '--coverage-text' => true,
             '--coverage-xml' => TMP_DIR . DS . 'coverage.xml',
             '--bootstrap' => BOOTSTRAP,
-            '--whitelist' => FIXTURES . DS . 'failing-tests',
+            '--whitelist' => FIXTURES . DS . 'failing_tests',
         ];
     }
 
@@ -111,19 +111,19 @@ final class BaseRunnerTest extends TestBase
         $skipped  = $doc->xpath('//skipped');
         $errors   = $doc->xpath('//error');
 
-        // these numbers represent the tests in fixtures/failing-tests
+        // these numbers represent the tests in fixtures/failing_tests
         // so will need to be updated when tests are added or removed
         static::assertNotFalse($suites);
-        static::assertCount(6, $suites);
+        static::assertCount(5, $suites);
         static::assertNotFalse($cases);
-        static::assertCount(24, $cases);
+        static::assertCount(17, $cases);
         static::assertNotFalse($failures);
-        static::assertCount(6, $failures);
+        static::assertCount(5, $failures);
         static::assertNotFalse($warnings);
-        static::assertCount(2, $warnings);
+        static::assertCount(1, $warnings);
         static::assertNotFalse($skipped);
-        static::assertCount(4, $skipped);
+        static::assertCount(2, $skipped);
         static::assertNotFalse($errors);
-        static::assertCount(3, $errors);
+        static::assertCount(2, $errors);
     }
 }

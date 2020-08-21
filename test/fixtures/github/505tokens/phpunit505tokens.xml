@@ -1,7 +1,0 @@
-<phpunit>
-    <testsuites>
-        <testsuite name="Github issue 505 testing tokens">
-            <file>Issue505TokensTest.php</file>
-        </testsuite>
-    </testsuites>
-</phpunit>

@@ -2,10 +2,10 @@
 <phpunit bootstrap="../bootstrap.php">
     <testsuites>
         <testsuite name="Suite 1">
-            <directory>./parallel-suite/One/</directory>
+            <directory>./parallel_suite/One/</directory>
         </testsuite>
         <testsuite name="Suite 2">
-            <directory>./parallel-suite/Two/</directory>
+            <directory>./parallel_suite/Two/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

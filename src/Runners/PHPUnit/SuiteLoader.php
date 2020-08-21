@@ -172,12 +172,10 @@ final class SuiteLoader
         } else {
             foreach ($this->files as $path) {
                 try {
-                    $parser = new Parser($path);
-                    if (($class = $parser->getClass()) !== null) {
-                        $suite = $this->createSuite($path, $class);
-                        if (count($suite->getFunctions()) > 0) {
-                            $this->loadedSuites[$path] = $suite;
-                        }
+                    $class = (new Parser($path))->getClass();
+                    $suite = $this->createSuite($path, $class);
+                    if (count($suite->getFunctions()) > 0) {
+                        $this->loadedSuites[$path] = $suite;
                     }
                 } catch (NoClassInFileException $e) {
                     continue;

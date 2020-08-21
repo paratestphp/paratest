@@ -92,7 +92,7 @@ final class ReaderTest extends TestBase
         $first = $suite->suites[0];
         static::assertSame('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $first->name);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php',
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
         static::assertSame(4, $first->tests);
@@ -114,7 +114,7 @@ final class ReaderTest extends TestBase
         static::assertSame('testTruth', $first->name);
         static::assertSame('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $first->class);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php',
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
         static::assertSame(21, $first->line);
@@ -131,7 +131,7 @@ final class ReaderTest extends TestBase
         static::assertSame(ExpectationFailedException::class, $failure['type']);
         static::assertSame(
             "Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php:32',
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             $failure['text']
         );
     }
@@ -145,7 +145,7 @@ final class ReaderTest extends TestBase
         static::assertSame('Exception', $error['type']);
         static::assertSame(
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithErrorTest.php:17',
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
             $error['text']
         );
     }
@@ -253,12 +253,12 @@ final class ReaderTest extends TestBase
         static::assertCount(3, $failures);
         static::assertSame(
             "Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php:32',
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             $failures[0]
         );
         static::assertSame(
             "UnitTestWithErrorTest::testFalsehood\nFailed asserting that true is false." .
-                "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest." .
+                "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest." .
                 'php:20',
             $failures[1]
         );
@@ -270,7 +270,7 @@ final class ReaderTest extends TestBase
         static::assertCount(3, $errors);
         static::assertSame(
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithErrorTest.php:17',
+                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
             $errors[0]
         );
     }
