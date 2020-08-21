@@ -9,11 +9,15 @@ use ParaTest\Runners\PHPUnit\FullSuite;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\SuiteLoader;
 use ParaTest\Tests\TestBase;
+use ParseError;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use RuntimeException;
 
 use function array_keys;
 use function array_shift;
 use function count;
+use function preg_match;
 use function strstr;
 use function uniqid;
 
@@ -22,13 +26,6 @@ use function uniqid;
  */
 final class SuiteLoaderTest extends TestBase
 {
-    public function testConstructor(): void
-    {
-        $options = $this->createOptionsFromArgv(['--group' => 'group1']);
-        $loader  = new SuiteLoader($options);
-        static::assertEquals($options, $this->getObjectValue($loader, 'options'));
-    }
-
     public function testLoadThrowsExceptionWithInvalidPath(): void
     {
         $loader = new SuiteLoader($this->createOptionsFromArgv(['--path' => '/path/to/nowhere']));
@@ -109,7 +106,7 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing_tests'));
         static::assertCount($expected, $files);
     }
 
@@ -122,8 +119,8 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            count($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing_tests')) +
+            count($this->findTests(FIXTURES . DS . 'failing_tests'));
         static::assertCount($expected, $files);
     }
 
@@ -136,7 +133,7 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'failing-tests')) + 2;
+        $expected = count($this->findTests(FIXTURES . DS . 'failing_tests')) + 2;
         static::assertCount($expected, $files);
     }
 
@@ -149,7 +146,7 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) + 2;
+        $expected = count($this->findTests(FIXTURES . DS . 'passing_tests')) + 2;
         static::assertCount($expected, $files);
     }
 
@@ -163,7 +160,7 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'parallel-suite' . DS . 'One'));
+        $expected = count($this->findTests(FIXTURES . DS . 'parallel_suite' . DS . 'One'));
         static::assertCount($expected, $files);
     }
 
@@ -176,7 +173,7 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests'));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing_tests'));
         static::assertCount($expected, $files);
     }
 
@@ -189,8 +186,8 @@ final class SuiteLoaderTest extends TestBase
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
-        $expected = count($this->findTests(FIXTURES . DS . 'passing-tests')) +
-            count($this->findTests(FIXTURES . DS . 'failing-tests'));
+        $expected = count($this->findTests(FIXTURES . DS . 'passing_tests')) +
+            count($this->findTests(FIXTURES . DS . 'failing_tests'));
         static::assertCount($expected, $files);
     }
 
@@ -210,7 +207,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadFileGetsPathOfFile(): void
     {
-        $path  = $this->fixture('failing-tests' . DS . 'UnitTestWithClassAnnotationTest.php');
+        $path  = $this->fixture('failing_tests' . DS . 'UnitTestWithClassAnnotationTest.php');
         $paths = $this->getLoadedPaths($path);
         static::assertEquals($path, array_shift($paths));
     }
@@ -229,7 +226,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadFileShouldLoadFileWhereNameDoesNotEndInTest(): void
     {
-        $path  = $this->fixture('passing-tests' . DS . 'TestOfUnits.php');
+        $path  = $this->fixture('passing_tests' . DS . 'TestOfUnits.php');
         $paths = $this->getLoadedPaths($path);
         static::assertEquals($path, array_shift($paths));
     }
@@ -239,7 +236,7 @@ final class SuiteLoaderTest extends TestBase
      */
     public function testLoadDirGetsPathOfAllTestsWithKeys(): array
     {
-        $fixturePath = $this->fixture('passing-tests');
+        $fixturePath = $this->fixture('passing_tests');
         $files       = $this->findTests($fixturePath);
 
         $loader = new SuiteLoader($this->createOptionsFromArgv(['--path' => $fixturePath]));
@@ -301,7 +298,7 @@ final class SuiteLoaderTest extends TestBase
     {
         $options = $this->createOptionsFromArgv([
             '--group' => 'group1',
-            '--path' => $this->fixture('passing-tests/GroupsTest.php'),
+            '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -315,7 +312,7 @@ final class SuiteLoaderTest extends TestBase
     {
         $options = $this->createOptionsFromArgv([
             '--group' => 'group4',
-            '--path' => $this->fixture('passing-tests/GroupsTest.php'),
+            '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -328,7 +325,7 @@ final class SuiteLoaderTest extends TestBase
     {
         $options = $this->createOptionsFromArgv([
             '--group' => 'non-existent',
-            '--path' => $this->fixture('passing-tests/GroupsTest.php'),
+            '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
@@ -340,17 +337,39 @@ final class SuiteLoaderTest extends TestBase
     {
         $options = $this->createOptionsFromArgv([
             '--group' => 'non-existent',
-            '--path' => $this->fixture('special-classes/FileWithoutClass.php'),
+            '--path' => $this->fixture('special_classes/FileWithoutClass.php'),
         ]);
         $loader  = new SuiteLoader($options);
         $loader->load();
         static::assertCount(0, $loader->getTestMethods());
     }
 
+    public function testExcludeGroupSwitchDontExecuteThatGroup(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--exclude-group' => 'group1',
+            '--path' => $this->fixture('passing_tests/GroupsTest.php'),
+        ]);
+        $loader  = new SuiteLoader($options);
+        $loader->load();
+        static::assertCount(3, $loader->getTestMethods());
+    }
+
+    public function testGroupsSwitchExecutesMultipleGroups(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--group' => 'group1,group3',
+            '--path' => $this->fixture('passing_tests/GroupsTest.php'),
+        ]);
+        $loader  = new SuiteLoader($options);
+        $loader->load();
+        static::assertCount(3, $loader->getTestMethods());
+    }
+
     public function testExecutableTestsForFunctionalModeUse(): void
     {
         $loader = new SuiteLoader($this->createOptionsFromArgv([
-            '--path' => $this->fixture('passing-tests/DependsOnChain.php'),
+            '--path' => $this->fixture('passing_tests/DependsOnChain.php'),
         ]));
         $loader->load();
         $tests = $loader->getTestMethods();
@@ -382,7 +401,7 @@ final class SuiteLoaderTest extends TestBase
     {
         $options = $this->createOptionsFromArgv([
             '--bootstrap' => BOOTSTRAP,
-            '--path' => $this->fixture('dataprovider-tests/DataProviderTest.php'),
+            '--path' => $this->fixture('dataprovider_tests/DataProviderTest.php'),
             '--filter' => 'testNumericDataProvider1000',
             '--functional' => true,
             '--max-batch-size' => 50,
@@ -398,5 +417,38 @@ final class SuiteLoaderTest extends TestBase
 
         static::assertInstanceOf(Suite::class, $suite);
         static::assertCount(20, $suite->getFunctions());
+    }
+
+    public function testRunWithFatalParseErrors(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--path' => $this->fixture('fatal_tests' . DS . 'UnitTestWithFatalParseErrorTest.php'),
+        ]);
+        $loader  = new SuiteLoader($options);
+
+        self::expectException(ParseError::class);
+
+        $loader->load();
+    }
+
+    /**
+     * @return string[]
+     */
+    private function findTests(string $dir): array
+    {
+        $it    = new RecursiveDirectoryIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
+        $it    = new RecursiveIteratorIterator($it);
+        $files = [];
+        foreach ($it as $file) {
+            $match = preg_match('/Test\.php$/', $file->getPathname());
+            self::assertNotFalse($match);
+            if ($match === 0) {
+                continue;
+            }
+
+            $files[] = $file->getPathname();
+        }
+
+        return $files;
     }
 }

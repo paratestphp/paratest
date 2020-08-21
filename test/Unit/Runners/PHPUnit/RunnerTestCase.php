@@ -11,8 +11,10 @@ use SebastianBergmann\CodeCoverage\CodeCoverage;
 
 use function array_merge;
 use function defined;
+use function preg_match;
 use function sprintf;
 use function str_replace;
+use function substr_count;
 use function uniqid;
 
 abstract class RunnerTestCase extends TestBase
@@ -22,7 +24,7 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testResultsAreCorrect(): void
     {
-        $this->bareOptions['--path']         = $this->fixture('passing-tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--path']         = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
         $this->bareOptions['--coverage-php'] = TMP_DIR . DS . uniqid('result_');
 
         $this->assertTestsPassed($this->runRunner());
@@ -33,15 +35,23 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testRunningFewerTestsThanTheWorkersIsPossible(): void
     {
-        $this->bareOptions['--path']      = $this->fixture('passing-tests' . DS . 'GroupsTest.php');
-        $this->bareOptions['--processes'] = 2;
+        $this->bareOptions['--path']      = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--processes'] = 10;
+
+        $this->assertTestsPassed($this->runRunner());
+    }
+
+    final public function testRunningMoreTestsThanTheWorkersIsPossible(): void
+    {
+        $this->bareOptions['--path']      = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--processes'] = 1;
 
         $this->assertTestsPassed($this->runRunner());
     }
 
     final public function testExitCodes(): void
     {
-        $this->bareOptions['--path'] = $this->fixture('wrapper-runner-exit-code-tests' . DS . 'ErrorTest.php');
+        $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests' . DS . 'ErrorTest.php');
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('Tests: 1', $runnerResult->getOutput());
@@ -49,7 +59,7 @@ abstract class RunnerTestCase extends TestBase
         static::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
         static::assertEquals(TestRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
 
-        $this->bareOptions['--path'] = $this->fixture('wrapper-runner-exit-code-tests' . DS . 'FailureTest.php');
+        $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests' . DS . 'FailureTest.php');
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('Tests: 1', $runnerResult->getOutput());
@@ -57,13 +67,13 @@ abstract class RunnerTestCase extends TestBase
         static::assertStringContainsString('Errors: 0', $runnerResult->getOutput());
         static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
 
-        $this->bareOptions['--path'] = $this->fixture('wrapper-runner-exit-code-tests' . DS . 'SuccessTest.php');
+        $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests' . DS . 'SuccessTest.php');
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('OK (1 test, 1 assertion)', $runnerResult->getOutput());
         static::assertEquals(TestRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
 
-        $this->bareOptions['--path'] = $this->fixture('wrapper-runner-exit-code-tests');
+        $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests');
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('Tests: 3', $runnerResult->getOutput());
@@ -79,15 +89,15 @@ abstract class RunnerTestCase extends TestBase
             '--parallel-suite' => true,
             '--processes' => 2,
             '--verbose' => 1,
-            '--whitelist' => $this->fixture('parallel-suite'),
+            '--whitelist' => $this->fixture('parallel_suite'),
         ]);
 
         $this->assertTestsPassed($this->runRunner());
     }
 
-    final public function testRaiseExceptionWhenATestCallsExitSilently(): void
+    final public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
     {
-        $this->bareOptions['--path']         = $this->fixture('exit-tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
+        $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
         $this->bareOptions['--coverage-php'] = TMP_DIR . DS . uniqid('result_');
 
         $this->expectException(WorkerCrashedException::class);
@@ -96,9 +106,9 @@ abstract class RunnerTestCase extends TestBase
         $this->runRunner();
     }
 
-    final public function testRaiseExceptionWhenATestCallsExitLoudly(): void
+    final public function testRaiseExceptionWhenATestCallsExitLoudlyWithCoverage(): void
     {
-        $this->bareOptions['--path']         = $this->fixture('exit-tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
+        $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
         $this->bareOptions['--coverage-php'] = TMP_DIR . DS . uniqid('result_');
 
         $this->expectException(WorkerCrashedException::class);
@@ -107,9 +117,40 @@ abstract class RunnerTestCase extends TestBase
         $this->runRunner();
     }
 
+    final public function testRaiseExceptionWhenATestCallsExitSilentlyWithoutCoverage(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
+
+        $this->expectException(WorkerCrashedException::class);
+        $this->expectExceptionMessageMatches('/UnitTestThatExitsSilentlyTest/');
+
+        $this->runRunner();
+    }
+
+    final public function testRaiseExceptionWhenATestCallsExitLoudlyWithoutCoverage(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
+
+        $this->expectException(WorkerCrashedException::class);
+        $this->expectExceptionMessageMatches('/UnitTestThatExitsLoudlyTest/');
+
+        $this->runRunner();
+    }
+
+    final public function testRaiseExceptionWhenATestCallsExitWithoutCoverageSingleProcess(): void
+    {
+        $this->bareOptions['--path']      = $this->fixture('exit_tests');
+        $this->bareOptions['--processes'] = 1;
+
+        $this->expectException(WorkerCrashedException::class);
+        $this->expectExceptionMessageMatches('/UnitTestThatExits(Silently|Loudly)Test/');
+
+        $this->runRunner();
+    }
+
     final public function testPassthrus(): void
     {
-        $this->bareOptions['--path'] = $this->fixture('passthru-tests' . DS . 'PassthruTest.php');
+        $this->bareOptions['--path'] = $this->fixture('passthru_tests' . DS . 'PassthruTest.php');
 
         $runnerResult = $this->runRunner();
         static::assertSame(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
@@ -121,7 +162,160 @@ abstract class RunnerTestCase extends TestBase
             $this->bareOptions['--passthru-php'] = str_replace('\'', '"', (string) $this->bareOptions['--passthru-php']);
         }
 
+        $this->assertTestsPassed($this->runRunner());
+    }
+
+    final public function testGroupAndExcludeGroupArePassedToPhpunitEvenForNonFunctionTests(): void
+    {
+        $this->bareOptions['--path']          = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--group']         = 'group1,group2';
+        $this->bareOptions['--exclude-group'] = 'group3';
+
+        $this->assertTestsPassed($this->runRunner(), '3', '3');
+    }
+
+    final public function testTestsWithWarningsResultInFailure(): void
+    {
+        $this->bareOptions['--path']          = $this->fixture('warning_tests' . DS . 'HasWarningsTest.php');
+        $this->bareOptions['--configuration'] = $this->fixture('warning_tests' . DS . 'phpunit.xml.dist');
+
         $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Warnings', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testTestsWithOtherWarningsResultInFailure(): void
+    {
+        $this->bareOptions['--path']          = $this->fixture('warning_tests' . DS . 'HasOtherWarningsTest.php');
+        $this->bareOptions['--configuration'] = $this->fixture('warning_tests' . DS . 'phpunit.xml.dist');
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Warnings', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testParatestEnvironmentVariable(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('paratest_only_tests' . DS . 'EnvironmentTest.php');
+
+        $this->assertTestsPassed($this->runRunner());
+    }
+
+    final public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens(): void
+    {
+        $this->bareOptions['--path']           = $this->fixture('paratest_only_tests' . DS . 'EnvironmentTest.php');
+        $this->bareOptions['--no-test-tokens'] = true;
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testSkippedInDefaultMode(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('skipped_tests' . DS . 'SkippedTest.php');
+
+        $runnerResult = $this->runRunner();
+
+        $expected = "OK, but incomplete, skipped, or risky tests!\n"
+            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+        static::assertStringContainsString($expected, $runnerResult->getOutput());
+        $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
+    }
+
+    final public function testIncompleteInDefaultMode(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('skipped_tests' . DS . 'IncompleteTest.php');
+
+        $runnerResult = $this->runRunner();
+
+        $expected = "OK, but incomplete, skipped, or risky tests!\n"
+            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+        static::assertStringContainsString($expected, $runnerResult->getOutput());
+        $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
+    }
+
+    final public function testDataProviderWithSkippedInDefaultMode(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('skipped_tests' . DS . 'SkippedAndIncompleteDataProviderTest.php');
+
+        $runnerResult = $this->runRunner();
+
+        $expected = "OK, but incomplete, skipped, or risky tests!\n"
+            . 'Tests: 100, Assertions: 33, Incomplete: 67.';
+        static::assertStringContainsString($expected, $runnerResult->getOutput());
+        $this->assertContainsNSkippedTests(67, $runnerResult->getOutput());
+    }
+
+    final protected function assertContainsNSkippedTests(int $n, string $output): void
+    {
+        preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
+        static::assertCount(2, $matches);
+        $numberOfS = substr_count($matches[1], 'S');
+        static::assertEquals(
+            $n,
+            $numberOfS,
+            "The test should have skipped {$n} tests, instead it skipped {$numberOfS}, {$matches[1]}"
+        );
+    }
+
+    /**
+     * @group github
+     * @coversNothing
+     */
+    final public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuite(): void
+    {
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH420'));
+        $this->assertTestsPassed($runnerResult);
+    }
+
+    /**
+     * @group github
+     * @coversNothing
+     */
+    final public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuiteManualBootstrap(): void
+    {
+        $this->bareOptions['--bootstrap'] = $this->fixture('github' . DS . 'GH420bis' . DS . 'bootstrap.php');
+
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH420bis'));
+        $this->assertTestsPassed($runnerResult);
+    }
+
+    /**
+     * @group github
+     * @coversNothing
+     */
+    final public function testFilterOutTestWithoutGroupWhenGroupIsSpecified(): void
+    {
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH432'));
+        $this->assertTestsPassed($runnerResult);
+    }
+
+    /**
+     * @group github
+     * @coversNothing
+     */
+    final public function testTokensAreAbsentWhenNoTestTokensIsSpecified(): void
+    {
+        $this->bareOptions['--no-test-tokens'] = true;
+        $this->bareOptions['--processes']      = 1;
+
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505'));
+        $this->assertTestsPassed($runnerResult);
+    }
+
+    /**
+     * @group github
+     * @coversNothing
+     */
+    final public function testTokensArePresentByDefault(): void
+    {
+        $this->bareOptions['--processes'] = 1;
+
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505tokens'));
         $this->assertTestsPassed($runnerResult);
     }
 }

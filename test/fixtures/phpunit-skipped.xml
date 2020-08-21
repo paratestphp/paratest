@@ -2,7 +2,7 @@
 <phpunit>
     <testsuites>
         <testsuite name="ParaTest Fixtures">
-            <directory>./skipped-tests/</directory>
+            <directory>./skipped_tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

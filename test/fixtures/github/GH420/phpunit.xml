@@ -1,0 +1,20 @@
+<phpunit
+        bootstrap="./bootstrap.php"
+>
+    <testsuites>
+        <testsuite name="Github issue">
+            <file>IssueTest.php</file>
+        </testsuite>
+    </testsuites>
+    <php>
+        <ini name="sendmail_from" value="ISSUE_420_ini"/>
+        <const name="ISSUE_420_const" value="ISSUE_420_const"/>
+        <var name="ISSUE_420_var" value="ISSUE_420_var"/>
+        <env name="ISSUE_420_env" value="ISSUE_420_env"/>
+        <get name="ISSUE_420_get" value="ISSUE_420_get"/>
+        <post name="ISSUE_420_post" value="ISSUE_420_post"/>
+        <cookie name="ISSUE_420_cookie" value="ISSUE_420_cookie"/>
+        <server name="ISSUE_420_server" value="ISSUE_420_server"/>
+        <files name="ISSUE_420_files" value="ISSUE_420_files"/>
+    </php>
+</phpunit>

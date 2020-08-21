@@ -46,7 +46,6 @@ final class WrapperRunner extends BaseWrapperRunner
         $this->assignAllPendingTests();
         $this->sendStopMessages();
         $this->waitForAllToFinish();
-        $this->setExitCode();
     }
 
     private function startWorkers(): void
@@ -73,13 +72,17 @@ final class WrapperRunner extends BaseWrapperRunner
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $key => $worker) {
                 if (! $worker->isFree()) {
+                    // Happens randomly depending on concurrency and resource usage
+                    // Cannot be covered by tests reliably
                     continue; // @codeCoverageIgnore
                 }
 
                 $this->flushWorker($worker);
                 $pending = array_shift($this->pending);
                 if ($pending === null) {
-                    continue;
+                    // Happens randomly depending on concurrency and resource usage
+                    // Cannot be covered by tests reliably
+                    continue; // @codeCoverageIgnore
                 }
 
                 $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
@@ -143,7 +146,12 @@ final class WrapperRunner extends BaseWrapperRunner
             }
         }
 
-        $worker->printFeedback($this->printer);
+        try {
+            $worker->printFeedback($this->printer);
+        } catch (EmptyLogFileException $emptyLogFileException) {
+            throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyLogFileException);
+        }
+
         $worker->reset();
     }
 
@@ -166,6 +174,7 @@ final class WrapperRunner extends BaseWrapperRunner
                 }
 
                 $this->flushWorker($worker);
+                $this->setExitCode($worker->getExitCode());
                 unset($toStop[$index]);
             }
         }

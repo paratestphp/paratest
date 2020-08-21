@@ -15,7 +15,7 @@ use function intdiv;
 use function mt_rand;
 use function sort;
 use function str_replace;
-use function sys_get_temp_dir;
+use function uniqid;
 
 /**
  * @covers \ParaTest\Runners\PHPUnit\Options
@@ -81,6 +81,13 @@ final class OptionsTest extends TestBase
             '--functional' => false,
             '--filter' => 'testMe',
         ]);
+    }
+
+    public function testAutoProcessesMode(): void
+    {
+        $options = $this->createOptionsFromArgv(['--processes' => 'auto']);
+
+        static::assertEquals(Options::getNumberOfCPUCores(), $options->processes());
     }
 
     public function testHalfProcessesMode(): void
@@ -193,11 +200,11 @@ final class OptionsTest extends TestBase
         static::assertEmpty($options->passthruPhp());
         static::assertNull($options->path());
         static::assertEquals(PHPUNIT, $options->phpunit());
-        static::assertGreaterThan(0, $options->processes());
-        static::assertStringContainsString('Runner', $options->runner());
+        static::assertSame(PROCESSES_FOR_TESTS, $options->processes());
+        static::assertSame('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
         static::assertEmpty($options->testsuite());
-        static::assertSame(sys_get_temp_dir(), $options->tmpDir());
+        static::assertSame(TMP_DIR, $options->tmpDir());
         static::assertSame(0, $options->verbose());
         static::assertNull($options->whitelist());
     }
@@ -212,7 +219,7 @@ final class OptionsTest extends TestBase
             '--coverage-crap4j' => 'COVERAGE-CRAP4J',
             '--coverage-html' => 'COVERAGE-HTML',
             '--coverage-php' => 'COVERAGE-PHP',
-            '--coverage-test-limit' => '3',
+            '--coverage-test-limit' => 3,
             '--coverage-text' => true,
             '--coverage-xml' => 'COVERAGE-XML',
             '--exclude-group' => 'EXCLUDE-GROUP',
@@ -220,18 +227,18 @@ final class OptionsTest extends TestBase
             '--functional' => true,
             '--group' => 'GROUP',
             '--log-junit' => 'LOG-JUNIT',
-            '--max-batch-size' => '5',
+            '--max-batch-size' => 5,
             '--no-test-tokens' => true,
             '--parallel-suite' => true,
             '--passthru' => '-v',
             '--passthru-php' => '-d a=1',
             '--path' => 'PATH',
             '--phpunit' => 'PHPUNIT',
-            '--processes' => '999',
+            '--processes' => 999,
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',
-            '--tmp-dir' => TMP_DIR,
+            '--tmp-dir' => ($tmpDir = uniqid(TMP_DIR . DS . 't')),
             '--verbose' => 1,
             '--whitelist' => 'WHITELIST',
         ];
@@ -264,7 +271,7 @@ final class OptionsTest extends TestBase
         static::assertSame('MYRUNNER', $options->runner());
         static::assertTrue($options->stopOnFailure());
         static::assertSame(['TESTSUITE'], $options->testsuite());
-        static::assertSame(TMP_DIR, $options->tmpDir());
+        static::assertSame($tmpDir, $options->tmpDir());
         static::assertSame(1, $options->verbose());
         static::assertSame('WHITELIST', $options->whitelist());
 

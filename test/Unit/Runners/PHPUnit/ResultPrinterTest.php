@@ -70,7 +70,7 @@ final class ResultPrinterTest extends ResultTester
         $contents = $this->getStartOutput();
         $expected = sprintf(
             "\nRunning phpunit in %s processes with %s\n\n",
-            Options::getNumberOfCPUCores(),
+            PROCESSES_FOR_TESTS,
             $this->options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
@@ -106,7 +106,7 @@ final class ResultPrinterTest extends ResultTester
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
             "\nRunning phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
-            Options::getNumberOfCPUCores(),
+            PROCESSES_FOR_TESTS,
             $this->options->phpunit(),
             $pathToConfig
         );
@@ -119,7 +119,7 @@ final class ResultPrinterTest extends ResultTester
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
             "\nRunning phpunit in %s processes with %s. Functional mode is ON.\n\n",
-            Options::getNumberOfCPUCores(),
+            PROCESSES_FOR_TESTS,
             $this->options->phpunit()
         );
         static::assertStringStartsWith($expected, $contents);
@@ -215,13 +215,13 @@ final class ResultPrinterTest extends ResultTester
         $eq  = "There were 3 failures:\n\n";
         $eq .= "1) Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php:32\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32\n";
         $eq .= "\n2) UnitTestWithErrorTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20\n";
         $eq .= "\n3) UnitTestWithMethodAnnotationsTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php:20\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20\n";
 
         static::assertSame($eq, $failures);
     }
@@ -336,7 +336,7 @@ final class ResultPrinterTest extends ResultTester
         static::assertSame($expected, $feedback);
     }
 
-    public function testColors(): void
+    public function testColorsForFailing(): void
     {
         $this->options = $this->createOptionsFromArgv(['--colors' => true]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
@@ -346,7 +346,10 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($this->mixedSuite);
         $this->printer->printResults();
 
-        static::assertStringContainsString('FAILURES', $this->output->fetch());
+        static::assertStringContainsString(
+            '[37;41m[2KFAILURES',
+            $this->output->fetch()
+        );
     }
 
     public function testColorsForSkipped(): void
@@ -372,7 +375,10 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($this->passingSuite);
         $this->printer->printResults();
 
-        static::assertStringContainsString('OK', $this->output->fetch());
+        static::assertStringContainsString(
+            '[30;42m[2KOK',
+            $this->output->fetch()
+        );
     }
 
     /**

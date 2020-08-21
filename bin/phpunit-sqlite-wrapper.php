@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 if (! isset($argv[1])) {
     fwrite(STDERR, 'First parameter for sqlite database file required.');
-    exit(1);
+    exit(255);
 }
 
 $db = new PDO('sqlite:' . $argv[1]);
@@ -37,6 +37,7 @@ $reserveTest = '
     WHERE id = :id AND reserved_by_process_id IS NULL
 ';
 
+$exitCode = 0;
 while (($test = $db->query($selectQuery)->fetch()) !== false) {
     $statement = $db->prepare($reserveTest);
     $statement->execute([
@@ -50,11 +51,15 @@ while (($test = $db->query($selectQuery)->fetch()) !== false) {
     }
 
     try {
-        $_SERVER['argv'] = unserialize($test['command']);
+        $arguments = unserialize($test['command']);
 
-        PHPUnit\TextUI\Command::main(false);
+        $currentExitCode = (new PHPUnit\TextUI\Command)->run($arguments, false);
     } finally {
         $db->prepare('UPDATE tests SET completed = 1 WHERE id = :id')
             ->execute([':id' => $test['id']]);
     }
+
+    $exitCode = max($exitCode, $currentExitCode);
 }
+
+exit($exitCode);

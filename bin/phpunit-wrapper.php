@@ -19,7 +19,7 @@ foreach ($composerAutoloadFiles as $file) {
     }
 }
 
-$lastExitCode    = 0;
+$exitCode    = 0;
 $rand            = mt_rand(0, 999999);
 $uniqueTestToken = getenv('UNIQUE_TEST_TOKEN') ?: 'no_unique_test_token';
 $testToken       = getenv('TEST_TOKEN') ?: 'no_test_token';
@@ -38,17 +38,17 @@ $i = 0;
 while (true) {
     $i++;
     if (feof(\STDIN)) {
-        exit($lastExitCode);
+        exit($exitCode);
     }
 
     $command = fgets(\STDIN);
     if ($command === false) {
-        exit($lastExitCode);
+        exit($exitCode);
     }
 
     if ($command === \ParaTest\Runners\PHPUnit\Worker\WrapperWorker::COMMAND_EXIT) {
         echo "EXITED\n";
-        exit($lastExitCode);
+        exit($exitCode);
     }
 
     $arguments = unserialize($command);
@@ -66,11 +66,13 @@ while (true) {
     $_SERVER['argv'] = $arguments;
 
     ob_start();
-    $lastExitCode = PHPUnit\TextUI\Command::main(false);
+    $currentExitCode = (new PHPUnit\TextUI\Command)->run($arguments, false);
     $infoText     = ob_get_clean();
     assert($infoText !== false);
 
     $logInfo($infoText);
+
+    $exitCode = max($exitCode, $currentExitCode);
 
     echo \ParaTest\Runners\PHPUnit\Worker\WrapperWorker::COMMAND_FINISHED;
 }

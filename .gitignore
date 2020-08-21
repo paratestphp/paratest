@@ -1,6 +1,5 @@
 /.idea
-/test/fixtures/generated-tests
-/test/Unit/Runners/PHPUnit/generated-configs
+/test/fixtures/generated_tests
 /vendor
 composer.lock
 .phpunit.result.cache

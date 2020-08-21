@@ -10,11 +10,13 @@
         <directory name="src" />
         <ignoreFiles>
             <directory name="test/fixtures" />
+            <directory name="test/tmp" />
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
 
     <issueHandlers>
+      <DeprecatedClass errorLevel="suppress" />
       <InternalClass errorLevel="suppress" />
       <InternalMethod errorLevel="suppress" />
     </issueHandlers>

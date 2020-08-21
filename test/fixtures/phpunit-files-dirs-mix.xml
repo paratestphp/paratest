@@ -2,9 +2,9 @@
 <phpunit>
     <testsuites>
         <testsuite name="ParaTest Fixtures">
-            <directory>./failing-tests/</directory>
-            <file>./passing-tests/TestOfUnits.php</file>
-            <file>./passing-tests/GroupsTest.php</file>
+            <directory>./failing_tests/</directory>
+            <file>./passing_tests/TestOfUnits.php</file>
+            <file>./passing_tests/GroupsTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

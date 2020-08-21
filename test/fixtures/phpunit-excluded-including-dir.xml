@@ -2,8 +2,8 @@
 <phpunit>
     <testsuites>
         <testsuite name="ParaTest Fixtures">
-            <directory>./excluded-tests</directory>
-            <exclude>./excluded-tests/excluded</exclude>
+            <directory>./excluded_tests</directory>
+            <exclude>./excluded_tests/excluded</exclude>
         </testsuite>
     </testsuites>
 </phpunit>

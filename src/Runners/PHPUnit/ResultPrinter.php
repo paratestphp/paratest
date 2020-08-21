@@ -7,7 +7,6 @@ namespace ParaTest\Runners\PHPUnit;
 use InvalidArgumentException;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
-use RuntimeException;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -167,7 +166,7 @@ final class ResultPrinter
         try {
             $reader = new Reader($test->getTempFile());
         } catch (InvalidArgumentException $invalidArgumentException) {
-            throw new RuntimeException(sprintf(
+            throw new EmptyLogFileException(sprintf(
                 "%s\n" .
                 "The process: %s\n" .
                 "This means a PHPUnit process was unable to run \"%s\"\n",

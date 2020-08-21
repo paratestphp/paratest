@@ -11,11 +11,13 @@ use RuntimeException;
 
 use function array_map;
 use function assert;
+use function count;
+use function explode;
 use function fclose;
 use function fgets;
+use function fread;
 use function fwrite;
 use function implode;
-use function proc_get_status;
 use function serialize;
 use function stream_set_blocking;
 use function strstr;
@@ -27,6 +29,8 @@ final class WrapperWorker extends BaseWorker
 
     /** @var ExecutableTest|null */
     private $currentlyExecuting;
+    /** @var string */
+    private $chunks = '';
 
     /**
      * {@inheritDoc}
@@ -130,14 +134,9 @@ final class WrapperWorker extends BaseWorker
      */
     public function waitForStop(): void
     {
-        assert($this->proc !== null);
-        $status = proc_get_status($this->proc);
-        assert($status !== false);
-        while ($status['running']) {
-            $status = proc_get_status($this->proc);
-            assert($status !== false);
-            $this->setExitCode($status['running'], $status['exitcode']);
-        }
+        do {
+            $this->updateProcStatus();
+        } while ($this->running);
     }
 
     public function getCoverageFileName(): ?string
@@ -147,5 +146,46 @@ final class WrapperWorker extends BaseWorker
         }
 
         return null;
+    }
+
+    public function isFree(): bool
+    {
+        $this->updateStateFromAvailableOutput();
+        $this->checkNotCrashed();
+
+        return $this->inExecution === 0;
+    }
+
+    /**
+     * Have to read even incomplete lines to play nice with stream_select()
+     * Otherwise it would continue to non-block because there are bytes to be read,
+     * but fgets() won't pick them up.
+     */
+    private function updateStateFromAvailableOutput(): void
+    {
+        assert(isset($this->pipes[1]));
+
+        stream_set_blocking($this->pipes[1], false);
+        while ($chunk = fread($this->pipes[1], 4096)) {
+            $this->chunks            .= $chunk;
+            $this->alreadyReadOutput .= $chunk;
+        }
+
+        $lines = explode("\n", $this->chunks);
+        // last element is not a complete line,
+        // becomes part of a line completed later
+        $this->chunks = $lines[count($lines) - 1];
+        unset($lines[count($lines) - 1]);
+        // delivering complete lines to this Worker
+        foreach ($lines as $line) {
+            $line .= "\n";
+            if (strstr($line, "FINISHED\n") === false) {
+                continue;
+            }
+
+            --$this->inExecution;
+        }
+
+        stream_set_blocking($this->pipes[1], true);
     }
 }

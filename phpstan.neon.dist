@@ -35,6 +35,7 @@ parameters:
         - test/
     excludes_analyse:
         - test/fixtures/*
+        - test/tmp/*
     ignoreErrors:
         # Allowed forbidden calls
         -
@@ -47,7 +48,7 @@ parameters:
             path: bin/paratest
         -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 1
+            count: 2
             path: bin/phpunit-sqlite-wrapper.php
         -
             message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
@@ -58,14 +59,20 @@ parameters:
             count: 3
             path: bin/phpunit-wrapper.php
 
-        # Known fixtures
+        # Known
+        - "#^Variable property access on .+$#"
+        -
+            message:
+                """
+                    #^Instantiation of deprecated class PHPUnit\\\\Runner\\\\StandardTestSuiteLoader\\:
+                    see https\\://github\\.com/sebastianbergmann/phpunit/issues/4039$#
+                """
+            count: 1
+            path: src/Parser/Parser.php
         -
             message: "#^Should not use function \"proc_open\", please change the code\\.$#"
             count: 1
             path: src/Runners/PHPUnit/Worker/BaseWorker.php
-    
-        # Known errors
-        - "#^Variable property access on .+$#"
         - "#^.+ has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
         -
             message: "#^Method ParaTest\\\\Tests\\\\TestBase\\:\\:setUpTest\\(\\) is not final, but since the containing class is abstract, it should be\\.$#"
@@ -82,43 +89,31 @@ parameters:
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
-            path: test/fixtures/excluded-tests/excluded/ExcludedFailingTest.php
+            path: test/fixtures/excluded_tests/excluded/ExcludedFailingTest.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
-            path: test/fixtures/failing-tests/FailingTest.php
+            path: test/fixtures/failing_tests/FailingTest.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
-            path: test/fixtures/failing-tests/FailingTest.php
+            path: test/fixtures/failing_tests/FailingTest.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
-            path: test/fixtures/failing-tests/StopOnFailureTest.php
-        -
-            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
-            count: 1
-            path: test/fixtures/failing-tests/StopOnFailureTest.php
-        -
-            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
-            count: 1
-            path: test/fixtures/failing-tests/UnitTestWithClassAnnotationTest.php
+            path: test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php
         -
             message: "#^Unreachable statement \\- code above always terminates\\.$#"
             count: 1
-            path: test/fixtures/failing-tests/UnitTestWithErrorTest.php
+            path: test/fixtures/failing_tests/UnitTestWithErrorTest.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
             count: 1
-            path: test/fixtures/failing-tests/UnitTestWithMethodAnnotationsTest.php
-        -
-            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with true will always evaluate to false\\.$#"
-            count: 1
-            path: test/fixtures/slow-tests/LongRunningTest.php
+            path: test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php
         -
             message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
             count: 1
-            path: test/fixtures/wrapper-runner-exit-code-tests/FailureTest.php
+            path: test/fixtures/wrapper_runner_exit_code_tests/FailureTest.php
         -
             message: "#^Offset 'TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'TEST_TOKEN' \\=\\> int, \\?'UNIQUE_TEST_TOKEN' \\=\\> string\\)\\.$#"
             count: 1
@@ -141,9 +136,3 @@ parameters:
             message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"
             count: 1
             path: test/Unit/Runners/PHPUnit/SuiteLoaderTest.php
-
-        # Level MAX
-        -
-            message: "#^Parameter \\#1 \\$process of function proc_get_status expects resource, resource\\|null given\\.$#"
-            count: 1
-            path: src/Runners/PHPUnit/Worker/WrapperWorker.php

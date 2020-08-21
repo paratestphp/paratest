@@ -172,12 +172,10 @@ final class SuiteLoader
         } else {
             foreach ($this->files as $path) {
                 try {
-                    $parser = new Parser($path);
-                    if (($class = $parser->getClass()) !== null) {
-                        $suite = $this->createSuite($path, $class);
-                        if (count($suite->getFunctions()) > 0) {
-                            $this->loadedSuites[$path] = $suite;
-                        }
+                    $class = (new Parser($path))->getClass();
+                    $suite = $this->createSuite($path, $class);
+                    if (count($suite->getFunctions()) > 0) {
+                        $this->loadedSuites[$path] = $suite;
                     }
                 } catch (NoClassInFileException $e) {
                     continue;
@@ -324,16 +322,21 @@ final class SuiteLoader
      */
     private function testMatchGroupOptions(array $groups): bool
     {
-        if (count($this->options->group()) === 0) {
+        if ($this->options->group() === [] && $this->options->excludeGroup() === []) {
             return true;
         }
 
-        if (count($groups) === 0 || count(array_intersect($groups, $this->options->group())) === 0) {
-            return false;
-        }
+        $matchGroupIncluded = (
+            $this->options->group() !== []
+            && array_intersect($groups, $this->options->group()) !== []
+        );
 
-        return count($this->options->excludeGroup()) === 0
-            || count(array_intersect($groups, $this->options->excludeGroup())) === 0;
+        $matchGroupNotExcluded = (
+            $this->options->excludeGroup() !== []
+            && array_intersect($groups, $this->options->excludeGroup()) === []
+        );
+
+        return $matchGroupIncluded || $matchGroupNotExcluded;
     }
 
     private function testMatchFilterOptions(string $className, string $name): bool
