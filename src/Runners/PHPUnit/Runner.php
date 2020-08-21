@@ -8,15 +8,13 @@ use Exception;
 use ParaTest\Coverage\EmptyCoverageFileException;
 use ParaTest\Runners\PHPUnit\Worker\RunnerWorker;
 use PHPUnit\TextUI\TestRunner;
-use Symfony\Component\Console\Output\OutputInterface;
 
-use function array_filter;
-use function array_keys;
 use function array_merge;
 use function array_shift;
 use function assert;
 use function count;
 use function getenv;
+use function range;
 use function usleep;
 
 final class Runner extends BaseRunner
@@ -30,36 +28,24 @@ final class Runner extends BaseRunner
     private $running = [];
 
     /**
-     * A collection of available tokens based on the number
-     * of processes specified in $options.
-     *
-     * @var array<int, array{token: int, available: bool}>
-     */
-    private $tokens = [];
-
-    public function __construct(Options $opts, OutputInterface $output)
-    {
-        parent::__construct($opts, $output);
-        $this->initTokens();
-    }
-
-    /**
      * The money maker. Runs all ExecutableTest objects in separate processes.
      */
     protected function doRun(): void
     {
+        $availableTokens = range(1, $this->options->processes());
         while (count($this->running) > 0 || count($this->pending) > 0) {
-            foreach ($this->running as $key => $test) {
+            $this->fillRunQueue($availableTokens);
+            usleep(10000);
+
+            $availableTokens = [];
+            foreach ($this->running as $token => $test) {
                 if ($this->testIsStillRunning($test)) {
                     continue;
                 }
 
-                unset($this->running[$key]);
-                $this->releaseToken($key);
+                unset($this->running[$token]);
+                $availableTokens[] = $token;
             }
-
-            $this->fillRunQueue();
-            usleep(10000);
         }
     }
 
@@ -67,23 +53,24 @@ final class Runner extends BaseRunner
      * This method removes ExecutableTest objects from the pending collection
      * and adds them to the running collection. It is also in charge of recycling and
      * acquiring available test tokens for use.
+     *
+     * @param int[] $availableTokens
      */
-    private function fillRunQueue(): void
+    private function fillRunQueue(array $availableTokens): void
     {
         while (
             count($this->pending) > 0
             && count($this->running) < $this->options->processes()
-            && ($tokenData = $this->getNextAvailableToken()) !== false
+            && ($token = array_shift($availableTokens)) !== null
         ) {
-            $this->acquireToken($tokenData['token']);
-            $env = array_merge(getenv(), $this->options->fillEnvWithTokens($tokenData['token']));
+            $env = array_merge(getenv(), $this->options->fillEnvWithTokens($token));
 
             $executebleTest = array_shift($this->pending);
             /** @psalm-suppress RedundantConditionGivenDocblockType **/
             assert($executebleTest !== null);
 
-            $this->running[$tokenData['token']] = new RunnerWorker($executebleTest);
-            $this->running[$tokenData['token']]->run(
+            $this->running[$token] = new RunnerWorker($executebleTest);
+            $this->running[$token]->run(
                 $this->options->phpunit(),
                 $this->options->filtered(),
                 $env,
@@ -95,7 +82,7 @@ final class Runner extends BaseRunner
                 continue;
             }
 
-            $cmd = $this->running[$tokenData['token']];
+            $cmd = $this->running[$token];
             $this->output->write("\nExecuting test via: {$cmd->getExecutableTest()->getLastCommand()}\n");
         }
     }
@@ -161,66 +148,6 @@ final class Runner extends BaseRunner
         }
 
         $this->exitcode = $exit;
-    }
-
-    /**
-     * Initialize the available test tokens based
-     * on how many processes ParaTest will be run in.
-     */
-    private function initTokens(): void
-    {
-        $this->tokens = [];
-        for ($i = 1; $i <= $this->options->processes(); ++$i) {
-            $this->tokens[$i] = [
-                'token' => $i,
-                'available' => true,
-            ];
-        }
-    }
-
-    /**
-     * Gets the next token that is available to be acquired
-     * from a finished process.
-     *
-     * @return false|array{token: int, available: bool}
-     */
-    private function getNextAvailableToken()
-    {
-        foreach ($this->tokens as $data) {
-            if ($data['available']) {
-                return $data;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Flag a token as available for use.
-     */
-    private function releaseToken(int $tokenIdentifier): void
-    {
-        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier): bool {
-            return $val['token'] === $tokenIdentifier;
-        });
-
-        $keys = array_keys($filtered);
-
-        $this->tokens[$keys[0]]['available'] = true;
-    }
-
-    /**
-     * Flag a token as acquired and not available for use.
-     */
-    private function acquireToken(int $tokenIdentifier): void
-    {
-        $filtered = array_filter($this->tokens, static function ($val) use ($tokenIdentifier): bool {
-            return $val['token'] === $tokenIdentifier;
-        });
-
-        $keys = array_keys($filtered);
-
-        $this->tokens[$keys[0]]['available'] = false;
     }
 
     protected function beforeLoadChecks(): void

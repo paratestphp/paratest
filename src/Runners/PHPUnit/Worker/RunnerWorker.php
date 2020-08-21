@@ -74,10 +74,10 @@ final class RunnerWorker
      */
     public function run(
         string $binary,
-        array $options = [],
-        array $environmentVariables = [],
-        ?array $passthru = null,
-        ?array $passthruPhp = null
+        array $options,
+        array $environmentVariables,
+        ?array $passthru,
+        ?array $passthruPhp
     ): void {
         $process = $this->getProcess($binary, $options, $environmentVariables, $passthru, $passthruPhp);
         $cmd     = $process->getCommandLine();
