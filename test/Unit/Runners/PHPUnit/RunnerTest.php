@@ -129,4 +129,28 @@ final class RunnerTest extends RunnerTestCase
         static::assertStringContainsString($expected, $runnerResult->getOutput());
         $this->assertContainsNSkippedTests(67, $runnerResult->getOutput());
     }
+
+    public function testEachTestRunsExactlyOnceOnChainDependencyOnFunctionalMode(): void
+    {
+        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'DependsOnChain.php');
+        $this->bareOptions['--functional'] = true;
+
+        $this->assertTestsPassed($this->runRunner(), '5', '5');
+    }
+
+    public function testEachTestRunsExactlyOnceOnSameDependencyOnFunctionalMode(): void
+    {
+        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'DependsOnSame.php');
+        $this->bareOptions['--functional'] = true;
+
+        $this->assertTestsPassed($this->runRunner(), '3', '3');
+    }
+
+    public function testFunctionalModeEachTestCalledOnce(): void
+    {
+        $this->bareOptions['--path']       = $this->fixture('passing-tests' . DS . 'FunctionalModeEachTestCalledOnce.php');
+        $this->bareOptions['--functional'] = true;
+
+        $this->assertTestsPassed($this->runRunner(), '2', '2');
+    }
 }

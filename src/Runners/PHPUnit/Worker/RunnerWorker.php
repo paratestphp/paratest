@@ -101,9 +101,9 @@ final class RunnerWorker
     private function getProcess(
         string $binary,
         array $options,
-        array $environmentVariables = [],
-        ?array $passthru = null,
-        ?array $passthruPhp = null
+        array $environmentVariables,
+        ?array $passthru,
+        ?array $passthruPhp
     ): Process {
         $finder = new PhpExecutableFinder();
 

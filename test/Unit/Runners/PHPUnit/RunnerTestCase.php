@@ -36,7 +36,15 @@ abstract class RunnerTestCase extends TestBase
     final public function testRunningFewerTestsThanTheWorkersIsPossible(): void
     {
         $this->bareOptions['--path']      = $this->fixture('passing-tests' . DS . 'GroupsTest.php');
-        $this->bareOptions['--processes'] = 2;
+        $this->bareOptions['--processes'] = 10;
+
+        $this->assertTestsPassed($this->runRunner());
+    }
+
+    final public function testRunningMoreTestsThanTheWorkersIsPossible(): void
+    {
+        $this->bareOptions['--path']      = $this->fixture('passing-tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--processes'] = 1;
 
         $this->assertTestsPassed($this->runRunner());
     }
