@@ -128,7 +128,8 @@ abstract class ExecutableTest
      */
     final public function commandArguments(string $binary, array $options, ?array $passthru): array
     {
-        $options = array_merge($this->prepareOptions($options), ['log-junit' => $this->getTempFile()]);
+        $options              = $this->prepareOptions($options);
+        $options['log-junit'] = $this->getTempFile();
         if ($this->needsCoverage) {
             $options['coverage-php'] = $this->getCoverageFileName();
         }

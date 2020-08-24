@@ -327,6 +327,10 @@ final class Options
             $filtered['whitelist'] = $options['whitelist'];
         }
 
+        if ($options['stop-on-failure']) {
+            $filtered['stop-on-failure'] = null;
+        }
+
         return new self(
             $options['bootstrap'],
             $options['colors'],

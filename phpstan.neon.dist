@@ -48,7 +48,7 @@ parameters:
             path: bin/paratest
         -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 2
+            count: 3
             path: bin/phpunit-sqlite-wrapper.php
         -
             message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
@@ -56,7 +56,7 @@ parameters:
             path: bin/phpunit-wrapper.php
         -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 3
+            count: 4
             path: bin/phpunit-wrapper.php
 
         # Known

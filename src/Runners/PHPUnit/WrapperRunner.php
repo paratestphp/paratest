@@ -68,9 +68,19 @@ final class WrapperRunner extends BaseWrapperRunner
         $phpunit        = $this->options->phpunit();
         $phpunitOptions = $this->options->filtered();
 
-        while (count($this->pending)) {
+        while (count($this->pending) > 0 && count($this->workers) > 0) {
             $this->waitForStreamsToChange($this->streams);
             foreach ($this->progressedWorkers() as $key => $worker) {
+                if (! $worker->isRunning()) {
+                    $this->setExitCode($worker->getExitCode());
+                    unset($this->workers[$key]);
+                    if ($this->options->stopOnFailure()) {
+                        $this->pending = [];
+                    }
+
+                    continue;
+                }
+
                 if (! $worker->isFree()) {
                     // Happens randomly depending on concurrency and resource usage
                     // Cannot be covered by tests reliably

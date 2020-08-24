@@ -76,6 +76,10 @@ abstract class BaseWorker
         $bin .= ' ' . escapeshellarg($wrapperBinary);
 
         $parameters = [];
+        if ($options->stopOnFailure()) {
+            $parameters[] = '--stop-on-failure';
+        }
+
         $this->configureParameters($parameters);
         if (count($parameters) > 0) {
             $bin .= ' ' . implode(' ', array_map('escapeshellarg', $parameters));
@@ -102,13 +106,7 @@ abstract class BaseWorker
      */
     abstract protected function configureParameters(array &$parameters): void;
 
-    final public function isRunning(): bool
-    {
-        assert($this->proc !== null);
-        $this->updateProcStatus();
-
-        return $this->running;
-    }
+    abstract public function isRunning(): bool;
 
     final protected function checkNotCrashed(): void
     {
