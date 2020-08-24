@@ -18,6 +18,7 @@ use PHPUnit\Util\Test;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\CacheWarmer;
+use SebastianBergmann\Environment\Runtime;
 use SebastianBergmann\FileIterator\Facade;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -452,7 +453,11 @@ final class SuiteLoader
 
     private function warmCoverageCache(): void
     {
-        if (($configuration = $this->options->configuration()) === null || ! $configuration->codeCoverage()->hasCacheDirectory()) {
+        if (
+            ! (new Runtime())->canCollectCodeCoverage()
+            || ($configuration = $this->options->configuration()) === null
+            || ! $configuration->codeCoverage()->hasCacheDirectory()
+        ) {
             return;
         }
 
