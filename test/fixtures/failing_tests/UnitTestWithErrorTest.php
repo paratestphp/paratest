@@ -7,6 +7,8 @@ namespace ParaTest\Tests\fixtures\failing_tests;
 use RuntimeException;
 
 /**
+ * @internal
+ *
  * @runParallel
  */
 final class UnitTestWithErrorTest extends UnitTestWithMethodAnnotationsTest

@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 use function defined;
 use function ini_get;
 
+/**
+ * @internal
+ */
 class IssueTest extends TestCase
 {
     /**

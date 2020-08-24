@@ -7,6 +7,8 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 use ParaTest\Runners\PHPUnit\SqliteRunner;
 
 /**
+ * @internal
+ *
  * @requires extension pdo_sqlite
  * @covers \ParaTest\Runners\PHPUnit\BaseWrapperRunner
  * @covers \ParaTest\Runners\PHPUnit\SqliteRunner

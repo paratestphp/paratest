@@ -8,6 +8,8 @@ use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 
 /**
+ * @internal
+ *
  * @requires OSFAMILY Linux
  * @covers \ParaTest\Runners\PHPUnit\BaseWrapperRunner
  * @covers \ParaTest\Runners\PHPUnit\WrapperRunner

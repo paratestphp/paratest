@@ -22,6 +22,8 @@ use function strstr;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\SuiteLoader
  */
 final class SuiteLoaderTest extends TestBase

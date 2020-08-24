@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 use function uniqid;
 
+/**
+ * @internal
+ */
 class UnitTestWithMethodAnnotationsTest extends TestCase
 {
     /**

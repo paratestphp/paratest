@@ -17,6 +17,9 @@ use function preg_match;
 use function realpath;
 use function str_replace;
 
+/**
+ * @internal
+ */
 final class Parser
 {
     /** @var ReflectionClass<TestCase> */

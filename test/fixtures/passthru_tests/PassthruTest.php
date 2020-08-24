@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 use function ini_get;
 
+/**
+ * @internal
+ */
 final class PassthruTest extends TestCase
 {
     public function testExit(): void

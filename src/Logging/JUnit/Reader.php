@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Logging\JUnit;
 
 use InvalidArgumentException;
-use ParaTest\Logging\MetaProvider;
+use ParaTest\Logging\MetaProviderInterface;
 use SimpleXMLElement;
 
 use function array_merge;
@@ -17,7 +17,10 @@ use function file_get_contents;
 use function filesize;
 use function unlink;
 
-final class Reader implements MetaProvider
+/**
+ * @internal
+ */
+final class Reader implements MetaProviderInterface
 {
     /** @var SimpleXMLElement */
     private $xml;

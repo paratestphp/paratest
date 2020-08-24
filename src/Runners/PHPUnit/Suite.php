@@ -10,6 +10,8 @@ use function count;
  * A suite represents an entire PHPUnit Test Suite
  * object - this class is essentially used for running
  * entire test classes in parallel
+ *
+ * @internal
  */
 final class Suite extends ExecutableTest
 {

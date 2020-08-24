@@ -47,6 +47,8 @@ use const PHP_BINARY;
 /**
  * An object containing all configurable information used
  * to run PHPUnit via ParaTest.
+ *
+ * @internal
  */
 final class Options
 {

@@ -6,6 +6,9 @@ namespace ParaTest\Parser;
 
 use Exception;
 
+/**
+ * @internal
+ */
 final class NoClassInFileException extends Exception
 {
 }

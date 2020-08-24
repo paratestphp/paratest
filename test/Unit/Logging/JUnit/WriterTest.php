@@ -14,6 +14,8 @@ use function file_get_contents;
 use function unlink;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Logging\JUnit\Writer
  */
 final class WriterTest extends TestBase

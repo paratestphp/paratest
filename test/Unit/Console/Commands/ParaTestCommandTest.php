@@ -15,6 +15,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use function sprintf;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Console\Commands\ParaTestCommand
  */
 final class ParaTestCommandTest extends TestBase

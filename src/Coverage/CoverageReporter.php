@@ -14,6 +14,9 @@ use SebastianBergmann\CodeCoverage\Report\Text;
 use SebastianBergmann\CodeCoverage\Report\Xml\Facade as XmlReport;
 use SebastianBergmann\CodeCoverage\Version;
 
+/**
+ * @internal
+ */
 final class CoverageReporter
 {
     /** @var CodeCoverage */

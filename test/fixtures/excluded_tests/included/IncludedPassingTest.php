@@ -6,6 +6,9 @@ namespace ParaTest\Tests\fixtures\excluded_tests\included;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class IncludedPassingTest extends TestCase
 {
     public function testTruth(): void

@@ -7,6 +7,8 @@ namespace ParaTest\Tests\fixtures\github\GH432;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * @internal
+ *
  * @group group1
  */
 class IssueBarTest extends TestCase

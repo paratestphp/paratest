@@ -6,6 +6,9 @@ namespace ParaTest\Runners\PHPUnit\Worker;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @internal
+ */
 final class SqliteWorker extends BaseWorker
 {
     /** @var string */

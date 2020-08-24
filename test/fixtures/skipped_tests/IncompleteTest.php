@@ -6,6 +6,9 @@ namespace ParaTest\Tests\fixtures\skipped_tests;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class IncompleteTest extends TestCase
 {
     public function testIncomplete(): void

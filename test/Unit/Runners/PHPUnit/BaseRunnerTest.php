@@ -12,6 +12,8 @@ use function glob;
 use function simplexml_load_file;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\BaseRunner
  */
 final class BaseRunnerTest extends TestBase

@@ -7,6 +7,8 @@ namespace ParaTest\Tests\fixtures\failing_tests;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * @internal
+ *
  * @runParallel
  * @pizzaBox
  */

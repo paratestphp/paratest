@@ -16,6 +16,8 @@ use SebastianBergmann\CodeCoverage\RawCodeCoverageData;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Coverage\CoverageReporter
  */
 final class CoverageReporterTest extends TestBase

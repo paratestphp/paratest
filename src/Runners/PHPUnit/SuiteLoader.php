@@ -35,6 +35,9 @@ use function version_compare;
 
 use const PHP_VERSION;
 
+/**
+ * @internal
+ */
 final class SuiteLoader
 {
     /**

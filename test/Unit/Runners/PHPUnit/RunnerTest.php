@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\BaseRunner
  * @covers \ParaTest\Runners\PHPUnit\Runner
  * @covers \ParaTest\Runners\PHPUnit\Worker\RunnerWorker

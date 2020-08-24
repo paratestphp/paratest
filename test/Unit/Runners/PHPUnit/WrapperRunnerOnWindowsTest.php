@@ -10,6 +10,8 @@ use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\WrapperRunner
  * @requires OSFAMILY Windows
  */

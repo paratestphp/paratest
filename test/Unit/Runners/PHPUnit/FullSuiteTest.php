@@ -10,6 +10,8 @@ use ParaTest\Tests\TestBase;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\FullSuite
  */
 final class FullSuiteTest extends TestBase

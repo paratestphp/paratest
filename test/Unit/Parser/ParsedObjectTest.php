@@ -8,6 +8,8 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Tests\TestBase;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Parser\ParsedObject
  * @covers \ParaTest\Parser\ParsedFunction
  */

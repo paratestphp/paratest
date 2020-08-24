@@ -8,6 +8,8 @@ namespace ParaTest\Logging\JUnit;
  * A simple data structure for tracking
  * data associated with a testsuite node
  * in a JUnit xml document
+ *
+ * @internal
  */
 final class TestSuite
 {

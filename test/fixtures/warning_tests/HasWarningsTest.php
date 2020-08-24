@@ -6,6 +6,9 @@ namespace ParaTest\Tests\fixtures\warning_tests;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class HasWarningsTest extends TestCase
 {
     public function testPassingTest(): void

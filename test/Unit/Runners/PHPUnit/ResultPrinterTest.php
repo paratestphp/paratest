@@ -19,6 +19,8 @@ use function sprintf;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\ResultPrinter
  */
 final class ResultPrinterTest extends ResultTester

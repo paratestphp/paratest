@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 use function defined;
 
+/**
+ * @internal
+ */
 class IssueTest extends TestCase
 {
     /**

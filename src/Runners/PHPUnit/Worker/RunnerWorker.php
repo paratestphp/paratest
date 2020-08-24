@@ -16,6 +16,9 @@ use function strlen;
 
 use const DIRECTORY_SEPARATOR;
 
+/**
+ * @internal
+ */
 final class RunnerWorker
 {
     /** @var ExecutableTest */

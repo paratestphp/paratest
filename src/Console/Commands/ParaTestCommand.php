@@ -22,6 +22,9 @@ use function is_string;
 use function is_subclass_of;
 use function sprintf;
 
+/**
+ * @internal
+ */
 final class ParaTestCommand extends Command
 {
     public const COMMAND_NAME = 'paratest';

@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 use function count;
 use function strlen;
 /**
+ * @internal
+ *
  * @group group4
  */
 

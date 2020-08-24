@@ -12,6 +12,8 @@ use ParaTest\Tests\Unit\ResultTester;
 use function array_pop;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Logging\LogInterpreter
  */
 final class LogInterpreterTest extends ResultTester

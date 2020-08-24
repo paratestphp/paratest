@@ -18,6 +18,8 @@ use function str_replace;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\Options
  */
 final class OptionsTest extends TestBase

@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @runParallel
+ *
+ * @internal
  */
 final class UnitTestWithFatalFunctionErrorTest extends TestCase
 {

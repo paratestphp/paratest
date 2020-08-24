@@ -8,6 +8,9 @@ use function assert;
 use function explode;
 use function trim;
 
+/**
+ * @internal
+ */
 final class Str
 {
     /**
