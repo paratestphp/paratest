@@ -22,6 +22,14 @@ final class SqliteWorker extends BaseWorker
      */
     protected function configureParameters(array &$parameters): void
     {
+        $parameters[] = '--database';
         $parameters[] = $this->dbFileName;
+    }
+
+    public function isRunning(): bool
+    {
+        $this->updateProcStatus();
+
+        return $this->running;
     }
 }

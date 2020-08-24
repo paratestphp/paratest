@@ -156,6 +156,13 @@ final class WrapperWorker extends BaseWorker
         return $this->inExecution === 0;
     }
 
+    public function isRunning(): bool
+    {
+        $this->checkNotCrashed();
+
+        return $this->running;
+    }
+
     /**
      * Have to read even incomplete lines to play nice with stream_select()
      * Otherwise it would continue to non-block because there are bytes to be read,

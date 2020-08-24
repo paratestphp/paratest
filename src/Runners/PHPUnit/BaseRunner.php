@@ -18,9 +18,6 @@ abstract class BaseRunner implements RunnerInterface
     /** @var Options */
     protected $options;
 
-    /** @var LogInterpreter */
-    protected $interpreter;
-
     /** @var ResultPrinter */
     protected $printer;
 
@@ -42,6 +39,9 @@ abstract class BaseRunner implements RunnerInterface
 
     /** @var OutputInterface */
     protected $output;
+
+    /** @var LogInterpreter */
+    private $interpreter;
 
     /**
      * CoverageMerger to hold track of the accumulated coverage.

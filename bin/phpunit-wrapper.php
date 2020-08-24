@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+$opts = getopt('', [
+    'stop-on-failure'
+]);
+$stopOnFailure = array_key_exists('stop-on-failure', $opts);
+
 echo "Worker starting\n";
 
 $composerAutoloadFiles = [
@@ -19,7 +24,7 @@ foreach ($composerAutoloadFiles as $file) {
     }
 }
 
-$exitCode    = 0;
+$exitCode        = \PHPUnit\TextUI\TestRunner::SUCCESS_EXIT;
 $rand            = mt_rand(0, 999999);
 $uniqueTestToken = getenv('UNIQUE_TEST_TOKEN') ?: 'no_unique_test_token';
 $testToken       = getenv('TEST_TOKEN') ?: 'no_test_token';
@@ -72,7 +77,11 @@ while (true) {
 
     $logInfo($infoText);
 
+    echo \ParaTest\Runners\PHPUnit\Worker\WrapperWorker::COMMAND_FINISHED;
+
     $exitCode = max($exitCode, $currentExitCode);
 
-    echo \ParaTest\Runners\PHPUnit\Worker\WrapperWorker::COMMAND_FINISHED;
+    if ($stopOnFailure && $exitCode !== \PHPUnit\TextUI\TestRunner::SUCCESS_EXIT) {
+        exit($exitCode);
+    }
 }

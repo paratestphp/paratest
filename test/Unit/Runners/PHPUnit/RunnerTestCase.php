@@ -262,6 +262,24 @@ abstract class RunnerTestCase extends TestBase
         );
     }
 
+    final public function testStopOnFailureEndsRunBeforeWholeTestSuite(): void
+    {
+        $this->bareOptions['--processes'] = 1;
+        $this->bareOptions['--path']      = $this->fixture('failing_tests');
+        $runnerResult                     = $this->runRunner();
+
+        $regexp = '/Tests: \d+, Assertions: \d+, Failures: \d+, Errors: \d+\./';
+        static::assertSame(1, preg_match($regexp, $runnerResult->getOutput(), $matchesOnFullRun));
+
+        $this->bareOptions['--stop-on-failure'] = true;
+        $runnerResult                           = $this->runRunner();
+
+        static::assertSame(1, preg_match($regexp, $runnerResult->getOutput(), $matchesOnPartialRun));
+
+        static::assertNotEquals($matchesOnFullRun[0], $matchesOnPartialRun[0]);
+        static::assertSame('Tests: 1, Assertions: 1, Failures: 1, Errors: 0.', $matchesOnPartialRun[0]);
+    }
+
     /**
      * @group github
      * @coversNothing

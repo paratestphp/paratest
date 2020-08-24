@@ -281,6 +281,7 @@ final class OptionsTest extends TestBase
             'group' => 'GROUP',
             'exclude-group' => 'EXCLUDE-GROUP',
             'whitelist' => 'WHITELIST',
+            'stop-on-failure' => null,
         ], $options->filtered());
 
         static::assertTrue($options->hasCoverage());
