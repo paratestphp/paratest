@@ -14,6 +14,8 @@ use function count;
 use function file_get_contents;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
  */
 final class BaseWorkerTest extends TestBase

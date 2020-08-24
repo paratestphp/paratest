@@ -6,6 +6,9 @@ namespace ParaTest\Tests\fixtures\dataprovider_tests;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class DataProviderTest extends TestCase
 {
     /**

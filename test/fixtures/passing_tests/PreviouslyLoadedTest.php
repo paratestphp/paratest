@@ -6,6 +6,9 @@ namespace ParaTest\Tests\fixtures\passing_tests;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class PreviouslyLoadedTest extends TestCase
 {
     public function testRuns(): void

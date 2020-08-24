@@ -6,6 +6,9 @@ namespace ParaTest\Tests\fixtures\exit_tests;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class UnitTestThatExitsSilentlyTest extends TestCase
 {
     public function testExit(): void

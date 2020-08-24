@@ -17,6 +17,9 @@ use function getenv;
 use function range;
 use function usleep;
 
+/**
+ * @internal
+ */
 final class Runner extends BaseRunner
 {
     /**

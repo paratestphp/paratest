@@ -6,6 +6,9 @@ namespace ParaTest\Tests\fixtures\passthru_tests\level2;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 final class AnotherUnitTestInSubSubLevelTest extends TestCase
 {
     /**

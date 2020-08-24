@@ -13,6 +13,8 @@ use function trim;
  * A simple data structure for tracking
  * the results of a testcase node in a
  * JUnit xml document
+ *
+ * @internal
  */
 final class TestCase
 {

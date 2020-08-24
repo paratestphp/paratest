@@ -6,6 +6,9 @@ namespace ParaTest\Runners\PHPUnit;
 
 use function array_merge;
 
+/**
+ * @internal
+ */
 final class FullSuite extends ExecutableTest
 {
     /** @var string */

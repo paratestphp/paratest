@@ -20,6 +20,9 @@ use function stream_select;
 
 use const DIRECTORY_SEPARATOR;
 
+/**
+ * @internal
+ */
 final class WrapperRunner extends BaseWrapperRunner
 {
     /** @var WrapperWorker[] */

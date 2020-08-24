@@ -24,6 +24,9 @@ use function usleep;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
+/**
+ * @internal
+ */
 final class SqliteRunner extends BaseWrapperRunner
 {
     /** @var SqliteWorker[] */

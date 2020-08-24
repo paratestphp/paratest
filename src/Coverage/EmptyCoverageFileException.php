@@ -6,6 +6,9 @@ namespace ParaTest\Coverage;
 
 use RuntimeException;
 
+/**
+ * @internal
+ */
 final class EmptyCoverageFileException extends RuntimeException
 {
 }

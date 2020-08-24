@@ -19,6 +19,9 @@ use function str_replace;
 
 use const ENT_XML1;
 
+/**
+ * @internal
+ */
 final class Writer
 {
     /**

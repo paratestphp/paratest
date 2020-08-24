@@ -9,6 +9,8 @@ use ParaTest\Parser\ParsedFunction;
 use ParaTest\Tests\TestBase;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Parser\ParsedClass
  */
 final class ParsedClassTest extends TestBase

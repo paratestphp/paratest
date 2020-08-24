@@ -22,6 +22,9 @@ use function serialize;
 use function stream_set_blocking;
 use function strstr;
 
+/**
+ * @internal
+ */
 final class WrapperWorker extends BaseWorker
 {
     public const COMMAND_EXIT     = "EXIT\n";

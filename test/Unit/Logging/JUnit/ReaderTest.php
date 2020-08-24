@@ -16,6 +16,8 @@ use function file_put_contents;
 use function implode;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Logging\JUnit\Reader
  * @covers \ParaTest\Logging\JUnit\TestCase
  * @covers \ParaTest\Logging\JUnit\TestSuite

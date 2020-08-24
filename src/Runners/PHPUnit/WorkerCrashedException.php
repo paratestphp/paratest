@@ -6,6 +6,9 @@ namespace ParaTest\Runners\PHPUnit;
 
 use RuntimeException;
 
+/**
+ * @internal
+ */
 final class WorkerCrashedException extends RuntimeException
 {
 }

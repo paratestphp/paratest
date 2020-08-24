@@ -19,6 +19,8 @@ use const DIRECTORY_SEPARATOR;
 
 /**
  * Used for outputting ParaTest results
+ *
+ * @internal
  */
 final class ResultPrinter
 {

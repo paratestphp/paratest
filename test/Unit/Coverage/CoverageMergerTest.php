@@ -16,6 +16,8 @@ use SebastianBergmann\CodeCoverage\Report\PHP;
 use function touch;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Coverage\CoverageMerger
  */
 final class CoverageMergerTest extends TestBase
@@ -31,12 +33,12 @@ final class CoverageMergerTest extends TestBase
     public function testMerge(int $testLimit): void
     {
         $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProvider.php';
+        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProviderInterface.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine  = 45;
-        $secondFileFirstLine = 53;
+        $firstFileFirstLine  = 47;
+        $secondFileFirstLine = 55;
 
         $filter = new Filter();
         $filter->includeFiles([$firstFile, $secondFile]);

@@ -13,6 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function array_merge;
 use function assert;
 
+/**
+ * @internal
+ */
 abstract class BaseRunner implements RunnerInterface
 {
     /** @var Options */

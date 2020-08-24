@@ -16,6 +16,8 @@ use ParaTest\Tests\TestBase;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Parser\Parser
  */
 final class ParserTest extends TestBase
@@ -67,6 +69,8 @@ final class ParserTest extends TestBase
     {
         $class = $this->parseFile($this->fixture('failing_tests' . DS . 'UnitTestWithClassAnnotationTest.php'));
         static::assertEquals('/**
+ * @internal
+ *
  * @runParallel
  * @pizzaBox
  */', $class->getDocBlock());

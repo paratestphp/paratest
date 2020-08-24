@@ -9,6 +9,8 @@ use ParaTest\Tests\TestBase;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\ExecutableTest
  */
 final class ExecutableTestTest extends TestBase

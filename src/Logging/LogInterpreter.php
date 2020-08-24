@@ -13,7 +13,10 @@ use function array_reduce;
 use function array_values;
 use function count;
 
-final class LogInterpreter implements MetaProvider
+/**
+ * @internal
+ */
+final class LogInterpreter implements MetaProviderInterface
 {
     /**
      * A collection of Reader objects

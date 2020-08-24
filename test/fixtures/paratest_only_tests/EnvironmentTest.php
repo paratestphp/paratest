@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 use function getenv;
 use function is_numeric;
 
+/**
+ * @internal
+ */
 final class EnvironmentTest extends TestCase
 {
     /**

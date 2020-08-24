@@ -15,6 +15,8 @@ use function strpos;
  * Batch limited to run tests only from one php test case file.
  * Used for running ParaTest in functional mode.
  *
+ * @internal
+ *
  * @todo Rename to Batch
  */
 final class TestMethod extends ExecutableTest

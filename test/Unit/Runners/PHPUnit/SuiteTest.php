@@ -11,6 +11,8 @@ use ParaTest\Tests\TestBase;
 use function uniqid;
 
 /**
+ * @internal
+ *
  * @covers \ParaTest\Runners\PHPUnit\Suite
  */
 final class SuiteTest extends TestBase
