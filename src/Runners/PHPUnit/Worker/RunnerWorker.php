@@ -77,9 +77,10 @@ final class RunnerWorker
         array $options,
         array $environmentVariables,
         ?array $passthru,
-        ?array $passthruPhp
+        ?array $passthruPhp,
+        string $cwd
     ): void {
-        $process = $this->getProcess($binary, $options, $environmentVariables, $passthru, $passthruPhp);
+        $process = $this->getProcess($binary, $options, $environmentVariables, $passthru, $passthruPhp, $cwd);
         $cmd     = $process->getCommandLine();
 
         $this->assertValidCommandLineLength($cmd);
@@ -103,7 +104,8 @@ final class RunnerWorker
         array $options,
         array $environmentVariables,
         ?array $passthru,
-        ?array $passthruPhp
+        ?array $passthruPhp,
+        string $cwd
     ): Process {
         $finder = new PhpExecutableFinder();
 
@@ -114,7 +116,7 @@ final class RunnerWorker
 
         $args = array_merge($args, $this->executableTest->commandArguments($binary, $options, $passthru));
 
-        return new Process($args, null, $environmentVariables);
+        return new Process($args, $cwd, $environmentVariables);
     }
 
     /**

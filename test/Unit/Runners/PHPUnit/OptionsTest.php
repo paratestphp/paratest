@@ -187,6 +187,7 @@ final class OptionsTest extends TestBase
         static::assertSame(0, $options->coverageTestLimit());
         static::assertFalse($options->coverageText());
         static::assertNull($options->coverageXml());
+        static::assertSame(__DIR__, $options->cwd());
         static::assertEmpty($options->excludeGroup());
         static::assertNull($options->filter());
         static::assertEmpty($options->filtered());
@@ -255,6 +256,7 @@ final class OptionsTest extends TestBase
         static::assertSame(3, $options->coverageTestLimit());
         static::assertTrue($options->coverageText());
         static::assertSame('COVERAGE-XML', $options->coverageXml());
+        static::assertSame(__DIR__, $options->cwd());
         static::assertSame(['EXCLUDE-GROUP'], $options->excludeGroup());
         static::assertSame('FILTER', $options->filter());
         static::assertTrue($options->functional());
