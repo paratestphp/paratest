@@ -75,7 +75,8 @@ final class Runner extends BaseRunner
                 $this->options->filtered(),
                 $env,
                 $this->options->passthru(),
-                $this->options->passthruPhp()
+                $this->options->passthruPhp(),
+                $this->options->cwd()
             );
 
             if ($this->options->verbose() === 0) {

@@ -96,7 +96,7 @@ abstract class BaseWorker
             $bin = sprintf('cmd /V:ON /E:ON /D /C (%s)', $bin); // @codeCoverageIgnore
         }
 
-        $process     = proc_open($bin, self::$descriptorspec, $pipes, null, $env);
+        $process     = proc_open($bin, self::$descriptorspec, $pipes, $options->cwd(), $env);
         $this->proc  = is_resource($process) ? $process : null;
         $this->pipes = $pipes;
     }

@@ -182,6 +182,8 @@ final class Options
     private $coverageText;
     /** @var string|null */
     private $coverageXml;
+    /** @var string */
+    private $cwd;
     /** @var string|null */
     private $logJunit;
     /** @var string|null */
@@ -208,6 +210,7 @@ final class Options
         int $coverageTestLimit,
         bool $coverageText,
         ?string $coverageXml,
+        string $cwd,
         array $excludeGroup,
         ?string $filter,
         array $filtered,
@@ -239,6 +242,7 @@ final class Options
         $this->coverageTestLimit = $coverageTestLimit;
         $this->coverageText      = $coverageText;
         $this->coverageXml       = $coverageXml;
+        $this->cwd               = $cwd;
         $this->excludeGroup      = $excludeGroup;
         $this->filter            = $filter;
         $this->filtered          = $filtered;
@@ -342,6 +346,7 @@ final class Options
             (int) $options['coverage-test-limit'],
             $options['coverage-text'],
             $options['coverage-xml'],
+            $cwd,
             $excludeGroup,
             $options['filter'],
             $filtered,
@@ -853,6 +858,11 @@ final class Options
     public function coverageXml(): ?string
     {
         return $this->coverageXml;
+    }
+
+    public function cwd(): string
+    {
+        return $this->cwd;
     }
 
     public function logJunit(): ?string
