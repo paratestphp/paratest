@@ -64,6 +64,7 @@ final class BaseRunnerTest extends TestBase
         static::assertFileExists((string) $this->bareOptions['--coverage-xml']);
 
         static::assertStringContainsString('Code Coverage Report:', $runnerResult->getOutput());
+        static::assertStringContainsString('Generating code coverage', $runnerResult->getOutput());
     }
 
     public function testRunningTestsShouldLeaveNoTempFiles(): void

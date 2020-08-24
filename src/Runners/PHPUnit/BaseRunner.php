@@ -8,10 +8,12 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Coverage\CoverageReporter;
 use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
+use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
 use function assert;
+use function sprintf;
 
 /**
  * @internal
@@ -160,6 +162,11 @@ abstract class BaseRunner implements RunnerInterface
 
         $reporter = new CoverageReporter($codeCoverage, $codeCoverageConfiguration);
 
+        $this->output->write('Generating code coverage report ... ');
+
+        $timer = new Timer();
+        $timer->start();
+
         if (($coverageClover = $this->options->coverageClover()) !== null) {
             $reporter->clover($coverageClover);
         }
@@ -180,11 +187,13 @@ abstract class BaseRunner implements RunnerInterface
             $reporter->xml($coverageXml);
         }
 
-        if (($coveragePhp = $this->options->coveragePhp()) === null) {
-            return;
+        if (($coveragePhp = $this->options->coveragePhp()) !== null) {
+            $reporter->php($coveragePhp);
         }
 
-        $reporter->php($coveragePhp);
+        $this->output->writeln(
+            sprintf('done [%s]', $timer->stop()->asString())
+        );
     }
 
     final protected function hasCoverage(): bool
