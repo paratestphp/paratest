@@ -138,12 +138,10 @@ See [Logging docs](docs/logging.md) for further information.
 
 ### Generating code coverage
 
-Beginning from PHPUnit 9.3.4, it is strongly advised to warm the coverage cache before running any code-coverage
-analysis, see [PHPUnit Changlog @ 9.3.4](https://github.com/sebastianbergmann/phpunit/blob/master/ChangeLog-9.3.md#934---2020-08-10):
+Beginning from PHPUnit 9.3.4, it is strongly advised to set a coverage cache directory,
+see [PHPUnit Changlog @ 9.3.4](https://github.com/sebastianbergmann/phpunit/blob/master/ChangeLog-9.3.md#934---2020-08-10).
 
-```
-vendor/bin/phpunit --warm-coverage-cache
-``` 
+The cache is always warmed by ParaTest before executing the test suite.
 
 Examples assume your tests are located under `./test/unit`.
 ````

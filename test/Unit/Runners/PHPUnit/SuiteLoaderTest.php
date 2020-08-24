@@ -13,6 +13,7 @@ use ParseError;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 use function array_keys;
 use function array_shift;
@@ -28,9 +29,17 @@ use function uniqid;
  */
 final class SuiteLoaderTest extends TestBase
 {
+    /** @var BufferedOutput */
+    private $output;
+
+    protected function setUpTest(): void
+    {
+        $this->output = new BufferedOutput();
+    }
+
     public function testLoadThrowsExceptionWithInvalidPath(): void
     {
-        $loader = new SuiteLoader($this->createOptionsFromArgv(['--path' => '/path/to/nowhere']));
+        $loader = new SuiteLoader($this->createOptionsFromArgv(['--path' => '/path/to/nowhere']), $this->output);
 
         $this->expectException(RuntimeException::class);
 
@@ -39,7 +48,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadBarePathWithNoPathAndNoConfiguration(): void
     {
-        $loader = new SuiteLoader($this->createOptionsFromArgv([], __DIR__));
+        $loader = new SuiteLoader($this->createOptionsFromArgv([], __DIR__), $this->output);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('No path or configuration provided (tests must end with Test.php)');
@@ -52,7 +61,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-file.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -65,7 +74,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-excluded-including-file.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -78,7 +87,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-excluded-including-dir.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -92,7 +101,7 @@ final class SuiteLoaderTest extends TestBase
             '--configuration' => $this->fixture('phpunit-multifile.xml'),
             '--group' => 'fixtures,group4',
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -104,7 +113,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-passing.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -117,7 +126,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-multidir.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -131,7 +140,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-files-dirs-mix.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -144,7 +153,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-files-dirs-mix-duplicates.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -158,7 +167,7 @@ final class SuiteLoaderTest extends TestBase
             '--configuration' => $this->fixture('phpunit-parallel-suite.xml'),
             '--testsuite' => 'Suite 1',
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -171,7 +180,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-passing.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -184,7 +193,7 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--configuration' => $this->fixture('phpunit-multidir.xml'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $files = $this->getObjectValue($loader, 'files');
 
@@ -199,7 +208,7 @@ final class SuiteLoaderTest extends TestBase
             '--configuration' => $this->fixture('phpunit-non-existent-testsuite-dir.xml'),
             '--testsuite' => uniqid(),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessageMatches('/Suite path \w+ could not be found/');
@@ -219,7 +228,7 @@ final class SuiteLoaderTest extends TestBase
      */
     private function getLoadedPaths(string $path, ?SuiteLoader $loader = null): array
     {
-        $loader = $loader ?? new SuiteLoader($this->createOptionsFromArgv(['--path' => $path]));
+        $loader = $loader ?? new SuiteLoader($this->createOptionsFromArgv(['--path' => $path]), $this->output);
         $loader->load();
         $loaded = $this->getObjectValue($loader, 'loadedSuites');
 
@@ -241,7 +250,7 @@ final class SuiteLoaderTest extends TestBase
         $fixturePath = $this->fixture('passing_tests');
         $files       = $this->findTests($fixturePath);
 
-        $loader = new SuiteLoader($this->createOptionsFromArgv(['--path' => $fixturePath]));
+        $loader = new SuiteLoader($this->createOptionsFromArgv(['--path' => $fixturePath]), $this->output);
         $loader->load();
         $loaded = $this->getObjectValue($loader, 'loadedSuites');
         foreach ($loaded as $path => $test) {
@@ -302,7 +311,7 @@ final class SuiteLoaderTest extends TestBase
             '--group' => 'group1',
             '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $methods = $loader->getTestMethods();
         static::assertCount(2, $methods);
@@ -316,7 +325,7 @@ final class SuiteLoaderTest extends TestBase
             '--group' => 'group4',
             '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         $methods = $loader->getTestMethods();
         static::assertCount(1, $loader->getSuites());
@@ -329,7 +338,7 @@ final class SuiteLoaderTest extends TestBase
             '--group' => 'non-existent',
             '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         static::assertCount(0, $loader->getSuites());
         static::assertCount(0, $loader->getTestMethods());
@@ -341,7 +350,7 @@ final class SuiteLoaderTest extends TestBase
             '--group' => 'non-existent',
             '--path' => $this->fixture('special_classes/FileWithoutClass.php'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         static::assertCount(0, $loader->getTestMethods());
     }
@@ -352,7 +361,7 @@ final class SuiteLoaderTest extends TestBase
             '--exclude-group' => 'group1',
             '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         static::assertCount(3, $loader->getTestMethods());
     }
@@ -363,7 +372,7 @@ final class SuiteLoaderTest extends TestBase
             '--group' => 'group1,group3',
             '--path' => $this->fixture('passing_tests/GroupsTest.php'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
         static::assertCount(3, $loader->getTestMethods());
     }
@@ -372,7 +381,7 @@ final class SuiteLoaderTest extends TestBase
     {
         $loader = new SuiteLoader($this->createOptionsFromArgv([
             '--path' => $this->fixture('passing_tests/DependsOnChain.php'),
-        ]));
+        ]), $this->output);
         $loader->load();
         $tests = $loader->getTestMethods();
         static::assertCount(2, $tests);
@@ -388,7 +397,7 @@ final class SuiteLoaderTest extends TestBase
             '--configuration' => $this->fixture('phpunit-parallel-suite.xml'),
             '--parallel-suite' => true,
             '--processes' => 2,
-        ]));
+        ]), $this->output);
         $loader->load();
 
         $suites = $loader->getSuites();
@@ -408,7 +417,7 @@ final class SuiteLoaderTest extends TestBase
             '--functional' => true,
             '--max-batch-size' => 50,
         ], __DIR__);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
         $loader->load();
 
         $suites = $loader->getSuites();
@@ -426,11 +435,22 @@ final class SuiteLoaderTest extends TestBase
         $options = $this->createOptionsFromArgv([
             '--path' => $this->fixture('fatal_tests' . DS . 'UnitTestWithFatalParseErrorTest.php'),
         ]);
-        $loader  = new SuiteLoader($options);
+        $loader  = new SuiteLoader($options, $this->output);
 
         self::expectException(ParseError::class);
 
         $loader->load();
+    }
+
+    public function testCacheIsWarmedWhenSpecified(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('phpunit-coverage-cache.xml'),
+        ]);
+        $loader  = new SuiteLoader($options, $this->output);
+        $loader->load();
+
+        static::assertStringContainsString('Warming cache', $this->output->fetch());
     }
 
     /**
