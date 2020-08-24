@@ -135,6 +135,11 @@ jobs:
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
 
+      # @TODO remove this when deps are updated
+      - name: "Remove incompatible dependencies not useful for tests"
+        if: ${{ matrix.php-version == '8.0' }}
+        run: "composer remove --dev ekino/phpstan-banned-code ergebnis/phpstan-rules thecodingmachine/phpstan-strict-rules doctrine/coding-standard"
+
       - name: "Install lowest dependencies"
         if: ${{ matrix.dependencies == 'lowest' }}
         run: "composer update --no-interaction --no-progress --prefer-lowest"
