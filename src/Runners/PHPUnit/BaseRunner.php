@@ -69,7 +69,7 @@ abstract class BaseRunner implements RunnerInterface
 
     final public function run(): void
     {
-        $this->load(new SuiteLoader($this->options));
+        $this->load(new SuiteLoader($this->options, $this->output));
         $this->printer->start();
 
         $this->doRun();

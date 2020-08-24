@@ -9,13 +9,18 @@ use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
 use PHPUnit\Framework\ExecutionOrderDependency;
+use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\FilterMapper;
 use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\PhpHandler;
 use PHPUnit\TextUI\XmlConfiguration\TestSuite;
 use PHPUnit\Util\FileLoader;
 use PHPUnit\Util\Test;
 use RuntimeException;
+use SebastianBergmann\CodeCoverage\Filter;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\CacheWarmer;
 use SebastianBergmann\FileIterator\Facade;
+use SebastianBergmann\Timer\Timer;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_intersect;
 use function array_map;
@@ -66,11 +71,14 @@ final class SuiteLoader
 
     /** @var Options */
     private $options;
+    /** @var OutputInterface */
+    private $output;
 
-    public function __construct(Options $options)
+    public function __construct(Options $options, OutputInterface $output)
     {
         $this->options       = $options;
         $this->configuration = $options->configuration();
+        $this->output        = $output;
     }
 
     /**
@@ -160,6 +168,7 @@ final class SuiteLoader
         $this->files = array_unique($this->files); // remove duplicates
 
         $this->initSuites();
+        $this->warmCoverageCache();
     }
 
     /**
@@ -439,5 +448,31 @@ final class SuiteLoader
         }
 
         FileLoader::checkAndLoad($bootstrap);
+    }
+
+    private function warmCoverageCache(): void
+    {
+        if (($configuration = $this->options->configuration()) === null || ! $configuration->codeCoverage()->hasCacheDirectory()) {
+            return;
+        }
+
+        $filter = new Filter();
+        (new FilterMapper())->map(
+            $filter,
+            $configuration->codeCoverage()
+        );
+        $timer = new Timer();
+        $timer->start();
+
+        $this->output->write('Warming cache for static analysis ... ');
+
+        (new CacheWarmer())->warmCache(
+            $configuration->codeCoverage()->cacheDirectory()->path(),
+            ! $configuration->codeCoverage()->disableCodeCoverageIgnore(),
+            $configuration->codeCoverage()->ignoreDeprecatedCodeUnits(),
+            $filter
+        );
+
+        $this->output->writeln('done [' . $timer->stop()->asString() . ']');
     }
 }
