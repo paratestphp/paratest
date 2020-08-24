@@ -60,7 +60,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
 
         $input = new ArrayInput($argv, $inputDefinition);
 
-        return Options::fromConsoleInput($input, $cwd ?? PARATEST_ROOT);
+        return Options::fromConsoleInput($input, $cwd ?? __DIR__);
     }
 
     final protected function runRunner(?string $cwd = null): RunnerResult

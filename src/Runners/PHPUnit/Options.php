@@ -6,6 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use InvalidArgumentException;
 use ParaTest\Util\Str;
+use PHPUnit\TextUI\DefaultResultPrinter;
 use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,6 +29,7 @@ use function intdiv;
 use function is_dir;
 use function is_file;
 use function is_string;
+use function ksort;
 use function pclose;
 use function popen;
 use function preg_match;
@@ -304,19 +306,9 @@ final class Options
             throw new InvalidArgumentException('Option --filter is not implemented for non functional mode');
         }
 
-        $configuration     = null;
-        $configurationFile = self::guessConfigurationFile($options['configuration'], $cwd);
-        if ($configurationFile !== null) {
-            $configuration = (new Loader())->load($configurationFile);
-        }
-
         $filtered = [];
         if ($options['bootstrap'] !== null) {
             $filtered['bootstrap'] = $options['bootstrap'];
-        }
-
-        if ($configuration !== null) {
-            $filtered['configuration'] = $configuration->filename();
         }
 
         if (count($group) !== 0) {
@@ -335,9 +327,52 @@ final class Options
             $filtered['stop-on-failure'] = null;
         }
 
+        $colors = $options['colors'];
+
+        $configuration     = null;
+        $configurationFile = self::guessConfigurationFile($options['configuration'], $cwd);
+        if ($configurationFile !== null) {
+            $configuration = (new Loader())->load($configurationFile);
+
+            $colors = $colors || $configuration->phpunit()->colors() !== DefaultResultPrinter::COLOR_NEVER;
+
+            $codeCoverage = $configuration->codeCoverage();
+
+            if ($options['coverage-clover'] === null && $codeCoverage->hasClover()) {
+                $options['coverage-clover'] = $codeCoverage->clover()->target()->path();
+            }
+
+            if ($options['coverage-crap4j'] === null && $codeCoverage->hasCrap4j()) {
+                $options['coverage-crap4j'] = $codeCoverage->crap4j()->target()->path();
+            }
+
+            if ($options['coverage-html'] === null && $codeCoverage->hasHtml()) {
+                $options['coverage-html'] = $codeCoverage->html()->target()->path();
+            }
+
+            if ($options['coverage-php'] === null && $codeCoverage->hasPhp()) {
+                $options['coverage-php'] = $codeCoverage->php()->target()->path();
+            }
+
+            if ($options['coverage-xml'] === null && $codeCoverage->hasXml()) {
+                $options['coverage-xml'] = $codeCoverage->xml()->target()->path();
+            }
+
+            $logging = $configuration->logging();
+            if ($options['log-junit'] === null && $logging->hasJunit()) {
+                $options['log-junit'] = $logging->junit()->target()->path();
+            }
+        }
+
+        if ($configuration !== null) {
+            $filtered['configuration'] = $configuration->filename();
+        }
+
+        ksort($filtered);
+
         return new self(
             $options['bootstrap'],
-            $options['colors'],
+            $colors,
             $configuration,
             $options['coverage-clover'],
             $options['coverage-crap4j'],

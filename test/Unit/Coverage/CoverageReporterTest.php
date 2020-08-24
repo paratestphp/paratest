@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit\Coverage;
 
 use ParaTest\Coverage\CoverageReporter;
 use ParaTest\Tests\TestBase;
+use PHPUnit\TextUI\XmlConfiguration\Loader;
 use PHPUnit\Util\Xml;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Driver\Driver;
@@ -33,7 +34,9 @@ final class CoverageReporterTest extends TestBase
             __FILE__ => [__LINE__ => 1],
         ]), uniqid());
 
-        $this->coverageReporter = new CoverageReporter($codeCoverage);
+        $configuration = (new Loader())->load($this->fixture('phpunit-fully-configured.xml'));
+
+        $this->coverageReporter = new CoverageReporter($codeCoverage, $configuration->codeCoverage());
     }
 
     public function testGenerateClover(): void

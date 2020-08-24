@@ -280,11 +280,37 @@ final class OptionsTest extends TestBase
         static::assertSame([
             'bootstrap' => 'BOOTSTRAP',
             'configuration' => $options->configuration()->filename(),
-            'group' => 'GROUP',
             'exclude-group' => 'EXCLUDE-GROUP',
-            'whitelist' => 'WHITELIST',
+            'group' => 'GROUP',
             'stop-on-failure' => null,
+            'whitelist' => 'WHITELIST',
         ], $options->filtered());
+
+        static::assertTrue($options->hasCoverage());
+    }
+
+    public function testGatherOptionsFromConfiguration(): void
+    {
+        $argv = [
+            '--configuration' => $this->fixture('phpunit-fully-configured.xml'),
+        ];
+
+        $options = $this->createOptionsFromArgv($argv, __DIR__);
+
+        static::assertTrue($options->colors());
+        static::assertNotNull($options->configuration());
+        static::assertNotNull($options->coverageClover());
+        static::assertStringContainsString('clover.xml', $options->coverageClover());
+        static::assertNotNull($options->coverageCrap4j());
+        static::assertStringContainsString('crap4j.xml', $options->coverageCrap4j());
+        static::assertNotNull($options->coverageHtml());
+        static::assertStringContainsString('html-coverage', $options->coverageHtml());
+        static::assertNotNull($options->coveragePhp());
+        static::assertStringContainsString('coverage.php', $options->coveragePhp());
+        static::assertNotNull($options->coverageXml());
+        static::assertStringContainsString('xml-coverage', $options->coverageXml());
+        static::assertNotNull($options->logJunit());
+        static::assertStringContainsString('junit.xml', $options->logJunit());
 
         static::assertTrue($options->hasCoverage());
     }
