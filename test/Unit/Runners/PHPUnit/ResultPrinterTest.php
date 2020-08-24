@@ -41,7 +41,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $this->interpreter = new LogInterpreter();
         $this->output      = new BufferedOutput();
-        $this->options     = $this->createOptionsFromArgv([]);
+        $this->options     = $this->createOptionsFromArgv([], __DIR__);
         $this->printer     = new ResultPrinter($this->interpreter, $this->output, $this->options);
 
         $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);

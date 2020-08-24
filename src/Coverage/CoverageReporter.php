@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Coverage;
 
+use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\CodeCoverage as CodeCoverageConfiguration;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Report\Clover;
 use SebastianBergmann\CodeCoverage\Report\Crap4j;
@@ -17,10 +18,13 @@ final class CoverageReporter
 {
     /** @var CodeCoverage */
     private $coverage;
+    /** @var CodeCoverageConfiguration|null */
+    private $codeCoverageConfiguration;
 
-    public function __construct(CodeCoverage $coverage)
+    public function __construct(CodeCoverage $coverage, ?CodeCoverageConfiguration $codeCoverageConfiguration)
     {
-        $this->coverage = $coverage;
+        $this->coverage                  = $coverage;
+        $this->codeCoverageConfiguration = $codeCoverageConfiguration;
     }
 
     /**
@@ -42,6 +46,10 @@ final class CoverageReporter
     public function crap4j(string $target): void
     {
         $xml = new Crap4j();
+        if ($this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasCrap4j()) {
+            $xml = new Crap4j($this->codeCoverageConfiguration->crap4j()->threshold());
+        }
+
         $xml->process($this->coverage, $target);
     }
 
@@ -53,6 +61,13 @@ final class CoverageReporter
     public function html(string $target): void
     {
         $html = new Html\Facade();
+        if ($this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml()) {
+            $html = new Html\Facade(
+                $this->codeCoverageConfiguration->html()->lowUpperBound(),
+                $this->codeCoverageConfiguration->html()->highLowerBound()
+            );
+        }
+
         $html->process($this->coverage, $target);
     }
 

@@ -150,7 +150,12 @@ abstract class BaseRunner implements RunnerInterface
         assert($coverageMerger !== null);
         $codeCoverage = $coverageMerger->getCodeCoverageObject();
         assert($codeCoverage !== null);
-        $reporter = new CoverageReporter($codeCoverage);
+        $codeCoverageConfiguration = null;
+        if (($configuration = $this->options->configuration()) !== null) {
+            $codeCoverageConfiguration = $configuration->codeCoverage();
+        }
+
+        $reporter = new CoverageReporter($codeCoverage, $codeCoverageConfiguration);
 
         if (($coverageClover = $this->options->coverageClover()) !== null) {
             $reporter->clover($coverageClover);

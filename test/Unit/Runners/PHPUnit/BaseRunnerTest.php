@@ -21,7 +21,7 @@ final class BaseRunnerTest extends TestBase
         static::skipIfCodeCoverageNotEnabled();
 
         $this->bareOptions = [
-            '--path' => FIXTURES . DS . 'failing_tests',
+            '--path' => $this->fixture('failing_tests'),
             '--coverage-clover' => TMP_DIR . DS . 'coverage.clover',
             '--coverage-crap4j' => TMP_DIR . DS . 'coverage.crap4j',
             '--coverage-html' => TMP_DIR . DS . 'coverage.html',
@@ -29,7 +29,7 @@ final class BaseRunnerTest extends TestBase
             '--coverage-text' => true,
             '--coverage-xml' => TMP_DIR . DS . 'coverage.xml',
             '--bootstrap' => BOOTSTRAP,
-            '--whitelist' => FIXTURES . DS . 'failing_tests',
+            '--whitelist' => $this->fixture('failing_tests'),
         ];
     }
 
@@ -52,7 +52,8 @@ final class BaseRunnerTest extends TestBase
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-php']);
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-xml']);
 
-        $runnerResult = $this->runRunner();
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-fully-configured.xml');
+        $runnerResult                         = $this->runRunner();
 
         static::assertFileExists((string) $this->bareOptions['--coverage-clover']);
         static::assertFileExists((string) $this->bareOptions['--coverage-crap4j']);
