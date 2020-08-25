@@ -27,13 +27,10 @@ final class ResultPrinterTest extends ResultTester
 {
     /** @var ResultPrinter */
     private $printer;
-
     /** @var BufferedOutput */
     private $output;
-
     /** @var LogInterpreter */
     private $interpreter;
-
     /** @var Suite */
     private $passingSuiteWithWrongTestCountEstimation;
     /** @var Options */
@@ -238,7 +235,21 @@ final class ResultPrinterTest extends ResultTester
         $footer = $this->printer->getFooter();
 
         $eq  = "\nFAILURES!\n";
-        $eq .= "Tests: 20, Assertions: 10, Failures: 3, Errors: 4.\n";
+        $eq .= "Tests: 20, Assertions: 10, Errors: 4, Failures: 3, Warnings: 2, Skipped: 4.\n";
+
+        static::assertSame($eq, $footer);
+    }
+
+    public function testGetFooterWithWarnings(): void
+    {
+        $this->printer->addTest($this->warningSuite);
+
+        $this->prepareReaders();
+
+        $footer = $this->printer->getFooter();
+
+        $eq  = "\nWARNINGS!\n";
+        $eq .= "Tests: 1, Assertions: 0, Warnings: 1.\n";
 
         static::assertSame($eq, $footer);
     }
@@ -251,7 +262,7 @@ final class ResultPrinterTest extends ResultTester
 
         $footer = $this->printer->getFooter();
 
-        $eq = "OK (3 tests, 3 assertions)\n";
+        $eq = "\nOK (3 tests, 3 assertions)\n";
 
         static::assertSame($eq, $footer);
     }
@@ -348,10 +359,20 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($this->mixedSuite);
         $this->printer->printResults();
 
-        static::assertStringContainsString(
-            '[37;41m[2KFAILURES',
-            $this->output->fetch()
-        );
+        static::assertStringContainsString('FAILURES', $this->output->fetch());
+    }
+
+    public function testColorsForWarning(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->warningSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->warningSuite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('WARNING', $this->output->fetch());
     }
 
     public function testColorsForSkipped(): void
@@ -377,10 +398,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($this->passingSuite);
         $this->printer->printResults();
 
-        static::assertStringContainsString(
-            '[30;42m[2KOK',
-            $this->output->fetch()
-        );
+        static::assertStringContainsString('OK', $this->output->fetch());
     }
 
     /**

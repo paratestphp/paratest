@@ -13,11 +13,13 @@ interface MetaProviderInterface
 
     public function getTotalAssertions(): int;
 
-    public function getTotalFailures(): int;
-
     public function getTotalErrors(): int;
 
+    public function getTotalFailures(): int;
+
     public function getTotalWarnings(): int;
+
+    public function getTotalSkipped(): int;
 
     public function getTotalTime(): float;
 

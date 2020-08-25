@@ -81,7 +81,7 @@ final class RunnerTest extends RunnerTestCase
         $runnerResult = $this->runRunner();
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
-            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+            . 'Tests: 1, Assertions: 0, Skipped: 1.';
         static::assertStringContainsString($expected, $runnerResult->getOutput());
         $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
     }
@@ -95,7 +95,7 @@ final class RunnerTest extends RunnerTestCase
         $runnerResult = $this->runRunner();
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
-            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+            . 'Tests: 1, Assertions: 0, Skipped: 1.';
         static::assertStringContainsString($expected, $runnerResult->getOutput());
         $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
     }
@@ -109,7 +109,7 @@ final class RunnerTest extends RunnerTestCase
         $runnerResult = $this->runRunner();
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
-            . 'Tests: 100, Assertions: 33, Incomplete: 67.';
+            . 'Tests: 100, Assertions: 33, Skipped: 67.';
         static::assertStringContainsString($expected, $runnerResult->getOutput());
         $this->assertContainsNSkippedTests(67, $runnerResult->getOutput());
     }

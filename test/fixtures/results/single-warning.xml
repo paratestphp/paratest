@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="ParaTest\Tests\fixtures\failing_tests\WarningOnlyTest" file="/paratest/test/fixtures/failing_tests/WarningOnlyTest.php" tests="1" assertions="0" errors="0" warnings="1" failures="0" skipped="0" time="0.001774">
+        <testcase name="testWarning" class="ParaTest\Tests\fixtures\failing_tests\WarningOnlyTest" classname="ParaTest.Tests.fixtures.failing_tests.WarningOnlyTest" file="/paratest/test/fixtures/failing_tests/WarningOnlyTest.php" line="19" assertions="0" time="0.001774">
+            <warning type="PHPUnit\Framework\Warning">ParaTest\Tests\fixtures\failing_tests\WarningOnlyTest::testWarning
+5f44b77e10171
+
+</warning>
+        </testcase>
+    </testsuite>
+</testsuites>

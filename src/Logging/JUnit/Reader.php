@@ -137,23 +137,12 @@ final class Reader implements MetaProviderInterface
         $testCases = [];
         $testSuite = $this->caseNodesToSuite($nodeArray, $testCases);
         if (! $this->isSingle) {
-            $this->addSuite($testSuite, $testCases);
+            $testSuite->cases          = $testCases;
+            $this->suites[0]->suites[] = $testSuite;
         } else {
             $suite        = $this->suites[0];
             $suite->cases = array_merge($suite->cases, $testCases);
         }
-    }
-
-    /**
-     * Creates and adds a TestSuite based on the given
-     * suite properties and collection of test cases.
-     *
-     * @param TestCase[] $testCases
-     */
-    private function addSuite(TestSuite $suite, array $testCases): void
-    {
-        $suite->cases              = $testCases;
-        $this->suites[0]->suites[] = $suite;
     }
 
     /**
@@ -248,19 +237,24 @@ final class Reader implements MetaProviderInterface
         return $this->suites[0]->assertions;
     }
 
-    public function getTotalFailures(): int
-    {
-        return $this->suites[0]->failures;
-    }
-
     public function getTotalErrors(): int
     {
         return $this->suites[0]->errors;
     }
 
+    public function getTotalFailures(): int
+    {
+        return $this->suites[0]->failures;
+    }
+
     public function getTotalWarnings(): int
     {
         return $this->suites[0]->warnings;
+    }
+
+    public function getTotalSkipped(): int
+    {
+        return $this->suites[0]->skipped;
     }
 
     public function getTotalTime(): float
