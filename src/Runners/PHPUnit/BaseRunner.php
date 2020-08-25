@@ -137,7 +137,6 @@ abstract class BaseRunner implements RunnerInterface
         }
 
         $name = $this->options->path() ?? implode(',', $this->options->testsuite());
-        assert($name !== null);
 
         $writer = new Writer($this->interpreter, $name);
         $writer->write($logJunit);
