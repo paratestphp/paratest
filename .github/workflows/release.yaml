@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+env:
+  GITHUB_TOKEN: "${{ github.token }}"
+
 jobs:
   release:
     name: "Release"
@@ -64,8 +67,6 @@ jobs:
       - name: "Upload paratest.phar"
         if: "always()"
         uses: "actions/upload-release-asset@v1"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           asset_content_type: "text/plain"
           asset_name: "paratest.phar"
