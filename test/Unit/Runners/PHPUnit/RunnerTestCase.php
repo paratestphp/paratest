@@ -56,7 +56,6 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('Tests: 1', $runnerResult->getOutput());
-        static::assertStringContainsString('Failures: 0', $runnerResult->getOutput());
         static::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
         static::assertEquals(TestRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
 
@@ -65,7 +64,6 @@ abstract class RunnerTestCase extends TestBase
 
         static::assertStringContainsString('Tests: 1', $runnerResult->getOutput());
         static::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
-        static::assertStringContainsString('Errors: 0', $runnerResult->getOutput());
         static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests' . DS . 'SuccessTest.php');
@@ -224,7 +222,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
-            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+            . 'Tests: 1, Assertions: 0, Skipped: 1.';
         static::assertStringContainsString($expected, $runnerResult->getOutput());
         $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
     }
@@ -236,7 +234,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
-            . 'Tests: 1, Assertions: 0, Incomplete: 1.';
+            . 'Tests: 1, Assertions: 0, Skipped: 1.';
         static::assertStringContainsString($expected, $runnerResult->getOutput());
         $this->assertContainsNSkippedTests(1, $runnerResult->getOutput());
     }
@@ -248,7 +246,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         $expected = "OK, but incomplete, skipped, or risky tests!\n"
-            . 'Tests: 100, Assertions: 33, Incomplete: 67.';
+            . 'Tests: 100, Assertions: 33, Skipped: 67.';
         static::assertStringContainsString($expected, $runnerResult->getOutput());
         $this->assertContainsNSkippedTests(67, $runnerResult->getOutput());
     }
@@ -271,16 +269,16 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--path']      = $this->fixture('failing_tests');
         $runnerResult                     = $this->runRunner();
 
-        $regexp = '/Tests: \d+, Assertions: \d+, Failures: \d+, Errors: \d+\./';
+        $regexp = '/Tests: \d+, Assertions: \d+, Errors: \d+, Failures: \d+, Warnings: \d+, Skipped: \d+\./';
         static::assertSame(1, preg_match($regexp, $runnerResult->getOutput(), $matchesOnFullRun));
 
         $this->bareOptions['--stop-on-failure'] = true;
         $runnerResult                           = $this->runRunner();
 
+        $regexp = '/Tests: \d+, Assertions: \d+, Failures: \d+\./';
         static::assertSame(1, preg_match($regexp, $runnerResult->getOutput(), $matchesOnPartialRun));
 
         static::assertNotEquals($matchesOnFullRun[0], $matchesOnPartialRun[0]);
-        static::assertSame('Tests: 1, Assertions: 1, Failures: 1, Errors: 0.', $matchesOnPartialRun[0]);
     }
 
     /**

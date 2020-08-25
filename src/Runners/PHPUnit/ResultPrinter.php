@@ -7,15 +7,26 @@ namespace ParaTest\Runners\PHPUnit;
 use InvalidArgumentException;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
+use PHPUnit\Util\Color;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function array_filter;
+use function array_map;
+use function assert;
 use function count;
 use function floor;
+use function implode;
+use function is_array;
+use function max;
+use function preg_split;
+use function rtrim;
 use function sprintf;
+use function str_pad;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_EOL;
 
 /**
  * Used for outputting ParaTest results
@@ -154,8 +165,8 @@ final class ResultPrinter
     {
         $this->output->write($this->getHeader());
         $this->output->write($this->getErrors());
-        $this->output->write($this->getFailures());
         $this->output->write($this->getWarnings());
+        $this->output->write($this->getFailures());
         $this->output->write($this->getFooter());
     }
 
@@ -203,22 +214,22 @@ final class ResultPrinter
     }
 
     /**
-     * Whether the test run is successful and has no warnings.
-     */
-    public function isSuccessful(): bool
-    {
-        return $this->results->isSuccessful();
-    }
-
-    /**
      * Return the footer information reporting success
      * or failure.
      */
     public function getFooter(): string
     {
-        return $this->isSuccessful()
-                    ? $this->getSuccessFooter()
-                    : $this->getFailedFooter();
+        if ($this->results->isSuccessful()) {
+            if ($this->results->getTotalWarnings() === 0) {
+                $footer = $this->getSuccessFooter();
+            } else {
+                $footer = $this->getWarningFooter();
+            }
+        } else {
+            $footer = $this->getFailedFooter();
+        }
+
+        return "\n{$footer}\n";
     }
 
     /**
@@ -348,38 +359,32 @@ final class ResultPrinter
 
     private function printFeedbackItemColor(string $item): void
     {
-        $format = '%s';
-        if ($this->options->colors()) {
-            switch ($item) {
-                case 'E':
-                    // fg-red
-                    $format = "\x1b[31m%s\x1b[0m";
+        $buffer = $item;
+        switch ($item) {
+            case 'E':
+                $buffer = $this->colorizeTextBox('fg-red, bold', $item);
 
-                    break;
+                break;
 
-                case 'F':
-                    // bg-red
-                    $format = "\x1b[41m%s\x1b[0m";
+            case 'F':
+                $buffer = $this->colorizeTextBox('bg-red, fg-white', $item);
 
-                    break;
+                break;
 
-                case 'W':
-                case 'I':
-                case 'R':
-                    // fg-yellow
-                    $format = "\x1b[33m%s\x1b[0m";
+            case 'W':
+            case 'I':
+            case 'R':
+                $buffer = $this->colorizeTextBox('fg-yellow, bold', $item);
 
-                    break;
+                break;
 
-                case 'S':
-                    // fg-cyan
-                    $format = "\x1b[36m%s\x1b[0m";
+            case 'S':
+                $buffer = $this->colorizeTextBox('fg-cyan, bold', $item);
 
-                    break;
-            }
+                break;
         }
 
-        $this->output->write(sprintf($format, $item));
+        $this->output->write($buffer);
     }
 
     /**
@@ -429,15 +434,13 @@ final class ResultPrinter
      */
     private function getFailedFooter(): string
     {
-        $formatString = "FAILURES!\nTests: %d, Assertions: %d, Failures: %d, Errors: %d.\n";
+        $formatString = "FAILURES!\n%s";
 
-        return "\n" . $this->red(
+        return $this->colorizeTextBox(
+            'fg-white, bg-red',
             sprintf(
                 $formatString,
-                $this->results->getTotalTests(),
-                $this->results->getTotalAssertions(),
-                $this->results->getTotalFailures(),
-                $this->results->getTotalErrors()
+                $this->getFooterCounts()
             )
         );
     }
@@ -448,51 +451,83 @@ final class ResultPrinter
      */
     private function getSuccessFooter(): string
     {
-        $tests   = $this->totalCases;
-        $asserts = $this->results->getTotalAssertions();
+        if ($this->totalSkippedOrIncomplete === 0) {
+            $tests   = $this->totalCases;
+            $asserts = $this->results->getTotalAssertions();
 
-        if ($this->totalSkippedOrIncomplete > 0) {
-            // phpunit 4.5 produce NOT plural version for test(s) and assertion(s) in that case
-            // also it shows result in standard color scheme
-            return sprintf(
-                "OK, but incomplete, skipped, or risky tests!\n"
-                . "Tests: %d, Assertions: %d, Incomplete: %d.\n",
-                $tests,
-                $asserts,
-                $this->totalSkippedOrIncomplete
+            return $this->colorizeTextBox(
+                'fg-black, bg-green',
+                sprintf(
+                    'OK (%d test%s, %d assertion%s)',
+                    $tests,
+                    $tests === 1 ? '' : 's',
+                    $asserts,
+                    $asserts === 1 ? '' : 's'
+                )
             );
         }
 
-        // phpunit 4.5 produce plural version for test(s) and assertion(s) in that case
-        // also it shows result as black text on green background
-        return $this->green(sprintf(
-            "OK (%d test%s, %d assertion%s)\n",
-            $tests,
-            $tests === 1 ? '' : 's',
-            $asserts,
-            $asserts === 1 ? '' : 's'
-        ));
+        return $this->colorizeTextBox(
+            'fg-black, bg-yellow',
+            sprintf(
+                "OK, but incomplete, skipped, or risky tests!\n"
+                . '%s',
+                $this->getFooterCounts()
+            )
+        );
     }
 
-    private function green(string $text): string
+    private function getWarningFooter(): string
     {
-        if ($this->options->colors()) {
-            return "\x1b[30;42m\x1b[2K"
-                . $text
-                . "\x1b[0m\x1b[2K";
-        }
+        $formatString = "WARNINGS!\n%s";
 
-        return $text;
+        return $this->colorizeTextBox(
+            'fg-black, bg-yellow',
+            sprintf(
+                $formatString,
+                $this->getFooterCounts()
+            )
+        );
     }
 
-    private function red(string $text): string
+    private function getFooterCounts(): string
     {
-        if ($this->options->colors()) {
-            return "\x1b[37;41m\x1b[2K"
-                . $text
-                . "\x1b[0m\x1b[2K";
+        $counts = [
+            'Tests' => $this->results->getTotalTests(),
+            'Assertions' => $this->results->getTotalAssertions(),
+        ] + array_filter([
+            'Errors' => $this->results->getTotalErrors(),
+            'Failures' => $this->results->getTotalFailures(),
+            'Warnings' => $this->results->getTotalWarnings(),
+            'Skipped' => $this->results->getTotalSkipped(),
+        ]);
+
+        $output = '';
+        foreach ($counts as $label => $count) {
+            $output .= sprintf('%s: %s, ', $label, $count);
         }
 
-        return $text;
+        return rtrim($output, ', ') . '.';
+    }
+
+    /**
+     * @see \PHPUnit\TextUI\DefaultResultPrinter::colorizeTextBox
+     */
+    private function colorizeTextBox(string $color, string $buffer): string
+    {
+        if (! $this->options->colors()) {
+            return $buffer;
+        }
+
+        $lines = preg_split('/\r\n|\r|\n/', $buffer);
+        assert(is_array($lines));
+        $padding = max(array_map('\strlen', $lines));
+
+        $styledLines = [];
+        foreach ($lines as $line) {
+            $styledLines[] = Color::colorize($color, str_pad($line, $padding));
+        }
+
+        return implode(PHP_EOL, $styledLines);
     }
 }

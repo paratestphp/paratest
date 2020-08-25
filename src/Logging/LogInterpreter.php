@@ -143,13 +143,6 @@ final class LogInterpreter implements MetaProviderInterface
         }, 0);
     }
 
-    public function getTotalFailures(): int
-    {
-        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalFailures();
-        }, 0);
-    }
-
     public function getTotalErrors(): int
     {
         return array_reduce($this->readers, static function (int $result, Reader $reader): int {
@@ -157,10 +150,24 @@ final class LogInterpreter implements MetaProviderInterface
         }, 0);
     }
 
+    public function getTotalFailures(): int
+    {
+        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
+            return $result + $reader->getTotalFailures();
+        }, 0);
+    }
+
     public function getTotalWarnings(): int
     {
         return array_reduce($this->readers, static function (int $result, Reader $reader): int {
             return $result + $reader->getTotalWarnings();
+        }, 0);
+    }
+
+    public function getTotalSkipped(): int
+    {
+        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
+            return $result + $reader->getTotalSkipped();
         }, 0);
     }
 

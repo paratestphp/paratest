@@ -55,9 +55,10 @@ final class LogInterpreterTest extends ResultTester
     {
         static::assertSame(22, $this->interpreter->getTotalTests());
         static::assertSame(13, $this->interpreter->getTotalAssertions());
+        static::assertSame(3, $this->interpreter->getTotalErrors());
         static::assertSame(3, $this->interpreter->getTotalFailures());
         static::assertSame(2, $this->interpreter->getTotalWarnings());
-        static::assertSame(3, $this->interpreter->getTotalErrors());
+        static::assertSame(4, $this->interpreter->getTotalSkipped());
         static::assertSame(0.006784, $this->interpreter->getTotalTime());
     }
 

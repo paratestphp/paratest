@@ -26,11 +26,14 @@ abstract class ResultTester extends TestBase
     /** @var Suite */
     protected $errorSuite;
     /** @var Suite */
+    protected $warningSuite;
+    /** @var Suite */
     protected $skipped;
 
     final public function setUpTest(): void
     {
         $this->errorSuite        = $this->getSuiteWithResult('single-werror.xml', 1);
+        $this->warningSuite      = $this->getSuiteWithResult('single-warning.xml', 1);
         $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);
         $this->failureSuite      = $this->getSuiteWithResult('single-wfailure.xml', 3);
         $this->mixedSuite        = $this->getSuiteWithResult('mixed-results.xml', 7);

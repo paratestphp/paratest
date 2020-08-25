@@ -37,10 +37,10 @@ final class TestCase
     public $time;
 
     /** @var array<int, array{type: string, text: string}> */
-    public $failures = [];
+    public $errors = [];
 
     /** @var array<int, array{type: string, text: string}> */
-    public $errors = [];
+    public $failures = [];
 
     /** @var array<int, array{type: string, text: string}> */
     public $warnings = [];
