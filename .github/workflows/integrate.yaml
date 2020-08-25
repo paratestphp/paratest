@@ -305,8 +305,8 @@ jobs:
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
 
-      - name: "Install dependencies"
-        run: "composer update --no-interaction --no-progress"
+      - name: "Install prod dependencies"
+        run: "composer update --no-interaction --no-progress --no-dev"
 
       - name: "Download BOX.phar"
         run: "wget https://github.com/humbug/box/releases/latest/download/box.phar"
@@ -319,3 +319,9 @@ jobs:
 
       - name: "Show info about paratest.phar with humbug/box"
         run: "php box.phar info bin/paratest.phar"
+
+      - name: "Install dev dependencies"
+        run: "composer update --no-interaction --no-progress"
+
+      - name: "Test the compiled PHAR is good"
+        run: "bin/paratest.phar test/fixtures/passing_tests/"

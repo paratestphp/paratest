@@ -40,7 +40,7 @@ jobs:
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
 
       - name: "Install dependencies"
-        run: "composer update --no-interaction --no-progress"
+        run: "composer update --no-interaction --no-progress --no-dev"
 
       - name: "Download BOX.phar"
         run: "wget https://github.com/humbug/box/releases/latest/download/box.phar"
@@ -57,17 +57,6 @@ jobs:
       - name: "Determine tag"
         id: "determine-tag"
         run: "echo \"::set-output name=tag::${GITHUB_REF#refs/tags/}\""
-
-      - name: "Create release"
-        id: "create-release"
-        uses: "actions/create-release@v1"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        with:
-          draft: false
-          prerelease: false
-          release_name: "Version ${{ steps.determine-tag.outputs.tag }}"
-          tag_name: "${{ steps.determine-tag.outputs.tag }}"
 
       - name: "Upload paratest.phar"
         if: "always()"
