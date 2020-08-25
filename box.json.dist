@@ -4,16 +4,8 @@
         "KevinGH\\Box\\Compactor\\Php"
     ],
     "directories": [
-        "src"
-    ],
-    "finder": [
-        {
-            "name": "*.php",
-            "exclude": [
-                "friendsofphp"
-            ],
-            "in": "vendor"
-        }
+        "src",
+        "vendor"
     ],
     "files": [
         "LICENSE"
