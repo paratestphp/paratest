@@ -324,4 +324,6 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Test the compiled PHAR is good"
-        run: "bin/paratest.phar test/fixtures/passing_tests/"
+        run: |
+          rm phpunit.xml.dist
+          bin/paratest.phar --phpunit vendor/bin/phpunit test/fixtures/passing_tests/
