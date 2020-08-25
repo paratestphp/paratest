@@ -136,7 +136,7 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $name = $this->options->path() ?: implode(',', $this->options->testsuite()) ?: null;
+        $name = $this->options->path() ?? implode(',', $this->options->testsuite());
         assert($name !== null);
 
         $writer = new Writer($this->interpreter, $name);
