@@ -15,7 +15,7 @@ start using it with no additional bootstrap or configurations!
 Why use `paratest` over the alternative parallel test runners out there?
 
 * Code Coverage report combining. *Run your tests in N parallel processes and all the code coverage output will be combined into one report.*
-* Zero configuration. *After composer install, run with `vendor/bin/paratest -p4 path/to/tests`. That's it!*
+* Zero configuration. *After composer install, run with `vendor/bin/paratest`. That's it!*
 * Flexible. *Isolate test files in separate processes or take advantage of WrapperRunner for even faster runs.*
 
 # Installation
@@ -26,12 +26,12 @@ To install with composer run the following command:
     
 # Versions
 
-| PHPUnit Version  | Corresponding Paratest Version |
-| ------------- | ------------- |
-| <= 6.* | 1.* |
-| 7.* | 2.* |
-| 8.* | 3.* |
-| 9.* | 4.* |
+Only the latest version of PHPUnit is supported, and thus only the latest version of ParaTest is actively maintained.
+
+This is because of the following reasons:
+
+1. To reduce bugs, code duplication and incompatibilities with PHPUnit, from version 5 ParaTest heavily relies on PHPUnit `@internal` classes
+1. The fast pace both PHP and PHPUnit have taken recently adds too much maintenance burden, which we can only afford for the latest versions to stay up-to-date
 
 # Usage
 
@@ -39,44 +39,42 @@ After installation, the binary can be found at `vendor/bin/paratest`. Usage is a
 
 ```
 Usage:
- paratest [-p|--processes PROCESSES] [-f|--functional] [--no-test-tokens] [-h|--help] [--coverage-clover COVERAGE-CLOVER] [--coverage-crap4j COVERAGE-CRAP4J] [--coverage-html COVERAGE-HTML] [--coverage-php COVERAGE-PHP] [--coverage-text] [--coverage-xml COVERAGE-XML] [-m|--max-batch-size MAX-BATCH-SIZE] [--filter FILTER] [--parallel-suite] [--passthru PASSTHRU] [--passthru-php PASSTHRU-PHP] [-v|--verbose VERBOSE] [--whitelist WHITELIST] [--phpunit PHPUNIT] [--runner RUNNER] [--bootstrap BOOTSTRAP] [-c|--configuration CONFIGURATION] [-g|--group GROUP] [--exclude-group EXCLUDE-GROUP] [--stop-on-failure] [--log-junit LOG-JUNIT] [--colors] [--testsuite [TESTSUITE]] [--path PATH] [--] [<path>]
+  paratest [options] [--] [<path>]
 
 Arguments:
- path                        The path to a directory or file containing tests. (default: current directory)
-      
-Options:      
- --processes (-p)            The number of test processes to run. (Default: auto)
-                             Possible values:
-                             - Integer (>= 1): Number of processes to run.
-                             - auto (default): Number of processes is automatically set to the number of logical CPU cores.
-                             - half: Number of processes is automatically set to half the number of logical CPU cores.
- --functional (-f)           Run test methods instead of classes in separate processes.
- --no-test-tokens            Disable TEST_TOKEN environment variables. (Default: Variable is set)
- --help (-h)                 Display this help message.
- --coverage-clover           Generate code coverage report in Clover XML format.
- --coverage-crap4j           Generate code coverage report in Crap4J XML format.
- --coverage-html             Generate code coverage report in HTML format.
- --coverage-php              Serialize PHP_CodeCoverage object to file.
- --coverage-text             Generate code coverage report in text format.
- --coverage-xml              Generate code coverage report in PHPUnit XML format.
- --max-batch-size (-m)       Max batch size (only for functional mode). (Default: 0)
- --filter                    Filter (only for functional mode).
- --phpunit                   The PHPUnit binary to execute. (Default: vendor/bin/phpunit)
- --runner                    Runner, WrapperRunner or SqliteRunner. (Default: Runner)
- --bootstrap                 The bootstrap file to be used by PHPUnit.
- --configuration (-c)        The PHPUnit configuration file to use.
- --group (-g)                Only runs tests from the specified group(s).
- --exclude-group             Don't run tests from the specified group(s).
- --stop-on-failure           Don't start any more processes after a failure.
- --log-junit                 Log test execution in JUnit XML format to file.
- --colors                    Displays a colored bar as a test result.
- --testsuite                 Filter which testsuite to run. Run multiple suits by separating them with ",". Example:  --testsuite suite1,suite2
- --path                      An alias for the path argument.
- --parallel-suite            Run testsuites in parallel as opposed to running test classes / test functions in parallel.
- --passthru=PASSTHRU         Pass the given arguments verbatim to the underlying test framework. Example: --passthru="'--prepend' 'xdebug-filter.php'"
- --passthru-php=PASSTHRU-PHP Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="'-d' 'zend_extension=xdebug.so'"
-  -v, --verbose=VERBOSE      If given, debug output is printed. Example: --verbose=1
- 
+  path                                           The path to a directory or file containing tests.
+
+Options:
+      --bootstrap=BOOTSTRAP                      The bootstrap file to be used by PHPUnit.
+      --colors                                   Displays a colored bar as a test result.
+  -c, --configuration=CONFIGURATION              The PHPUnit configuration file to use.
+      --coverage-clover=COVERAGE-CLOVER          Generate code coverage report in Clover XML format.
+      --coverage-crap4j=COVERAGE-CRAP4J          Generate code coverage report in Crap4J XML format.
+      --coverage-html=COVERAGE-HTML              Generate code coverage report in HTML format.
+      --coverage-php=COVERAGE-PHP                Serialize PHP_CodeCoverage object to file.
+      --coverage-test-limit=COVERAGE-TEST-LIMIT  Limit the number of tests to record for each line of code. Helps to reduce memory and size of coverage reports.
+      --coverage-text                            Generate code coverage report in text format.
+      --coverage-xml=COVERAGE-XML                Generate code coverage report in PHPUnit XML format.
+      --exclude-group=EXCLUDE-GROUP              Don't run tests from the specified group(s).
+      --filter=FILTER                            Filter (only for functional mode).
+  -f, --functional                               Run test methods instead of classes in separate processes.
+  -g, --group=GROUP                              Only runs tests from the specified group(s).
+  -h, --help                                     Display this help message.
+      --log-junit=LOG-JUNIT                      Log test execution in JUnit XML format to file.
+  -m, --max-batch-size=MAX-BATCH-SIZE            Max batch size (only for functional mode). [default: 0]
+      --no-test-tokens                           Disable TEST_TOKEN environment variables. (default: variable is set)
+      --parallel-suite                           Run the suites of the config in parallel.
+      --passthru=PASSTHRU                        Pass the given arguments verbatim to the underlying test framework. Example: --passthru="'--prepend' 'xdebug-filter.php'"
+      --passthru-php=PASSTHRU-PHP                Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="'-d' 'zend_extension=xdebug.so'"
+      --path=PATH                                An alias for the path argument.
+      --phpunit=PHPUNIT                          The PHPUnit binary to execute. [default: "./vendor/phpunit/phpunit/phpunit"]
+  -p, --processes=PROCESSES                      The number of test processes to run. [default: "auto"]
+      --runner=RUNNER                            Runner, WrapperRunner or SqliteRunner. [default: "Runner"]
+      --stop-on-failure                          Don't start any more processes after a failure.
+      --testsuite=TESTSUITE                      Filter which testsuite to run
+      --tmp-dir=TMP-DIR                          Temporary directory for internal ParaTest files [default: sys_get_temp_dir()]
+  -v, --verbose=VERBOSE                          If given, debug output is printed. Example: --verbose=1 [default: 0]
+      --whitelist=WHITELIST                      Directory to add to the coverage whitelist.
 ```
 
 ### Optimizing Speed
