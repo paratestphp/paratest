@@ -1,9 +1,8 @@
 name: "Release"
 
 on:
-  push:
-    tags:
-      - "**"
+  release:
+    types: [created]
 
 jobs:
   release:
@@ -19,6 +18,10 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
+
+      - name: "Get release"
+        id: get_release
+        uses: "bruceadams/get-release@v1.2.1"
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
@@ -67,4 +70,4 @@ jobs:
           asset_content_type: "text/plain"
           asset_name: "paratest.phar"
           asset_path: "bin/paratest.phar"
-          upload_url: "${{ steps.create-release.outputs.upload_url }}"
+          upload_url: "${{ steps.get_release.outputs.upload_url }}"
