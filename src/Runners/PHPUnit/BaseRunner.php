@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
 use function assert;
+use function implode;
 use function sprintf;
 
 /**
