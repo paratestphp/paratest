@@ -160,6 +160,7 @@ final class Writer
         $this->appendDefects($caseNode, $case->failures, 'failure');
         $this->appendDefects($caseNode, $case->errors, 'error');
         $this->appendDefects($caseNode, $case->warnings, 'warning');
+        $this->appendDefects($caseNode, $case->risky, 'error');
         $this->appendDefects($caseNode, $case->skipped, 'skipped');
 
         return $caseNode;
@@ -228,7 +229,6 @@ final class Writer
             'skipped' => 0,
             'time' => 0,
         ];
-
         foreach ($suites as $suite) {
             $result['tests']      += $suite->tests;
             $result['assertions'] += $suite->assertions;

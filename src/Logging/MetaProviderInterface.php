@@ -31,4 +31,7 @@ interface MetaProviderInterface
 
     /** @return string[] */
     public function getFailures(): array;
+
+    /** @return string[] */
+    public function getRisky(): array;
 }

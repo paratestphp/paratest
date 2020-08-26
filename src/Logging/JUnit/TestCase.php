@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
+use PHPUnit\Framework\RiskyTestError;
 use SimpleXMLElement;
 
 use function assert;
+use function class_exists;
+use function is_subclass_of;
+use function iterator_to_array;
 use function trim;
 
 /**
@@ -48,6 +52,9 @@ final class TestCase
     /** @var array<int, array{type: string, text: string}> */
     public $skipped = [];
 
+    /** @var array<int, array{type: string, text: string}> */
+    public $risky = [];
+
     public function __construct(
         string $name,
         string $class,
@@ -82,11 +89,32 @@ final class TestCase
         );
 
         $system_output = $node->{'system-out'};
+
+        /** @var SimpleXMLElement[] $errors */
+        $errors = (array) $node->xpath('error');
+        $risky  = [];
+        foreach ($errors as $index => $error) {
+            $attributes = $error->attributes();
+            assert($attributes !== null);
+            $attributes = iterator_to_array($attributes);
+            $type       = (string) $attributes['type'];
+            if (
+                ! class_exists($type)
+                || ! ($type === RiskyTestError::class || is_subclass_of($type, RiskyTestError::class))
+            ) {
+                continue;
+            }
+
+            unset($errors[$index]);
+            $risky[] = $error;
+        }
+
         $defect_groups = [
             'failures' => (array) $node->xpath('failure'),
-            'errors' => (array) $node->xpath('error'),
+            'errors' => $errors,
             'warnings' => (array) $node->xpath('warning'),
             'skipped' => (array) $node->xpath('skipped'),
+            'risky' => $risky,
         ];
 
         foreach ($defect_groups as $group => $defects) {

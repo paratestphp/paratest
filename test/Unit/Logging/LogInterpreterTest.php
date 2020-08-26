@@ -93,8 +93,6 @@ final class LogInterpreterTest extends ResultTester
         $errors = [
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/" .
             'test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
-            'Risky Test',
-            'Risky Test',
         ];
         static::assertSame($errors, $this->interpreter->getErrors());
     }
@@ -120,6 +118,15 @@ final class LogInterpreterTest extends ResultTester
         ];
 
         static::assertSame($failures, $this->interpreter->getFailures());
+    }
+
+    public function testGetRiskyReturnsArrayOfErrorMessages(): void
+    {
+        $errors = [
+            'Risky Test',
+            'Risky Test',
+        ];
+        static::assertSame($errors, $this->interpreter->getRisky());
     }
 
     public function testGetCasesReturnsAllCases(): void

@@ -271,7 +271,7 @@ final class ReaderTest extends TestBase
     public function testMixedGetErrorMessages(): void
     {
         $errors = $this->mixed->getErrors();
-        static::assertCount(3, $errors);
+        static::assertCount(1, $errors);
         static::assertSame(
             "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
                 '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
@@ -306,7 +306,7 @@ final class ReaderTest extends TestBase
      */
     public function testGetMultiErrorsMessages(): void
     {
-        $errors = $this->multi_errors->getErrors();
+        $errors = $this->multi_errors->getRisky();
         static::assertCount(2, $errors);
         static::assertSame(
             "Risky Test\n" .
@@ -327,7 +327,7 @@ final class ReaderTest extends TestBase
     public function testMixedGetFeedback(): void
     {
         $feedback = $this->mixed->getFeedback();
-        static::assertSame('.F..E.F.WSSE.F.WSSE', implode('', $feedback));
+        static::assertSame('.F..E.F.WSSR.F.WSSR', implode('', $feedback));
     }
 
     public function testRemoveLog(): void

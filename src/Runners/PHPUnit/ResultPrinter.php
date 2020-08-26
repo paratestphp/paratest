@@ -167,6 +167,7 @@ final class ResultPrinter
             $this->getErrors(),
             $this->getWarnings(),
             $this->getFailures(),
+            $this->getRisky(),
         ]);
 
         $this->output->write($this->getHeader());
@@ -208,16 +209,6 @@ final class ResultPrinter
     }
 
     /**
-     * Returns warning messages as a string.
-     */
-    public function getWarnings(): string
-    {
-        $warnings = $this->results->getWarnings();
-
-        return $this->getDefects($warnings, 'warning');
-    }
-
-    /**
      * Return the footer information reporting success
      * or failure.
      */
@@ -237,6 +228,26 @@ final class ResultPrinter
     }
 
     /**
+     * Returns error messages.
+     */
+    public function getErrors(): string
+    {
+        $errors = $this->results->getErrors();
+
+        return $this->getDefects($errors, 'error');
+    }
+
+    /**
+     * Returns warning messages as a string.
+     */
+    public function getWarnings(): string
+    {
+        $warnings = $this->results->getWarnings();
+
+        return $this->getDefects($warnings, 'warning');
+    }
+
+    /**
      * Returns the failure messages.
      */
     public function getFailures(): string
@@ -247,13 +258,13 @@ final class ResultPrinter
     }
 
     /**
-     * Returns error messages.
+     * Returns the failure messages.
      */
-    public function getErrors(): string
+    public function getRisky(): string
     {
-        $errors = $this->results->getErrors();
+        $risky = $this->results->getRisky();
 
-        return $this->getDefects($errors, 'error');
+        return $this->getDefects($risky, 'risky');
     }
 
     /**
