@@ -225,6 +225,21 @@ final class ResultPrinterTest extends ResultTester
         static::assertSame($eq, $failures);
     }
 
+    public function testGetRisky(): void
+    {
+        $this->printer->addTest($this->mixedSuite);
+
+        $this->prepareReaders();
+
+        $failures = $this->printer->getRisky();
+
+        $eq  = "There were 2 riskys:\n\n";
+        $eq .= "1) Risky Test\n\n";
+        $eq .= "2) Risky Test\n\n";
+
+        static::assertSame($eq, $failures);
+    }
+
     public function testGetFooterWithFailures(): void
     {
         $this->printer->addTest($this->errorSuite);
@@ -272,7 +287,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->addTest($this->mixedSuite);
         $this->printer->printFeedback($this->mixedSuite);
         $contents = $this->output->fetch();
-        static::assertSame('.F..E.F.WSSE.F.WSSE', $contents);
+        static::assertSame('.F..E.F.WSSR.F.WSSR', $contents);
     }
 
     public function testPrintFeedbackForMoreThan100Suites(): void

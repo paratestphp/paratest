@@ -120,7 +120,7 @@ final class LogInterpreter implements MetaProviderInterface
             ++$dict[$case->file]->tests;
             $dict[$case->file]->assertions += $case->assertions;
             $dict[$case->file]->failures   += count($case->failures);
-            $dict[$case->file]->errors     += count($case->errors);
+            $dict[$case->file]->errors     += count($case->errors) + count($case->risky);
             $dict[$case->file]->warnings   += count($case->warnings);
             $dict[$case->file]->skipped    += count($case->skipped);
             $dict[$case->file]->time       += $case->time;
@@ -212,6 +212,19 @@ final class LogInterpreter implements MetaProviderInterface
         $messages = [];
         foreach ($this->readers as $reader) {
             $messages = array_merge($messages, $reader->getFailures());
+        }
+
+        return $messages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRisky(): array
+    {
+        $messages = [];
+        foreach ($this->readers as $reader) {
+            $messages = array_merge($messages, $reader->getRisky());
         }
 
         return $messages;

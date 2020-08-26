@@ -89,14 +89,16 @@ final class Reader implements MetaProviderInterface
         $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
         foreach ($suites as $suite) {
             foreach ($suite->cases as $case) {
-                if (count($case->failures) > 0) {
-                    $feedback[] = 'F';
-                } elseif (count($case->errors) > 0) {
+                if (count($case->errors) > 0) {
                     $feedback[] = 'E';
-                } elseif (count($case->skipped) > 0) {
-                    $feedback[] = 'S';
                 } elseif (count($case->warnings) > 0) {
                     $feedback[] = 'W';
+                } elseif (count($case->failures) > 0) {
+                    $feedback[] = 'F';
+                } elseif (count($case->risky) > 0) {
+                    $feedback[] = 'R';
+                } elseif (count($case->skipped) > 0) {
+                    $feedback[] = 'S';
                 } else {
                     $feedback[] = '.';
                 }
@@ -308,6 +310,24 @@ final class Reader implements MetaProviderInterface
         foreach ($suites as $suite) {
             foreach ($suite->cases as $case) {
                 foreach ($case->failures as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
+        }
+
+        return $messages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRisky(): array
+    {
+        $messages = [];
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach ($suites as $suite) {
+            foreach ($suite->cases as $case) {
+                foreach ($case->risky as $msg) {
                     $messages[] = $msg['text'];
                 }
             }
