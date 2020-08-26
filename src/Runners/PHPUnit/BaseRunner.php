@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_merge;
 use function assert;
-use function implode;
 use function sprintf;
 
 /**
@@ -136,7 +135,7 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $name = $this->options->path() ?? implode(',', $this->options->testsuite());
+        $name = $this->options->path() ?? '';
 
         $writer = new Writer($this->interpreter, $name);
         $writer->write($logJunit);

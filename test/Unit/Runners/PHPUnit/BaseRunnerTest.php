@@ -104,10 +104,10 @@ final class BaseRunnerTest extends TestBase
         $this->assertJunitXmlIsCorrect($outputPath);
     }
 
-    public function assertJunitXmlIsCorrect(string $path): void
+    private function assertJunitXmlIsCorrect(string $path): void
     {
         $doc = simplexml_load_file($path);
-        assert($doc !== false);
+        static::assertNotFalse($doc);
         $suites   = $doc->xpath('//testsuite');
         $cases    = $doc->xpath('//testcase');
         $failures = $doc->xpath('//failure');
@@ -129,5 +129,28 @@ final class BaseRunnerTest extends TestBase
         static::assertCount(2, $skipped);
         static::assertNotFalse($errors);
         static::assertCount(2, $errors);
+    }
+
+    public function testWritesLogWithEmptyNameWhenPathIsNotProvided(): void
+    {
+        $outputPath = TMP_DIR . DS . 'test-output.xml';
+
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-junit' => $outputPath,
+        ];
+
+        $this->runRunner();
+
+        static::assertFileExists($outputPath);
+        $doc = simplexml_load_file($outputPath);
+        static::assertNotFalse($doc);
+        $suites = (array) $doc->children();
+        static::assertArrayHasKey('testsuite', $suites);
+        $attribues = (array) $suites['testsuite']->attributes();
+        static::assertArrayHasKey('@attributes', $attribues);
+        static::assertIsArray($attribues['@attributes']);
+        static::assertArrayHasKey('name', $attribues['@attributes']);
+        static::assertSame('', $attribues['@attributes']['name']);
     }
 }
