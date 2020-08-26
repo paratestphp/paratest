@@ -203,7 +203,9 @@ final class SuiteLoader
             array_map('\ksort', $loadedSuites);
             ksort($loadedSuites);
 
-            $this->loadedSuites = array_merge(...$loadedSuites);
+            foreach ($loadedSuites as $loadedSuite) {
+                $this->loadedSuites = array_merge($this->loadedSuites, $loadedSuite);
+            }
         }
     }
 
