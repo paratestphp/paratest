@@ -35,7 +35,6 @@ $selectQuery = '
     SELECT id, command
     FROM tests
     WHERE reserved_by_process_id IS NULL
-    ORDER BY file_name
     LIMIT 1
 ';
 $reserveTest = '

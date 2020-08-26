@@ -37,12 +37,13 @@ final class ParsedClassTest extends TestBase
             ),
             new ParsedFunction('', 'testFunction3'),
         ];
-        $this->class   = new ParsedClass('', 'MyTestClass', 'MyNamespace', $this->methods);
+        $this->class   = new ParsedClass('', 'MyTestClass', 'MyNamespace', $this->methods, 4);
     }
 
     public function testGetters(): void
     {
         static::assertSame('MyNamespace', $this->class->getNamespace());
         static::assertSame($this->methods, $this->class->getMethods());
+        static::assertSame(4, $this->class->getParentsCount());
     }
 }

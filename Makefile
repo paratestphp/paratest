@@ -1,8 +1,8 @@
 all: csfix static-analysis test
 	@echo "Done."
 
-vendor: composer.lock
-	composer install
+vendor: composer.json
+	composer update
 	touch vendor
 
 .PHONY: csfix

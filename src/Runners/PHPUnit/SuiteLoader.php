@@ -32,6 +32,7 @@ use function count;
 use function in_array;
 use function is_array;
 use function is_int;
+use function ksort;
 use function preg_match;
 use function sprintf;
 use function strrpos;
@@ -183,16 +184,27 @@ final class SuiteLoader
                 $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName);
             }
         } else {
+            // The $class->getParentsCount() + array_merge(...$loadedSuites) stuff
+            // are needed to run test with child tests early, because PHPUnit autoloading
+            // of such classes in WrapperRunner/SqliteRunner environments fails (Runner is fine)
+            $loadedSuites = [];
             foreach ($this->files as $path) {
                 try {
                     $class = (new Parser($path))->getClass();
                     $suite = $this->createSuite($path, $class);
                     if (count($suite->getFunctions()) > 0) {
-                        $this->loadedSuites[$path] = $suite;
+                        $loadedSuites[$class->getParentsCount()][$path] = $suite;
                     }
                 } catch (NoClassInFileException $e) {
                     continue;
                 }
+            }
+
+            array_map('\ksort', $loadedSuites);
+            ksort($loadedSuites);
+
+            foreach ($loadedSuites as $loadedSuite) {
+                $this->loadedSuites = array_merge($this->loadedSuites, $loadedSuite);
             }
         }
     }

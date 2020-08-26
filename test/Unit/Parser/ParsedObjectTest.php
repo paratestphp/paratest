@@ -23,7 +23,7 @@ final class ParsedObjectTest extends TestBase
     public function setUpTest(): void
     {
         $this->docBlock    = "/**\n * @test\n @group group1\n*\\/";
-        $this->parsedClass = new ParsedClass($this->docBlock, self::class, 'My\\Name\\Space', []);
+        $this->parsedClass = new ParsedClass($this->docBlock, self::class, 'My\\Name\\Space', [], 4);
     }
 
     public function testGetters(): void

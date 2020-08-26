@@ -123,13 +123,15 @@ abstract class BaseWorker
 
     final public function getCrashReport(): string
     {
-        $lastCommand = count($this->commands) !== 0 ? 'Last executed command: ' . end($this->commands) : '';
+        $lastCommand              = count($this->commands) !== 0 ? 'Last executed command: ' . end($this->commands) : '';
+        $this->alreadyReadOutput .= (string) stream_get_contents($this->pipes[1]);
 
         return 'This worker has crashed.' . PHP_EOL
             . $lastCommand . PHP_EOL
-            . 'Output:' . PHP_EOL
+            . 'STDOUT:' . PHP_EOL
             . '----------------------' . PHP_EOL
             . $this->alreadyReadOutput . PHP_EOL
+            . 'STDERR:' . PHP_EOL
             . '----------------------' . PHP_EOL
             . $this->readAllStderr();
     }

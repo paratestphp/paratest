@@ -9,6 +9,8 @@ use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\Parser;
 use ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest;
+use ParaTest\Tests\fixtures\parser_tests\TestWithChildTestsTest;
+use ParaTest\Tests\fixtures\parser_tests\TestWithParentTestTest;
 use ParaTest\Tests\fixtures\passing_tests\PreviouslyLoadedTest;
 use ParaTest\Tests\fixtures\special_classes\SomeNamespace\ParserTestClassTest;
 use ParaTest\Tests\TestBase;
@@ -86,12 +88,14 @@ final class ParserTest extends TestBase
     {
         $class = $this->parseFile($this->fixture('failing_tests' . DS . 'UnitTestWithClassAnnotationTest.php'));
         static::assertCount(4, $class->getMethods());
+        static::assertSame(2, $class->getParentsCount());
     }
 
     public function testParsedClassWithParentHasCorrectNumberOfTestMethods(): void
     {
         $class = $this->parseFile($this->fixture('failing_tests' . DS . 'UnitTestWithErrorTest.php'));
         static::assertCount(8, $class->getMethods());
+        static::assertSame(3, $class->getParentsCount());
     }
 
     /**
@@ -100,5 +104,15 @@ final class ParserTest extends TestBase
     private function parseFile(string $path): ParsedClass
     {
         return (new Parser($path))->getClass();
+    }
+
+    public function testClassAutoloadedPreviouslyGetsCorrectlyLoadedByParser(): void
+    {
+        // Order here is relevant: load child class before parent one!
+        $child  = $this->parseFile($this->fixture('parser_tests' . DS . 'TestWithParentTestTest.php'));
+        $parent = $this->parseFile($this->fixture('parser_tests' . DS . 'TestWithChildTestsTest.php'));
+
+        static::assertSame(TestWithParentTestTest::class, $child->getName());
+        static::assertSame(TestWithChildTestsTest::class, $parent->getName());
     }
 }
