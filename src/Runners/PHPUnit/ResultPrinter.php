@@ -135,7 +135,7 @@ final class ResultPrinter
                          + (DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
                          - strlen($this->getProgress());
         $this->output->write(sprintf(
-            "\nRunning phpunit in %d process%s with %s%s\n\n",
+            "Running phpunit in %d process%s with %s%s\n\n",
             $this->options->processes(),
             $this->options->processes() > 1 ? 'es' : '',
             $this->options->phpunit(),
@@ -163,10 +163,14 @@ final class ResultPrinter
      */
     public function printResults(): void
     {
+        $failures = array_filter([
+            $this->getErrors(),
+            $this->getWarnings(),
+            $this->getFailures(),
+        ]);
+
         $this->output->write($this->getHeader());
-        $this->output->write($this->getErrors());
-        $this->output->write($this->getWarnings());
-        $this->output->write($this->getFailures());
+        $this->output->write(implode("---\n\n", $failures));
         $this->output->write($this->getFooter());
     }
 
@@ -229,7 +233,7 @@ final class ResultPrinter
             $footer = $this->getFailedFooter();
         }
 
-        return "\n{$footer}\n";
+        return "{$footer}\n";
     }
 
     /**
@@ -411,6 +415,8 @@ final class ResultPrinter
         for ($i = 1; $i <= count($defects); ++$i) {
             $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
         }
+
+        $output .= "\n";
 
         return $output;
     }
