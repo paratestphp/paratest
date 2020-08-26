@@ -362,6 +362,14 @@ final class SuiteLoaderTest extends TestBase
         static::assertStringContainsString('Warming cache', $this->output->fetch());
     }
 
+    public function testTestMethodsOfParentClassesAreCorrectlyLoaded(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('failing_tests');
+        $loader                      = $this->loadSuite();
+
+        static::assertCount(24, $loader->getTestMethods());
+    }
+
     /**
      * @return string[]
      */

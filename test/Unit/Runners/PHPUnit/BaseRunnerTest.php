@@ -118,17 +118,17 @@ final class BaseRunnerTest extends TestBase
         // these numbers represent the tests in fixtures/failing_tests
         // so will need to be updated when tests are added or removed
         static::assertNotFalse($suites);
-        static::assertCount(5, $suites);
+        static::assertCount(6, $suites);
         static::assertNotFalse($cases);
-        static::assertCount(17, $cases);
+        static::assertCount(24, $cases);
         static::assertNotFalse($failures);
-        static::assertCount(5, $failures);
+        static::assertCount(6, $failures);
         static::assertNotFalse($warnings);
-        static::assertCount(1, $warnings);
+        static::assertCount(2, $warnings);
         static::assertNotFalse($skipped);
-        static::assertCount(2, $skipped);
+        static::assertCount(4, $skipped);
         static::assertNotFalse($errors);
-        static::assertCount(2, $errors);
+        static::assertCount(3, $errors);
     }
 
     public function testWritesLogWithEmptyNameWhenPathIsNotProvided(): void

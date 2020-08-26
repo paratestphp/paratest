@@ -24,15 +24,18 @@ final class ParsedClass extends ParsedObject
      * @var ParsedFunction[]
      */
     private $methods;
+    /** @var int */
+    private $parentsCount;
 
     /**
      * @param ParsedFunction[] $methods
      */
-    public function __construct(string $doc, string $name, string $namespace, array $methods)
+    public function __construct(string $doc, string $name, string $namespace, array $methods, int $parentsCount)
     {
         parent::__construct($doc, $name);
-        $this->namespace = $namespace;
-        $this->methods   = $methods;
+        $this->namespace    = $namespace;
+        $this->methods      = $methods;
+        $this->parentsCount = $parentsCount;
     }
 
     /**
@@ -53,5 +56,10 @@ final class ParsedClass extends ParsedObject
     public function getNamespace(): string
     {
         return $this->namespace;
+    }
+
+    public function getParentsCount(): int
+    {
+        return $this->parentsCount;
     }
 }
