@@ -135,10 +135,9 @@ abstract class BaseRunner implements RunnerInterface
             return;
         }
 
-        $path = $this->options->path();
-        assert($path !== null);
+        $name = $this->options->path() ?? '';
 
-        $writer = new Writer($this->interpreter, $path);
+        $writer = new Writer($this->interpreter, $name);
         $writer->write($logJunit);
     }
 
