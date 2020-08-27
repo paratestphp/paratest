@@ -23,6 +23,7 @@ use function preg_split;
 use function rtrim;
 use function sprintf;
 use function str_pad;
+use function str_repeat;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
@@ -205,7 +206,7 @@ final class ResultPrinter
     {
         $resourceUsage = (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest();
 
-        return "\n\n" . $resourceUsage . "\n\n";
+        return "\n" . $resourceUsage . "\n\n";
     }
 
     /**
@@ -364,8 +365,16 @@ final class ResultPrinter
         $this->printFeedbackItemColor($item);
         ++$this->column;
         ++$this->casesProcessed;
-        if ($this->column !== $this->maxColumn) {
+        if ($this->column !== $this->maxColumn && $this->casesProcessed < $this->totalCases) {
             return;
+        }
+
+        if (
+            $this->casesProcessed > 0
+            && $this->casesProcessed === $this->totalCases
+            && ($pad = $this->maxColumn - $this->column) > 0
+        ) {
+            $this->output->write(str_repeat(' ', $pad));
         }
 
         $this->output->write($this->getProgress());
