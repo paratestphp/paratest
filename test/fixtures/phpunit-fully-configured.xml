@@ -9,8 +9,11 @@
             <file>./passing_tests/GroupsTest.php</file>
         </testsuite>
     </testsuites>
+    <!--
+    processUncoveredFiles="true" omitted due to
+    https://github.com/sebastianbergmann/php-code-coverage/issues/801
+    -->
     <coverage includeUncoveredFiles="true"
-              processUncoveredFiles="true"
               ignoreDeprecatedCodeUnits="true"
               disableCodeCoverageIgnore="true">
         <include>
