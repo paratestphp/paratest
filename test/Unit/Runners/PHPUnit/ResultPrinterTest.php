@@ -16,6 +16,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function defined;
 use function file_put_contents;
 use function sprintf;
+use function str_repeat;
 use function uniqid;
 
 /**
@@ -159,7 +160,7 @@ final class ResultPrinterTest extends ResultTester
         $header = $this->printer->getHeader();
 
         static::assertMatchesRegularExpression(
-            "/\n\nTime: ([.:]?[0-9]{1,3})+ ?" .
+            "/\nTime: ([.:]?[0-9]{1,3})+ ?" .
             '(minute|minutes|second|seconds|ms|)?,' .
             " Memory:[\\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
             $header
@@ -287,7 +288,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->addTest($this->mixedSuite);
         $this->printer->printFeedback($this->mixedSuite);
         $contents = $this->output->fetch();
-        static::assertSame('.F..E.F.WSSR.F.WSSR', $contents);
+        static::assertSame(".F..E.F.WSSR.F.WSSR 19 / 19 (100%)\n", $contents);
     }
 
     public function testPrintFeedbackForMoreThan100Suites(): void
@@ -323,6 +324,8 @@ final class ResultPrinterTest extends ResultTester
         for ($i = 0; $i < $secondRowColumns; ++$i) {
             $expected .= '.';
         }
+
+        $expected .= sprintf("%s 120 / 120 (100%%)\n", str_repeat(' ', $firstRowColumns - $secondRowColumns));
 
         static::assertSame($expected, $feedback);
     }
@@ -360,6 +363,8 @@ final class ResultPrinterTest extends ResultTester
         for ($i = 0; $i < $secondRowColumns; ++$i) {
             $expected .= '.';
         }
+
+        $expected .= sprintf("%s 66 / 66 (100%%)\n", str_repeat(' ', $firstRowColumns - $secondRowColumns));
 
         static::assertSame($expected, $feedback);
     }
