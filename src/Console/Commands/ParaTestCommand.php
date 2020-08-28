@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
-use ParaTest\Runners\PHPUnit\SqliteRunner;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -32,7 +31,6 @@ final class ParaTestCommand extends Command
     private const KNOWN_RUNNERS = [
         'Runner' => Runner::class,
         'WrapperRunner' => WrapperRunner::class,
-        'SqliteRunner' => SqliteRunner::class,
     ];
 
     /** @var string */

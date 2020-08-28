@@ -582,7 +582,7 @@ final class Options
                 'runner',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Runner, WrapperRunner or SqliteRunner.',
+                'Runner or WrapperRunner.',
                 'Runner'
             ),
             new InputOption(

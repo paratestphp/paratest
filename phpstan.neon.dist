@@ -47,10 +47,6 @@ parameters:
             count: 1
             path: bin/paratest
         -
-            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 3
-            path: bin/phpunit-sqlite-wrapper.php
-        -
             message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
             count: 4
             path: bin/phpunit-wrapper.php
@@ -128,10 +124,6 @@ parameters:
             path: test/Unit/Runners/PHPUnit/OptionsTest.php
 
         # Level 7
-        -
-            message: "#^Cannot call method fetch\\(\\) on PDOStatement\\|false\\.$#"
-            count: 1
-            path: bin/phpunit-sqlite-wrapper.php
         -
             message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"
             count: 1
