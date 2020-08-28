@@ -334,6 +334,19 @@ abstract class RunnerTestCase extends TestBase
      * @group github
      * @coversNothing
      */
+    final public function testChildProcessPipeOverflow(): void
+    {
+        $this->bareOptions['--no-test-tokens'] = true;
+        $this->bareOptions['--processes']      = 1;
+
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH431'));
+        $this->assertTestsPassed($runnerResult);
+    }
+
+    /**
+     * @group github
+     * @coversNothing
+     */
     final public function testTokensArePresentByDefault(): void
     {
         $this->bareOptions['--processes'] = 1;
