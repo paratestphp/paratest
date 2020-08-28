@@ -6,6 +6,8 @@ namespace ParaTest\Tests\fixtures\github\GH431;
 
 use PHPUnit\Framework\TestCase;
 
+use function str_repeat;
+
 /**
  * @internal
  */
@@ -18,5 +20,4 @@ class IssueTest extends TestCase
         // run with: ../../../../bin/paratest -c . --runner=SqliteRunner
         echo str_repeat('a', 100000);
     }
-
 }
