@@ -66,6 +66,14 @@ parameters:
             count: 1
             path: src/Parser/Parser.php
         -
+            message:
+                """
+                    #^Usage of deprecated trait PHPUnit\\\\Framework\\\\TestListenerDefaultImplementation in class ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\NullPhpunitPrinter\\:
+                    The `TestListener` interface is deprecated$#
+                """
+            count: 1
+            path: src/Runners/PHPUnit/Worker/NullPhpunitPrinter.php
+        -
             message: "#^Should not use function \"proc_open\", please change the code\\.$#"
             count: 1
             path: src/Runners/PHPUnit/Worker/BaseWorker.php

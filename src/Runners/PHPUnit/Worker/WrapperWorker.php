@@ -66,9 +66,10 @@ final class WrapperWorker extends BaseWorker
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
         assert($this->currentlyExecuting === null);
-        $this->currentlyExecuting = $test;
-        $commandArguments         = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
-        $command                  = implode(' ', $commandArguments);
+        $this->currentlyExecuting  = $test;
+        $phpunitOptions['printer'] = NullPhpunitPrinter::class;
+        $commandArguments          = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
+        $command                   = implode(' ', $commandArguments);
         if ($options->verbose() > 0) {
             $this->output->write("\nExecuting test via: {$command}\n");
         }
