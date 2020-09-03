@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestListenerDefaultImplementation;
 use PHPUnit\Framework\TestResult;
 use PHPUnit\TextUI\ResultPrinter;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class NullPhpunitPrinter implements ResultPrinter
 {
     use TestListenerDefaultImplementation;

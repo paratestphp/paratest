@@ -9,14 +9,13 @@ use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function array_keys;
 use function array_shift;
 use function assert;
 use function count;
 use function defined;
 use function dirname;
 use function realpath;
-use function stream_select;
+use function usleep;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -25,14 +24,13 @@ use const DIRECTORY_SEPARATOR;
  */
 final class WrapperRunner extends BaseWrapperRunner
 {
+    private const CYCLE_SLEEP = 10000;
+
     /** @var WrapperWorker[] */
     private $workers = [];
 
     /** @var resource[] */
     private $streams = [];
-
-    /** @var resource[] */
-    private $modified = [];
 
     public function __construct(Options $opts, OutputInterface $output)
     {
@@ -72,9 +70,15 @@ final class WrapperRunner extends BaseWrapperRunner
         $phpunitOptions = $this->options->filtered();
 
         while (count($this->pending) > 0 && count($this->workers) > 0) {
-            $this->waitForStreamsToChange($this->streams);
-            foreach ($this->progressedWorkers() as $key => $worker) {
+            foreach ($this->workers as $key => $worker) {
                 if (! $worker->isRunning()) {
+                    if ($worker->isFree()) {
+                        // Happens when isFree returns true (the test ended) and also
+                        // isRunning returns true, but in the meanwhile due to a --stop-on-failure
+                        // the process exited
+                        $this->flushWorker($worker);  // @codeCoverageIgnore
+                    }
+
                     $this->setExitCode($worker->getExitCode());
                     unset($this->workers[$key]);
                     if ($this->options->stopOnFailure()) {
@@ -100,49 +104,9 @@ final class WrapperRunner extends BaseWrapperRunner
 
                 $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
             }
+
+            usleep(self::CYCLE_SLEEP);
         }
-    }
-
-    /**
-     * put on WorkersPool
-     *
-     * @param resource[] $modified
-     */
-    private function waitForStreamsToChange(array $modified): void
-    {
-        $write  = [];
-        $except = [];
-        $result = stream_select($modified, $write, $except, 1);
-        assert($result !== false);
-
-        $this->modified = $modified;
-    }
-
-    /**
-     * put on WorkersPool.
-     *
-     * @return WrapperWorker[]
-     */
-    private function progressedWorkers(): array
-    {
-        $result = [];
-        foreach ($this->modified as $modifiedStream) {
-            $found = null;
-            foreach ($this->streams as $index => $stream) {
-                if ($modifiedStream === $stream) {
-                    $found = $index;
-                    break;
-                }
-            }
-
-            assert($found !== null);
-
-            $result[$found] = $this->workers[$found];
-        }
-
-        $this->modified = [];
-
-        return $result;
     }
 
     private function flushWorker(WrapperWorker $worker): void
@@ -177,36 +141,18 @@ final class WrapperRunner extends BaseWrapperRunner
 
     private function waitForAllToFinish(): void
     {
-        $toStop = $this->workers;
-        while (count($toStop) > 0) {
-            $toCheck = $this->streamsOf($toStop);
-            $this->waitForStreamsToChange($toCheck);
-            foreach ($this->progressedWorkers() as $index => $worker) {
+        while (count($this->workers) > 0) {
+            foreach ($this->workers as $index => $worker) {
                 if ($worker->isRunning()) {
                     continue;
                 }
 
                 $this->flushWorker($worker);
                 $this->setExitCode($worker->getExitCode());
-                unset($toStop[$index]);
+                unset($this->workers[$index]);
             }
-        }
-    }
 
-    /**
-     * Returns the output streams of a subset of workers.
-     *
-     * @param WrapperWorker[] $workers keys are positions in $this->workers
-     *
-     * @return resource[]
-     */
-    private function streamsOf(array $workers): array
-    {
-        $streams = [];
-        foreach (array_keys($workers) as $index) {
-            $streams[$index] = $this->streams[$index];
+            usleep(self::CYCLE_SLEEP);
         }
-
-        return $streams;
     }
 }

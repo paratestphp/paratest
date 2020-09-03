@@ -33,12 +33,12 @@ final class CoverageMergerTest extends TestBase
     public function testMerge(int $testLimit): void
     {
         $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
-        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'MetaProviderInterface.php';
+        $secondFile = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'JUnit' . DS . 'Reader.php';
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine  = 47;
-        $secondFileFirstLine = 55;
+        $firstFileFirstLine  = 67;
+        $secondFileFirstLine = 39;
 
         $filter = new Filter();
         $filter->includeFiles([$firstFile, $secondFile]);
@@ -54,7 +54,10 @@ final class CoverageMergerTest extends TestBase
         );
 
         $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
-            $firstFile => [$firstFileFirstLine => 1, 1 + $firstFileFirstLine => 1],
+            $firstFile => [
+                $firstFileFirstLine => 1,
+                1 + $firstFileFirstLine => 1,
+            ],
         ]);
         $coverage2 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
         $coverage2->append(

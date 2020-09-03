@@ -47,12 +47,8 @@ parameters:
             count: 1
             path: bin/paratest
         -
-            message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
-            count: 4
-            path: bin/phpunit-wrapper.php
-        -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 4
+            count: 3
             path: bin/phpunit-wrapper.php
 
         # Known
@@ -82,10 +78,6 @@ parameters:
             message: "#^Method ParaTest\\\\Tests\\\\TestBase\\:\\:setUpTest\\(\\) is not final, but since the containing class is abstract, it should be\\.$#"
             count: 1
             path: test/TestBase.php
-        -
-            message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
-            count: 2
-            path: bin/phpunit-wrapper.php
         -
             message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
             count: 1

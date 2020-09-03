@@ -18,17 +18,27 @@ use function end;
 use function escapeshellarg;
 use function getenv;
 use function implode;
+use function is_file;
 use function is_resource;
 use function proc_get_status;
 use function proc_open;
 use function sprintf;
 use function stream_get_contents;
+use function touch;
+use function uniqid;
+use function unlink;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
 abstract class BaseWorker
 {
+    /**
+     * It must be a 1 byte string to ensure
+     * filesize() is equal to the number of tests executed
+     */
+    public const TEST_EXECUTED_MARKER = '1';
+
     /** @var resource|null */
     protected $proc;
     /** @var resource[] */
@@ -50,11 +60,20 @@ abstract class BaseWorker
     /** @var int|null */
     private $exitCode = null;
     /** @var string */
-    protected $alreadyReadOutput = '';
+    protected $writeToPathname = '';
 
     public function __construct(OutputInterface $output)
     {
         $this->output = $output;
+    }
+
+    final public function __destruct()
+    {
+        if (! is_file($this->writeToPathname)) {
+            return;
+        }
+
+        unlink($this->writeToPathname);
     }
 
     final public function start(
@@ -62,6 +81,15 @@ abstract class BaseWorker
         Options $options,
         int $token
     ): void {
+        $this->writeToPathname = sprintf(
+            '%s%sworker_%s_stdout_%s',
+            $options->tmpDir(),
+            DIRECTORY_SEPARATOR,
+            $token,
+            uniqid()
+        );
+        touch($this->writeToPathname);
+
         $env = array_merge(getenv(), $options->fillEnvWithTokens($token));
 
         $finder        = new PhpExecutableFinder();
@@ -79,6 +107,9 @@ abstract class BaseWorker
         if ($options->stopOnFailure()) {
             $parameters[] = '--stop-on-failure';
         }
+
+        $parameters[] = '--write-to';
+        $parameters[] = $this->writeToPathname;
 
         $this->configureParameters($parameters);
         if (count($parameters) > 0) {
@@ -123,25 +154,18 @@ abstract class BaseWorker
 
     final public function getCrashReport(): string
     {
-        $lastCommand              = count($this->commands) !== 0 ? 'Last executed command: ' . end($this->commands) : '';
-        $this->alreadyReadOutput .= (string) stream_get_contents($this->pipes[1]);
+        $lastCommand = count($this->commands) !== 0 ? 'Last executed command: ' . end($this->commands) : '';
+        $stdout      = (string) stream_get_contents($this->pipes[1]);
+        $stderr      = (string) stream_get_contents($this->pipes[2]);
 
         return 'This worker has crashed.' . PHP_EOL
             . $lastCommand . PHP_EOL
             . 'STDOUT:' . PHP_EOL
             . '----------------------' . PHP_EOL
-            . $this->alreadyReadOutput . PHP_EOL
+            . $stdout . PHP_EOL
             . 'STDERR:' . PHP_EOL
             . '----------------------' . PHP_EOL
-            . $this->readAllStderr();
-    }
-
-    private function readAllStderr(): string
-    {
-        $data = stream_get_contents($this->pipes[2]);
-        assert($data !== false);
-
-        return $data;
+            . $stderr;
     }
 
     final protected function updateProcStatus(): void
