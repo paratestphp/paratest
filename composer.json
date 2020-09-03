@@ -22,7 +22,6 @@
         "php": "^7.3",
         "ext-dom": "*",
         "ext-pcre": "*",
-        "ext-pdo": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "phpunit/php-code-coverage": "^9.1.6",
