@@ -10,7 +10,6 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -19,7 +18,6 @@ use function array_map;
 use function array_merge;
 use function assert;
 use function clearstatcache;
-use function count;
 use function dirname;
 use function end;
 use function filesize;
@@ -32,7 +30,6 @@ use function uniqid;
 use function unlink;
 
 use const DIRECTORY_SEPARATOR;
-use const PHP_EOL;
 
 /**
  * @internal
@@ -90,11 +87,6 @@ final class WrapperWorker
         }
 
         $parameters[] = $wrapper;
-
-        if ($options->stopOnFailure()) {
-            $parameters[] = '--stop-on-failure';
-        }
-
         $parameters[] = '--write-to';
         $parameters[] = $this->writeToPathname;
 
@@ -127,27 +119,23 @@ final class WrapperWorker
 
     public function raiseProcessFailedException(): void
     {
-        throw new WorkerCrashedException(
-            sprintf('Error executing: %s', end($this->commands)),
-            0,
-            new ProcessFailedException($this->process)
+        $error = sprintf(
+            'The command "%s" failed.' . "\n\nExit Code: %s(%s)\n\nWorking directory: %s",
+            end($this->commands),
+            ($t = $this->process->getExitCode()) !== null ? $t : 'NULL',
+            (string) $this->process->getExitCodeText(),
+            (string) $this->process->getWorkingDirectory()
         );
-    }
 
-    public function getCrashReport(): string
-    {
-        $lastCommand = count($this->commands) !== 0 ? 'Last executed command: ' . end($this->commands) : '';
-        $stdout      = $this->process->getOutput();
-        $stderr      = $this->process->getErrorOutput();
+        if (! $this->process->isOutputDisabled()) {
+            $error .= sprintf(
+                "\n\nOutput:\n================\n%s\n\nError Output:\n================\n%s",
+                $this->process->getOutput(),
+                $this->process->getErrorOutput()
+            );
+        }
 
-        return 'This worker has crashed.' . PHP_EOL
-            . $lastCommand . PHP_EOL
-            . 'STDOUT:' . PHP_EOL
-            . '----------------------' . PHP_EOL
-            . $stdout . PHP_EOL
-            . 'STDERR:' . PHP_EOL
-            . '----------------------' . PHP_EOL
-            . $stderr;
+        throw new WorkerCrashedException($error);
     }
 
     /**

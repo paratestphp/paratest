@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use InvalidArgumentException;
-use ParaTest\Coverage\EmptyCoverageFileException;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use PHPUnit\TextUI\TestRunner;
 
@@ -80,22 +79,14 @@ final class WrapperRunner extends BaseRunner
 
     private function flushWorker(WrapperWorker $worker): void
     {
+        $reader = $worker->printFeedback($this->printer);
+
         if ($this->hasCoverage()) {
             $coverageMerger = $this->getCoverage();
             assert($coverageMerger !== null);
             if (($coverageFileName = $worker->getCoverageFileName()) !== null) {
-                try {
-                    $coverageMerger->addCoverageFromFile($coverageFileName);
-                } catch (EmptyCoverageFileException $emptyCoverageFileException) {
-                    throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyCoverageFileException);
-                }
+                $coverageMerger->addCoverageFromFile($coverageFileName);
             }
-        }
-
-        try {
-            $reader = $worker->printFeedback($this->printer);
-        } catch (EmptyLogFileException $emptyLogFileException) {
-            throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyLogFileException);
         }
 
         $worker->reset();
@@ -127,6 +118,10 @@ final class WrapperRunner extends BaseRunner
             foreach ($this->workers as $index => $worker) {
                 if ($worker->isRunning()) {
                     continue;
+                }
+
+                if (! $worker->isFree()) {
+                    $worker->raiseProcessFailedException();
                 }
 
                 $this->flushWorker($worker);
