@@ -9,6 +9,7 @@ use ParaTest\Util\Str;
 use PHPUnit\TextUI\DefaultResultPrinter;
 use PHPUnit\TextUI\XmlConfiguration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -372,6 +373,10 @@ final class Options
 
         ksort($filtered);
 
+        // Must be a static non-customizable reference because ParaTest code
+        // is strictly coupled with PHPUnit pinned version
+        $phpunit = self::getPhpunitBinary();
+
         return new self(
             $options['bootstrap'],
             $colors,
@@ -396,7 +401,7 @@ final class Options
             self::parsePassthru($options['passthru'] ?? null),
             self::parsePassthru($options['passthru-php'] ?? null),
             $options['path'],
-            $options['phpunit'],
+            $phpunit,
             (int) $options['processes'],
             $options['runner'],
             $options['stop-on-failure'],
@@ -565,13 +570,6 @@ final class Options
                 'An alias for the path argument.'
             ),
             new InputOption(
-                'phpunit',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'The PHPUnit binary to execute.',
-                self::getPhpunitBinary()
-            ),
-            new InputOption(
                 'processes',
                 'p',
                 InputOption::VALUE_REQUIRED,
@@ -621,40 +619,22 @@ final class Options
     }
 
     /**
-     * Get the path to phpunit
-     * First checks if a Windows batch script is in the composer vendors directory.
-     * Composer automatically handles creating a .bat file, so if on windows this should be the case.
-     * Second look for the phpunit binary under nix
-     * Defaults to phpunit on the users PATH.
-     *
      * @return string $phpunit the path to phpunit
      */
     private static function getPhpunitBinary(): string
     {
-        $vendor = static::vendorDir();
+        $tryPaths = [
+            dirname(__DIR__, 5) . '/phpunit/phpunit/phpunit',
+            dirname(__DIR__, 3) . '/vendor/phpunit/phpunit/phpunit',
+        ];
 
-        $phpunit = $vendor . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'phpunit' .
-            DIRECTORY_SEPARATOR . 'phpunit';
-        if (file_exists($phpunit)) {
-            return $phpunit;
+        foreach ($tryPaths as $path) {
+            if (($realPath = realpath($path)) !== false && file_exists($path)) {
+                return $path;
+            }
         }
 
-        return 'phpunit'; // @codeCoverageIgnore
-    }
-
-    /**
-     * Get the path to the vendor directory
-     * First assumes vendor directory is accessible from src (i.e development)
-     * Second assumes vendor directory is accessible within src.
-     */
-    private static function vendorDir(): string
-    {
-        $vendor = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'vendor';
-        if (! file_exists($vendor)) {
-            $vendor = dirname(__DIR__, 5); // @codeCoverageIgnore
-        }
-
-        return $vendor;
+        throw new RuntimeException('PHPUnit not found'); // @codeCoverageIgnore
     }
 
     /**

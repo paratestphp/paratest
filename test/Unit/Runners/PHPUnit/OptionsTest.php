@@ -34,7 +34,6 @@ final class OptionsTest extends TestBase
         $this->unfiltered = [
             '--processes' => 5,
             '--path' => '/path/to/tests',
-            '--phpunit' => 'phpunit',
             '--functional' => true,
             '--group' => 'group1',
             '--exclude-group' => 'group2',
@@ -70,7 +69,6 @@ final class OptionsTest extends TestBase
     {
         static::assertEquals($this->unfiltered['--processes'], $this->options->processes());
         static::assertEquals($this->unfiltered['--path'], $this->options->path());
-        static::assertEquals($this->unfiltered['--phpunit'], $this->options->phpunit());
         static::assertEquals($this->unfiltered['--functional'], $this->options->functional());
         static::assertEquals([$this->unfiltered['--group']], $this->options->group());
     }
@@ -202,7 +200,7 @@ final class OptionsTest extends TestBase
         static::assertEmpty($options->passthru());
         static::assertEmpty($options->passthruPhp());
         static::assertNull($options->path());
-        static::assertEquals(PHPUNIT, $options->phpunit());
+        static::assertStringContainsString('phpunit', $options->phpunit());
         static::assertSame(PROCESSES_FOR_TESTS, $options->processes());
         static::assertSame('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
@@ -236,7 +234,6 @@ final class OptionsTest extends TestBase
             '--passthru' => '-v',
             '--passthru-php' => '-d a=1',
             '--path' => 'PATH',
-            '--phpunit' => 'PHPUNIT',
             '--processes' => 999,
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
@@ -270,7 +267,6 @@ final class OptionsTest extends TestBase
         static::assertSame(['-v'], $options->passthru());
         static::assertSame(['-d', 'a=1'], $options->passthruPhp());
         static::assertSame('PATH', $options->path());
-        static::assertSame('PHPUNIT', $options->phpunit());
         static::assertSame(999, $options->processes());
         static::assertSame('MYRUNNER', $options->runner());
         static::assertTrue($options->stopOnFailure());
