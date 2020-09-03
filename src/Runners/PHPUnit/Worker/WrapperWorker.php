@@ -77,11 +77,7 @@ final class WrapperWorker
         );
         touch($this->writeToPathname);
 
-        $finder        = new PhpExecutableFinder();
-        $phpExecutable = $finder->find();
-        assert($phpExecutable !== false);
-
-        $parameters = [$phpExecutable];
+        $parameters = [(new PhpExecutableFinder())->find()];
         if (($passthruPhp = $options->passthruPhp()) !== null) {
             $parameters = array_merge($parameters, $passthruPhp);
         }
@@ -117,25 +113,12 @@ final class WrapperWorker
         $this->process->start();
     }
 
-    public function raiseProcessFailedException(): void
+    public function getWorkerCrashedException(): WorkerCrashedException
     {
-        $error = sprintf(
-            'The command "%s" failed.' . "\n\nExit Code: %s(%s)\n\nWorking directory: %s",
-            end($this->commands),
-            ($t = $this->process->getExitCode()) !== null ? $t : 'NULL',
-            (string) $this->process->getExitCodeText(),
-            (string) $this->process->getWorkingDirectory()
-        );
+        $command = end($this->commands);
+        assert($command !== false);
 
-        if (! $this->process->isOutputDisabled()) {
-            $error .= sprintf(
-                "\n\nOutput:\n================\n%s\n\nError Output:\n================\n%s",
-                $this->process->getOutput(),
-                $this->process->getErrorOutput()
-            );
-        }
-
-        throw new WorkerCrashedException($error);
+        return WorkerCrashedException::fromProcess($this->process, $command);
     }
 
     /**
@@ -144,9 +127,8 @@ final class WrapperWorker
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
         assert($this->currentlyExecuting === null);
-        $phpunitOptions['printer'] = NullPhpunitPrinter::class;
-        $commandArguments          = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
-        $command                   = implode(' ', array_map('\\escapeshellarg', $commandArguments));
+        $commandArguments = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
+        $command          = implode(' ', array_map('\\escapeshellarg', $commandArguments));
         if ($options->verbose() > 0) {
             $this->output->write("\nExecuting test via: {$command}\n");
         }

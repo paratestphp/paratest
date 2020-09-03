@@ -65,12 +65,13 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
 
     final protected function runRunner(?string $cwd = null): RunnerResult
     {
-        $output        = new BufferedOutput();
-        $runnerClass   = $this->runnerClass;
-        $wrapperRunner = new $runnerClass($this->createOptionsFromArgv($this->bareOptions, $cwd), $output);
-        $wrapperRunner->run();
+        $output      = new BufferedOutput();
+        $runnerClass = $this->runnerClass;
 
-        return new RunnerResult($wrapperRunner->getExitCode(), $output->fetch());
+        $runner = new $runnerClass($this->createOptionsFromArgv($this->bareOptions, $cwd), $output);
+        $runner->run();
+
+        return new RunnerResult($runner->getExitCode(), $output->fetch());
     }
 
     final protected function assertTestsPassed(

@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use Exception;
-use ParaTest\Coverage\EmptyCoverageFileException;
 use ParaTest\Runners\PHPUnit\Worker\RunnerWorker;
 use PHPUnit\TextUI\TestRunner;
 
-use function array_merge;
 use function array_shift;
 use function assert;
 use function count;
-use function getenv;
+use function max;
 use function range;
 use function usleep;
 
@@ -38,7 +36,7 @@ final class Runner extends BaseRunner
         $availableTokens = range(1, $this->options->processes());
         while (count($this->running) > 0 || count($this->pending) > 0) {
             $this->fillRunQueue($availableTokens);
-            usleep(10000);
+            usleep(self::CYCLE_SLEEP);
 
             $availableTokens = [];
             foreach ($this->running as $token => $test) {
@@ -66,21 +64,12 @@ final class Runner extends BaseRunner
             && count($this->running) < $this->options->processes()
             && ($token = array_shift($availableTokens)) !== null
         ) {
-            $env = array_merge(getenv(), $this->options->fillEnvWithTokens($token));
-
             $executebleTest = array_shift($this->pending);
             /** @psalm-suppress RedundantConditionGivenDocblockType **/
             assert($executebleTest !== null);
 
-            $this->running[$token] = new RunnerWorker($executebleTest);
-            $this->running[$token]->run(
-                $this->options->phpunit(),
-                $this->options->filtered(),
-                $env,
-                $this->options->passthru(),
-                $this->options->passthruPhp(),
-                $this->options->cwd()
-            );
+            $this->running[$token] = new RunnerWorker($executebleTest, $this->options, $token);
+            $this->running[$token]->run();
 
             if ($this->options->verbose() === 0) {
                 continue;
@@ -101,57 +90,37 @@ final class Runner extends BaseRunner
      */
     private function testIsStillRunning(RunnerWorker $worker): bool
     {
-        if (! $worker->isDoneRunning()) {
+        if ($worker->isRunning()) {
             return true;
         }
 
-        $this->setExitCode($worker);
-        $worker->stop();
-        if ($this->options->stopOnFailure() && $worker->getExitCode() > 0) {
+        $this->exitcode = max($this->exitcode, (int) $worker->stop());
+        if ($this->options->stopOnFailure() && $this->exitcode > 0) {
             $this->pending = [];
         }
 
-        $executableTest = $worker->getExecutableTest();
         if (
-            $worker->getExitCode() > 0
-            && $worker->getExitCode() !== TestRunner::FAILURE_EXIT
-            && $worker->getExitCode() !== TestRunner::EXCEPTION_EXIT
+            $this->exitcode > 0
+            && $this->exitcode !== TestRunner::FAILURE_EXIT
+            && $this->exitcode !== TestRunner::EXCEPTION_EXIT
         ) {
-            throw new WorkerCrashedException($worker->getCrashReport());
+            throw $worker->getWorkerCrashedException();
+        }
+
+        $executableTest = $worker->getExecutableTest();
+        try {
+            $this->printer->printFeedback($executableTest);
+        } catch (EmptyLogFileException $emptyLogFileException) {
+            throw $worker->getWorkerCrashedException($emptyLogFileException);
         }
 
         if ($this->hasCoverage()) {
             $coverageMerger = $this->getCoverage();
             assert($coverageMerger !== null);
-            try {
-                $coverageMerger->addCoverageFromFile($executableTest->getCoverageFileName());
-            } catch (EmptyCoverageFileException $emptyCoverageFileException) {
-                throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyCoverageFileException);
-            }
-        }
-
-        try {
-            $this->printer->printFeedback($executableTest);
-        } catch (EmptyLogFileException $emptyLogFileException) {
-            throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyLogFileException);
+            $coverageMerger->addCoverageFromFile($executableTest->getCoverageFileName());
         }
 
         return false;
-    }
-
-    /**
-     * If the provided test object has an exit code
-     * higher than the currently set exit code, that exit
-     * code will be set as the overall exit code.
-     */
-    private function setExitCode(RunnerWorker $test): void
-    {
-        $exit = $test->getExitCode();
-        if ($exit === null || $exit <= $this->exitcode) {
-            return;
-        }
-
-        $this->exitcode = $exit;
     }
 
     protected function beforeLoadChecks(): void

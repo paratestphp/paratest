@@ -19,8 +19,6 @@ use function usleep;
  */
 final class WrapperRunner extends BaseRunner
 {
-    private const CYCLE_SLEEP = 10000;
-
     /** @var WrapperWorker[] */
     private $workers = [];
 
@@ -58,7 +56,7 @@ final class WrapperRunner extends BaseRunner
         while (count($this->pending) > 0 && count($this->workers) > 0) {
             foreach ($this->workers as $key => $worker) {
                 if (! $worker->isRunning()) {
-                    $worker->raiseProcessFailedException();
+                    throw $worker->getWorkerCrashedException();
                 }
 
                 if (! $worker->isFree()) {
@@ -121,7 +119,7 @@ final class WrapperRunner extends BaseRunner
                 }
 
                 if (! $worker->isFree()) {
-                    $worker->raiseProcessFailedException();
+                    throw $worker->getWorkerCrashedException();
                 }
 
                 $this->flushWorker($worker);

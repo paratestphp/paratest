@@ -10,8 +10,10 @@ use ParaTest\Runners\PHPUnit\WrapperRunner;
 /**
  * @internal
  *
+ * @covers \ParaTest\Runners\PHPUnit\BaseRunner
  * @covers \ParaTest\Runners\PHPUnit\WrapperRunner
  * @covers \ParaTest\Runners\PHPUnit\Worker\WrapperWorker
+ * @covers \ParaTest\Runners\PHPUnit\WorkerCrashedException
  */
 final class WrapperRunnerTest extends RunnerTestCase
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Worker\NullPhpunitPrinter;
 use ParaTest\Tests\TestBase;
 
 use function uniqid;
@@ -42,6 +43,8 @@ final class ExecutableTestTest extends TestBase
             '--a',
             'b',
             '--no-coverage',
+            '--printer',
+            NullPhpunitPrinter::class,
             '--log-junit',
             $this->executableTestChild->getTempFile(),
             '--coverage-php',
