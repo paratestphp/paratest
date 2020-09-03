@@ -12,7 +12,7 @@ use function ini_get;
 /**
  * @internal
  */
-class IssueTest extends TestCase
+final class IssueTest extends TestCase
 {
     /**
      * @dataProvider provideCases

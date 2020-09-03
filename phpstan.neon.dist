@@ -48,15 +48,7 @@ parameters:
             path: bin/paratest
         -
             message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 3
-            path: bin/phpunit-sqlite-wrapper.php
-        -
-            message: "#^Should not use node with type \"Stmt_Echo\", please change the code\\.$#"
-            count: 4
-            path: bin/phpunit-wrapper.php
-        -
-            message: "#^Should not use node with type \"Expr_Exit\", please change the code\\.$#"
-            count: 4
+            count: 2
             path: bin/phpunit-wrapper.php
 
         # Known
@@ -70,18 +62,22 @@ parameters:
             count: 1
             path: src/Parser/Parser.php
         -
-            message: "#^Should not use function \"proc_open\", please change the code\\.$#"
+            message:
+                """
+                    #^Usage of deprecated trait PHPUnit\\\\Framework\\\\TestListenerDefaultImplementation in class ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\NullPhpunitPrinter\\:
+                    The `TestListener` interface is deprecated$#
+                """
             count: 1
-            path: src/Runners/PHPUnit/Worker/BaseWorker.php
+            path: src/Runners/PHPUnit/Worker/NullPhpunitPrinter.php
         - "#^.+ has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
+        -
+            message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\WrapperWorker\\:\\:\\$input type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\InputStream\\.$#"
+            count: 1
+            path: src/Runners/PHPUnit/Worker/WrapperWorker.php
         -
             message: "#^Method ParaTest\\\\Tests\\\\TestBase\\:\\:setUpTest\\(\\) is not final, but since the containing class is abstract, it should be\\.$#"
             count: 1
             path: test/TestBase.php
-        -
-            message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
-            count: 2
-            path: bin/phpunit-wrapper.php
         -
             message: "#^Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.$#"
             count: 1
@@ -128,10 +124,6 @@ parameters:
             path: test/Unit/Runners/PHPUnit/OptionsTest.php
 
         # Level 7
-        -
-            message: "#^Cannot call method fetch\\(\\) on PDOStatement\\|false\\.$#"
-            count: 1
-            path: bin/phpunit-sqlite-wrapper.php
         -
             message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"
             count: 1

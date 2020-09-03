@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @internal
  */
-class IssueFooTest extends TestCase
+final class IssueFooTest extends TestCase
 {
     public function testTrue(): void
     {

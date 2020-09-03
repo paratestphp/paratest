@@ -186,7 +186,7 @@ final class SuiteLoader
         } else {
             // The $class->getParentsCount() + array_merge(...$loadedSuites) stuff
             // are needed to run test with child tests early, because PHPUnit autoloading
-            // of such classes in WrapperRunner/SqliteRunner environments fails (Runner is fine)
+            // of such classes in WrapperRunner environments fails (Runner is fine)
             $loadedSuites = [];
             foreach ($this->files as $path) {
                 try {

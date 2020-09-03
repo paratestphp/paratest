@@ -270,13 +270,17 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult                     = $this->runRunner();
 
         $regexp = '/Tests: \d+, Assertions: \d+, Errors: \d+, Failures: \d+, Warnings: \d+, Skipped: \d+\./';
-        static::assertSame(1, preg_match($regexp, $runnerResult->getOutput(), $matchesOnFullRun));
+        $output = $runnerResult->getOutput();
+        static::assertMatchesRegularExpression($regexp, $output);
+        static::assertSame(1, preg_match($regexp, $output, $matchesOnFullRun));
 
         $this->bareOptions['--stop-on-failure'] = true;
         $runnerResult                           = $this->runRunner();
 
         $regexp = '/Tests: \d+, Assertions: \d+, Failures: \d+\./';
-        static::assertSame(1, preg_match($regexp, $runnerResult->getOutput(), $matchesOnPartialRun));
+        $output = $runnerResult->getOutput();
+        static::assertMatchesRegularExpression($regexp, $output);
+        static::assertSame(1, preg_match($regexp, $output, $matchesOnPartialRun));
 
         static::assertNotEquals($matchesOnFullRun[0], $matchesOnPartialRun[0]);
     }
@@ -323,6 +327,18 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--processes']      = 1;
 
         $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505'));
+        $this->assertTestsPassed($runnerResult);
+    }
+
+    /**
+     * @group github
+     * @coversNothing
+     */
+    final public function testChildProcessPipeOverflow(): void
+    {
+        $this->bareOptions['--processes'] = 1;
+
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH431'));
         $this->assertTestsPassed($runnerResult);
     }
 
