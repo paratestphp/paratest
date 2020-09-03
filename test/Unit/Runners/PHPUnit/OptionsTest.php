@@ -200,6 +200,7 @@ final class OptionsTest extends TestBase
         static::assertEmpty($options->passthru());
         static::assertEmpty($options->passthruPhp());
         static::assertNull($options->path());
+        static::assertStringContainsString('phpunit', $options->phpunit());
         static::assertSame(PROCESSES_FOR_TESTS, $options->processes());
         static::assertSame('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
