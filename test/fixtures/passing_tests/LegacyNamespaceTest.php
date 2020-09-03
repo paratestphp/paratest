@@ -9,7 +9,7 @@ namespace {
  *
  * @internal
  */
-    class LegacyNamespaceTest extends PHPUnit\Framework\TestCase
+    final class LegacyNamespaceTest extends PHPUnit\Framework\TestCase
     {
         public function testAlwaysTrue(): void
         {

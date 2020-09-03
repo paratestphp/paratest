@@ -11,7 +11,7 @@ use function defined;
 /**
  * @internal
  */
-class IssueTest extends TestCase
+final class IssueTest extends TestCase
 {
     /**
      * @dataProvider provideCases

@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @group group1
  */
-class IssueBarTest extends TestCase
+final class IssueBarTest extends TestCase
 {
     public function testTrue(): void
     {

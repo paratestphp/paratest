@@ -11,13 +11,14 @@ use function str_repeat;
 /**
  * @internal
  */
-class IssueTest extends TestCase
+final class IssueTest extends TestCase
 {
     public function testFillBuffers(): void
     {
         // the string is larger than the output buffer.
         // if the parent process doesnt read the output buffer, this test will hang forever.
-        // run with: ../../../../bin/paratest -c . --runner=SqliteRunner
-        echo str_repeat('a', 100000);
+        echo str_repeat('a', 10000);
+
+        $this->assertTrue(true);
     }
 }

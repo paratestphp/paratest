@@ -11,7 +11,7 @@ use function getenv;
 /**
  * @internal
  */
-class IssueTest extends TestCase
+final class IssueTest extends TestCase
 {
     public function testHaveNoEnv(): void
     {
