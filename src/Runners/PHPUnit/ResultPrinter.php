@@ -180,7 +180,7 @@ final class ResultPrinter
      * Prints the individual "quick" feedback for run
      * tests, that is the ".EF" items.
      */
-    public function printFeedback(ExecutableTest $test): void
+    public function printFeedback(ExecutableTest $test): Reader
     {
         try {
             $reader = new Reader($test->getTempFile());
@@ -197,6 +197,8 @@ final class ResultPrinter
 
         $this->results->addReader($reader);
         $this->processReaderFeedback($reader, $test->getTestCount());
+
+        return $reader;
     }
 
     /**

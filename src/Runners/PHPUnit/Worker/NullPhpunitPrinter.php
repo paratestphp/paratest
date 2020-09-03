@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestResult;
 use PHPUnit\TextUI\ResultPrinter;
 
 /**
+ * @internal
+ *
  * @codeCoverageIgnore
  */
 final class NullPhpunitPrinter implements ResultPrinter

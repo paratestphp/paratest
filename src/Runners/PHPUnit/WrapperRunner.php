@@ -4,41 +4,35 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use InvalidArgumentException;
 use ParaTest\Coverage\EmptyCoverageFileException;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
-use RuntimeException;
-use Symfony\Component\Console\Output\OutputInterface;
+use PHPUnit\TextUI\TestRunner;
 
 use function array_shift;
 use function assert;
 use function count;
-use function defined;
-use function dirname;
-use function realpath;
+use function max;
 use function usleep;
-
-use const DIRECTORY_SEPARATOR;
 
 /**
  * @internal
  */
-final class WrapperRunner extends BaseWrapperRunner
+final class WrapperRunner extends BaseRunner
 {
     private const CYCLE_SLEEP = 10000;
 
     /** @var WrapperWorker[] */
     private $workers = [];
 
-    /** @var resource[] */
-    private $streams = [];
-
-    public function __construct(Options $opts, OutputInterface $output)
+    protected function beforeLoadChecks(): void
     {
-        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            throw new RuntimeException('WrapperRunner is not supported on Windows'); // @codeCoverageIgnore
+        if ($this->options->functional()) {
+            throw new InvalidArgumentException(
+                'The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due ' .
+                'to the current PHPUnit commands causing classloading issues.'
+            );
         }
-
-        parent::__construct($opts, $output);
     }
 
     protected function doRun(): void
@@ -51,16 +45,9 @@ final class WrapperRunner extends BaseWrapperRunner
 
     private function startWorkers(): void
     {
-        $wrapper = realpath(
-            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
-        );
-        assert($wrapper !== false);
-        for ($i = 1; $i <= $this->options->processes(); ++$i) {
-            $worker = new WrapperWorker($this->output);
-
-            $worker->start($wrapper, $this->options, $i);
-            $this->streams[] = $worker->stdout();
-            $this->workers[] = $worker;
+        for ($token = 1; $token <= $this->options->processes(); ++$token) {
+            $this->workers[$token] = new WrapperWorker($this->output, $this->options, $token);
+            $this->workers[$token]->start();
         }
     }
 
@@ -72,37 +59,19 @@ final class WrapperRunner extends BaseWrapperRunner
         while (count($this->pending) > 0 && count($this->workers) > 0) {
             foreach ($this->workers as $key => $worker) {
                 if (! $worker->isRunning()) {
-                    if ($worker->isFree()) {
-                        // Happens when isFree returns true (the test ended) and also
-                        // isRunning returns true, but in the meanwhile due to a --stop-on-failure
-                        // the process exited
-                        $this->flushWorker($worker);  // @codeCoverageIgnore
-                    }
-
-                    $this->setExitCode($worker->getExitCode());
-                    unset($this->workers[$key]);
-                    if ($this->options->stopOnFailure()) {
-                        $this->pending = [];
-                    }
-
-                    continue;
+                    $worker->raiseProcessFailedException();
                 }
 
                 if (! $worker->isFree()) {
-                    // Happens randomly depending on concurrency and resource usage
-                    // Cannot be covered by tests reliably
-                    continue; // @codeCoverageIgnore
+                    continue;
                 }
 
                 $this->flushWorker($worker);
-                $pending = array_shift($this->pending);
-                if ($pending === null) {
-                    // Happens randomly depending on concurrency and resource usage
-                    // Cannot be covered by tests reliably
-                    continue; // @codeCoverageIgnore
+                if ($this->exitcode > 0 && $this->options->stopOnFailure()) {
+                    $this->pending = [];
+                } elseif (($pending = array_shift($this->pending)) !== null) {
+                    $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
                 }
-
-                $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
             }
 
             usleep(self::CYCLE_SLEEP);
@@ -124,12 +93,25 @@ final class WrapperRunner extends BaseWrapperRunner
         }
 
         try {
-            $worker->printFeedback($this->printer);
+            $reader = $worker->printFeedback($this->printer);
         } catch (EmptyLogFileException $emptyLogFileException) {
             throw new WorkerCrashedException($worker->getCrashReport(), 0, $emptyLogFileException);
         }
 
         $worker->reset();
+
+        if ($reader === null) {
+            return;
+        }
+
+        $exitCode = TestRunner::SUCCESS_EXIT;
+        if ($reader->getTotalErrors() > 0) {
+            $exitCode = TestRunner::EXCEPTION_EXIT;
+        } elseif ($reader->getTotalFailures() > 0 || $reader->getTotalWarnings() > 0) {
+            $exitCode = TestRunner::FAILURE_EXIT;
+        }
+
+        $this->exitcode = max($this->exitcode, $exitCode);
     }
 
     private function sendStopMessages(): void
@@ -148,7 +130,6 @@ final class WrapperRunner extends BaseWrapperRunner
                 }
 
                 $this->flushWorker($worker);
-                $this->setExitCode($worker->getExitCode());
                 unset($this->workers[$index]);
             }
 

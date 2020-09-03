@@ -10,10 +10,7 @@ use ParaTest\Runners\PHPUnit\WrapperRunner;
 /**
  * @internal
  *
- * @requires OSFAMILY Linux
- * @covers \ParaTest\Runners\PHPUnit\BaseWrapperRunner
  * @covers \ParaTest\Runners\PHPUnit\WrapperRunner
- * @covers \ParaTest\Runners\PHPUnit\Worker\BaseWorker
  * @covers \ParaTest\Runners\PHPUnit\Worker\WrapperWorker
  */
 final class WrapperRunnerTest extends RunnerTestCase
