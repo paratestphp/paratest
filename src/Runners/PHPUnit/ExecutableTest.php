@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Worker\NullPhpunitPrinter;
+
 use function array_map;
 use function array_merge;
 use function assert;
@@ -129,6 +131,7 @@ abstract class ExecutableTest
     final public function commandArguments(string $binary, array $options, ?array $passthru): array
     {
         $options              = $this->prepareOptions($options);
+        $options['printer']   = NullPhpunitPrinter::class;
         $options['log-junit'] = $this->getTempFile();
         if ($this->needsCoverage) {
             $options['coverage-php'] = $this->getCoverageFileName();

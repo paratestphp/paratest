@@ -20,6 +20,8 @@ use function sprintf;
  */
 abstract class BaseRunner implements RunnerInterface
 {
+    protected const CYCLE_SLEEP = 10000;
+
     /** @var Options */
     protected $options;
 

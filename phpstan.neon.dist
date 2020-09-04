@@ -70,6 +70,7 @@ parameters:
             count: 1
             path: src/Runners/PHPUnit/Worker/NullPhpunitPrinter.php
         - "#^.+ has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
+        - "#^Method .+ has parameter .+ with no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
         -
             message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\WrapperWorker\\:\\:\\$input type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\InputStream\\.$#"
             count: 1

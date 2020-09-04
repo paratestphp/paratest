@@ -10,6 +10,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
  * @covers \ParaTest\Runners\PHPUnit\BaseRunner
  * @covers \ParaTest\Runners\PHPUnit\Runner
  * @covers \ParaTest\Runners\PHPUnit\Worker\RunnerWorker
+ * @covers \ParaTest\Runners\PHPUnit\WorkerCrashedException
  */
 final class RunnerTest extends RunnerTestCase
 {

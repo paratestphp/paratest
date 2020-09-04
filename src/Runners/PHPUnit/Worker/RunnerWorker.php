@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
+use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use RuntimeException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 use function array_merge;
-use function assert;
-use function sprintf;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
@@ -23,12 +24,32 @@ final class RunnerWorker
 {
     /** @var ExecutableTest */
     private $executableTest;
-    /** @var Process|null */
+    /** @var Process */
     private $process;
 
-    public function __construct(ExecutableTest $executableTest)
+    public function __construct(ExecutableTest $executableTest, Options $options, int $token)
     {
         $this->executableTest = $executableTest;
+
+        $args = [(new PhpExecutableFinder())->find()];
+        if (($passthruPhp = $options->passthruPhp()) !== null) {
+            $args = array_merge($args, $passthruPhp);
+        }
+
+        $args = array_merge(
+            $args,
+            $this->executableTest->commandArguments(
+                $options->phpunit(),
+                $options->filtered(),
+                $options->passthru()
+            )
+        );
+
+        $this->process = new Process($args, $options->cwd(), $options->fillEnvWithTokens($token));
+
+        $cmd = $this->process->getCommandLine();
+        $this->assertValidCommandLineLength($cmd);
+        $this->executableTest->setLastCommand($cmd);
     }
 
     public function getExecutableTest(): ExecutableTest
@@ -37,89 +58,28 @@ final class RunnerWorker
     }
 
     /**
-     * Stop the process and return it's
-     * exit code.
+     * Executes the test by creating a separate process.
      */
-    public function stop(): ?int
+    public function run(): void
     {
-        assert($this->process !== null);
-
-        return $this->process->stop();
+        $this->process->start();
     }
 
     /**
      * Check if the process has terminated.
      */
-    public function isDoneRunning(): bool
+    public function isRunning(): bool
     {
-        assert($this->process !== null);
-
-        return $this->process->isTerminated();
+        return $this->process->isRunning();
     }
 
     /**
-     * Return the exit code of the process.
+     * Stop the process and return it's
+     * exit code.
      */
-    public function getExitCode(): ?int
+    public function stop(): ?int
     {
-        assert($this->process !== null);
-
-        return $this->process->getExitCode();
-    }
-
-    /**
-     * Executes the test by creating a separate process.
-     *
-     * @param array<string, string|null>    $options
-     * @param array<string|int, string|int> $environmentVariables
-     * @param string[]|null                 $passthru
-     * @param string[]|null                 $passthruPhp
-     */
-    public function run(
-        string $binary,
-        array $options,
-        array $environmentVariables,
-        ?array $passthru,
-        ?array $passthruPhp,
-        string $cwd
-    ): void {
-        $process = $this->getProcess($binary, $options, $environmentVariables, $passthru, $passthruPhp, $cwd);
-        $cmd     = $process->getCommandLine();
-
-        $this->assertValidCommandLineLength($cmd);
-        $this->executableTest->setLastCommand($cmd);
-
-        $this->process = $process;
-        $this->process->start();
-    }
-
-    /**
-     * Build the full executable as we would do on the command line, e.g.
-     * php -d zend_extension=xdebug.so vendor/bin/phpunit -_teststuite suite1 --prepend xdebug-filter.php.
-     *
-     * @param array<string, string|null>    $options
-     * @param array<string|int, string|int> $environmentVariables
-     * @param string[]|null                 $passthru
-     * @param string[]|null                 $passthruPhp
-     */
-    private function getProcess(
-        string $binary,
-        array $options,
-        array $environmentVariables,
-        ?array $passthru,
-        ?array $passthruPhp,
-        string $cwd
-    ): Process {
-        $finder = new PhpExecutableFinder();
-
-        $args = [$finder->find()];
-        if ($passthruPhp !== null) {
-            $args = array_merge($args, $passthruPhp);
-        }
-
-        $args = array_merge($args, $this->executableTest->commandArguments($binary, $options, $passthru));
-
-        return new Process($args, $cwd, $environmentVariables);
+        return $this->process->stop();
     }
 
     /**
@@ -132,48 +92,28 @@ final class RunnerWorker
      * @param string $cmd Command line
      *
      * @throws RuntimeException on too long command line.
+     *
+     * @codeCoverageIgnore
      */
     private function assertValidCommandLineLength(string $cmd): void
     {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            // @codeCoverageIgnoreStart
-            // symfony's process wrapper
-            $cmd = 'cmd /V:ON /E:ON /C "(' . $cmd . ')';
-            if (strlen($cmd) > 32767) {
-                throw new RuntimeException('Command line is too long, try to decrease max batch size');
-            }
-
-            // @codeCoverageIgnoreEnd
+        if (DIRECTORY_SEPARATOR !== '\\') {
+            return;
         }
 
-        /*
-         * @todo Implement command line length validation for linux/osx/freebsd.
-         *       Please note that on unix environment variables also became part of command line:
-         *         - linux: echo | xargs --show-limits
-         *         - osx/linux: getconf ARG_MAX
-         */
+        // symfony's process wrapper
+        $cmd = 'cmd /V:ON /E:ON /C "(' . $cmd . ')';
+        if (strlen($cmd) > 32767) {
+            throw new RuntimeException('Command line is too long, try to decrease max batch size');
+        }
     }
 
-    public function getCrashReport(): string
+    public function getWorkerCrashedException(?Throwable $previousException = null): WorkerCrashedException
     {
-        assert($this->process !== null);
-
-        $error = sprintf(
-            'The command "%s" failed.' . "\n\nExit Code: %s(%s)\n\nWorking directory: %s",
+        return WorkerCrashedException::fromProcess(
+            $this->process,
             $this->process->getCommandLine(),
-            (string) $this->process->getExitCode(),
-            (string) $this->process->getExitCodeText(),
-            (string) $this->process->getWorkingDirectory()
+            $previousException
         );
-
-        if (! $this->process->isOutputDisabled()) {
-            $error .= sprintf(
-                "\n\nOutput:\n================\n%s\n\nError Output:\n================\n%s",
-                $this->process->getOutput(),
-                $this->process->getErrorOutput()
-            );
-        }
-
-        return $error;
     }
 }
