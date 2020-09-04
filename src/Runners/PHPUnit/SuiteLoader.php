@@ -200,7 +200,10 @@ final class SuiteLoader
                 }
             }
 
-            array_map('\ksort', $loadedSuites);
+            foreach ($loadedSuites as $key => $loadedSuite) {
+                ksort($loadedSuites[$key]);
+            }
+
             ksort($loadedSuites);
 
             foreach ($loadedSuites as $loadedSuite) {
