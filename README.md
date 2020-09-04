@@ -140,10 +140,9 @@ vendor/bin/paratest -p4 --runner=WrapperRunner --coverage-html=/tmp/coverage tes
 ### Troubleshooting
 If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via `--verbose=1`.
 
-In case you are using the `WrapperRunner` for execution, consider enabling logging for troubleshooting via `export PT_LOGGING_ENABLE="true"`.
-The corresponding logfiles are placed in your `sys_get_temp_dir()`.
-
-See [Logging docs](docs/logging.md) for further information.
+When a sub-process fails, the originating command is given in the output and can then be copy-pasted in the terminal
+to be run and debugged. All internal commands run with `--printer [...]\NullPhpunitPrinter` which silence the original
+PHPUnit output: during a debugging run remove that option to restore the output and see what PHPUnit is doing.
 
 ### Generating code coverage
 
@@ -154,7 +153,7 @@ The cache is always warmed by ParaTest before executing the test suite.
 
 Examples assume your tests are located under `./test/unit`.
 ````
-vendor/bin/paratest -p 1 --coverage-text test/unit
+vendor/bin/paratest --coverage-text test/unit
 
 Running phpunit in 1 process with /codebase/paratest/vendor/phpunit/phpunit/phpunit
 
@@ -187,7 +186,7 @@ Windows users be sure to use the appropriate batch files.
 
 An example being:
 
-`vendor\bin\paratest.bat --phpunit vendor\bin\phpunit.bat ...`
+`vendor\bin\paratest.bat ...`
 
 ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests.
 
