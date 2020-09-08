@@ -1,6 +1,8 @@
 /.idea
+/coverage
 /test/fixtures/generated_tests
 /vendor
 composer.lock
 .phpunit.result.cache
 .php_cs.cache
+infections.log
