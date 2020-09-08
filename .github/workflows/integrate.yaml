@@ -153,48 +153,7 @@ jobs:
 
       - name: "Run tests"
         timeout-minutes: 10
-        run: "vendor/bin/phpunit"
-
-  mutation-tests:
-    name: "Mutation Tests"
-
-    runs-on: "ubuntu-latest"
-
-    strategy:
-      matrix:
-        php-version:
-          - "7.4"
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "pcov"
-          php-version: "${{ matrix.php-version }}"
-          tools: composer:v1
-          extensions: sqlite
-
-      - name: "Get composer cache directory"
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: "Cache dependencies"
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
-
-      - name: "Install dependencies"
-        run: "composer update --no-interaction --no-progress"
-
-      - name: "Infection"
-        run: "vendor/bin/infection -j4"
-        env:
-          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
+        run: "vendor/bin/phpunit --no-coverage --no-logging"
 
   code-coverage:
     name: "Code Coverage"
@@ -215,6 +174,7 @@ jobs:
         with:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
+          ini-values: zend.assertions=1
           tools: composer:v1
 
       - name: "Get composer cache directory"
@@ -233,12 +193,22 @@ jobs:
 
       - name: "Run tests"
         timeout-minutes: 10
-        run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
+        run: "vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml"
 
       - name: "Send code coverage report to Codecov.io"
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: true
+
+      - name: "Infection"
+        run: "vendor/bin/infection --threads=$(nproc) --coverage=coverage --skip-initial-tests"
+        env:
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
+
+      - name: "Output infections"
+        run: "cat infections.log"
 
   coding-standards:
     name: "Coding Standards"

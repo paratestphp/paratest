@@ -6,7 +6,7 @@
     },
     "timeout": 10,
     "logs": {
-        "text": "php:\/\/stderr",
+        "text": "infections.log",
         "badge": {
             "branch": "master"
         }
@@ -14,6 +14,6 @@
     "mutators": {
         "@default": true
     },
-    "minMsi": 79,
-    "minCoveredMsi": 88
+    "minMsi": 83,
+    "minCoveredMsi": 84
 }
