@@ -152,7 +152,7 @@ jobs:
         run: "composer update --no-interaction --no-progress --ignore-platform-reqs"
 
       - name: "Run tests"
-        timeout-minutes: 10
+        timeout-minutes: 3
         run: "vendor/bin/phpunit --no-coverage --no-logging"
 
   code-coverage:
@@ -192,7 +192,7 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Run tests"
-        timeout-minutes: 10
+        timeout-minutes: 3
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml"
 
       - name: "Send code coverage report to Codecov.io"
@@ -203,7 +203,8 @@ jobs:
           fail_ci_if_error: true
 
       - name: "Infection"
-        run: "vendor/bin/infection --threads=$(nproc) --coverage=coverage --skip-initial-tests"
+        timeout-minutes: 10
+        run: "vendor/bin/infection --ansi --threads=$(nproc) --coverage=coverage --skip-initial-tests"
         env:
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
 
