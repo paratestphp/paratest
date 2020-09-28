@@ -9,7 +9,7 @@ use ParaTest\Tests\TestBase;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use PHPUnit\Util\Xml;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
-use SebastianBergmann\CodeCoverage\Driver\Driver;
+use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\CodeCoverage\RawCodeCoverageData;
 
@@ -31,7 +31,7 @@ final class CoverageReporterTest extends TestBase
 
         $filter = new Filter();
         $filter->includeFile(__FILE__);
-        $codeCoverage = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
+        $codeCoverage = new CodeCoverage((new Selector())->forLineCoverage($filter), $filter);
         $codeCoverage->append(RawCodeCoverageData::fromXdebugWithoutPathCoverage([
             __FILE__ => [__LINE__ => 1],
         ]), uniqid());

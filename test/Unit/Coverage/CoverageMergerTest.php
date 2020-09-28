@@ -8,7 +8,7 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Tests\TestBase;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
-use SebastianBergmann\CodeCoverage\Driver\Driver;
+use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\CodeCoverage\RawCodeCoverageData;
 use SebastianBergmann\CodeCoverage\Report\PHP;
@@ -47,7 +47,7 @@ final class CoverageMergerTest extends TestBase
             $firstFile => [$firstFileFirstLine => 1],
             $secondFile => [$secondFileFirstLine => 1],
         ]);
-        $coverage1 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
+        $coverage1 = new CodeCoverage((new Selector())->forLineCoverage($filter), $filter);
         $coverage1->append(
             $data,
             'Test1'
@@ -59,7 +59,7 @@ final class CoverageMergerTest extends TestBase
                 1 + $firstFileFirstLine => 1,
             ],
         ]);
-        $coverage2 = new CodeCoverage(Driver::forLineCoverage($filter), $filter);
+        $coverage2 = new CodeCoverage((new Selector())->forLineCoverage($filter), $filter);
         $coverage2->append(
             $data,
             'Test2'
