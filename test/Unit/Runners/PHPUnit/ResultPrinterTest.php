@@ -14,6 +14,7 @@ use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function defined;
+use function file_exists;
 use function file_put_contents;
 use function sprintf;
 use function str_repeat;
@@ -58,7 +59,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldAddTest(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false, TMP_DIR);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false, false, TMP_DIR);
 
         $this->printer->addTest($suite);
 
@@ -80,10 +81,10 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, [], false, TMP_DIR);
+            $funcs[] = new TestMethod((string) $i, [], false, false, TMP_DIR);
         }
 
-        $suite = new Suite('/path', $funcs, false, TMP_DIR);
+        $suite = new Suite('/path', $funcs, false, false, TMP_DIR);
         $this->printer->addTest($suite);
         $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
@@ -136,16 +137,16 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new TestMethod('funcOne', [], false, TMP_DIR),
-            new TestMethod('funcTwo', [], false, TMP_DIR),
-        ], false, TMP_DIR);
+            new TestMethod('funcOne', [], false, false, TMP_DIR),
+            new TestMethod('funcTwo', [], false, false, TMP_DIR),
+        ], false, false, TMP_DIR);
         $this->printer->addTest($suite);
         static::assertSame(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod'], false, TMP_DIR);
+        $method = new TestMethod('/path', ['testThisMethod'], false, false, TMP_DIR);
         $this->printer->addTest($method);
         static::assertSame(1, $this->printer->getTotalCases());
     }
@@ -441,13 +442,47 @@ final class ResultPrinterTest extends ResultTester
 
     public function testEmptyLogFileRaiseExceptionWithLastCommand(): void
     {
-        $test = new ExecutableTestChild(uniqid(), false, TMP_DIR);
+        $test = new ExecutableTestChild(uniqid(), false, false, TMP_DIR);
         $test->setLastCommand(uniqid());
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessageMatches(sprintf('/%s/', $test->getLastCommand()));
 
         $this->printer->printFeedback($test);
+    }
+
+    public function testTeamcityEmptyLogFileRaiseExceptionWithLastCommand(): void
+    {
+        $teamcityLog = TMP_DIR . DS . 'teamcity.log';
+
+        $this->options = $this->createOptionsFromArgv(['--log-teamcity' => $teamcityLog]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+
+        $test = $this->getSuiteWithResult('single-passing.xml', 1);
+        $test->setLastCommand(uniqid());
+
+        file_put_contents($test->getTeamcityTempFile(), '');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches(sprintf('/%s/', $test->getLastCommand()));
+        $this->expectExceptionMessageMatches('/Teamcity/');
+
+        $this->printer->printFeedback($test);
+    }
+
+    public function testTeamcityFeedback(): void
+    {
+        $teamcityLog = TMP_DIR . DS . 'teamcity2.log';
+
+        $this->options = $this->createOptionsFromArgv(['--log-teamcity' => $teamcityLog]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->passingSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->passingSuite);
+        $this->printer->printResults();
+
+        static::assertStringContainsString('OK', $this->output->fetch());
+        static::assertTrue(file_exists($teamcityLog));
     }
 
     private function getStartOutput(): string

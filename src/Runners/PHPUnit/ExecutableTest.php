@@ -22,12 +22,12 @@ abstract class ExecutableTest
     private $path;
 
     /**
-     * A path to the temp file created
+     * A path to the temp JUnit file created
      * for this test.
      *
      * @var string|null
      */
-    private $temp;
+    private $tempJUnit;
 
     /**
      * Path where the coveragereport is stored.
@@ -35,6 +35,14 @@ abstract class ExecutableTest
      * @var string|null
      */
     private $coverageFileName;
+
+    /**
+     * A path to the temp Teamcity format file created
+     * for this test.
+     *
+     * @var string|null
+     */
+    private $tempTeamcity;
 
     /**
      * Last executed process command.
@@ -45,13 +53,16 @@ abstract class ExecutableTest
 
     /** @var bool */
     private $needsCoverage;
+    /** @var bool */
+    private $needsTeamcity;
     /** @var string */
     private $tmpDir;
 
-    public function __construct(string $path, bool $needsCoverage, string $tmpDir)
+    public function __construct(string $path, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {
         $this->path          = $path;
         $this->needsCoverage = $needsCoverage;
+        $this->needsTeamcity = $needsTeamcity;
         $this->tmpDir        = $tmpDir;
     }
 
@@ -68,42 +79,49 @@ abstract class ExecutableTest
         return $this->path;
     }
 
-    /**
-     * Returns the path to this test's temp file.
+    final private function touchTempFile(?string &$tempName, string $prefix): string
+    {
+        if ($tempName === null) {
+            $newFile = tempnam($this->tmpDir, $prefix);
+            assert($newFile !== false);
+
+            $tempName = $newFile;
+        }
+
+        return $tempName;
+    }
+
+    final private function unlinkTempFile(?string &$tempName): void
+    {
+        if ($tempName === null) {
+            return;
+        }
+
+        unlink($tempName);
+        $tempName = null;
+    }
+
+  /**
+     * Returns the path to this test's JUnit temp file.
      * If the temp file does not exist, it will be
      * created.
      */
     final public function getTempFile(): string
     {
-        if ($this->temp === null) {
-            $temp = tempnam($this->tmpDir, 'PT_');
-            assert($temp !== false);
-
-            $this->temp = $temp;
-        }
-
-        return $this->temp;
+        return $this->touchTempFile($this->tempJUnit, 'PT_');
     }
 
     /**
      * Removes the test file.
      */
-    final public function deleteFile(): void
+    final public function deleteTempFiles(): void
     {
-        if ($this->temp !== null) {
-            unlink($this->temp);
-            $this->temp = null;
-        }
-
-        if ($this->coverageFileName === null) {
-            return;
-        }
-
-        unlink($this->coverageFileName);
-        $this->coverageFileName = null;
+        $this->unlinkTempFile($this->tempJUnit);
+        $this->unlinkTempFile($this->tempTeamcity);
+        $this->unlinkTempFile($this->coverageFileName);
     }
 
-    /**
+  /**
      * Return the last process command.
      */
     final public function getLastCommand(): string
@@ -133,6 +151,11 @@ abstract class ExecutableTest
         $options              = $this->prepareOptions($options);
         $options['printer']   = NullPhpunitPrinter::class;
         $options['log-junit'] = $this->getTempFile();
+
+        if ($this->needsTeamcity) {
+            $options['log-teamcity'] = $this->getTeamcityTempFile();
+        }
+
         if ($this->needsCoverage) {
             $options['coverage-php'] = $this->getCoverageFileName();
         }
@@ -162,14 +185,17 @@ abstract class ExecutableTest
      */
     final public function getCoverageFileName(): string
     {
-        if ($this->coverageFileName === null) {
-            $coverageFileName = tempnam($this->tmpDir, 'CV_');
-            assert($coverageFileName !== false);
+        return $this->touchTempFile($this->coverageFileName, 'CV_');
+    }
 
-            $this->coverageFileName = $coverageFileName;
-        }
-
-        return $this->coverageFileName;
+    /**
+     * Returns the path to this test's Teamcity format temp file.
+     * If the temp file does not exist, it will be
+     * created.
+     */
+    final public function getTeamcityTempFile(): string
+    {
+        return $this->touchTempFile($this->tempTeamcity, 'TF_');
     }
 
     /**

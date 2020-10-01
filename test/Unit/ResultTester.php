@@ -50,11 +50,12 @@ abstract class ResultTester extends TestBase
     {
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
-            $functions[] = new TestMethod((string) $i, [], false, TMP_DIR);
+            $functions[] = new TestMethod((string) $i, [], false, true, TMP_DIR);
         }
 
-        $suite = new Suite('', $functions, false, TMP_DIR);
+        $suite = new Suite('', $functions, false, true, TMP_DIR);
         file_put_contents($suite->getTempFile(), (string) file_get_contents(FIXTURES . DS . 'results' . DS . $result));
+        file_put_contents($suite->getTeamcityTempFile(), 'no data');
 
         return $suite;
     }

@@ -19,7 +19,7 @@ final class FullSuiteTest extends TestBase
     public function testPrepareTheFullSuiteAsArguments(): void
     {
         $name      = uniqid('Suite_');
-        $fullSuite = new FullSuite($name, false, TMP_DIR);
+        $fullSuite = new FullSuite($name, false, false, TMP_DIR);
 
         $commandArguments = $fullSuite->commandArguments(uniqid(), [], null);
 
