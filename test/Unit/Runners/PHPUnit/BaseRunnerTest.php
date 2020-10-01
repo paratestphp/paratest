@@ -8,8 +8,15 @@ use ParaTest\Tests\TestBase;
 
 use function assert;
 use function count;
+use function ctype_space;
+use function fclose;
+use function fgets;
+use function file_exists;
+use function fopen;
 use function glob;
 use function simplexml_load_file;
+use function strlen;
+use function substr;
 
 /**
  * @internal
@@ -71,14 +78,17 @@ final class BaseRunnerTest extends TestBase
     {
         // Needed for one line coverage on early exit CS Fix :\
         unset($this->bareOptions['--coverage-php']);
+        $this->bareOptions['--log-teamcity'] = TMP_DIR . DS . 'test-output.teamcity';
 
         $countBefore         = count($this->globTempDir('PT_*'));
         $countCoverageBefore = count($this->globTempDir('CV_*'));
+        $countTeamcityBefore = count($this->globTempDir('TF_*'));
 
         $this->runRunner();
 
         $countAfter         = count($this->globTempDir('PT_*'));
         $countCoverageAfter = count($this->globTempDir('CV_*'));
+        $countTeamcityAfter = count($this->globTempDir('CF_*'));
 
         static::assertSame(
             $countAfter,
@@ -89,6 +99,11 @@ final class BaseRunnerTest extends TestBase
             $countCoverageAfter,
             $countCoverageBefore,
             "Test Runner failed to clean up the 'CV_*' file in " . TMP_DIR
+        );
+        static::assertSame(
+            $countTeamcityAfter,
+            $countTeamcityBefore,
+            "Test Runner failed to clean up the 'TF_*' file in " . TMP_DIR
         );
     }
 
@@ -152,5 +167,35 @@ final class BaseRunnerTest extends TestBase
         static::assertIsArray($attribues['@attributes']);
         static::assertArrayHasKey('name', $attribues['@attributes']);
         static::assertSame('', $attribues['@attributes']['name']);
+    }
+
+    public function testTeamcityLog(): void
+    {
+        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
+
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-teamcity' => $outputPath,
+        ];
+
+        $this->runRunner();
+
+        static::assertTrue(file_exists($outputPath));
+        $handle = fopen($outputPath, 'r');
+        static::assertNotFalse($handle);
+
+        $starts_with = static function ($haystack, $needle): bool {
+            return substr($haystack, 0, strlen($needle)) === $needle;
+        };
+
+        while (($line = fgets($handle)) !== false) {
+            if (ctype_space($line)) {
+                continue;
+            }
+
+            static::assertTrue($starts_with($line, '##teamcity'), "`$line`");
+        }
+
+        fclose($handle);
     }
 }

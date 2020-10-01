@@ -25,9 +25,9 @@ final class Suite extends ExecutableTest
     /**
      * @param TestMethod[] $functions
      */
-    public function __construct(string $path, array $functions, bool $needsCoverage, string $tmpDir)
+    public function __construct(string $path, array $functions, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {
-        parent::__construct($path, $needsCoverage, $tmpDir);
+        parent::__construct($path, $needsCoverage, $needsTeamcity, $tmpDir);
         $this->functions = $functions;
     }
 

@@ -224,6 +224,7 @@ final class SuiteLoader
                 $path,
                 $methodBatch,
                 $this->options->hasCoverage(),
+                $this->options->hasLogTeamcity(),
                 $this->options->tmpDir()
             );
         }
@@ -388,6 +389,7 @@ final class SuiteLoader
                 $class
             ),
             $this->options->hasCoverage(),
+            $this->options->hasLogTeamcity(),
             $this->options->tmpDir()
         );
     }
@@ -397,6 +399,7 @@ final class SuiteLoader
         return new FullSuite(
             $suiteName,
             $this->options->hasCoverage(),
+            $this->options->hasLogTeamcity(),
             $this->options->tmpDir()
         );
     }

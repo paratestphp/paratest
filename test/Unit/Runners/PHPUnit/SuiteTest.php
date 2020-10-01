@@ -20,10 +20,10 @@ final class SuiteTest extends TestBase
     public function testConstructor(): void
     {
         $file        = uniqid('pathToFile_');
-        $testMethod1 = new TestMethod($file, [], false, TMP_DIR);
-        $testMethod2 = new TestMethod($file, [], false, TMP_DIR);
+        $testMethod1 = new TestMethod($file, [], false, false, TMP_DIR);
+        $testMethod2 = new TestMethod($file, [], false, false, TMP_DIR);
         $testMethods = [$testMethod1, $testMethod2];
-        $suite       = new Suite($file, $testMethods, false, TMP_DIR);
+        $suite       = new Suite($file, $testMethods, false, false, TMP_DIR);
 
         $commandArguments = $suite->commandArguments(uniqid(), [], null);
 

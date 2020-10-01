@@ -62,6 +62,7 @@ Options:
   -g, --group=GROUP                              Only runs tests from the specified group(s).
   -h, --help                                     Display this help message.
       --log-junit=LOG-JUNIT                      Log test execution in JUnit XML format to file.
+      --log-teamcity=LOG-TEAMCITY                Log test execution in Teamcity format to file.
   -m, --max-batch-size=MAX-BATCH-SIZE            Max batch size (only for functional mode). [default: 0]
       --no-test-tokens                           Disable TEST_TOKEN environment variables. (default: variable is set)
       --parallel-suite                           Run the suites of the config in parallel.

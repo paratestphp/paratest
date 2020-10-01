@@ -228,6 +228,7 @@ final class OptionsTest extends TestBase
             '--functional' => true,
             '--group' => 'GROUP',
             '--log-junit' => 'LOG-JUNIT',
+            '--log-teamcity' => 'LOG-TEAMCITY',
             '--max-batch-size' => 5,
             '--no-test-tokens' => true,
             '--parallel-suite' => true,
@@ -261,6 +262,7 @@ final class OptionsTest extends TestBase
         static::assertTrue($options->functional());
         static::assertSame(['GROUP'], $options->group());
         static::assertSame('LOG-JUNIT', $options->logJunit());
+        static::assertSame('LOG-TEAMCITY', $options->logTeamcity());
         static::assertSame(5, $options->maxBatchSize());
         static::assertTrue($options->noTestTokens());
         static::assertTrue($options->parallelSuite());
@@ -284,6 +286,7 @@ final class OptionsTest extends TestBase
             'whitelist' => 'WHITELIST',
         ], $options->filtered());
 
+        static::assertTrue($options->hasLogTeamcity());
         static::assertTrue($options->hasCoverage());
     }
 

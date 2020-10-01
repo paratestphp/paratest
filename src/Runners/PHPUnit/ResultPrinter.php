@@ -15,7 +15,11 @@ use function array_filter;
 use function array_map;
 use function assert;
 use function count;
+use function fclose;
+use function file_get_contents;
 use function floor;
+use function fopen;
+use function fwrite;
 use function implode;
 use function is_array;
 use function max;
@@ -25,6 +29,7 @@ use function sprintf;
 use function str_pad;
 use function str_repeat;
 use function strlen;
+use function unlink;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
@@ -104,6 +109,9 @@ final class ResultPrinter
      */
     private $processSkipped = false;
 
+    /** @var mixed */
+    private $teamcityLogFileHandle;
+
     /** @var OutputInterface */
     private $output;
     /** @var Options */
@@ -114,6 +122,14 @@ final class ResultPrinter
         $this->results = $results;
         $this->output  = $output;
         $this->options = $options;
+
+        if (! $this->options->hasLogTeamcity()) {
+            return;
+        }
+
+        $teamcityLogFile = $this->options->logTeamcity();
+        assert($teamcityLogFile !== null);
+        $this->teamcityLogFileHandle = fopen($teamcityLogFile, 'w');
     }
 
     /**
@@ -174,6 +190,12 @@ final class ResultPrinter
         $this->output->write($this->getHeader());
         $this->output->write(implode("---\n\n", $failures));
         $this->output->write($this->getFooter());
+
+        if (! $this->options->hasLogTeamcity()) {
+            return;
+        }
+
+        fclose($this->teamcityLogFileHandle);
     }
 
     /**
@@ -193,6 +215,24 @@ final class ResultPrinter
                 $test->getLastCommand(),
                 $test->getPath()
             ), 0, $invalidArgumentException);
+        }
+
+        if ($this->options->hasLogTeamcity()) {
+            $log_file = $test->getTeamcityTempFile();
+            $result   = file_get_contents($log_file);
+
+            if ($result === false || $result === '') {
+                throw new EmptyLogFileException(sprintf(
+                    "Teamcity format file is empty.\n" .
+                    "The process: %s\n" .
+                    "This means a PHPUnit process was unable to run \"%s\"\n",
+                    $test->getLastCommand(),
+                    $test->getPath()
+                ), 0);
+            }
+
+            fwrite($this->teamcityLogFileHandle, $result);
+            unlink($log_file);
         }
 
         $this->results->addReader($reader);
