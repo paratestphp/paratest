@@ -15,6 +15,9 @@ use function array_filter;
 use function array_map;
 use function assert;
 use function count;
+use function file_get_contents;
+use function file_put_contents;
+use function filesize;
 use function floor;
 use function implode;
 use function is_array;
@@ -27,6 +30,7 @@ use function str_repeat;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
+use const FILE_APPEND;
 use const PHP_EOL;
 
 /**
@@ -193,6 +197,24 @@ final class ResultPrinter
                 $test->getLastCommand(),
                 $test->getPath()
             ), 0, $invalidArgumentException);
+        }
+
+        if (($teamcityLogFile = $this->options->logTeamcity()) !== null) {
+            $log_file = $test->getTeamcityTempFile();
+
+            if (filesize($log_file) === 0) {
+                throw new EmptyLogFileException(sprintf(
+                    "Teamcity format file is empty.\n" .
+                    "The process: %s\n" .
+                    "This means a PHPUnit process was unable to run \"%s\"\n",
+                    $test->getLastCommand(),
+                    $test->getPath()
+                ));
+            }
+
+            $result = file_get_contents($log_file);
+            assert($result !== false);
+            file_put_contents($teamcityLogFile, $result, FILE_APPEND);
         }
 
         $this->results->addReader($reader);

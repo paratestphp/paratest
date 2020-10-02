@@ -21,7 +21,7 @@ final class ExecutableTestTest extends TestBase
 
     public function setUpTest(): void
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile', true, TMP_DIR);
+        $this->executableTestChild = new ExecutableTestChild('pathToFile', true, true, TMP_DIR);
     }
 
     public function testConstructor(): void
@@ -47,6 +47,8 @@ final class ExecutableTestTest extends TestBase
             NullPhpunitPrinter::class,
             '--log-junit',
             $this->executableTestChild->getTempFile(),
+            '--log-teamcity',
+            $this->executableTestChild->getTeamcityTempFile(),
             '--coverage-php',
             $this->executableTestChild->getCoverageFileName(),
             'pathToFile',
@@ -59,19 +61,31 @@ final class ExecutableTestTest extends TestBase
     {
         $logFile = $this->executableTestChild->getTempFile();
         static::assertFileExists($logFile);
-        $this->executableTestChild->deleteFile();
+        $this->executableTestChild->deleteTempFiles();
         static::assertFileDoesNotExist($logFile);
 
         $ccFile = $this->executableTestChild->getCoverageFileName();
         static::assertFileExists($ccFile);
-        $this->executableTestChild->deleteFile();
+        $this->executableTestChild->deleteTempFiles();
         static::assertFileDoesNotExist($ccFile);
+
+        $tfFile = $this->executableTestChild->getTeamcityTempFile();
+        static::assertFileExists($tfFile);
+        $this->executableTestChild->deleteTempFiles();
+        static::assertFileDoesNotExist($tfFile);
     }
 
     public function testGetTempFileShouldReturnSameFileIfAlreadyCalled(): void
     {
         $file      = $this->executableTestChild->getTempFile();
         $fileAgain = $this->executableTestChild->getTempFile();
+        static::assertEquals($file, $fileAgain);
+    }
+
+    public function testGetTeamcityTempFileShouldReturnSameFileIfAlreadyCalled(): void
+    {
+        $file      = $this->executableTestChild->getTeamcityTempFile();
+        $fileAgain = $this->executableTestChild->getTeamcityTempFile();
         static::assertEquals($file, $fileAgain);
     }
 

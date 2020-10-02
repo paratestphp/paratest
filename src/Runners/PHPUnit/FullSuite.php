@@ -14,9 +14,9 @@ final class FullSuite extends ExecutableTest
     /** @var string */
     private $suiteName;
 
-    public function __construct(string $suiteName, bool $needsCoverage, string $tmpDir)
+    public function __construct(string $suiteName, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {
-        parent::__construct('', $needsCoverage, $tmpDir);
+        parent::__construct('', $needsCoverage, $needsTeamcity, $tmpDir);
 
         $this->suiteName = $suiteName;
     }

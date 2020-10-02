@@ -8,7 +8,9 @@ use ParaTest\Tests\TestBase;
 
 use function assert;
 use function count;
+use function file_get_contents;
 use function glob;
+use function preg_match_all;
 use function simplexml_load_file;
 
 /**
@@ -71,14 +73,17 @@ final class BaseRunnerTest extends TestBase
     {
         // Needed for one line coverage on early exit CS Fix :\
         unset($this->bareOptions['--coverage-php']);
+        $this->bareOptions['--log-teamcity'] = TMP_DIR . DS . 'test-output.teamcity';
 
         $countBefore         = count($this->globTempDir('PT_*'));
         $countCoverageBefore = count($this->globTempDir('CV_*'));
+        $countTeamcityBefore = count($this->globTempDir('TF_*'));
 
         $this->runRunner();
 
         $countAfter         = count($this->globTempDir('PT_*'));
         $countCoverageAfter = count($this->globTempDir('CV_*'));
+        $countTeamcityAfter = count($this->globTempDir('CF_*'));
 
         static::assertSame(
             $countAfter,
@@ -89,6 +94,11 @@ final class BaseRunnerTest extends TestBase
             $countCoverageAfter,
             $countCoverageBefore,
             "Test Runner failed to clean up the 'CV_*' file in " . TMP_DIR
+        );
+        static::assertSame(
+            $countTeamcityAfter,
+            $countTeamcityBefore,
+            "Test Runner failed to clean up the 'TF_*' file in " . TMP_DIR
         );
     }
 
@@ -152,5 +162,23 @@ final class BaseRunnerTest extends TestBase
         static::assertIsArray($attribues['@attributes']);
         static::assertArrayHasKey('name', $attribues['@attributes']);
         static::assertSame('', $attribues['@attributes']['name']);
+    }
+
+    public function testTeamcityLog(): void
+    {
+        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
+
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-teamcity' => $outputPath,
+        ];
+
+        $this->runRunner();
+
+        static::assertFileExists($outputPath);
+        $content = file_get_contents($outputPath);
+        static::assertNotFalse($content);
+
+        self::assertSame(66, preg_match_all('/^##teamcity/m', $content));
     }
 }

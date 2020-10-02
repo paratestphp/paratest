@@ -192,6 +192,8 @@ final class Options
     /** @var string|null */
     private $logJunit;
     /** @var string|null */
+    private $logTeamcity;
+    /** @var string|null */
     private $whitelist;
     /** @var string */
     private $tmpDir;
@@ -222,6 +224,7 @@ final class Options
         bool $functional,
         array $group,
         ?string $logJunit,
+        ?string $logTeamcity,
         ?int $maxBatchSize,
         bool $noTestTokens,
         bool $parallelSuite,
@@ -254,6 +257,7 @@ final class Options
         $this->functional        = $functional;
         $this->group             = $group;
         $this->logJunit          = $logJunit;
+        $this->logTeamcity       = $logTeamcity;
         $this->maxBatchSize      = $maxBatchSize;
         $this->noTestTokens      = $noTestTokens;
         $this->parallelSuite     = $parallelSuite;
@@ -365,6 +369,10 @@ final class Options
             if ($options['log-junit'] === null && $logging->hasJunit()) {
                 $options['log-junit'] = $logging->junit()->target()->path();
             }
+
+            if ($options['log-teamcity'] === null && $logging->hasTeamCity()) {
+                $options['log-teamcity'] = $logging->teamCity()->target()->path();
+            }
         }
 
         if ($configuration !== null) {
@@ -395,6 +403,7 @@ final class Options
             $options['functional'],
             $group,
             $options['log-junit'],
+            $options['log-teamcity'],
             (int) $options['max-batch-size'],
             $options['no-test-tokens'],
             $options['parallel-suite'],
@@ -529,6 +538,12 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Log test execution in JUnit XML format to file.'
+            ),
+            new InputOption(
+                'log-teamcity',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Log test execution in Teamcity format to file.'
             ),
             new InputOption(
                 'max-batch-size',
@@ -885,6 +900,16 @@ final class Options
     public function logJunit(): ?string
     {
         return $this->logJunit;
+    }
+
+    public function logTeamcity(): ?string
+    {
+        return $this->logTeamcity;
+    }
+
+    public function hasLogTeamcity(): bool
+    {
+        return $this->logTeamcity !== null;
     }
 
     public function tmpDir(): string
