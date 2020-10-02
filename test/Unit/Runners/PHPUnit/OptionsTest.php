@@ -194,6 +194,7 @@ final class OptionsTest extends TestBase
         static::assertFalse($options->functional());
         static::assertEmpty($options->group());
         static::assertNull($options->logJunit());
+        static::assertNull($options->logTeamcity());
         static::assertSame(0, $options->maxBatchSize());
         static::assertFalse($options->noTestTokens());
         static::assertFalse($options->parallelSuite());
@@ -208,6 +209,9 @@ final class OptionsTest extends TestBase
         static::assertSame(TMP_DIR, $options->tmpDir());
         static::assertSame(0, $options->verbose());
         static::assertNull($options->whitelist());
+
+        static::assertFalse($options->hasLogTeamcity());
+        static::assertFalse($options->hasCoverage());
     }
 
     public function testProvidedOptions(): void

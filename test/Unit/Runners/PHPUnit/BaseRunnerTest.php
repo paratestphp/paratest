@@ -8,15 +8,10 @@ use ParaTest\Tests\TestBase;
 
 use function assert;
 use function count;
-use function ctype_space;
-use function fclose;
-use function fgets;
-use function file_exists;
-use function fopen;
+use function file_get_contents;
 use function glob;
+use function preg_match_all;
 use function simplexml_load_file;
-use function strlen;
-use function substr;
 
 /**
  * @internal
@@ -180,22 +175,10 @@ final class BaseRunnerTest extends TestBase
 
         $this->runRunner();
 
-        static::assertTrue(file_exists($outputPath));
-        $handle = fopen($outputPath, 'r');
-        static::assertNotFalse($handle);
+        static::assertFileExists($outputPath);
+        $content = file_get_contents($outputPath);
+        static::assertNotFalse($content);
 
-        $starts_with = static function ($haystack, $needle): bool {
-            return substr($haystack, 0, strlen($needle)) === $needle;
-        };
-
-        while (($line = fgets($handle)) !== false) {
-            if (ctype_space($line)) {
-                continue;
-            }
-
-            static::assertTrue($starts_with($line, '##teamcity'), "`$line`");
-        }
-
-        fclose($handle);
+        self::assertSame(66, preg_match_all('/^##teamcity/m', $content));
     }
 }

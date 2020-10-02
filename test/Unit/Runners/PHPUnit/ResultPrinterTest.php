@@ -14,7 +14,6 @@ use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function defined;
-use function file_exists;
 use function file_put_contents;
 use function sprintf;
 use function str_repeat;
@@ -463,8 +462,7 @@ final class ResultPrinterTest extends ResultTester
 
         file_put_contents($test->getTeamcityTempFile(), '');
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches(sprintf('/%s/', $test->getLastCommand()));
-        $this->expectExceptionMessageMatches('/Teamcity/');
+        $this->expectExceptionMessageMatches(sprintf('/Teamcity.+%s/s', $test->getLastCommand()));
 
         $this->printer->printFeedback($test);
     }
@@ -482,7 +480,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printResults();
 
         static::assertStringContainsString('OK', $this->output->fetch());
-        static::assertTrue(file_exists($teamcityLog));
+        static::assertFileExists($teamcityLog);
     }
 
     private function getStartOutput(): string
