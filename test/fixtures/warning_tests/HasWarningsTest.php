@@ -6,6 +6,8 @@ namespace ParaTest\Tests\fixtures\warning_tests;
 
 use PHPUnit\Framework\TestCase;
 
+use function uniqid;
+
 /**
  * @internal
  */
@@ -16,21 +18,8 @@ final class HasWarningsTest extends TestCase
         $this->assertTrue(true);
     }
 
-    // phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
-    private function testPrivateTest(): void
+    public function testForcedWarning(): void
     {
-        $this->assertTrue(true);
+        $this->addWarning(uniqid('paratest_warning_'));
     }
-
-    // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
-
-    /**
-     * @dataProvider llamas
-     */
-    private function testMissingDataProvider(): void
-    {
-        $this->assertTrue(true);
-    }
-
-    // phpcs:enable
 }
