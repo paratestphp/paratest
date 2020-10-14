@@ -83,6 +83,37 @@ final class OptionsTest extends TestBase
         ]);
     }
 
+    public function testOrderByBadParam(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->createOptionsFromArgv(['--order-by' => 'not_a_valid_order']);
+    }
+
+    public function testOrderWithoutOrderBy(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->createOptionsFromArgv(['--random-order-seed' => 123]);
+    }
+
+    public function testOrderBadOrder(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->createOptionsFromArgv([
+            '--random-order-seed' => 123,
+            '--order-by' => Options::REVERSED_ORDER,
+        ]);
+    }
+
+    public function testSeedNotNumberic(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->createOptionsFromArgv(['--random-order-seed' => 'not_a_numeric_seed']);
+    }
+
     public function testAutoProcessesMode(): void
     {
         $options = $this->createOptionsFromArgv(['--processes' => 'auto']);
@@ -117,6 +148,13 @@ final class OptionsTest extends TestBase
         $options = $this->createOptionsFromArgv([], __DIR__);
 
         static::assertArrayNotHasKey('configuration', $options->filtered());
+    }
+
+    public function testRandomOrderSeedAutoset(): void
+    {
+        $options = $this->createOptionsFromArgv(['--order-by' => Options::RANDOM_ORDER]);
+
+        static::assertGreaterThan(0, $options->randomOrderSeed());
     }
 
     public function testPassthru(): void
@@ -209,7 +247,8 @@ final class OptionsTest extends TestBase
         static::assertSame(TMP_DIR, $options->tmpDir());
         static::assertSame(0, $options->verbose());
         static::assertNull($options->whitelist());
-
+        static::assertSame(Options::DEFAULT_ORDER, $options->orderBy());
+        static::assertSame(0, $options->randomOrderSeed());
         static::assertFalse($options->hasLogTeamcity());
         static::assertFalse($options->hasCoverage());
     }
@@ -246,6 +285,8 @@ final class OptionsTest extends TestBase
             '--tmp-dir' => ($tmpDir = uniqid(TMP_DIR . DS . 't')),
             '--verbose' => 1,
             '--whitelist' => 'WHITELIST',
+            '--order-by' => Options::RANDOM_ORDER,
+            '--random-order-seed' => 12345678,
         ];
 
         $options = $this->createOptionsFromArgv($argv, __DIR__);
@@ -280,6 +321,8 @@ final class OptionsTest extends TestBase
         static::assertSame($tmpDir, $options->tmpDir());
         static::assertSame(1, $options->verbose());
         static::assertSame('WHITELIST', $options->whitelist());
+        static::assertSame(Options::RANDOM_ORDER, $options->orderBy());
+        static::assertSame(12345678, $options->randomOrderSeed());
 
         static::assertSame([
             'bootstrap' => 'BOOTSTRAP',

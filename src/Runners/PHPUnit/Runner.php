@@ -64,9 +64,9 @@ final class Runner extends BaseRunner
             && count($this->running) < $this->options->processes()
             && ($token = array_shift($availableTokens)) !== null
         ) {
-            $executebleTest = array_shift($this->pending);
+            $executableTest = array_shift($this->pending);
 
-            $this->running[$token] = new RunnerWorker($executebleTest, $this->options, $token);
+            $this->running[$token] = new RunnerWorker($executableTest, $this->options, $token);
             $this->running[$token]->run();
 
             if ($this->options->verbose() === 0) {

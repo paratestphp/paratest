@@ -18,6 +18,7 @@ use Symfony\Component\Process\Process;
 
 use function array_shift;
 use function assert;
+use function bin2hex;
 use function count;
 use function dirname;
 use function escapeshellarg;
@@ -25,16 +26,20 @@ use function explode;
 use function fgets;
 use function file_exists;
 use function file_get_contents;
+use function hexdec;
 use function implode;
+use function in_array;
 use function intdiv;
 use function is_dir;
 use function is_file;
+use function is_numeric;
 use function is_string;
 use function ksort;
 use function pclose;
 use function popen;
 use function preg_match;
 use function preg_match_all;
+use function random_bytes;
 use function realpath;
 use function sprintf;
 use function strlen;
@@ -55,6 +60,11 @@ final class Options
 {
     public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
     public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
+
+    public const DEFAULT_ORDER  = 'default';
+    public const RANDOM_ORDER   = 'random';
+    public const REVERSED_ORDER = 'reversed';
+
 
     /**
      * @see \PHPUnit\Util\Configuration
@@ -197,6 +207,10 @@ final class Options
     private $whitelist;
     /** @var string */
     private $tmpDir;
+    /** @var string */
+    private $orderBy;
+    /** @var int|null */
+    private $randomOrderSeed;
 
     /**
      * @param array<string, string|null> $filtered
@@ -238,7 +252,9 @@ final class Options
         array $testsuite,
         string $tmpDir,
         int $verbose,
-        ?string $whitelist
+        ?string $whitelist,
+        string $orderBy,
+        ?int $randomOrderSeed
     ) {
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
@@ -272,6 +288,8 @@ final class Options
         $this->tmpDir            = $tmpDir;
         $this->verbose           = $verbose;
         $this->whitelist         = $whitelist;
+        $this->orderBy           = $orderBy;
+        $this->randomOrderSeed   = $randomOrderSeed;
     }
 
     public static function fromConsoleInput(InputInterface $input, string $cwd): self
@@ -311,6 +329,36 @@ final class Options
 
         if (isset($options['filter']) && strlen($options['filter']) > 0 && ! $options['functional']) {
             throw new InvalidArgumentException('Option --filter is not implemented for non functional mode');
+        }
+
+        if (isset($options['order-by']) && ! in_array($options['order-by'], [self::DEFAULT_ORDER, self::REVERSED_ORDER, self::RANDOM_ORDER], true)) {
+            throw new InvalidArgumentException('Option --order-by supports only default|random|reverse');
+        }
+
+        if (isset($options['random-order-seed']) && ! is_numeric($options['random-order-seed'])) {
+            throw new InvalidArgumentException('Option --order-by should be a number');
+        }
+
+        if (isset($options['random-order-seed'])) {
+            if (! isset($options['order-by'])) {
+                throw new InvalidArgumentException('Option --random-order-seed useless without --order-by=random');
+            }
+
+            if ($options['order-by'] !== self::RANDOM_ORDER) {
+                throw new InvalidArgumentException(sprintf('Option --random-order-seed useless in order-by=%s mode', $options['order-by']));
+            }
+        }
+
+        if (! isset($options['order-by'])) {
+            $options['order-by'] = self::DEFAULT_ORDER;
+        }
+
+        if ($options['order-by'] === self::RANDOM_ORDER) {
+            if (isset($options['random-order-seed'])) {
+                $options['random-order-seed'] = (int) $options['random-order-seed'];
+            } else {
+                $options['random-order-seed'] = (int) hexdec(bin2hex(random_bytes(4)));
+            }
         }
 
         $filtered = [];
@@ -417,7 +465,9 @@ final class Options
             $testsuite,
             $options['tmp-dir'],
             (int) $options['verbose'],
-            $options['whitelist']
+            $options['whitelist'],
+            $options['order-by'],
+            $options['random-order-seed']
         );
     }
 
@@ -559,6 +609,12 @@ final class Options
                 'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'
             ),
             new InputOption(
+                'order-by',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Run tests in order: default|random|reverse'
+            ),
+            new InputOption(
                 'parallel-suite',
                 null,
                 InputOption::VALUE_NONE,
@@ -590,6 +646,12 @@ final class Options
                 InputOption::VALUE_REQUIRED,
                 'The number of test processes to run.',
                 'auto'
+            ),
+            new InputOption(
+                'random-order-seed',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Use a specific random seed <N> for random order'
             ),
             new InputOption(
                 'runner',
@@ -920,6 +982,16 @@ final class Options
     public function whitelist(): ?string
     {
         return $this->whitelist;
+    }
+
+    public function orderBy(): string
+    {
+        return $this->orderBy;
+    }
+
+    public function randomOrderSeed(): int
+    {
+        return $this->randomOrderSeed ?? 0;
     }
 
     /**

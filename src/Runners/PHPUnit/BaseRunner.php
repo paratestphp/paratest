@@ -11,7 +11,12 @@ use ParaTest\Logging\LogInterpreter;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function array_keys;
+use function array_merge;
+use function array_reverse;
 use function assert;
+use function mt_srand;
+use function shuffle;
 use function sprintf;
 
 /**
@@ -95,9 +100,36 @@ abstract class BaseRunner implements RunnerInterface
         $this->pending = $this->options->functional()
             ? $loader->getTestMethods()
             : $loader->getSuites();
+
+        $this->sortPending();
+
         foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);
         }
+    }
+
+    private function sortPending(): void
+    {
+        $seed = $this->options->randomOrderSeed();
+        if ($seed > 0 && $this->options->orderBy() === Options::RANDOM_ORDER) {
+            mt_srand($seed);
+
+            $keys      = array_keys($this->pending);
+            $new_array = [];
+            shuffle($keys);
+            foreach ($keys as $key) {
+                $new_array[$key] = $this->pending[$key];
+            }
+
+            $this->pending = $new_array;
+            mt_srand();
+        }
+
+        if ($this->options->orderBy() !== Options::REVERSED_ORDER) {
+            return;
+        }
+
+        $this->pending = array_reverse($this->pending);
     }
 
     abstract protected function beforeLoadChecks(): void;

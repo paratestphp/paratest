@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
 use Symfony\Component\Process\Process;
 
@@ -204,5 +205,42 @@ final class BaseRunnerTest extends TestBase
 
         self::assertSame(0, $fifoReader->wait());
         self::assertSame(66, preg_match_all('/^##teamcity/m', $fifoReader->getOutput()));
+    }
+
+    public function testRunnerSort(): void
+    {
+        $this->bareOptions = [
+            '--order-by' => Options::RANDOM_ORDER,
+            '--random-order-seed' => 123,
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ];
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Random order seed 123', $runnerResult->getOutput());
+    }
+
+    public function testRunnerSortNoSeed(): void
+    {
+        $this->bareOptions = [
+            '--order-by' => Options::RANDOM_ORDER,
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ];
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Random order seed ', $runnerResult->getOutput());
+    }
+
+    public function testRunnerReversed(): void
+    {
+        $this->bareOptions = [
+            '--order-by' => Options::REVERSED_ORDER,
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ];
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Reversed tests order', $runnerResult->getOutput());
     }
 }
