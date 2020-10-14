@@ -11,8 +11,6 @@ use ParaTest\Logging\LogInterpreter;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function array_keys;
-use function array_merge;
 use function array_reverse;
 use function assert;
 use function mt_srand;
@@ -113,15 +111,7 @@ abstract class BaseRunner implements RunnerInterface
         $seed = $this->options->randomOrderSeed();
         if ($seed > 0 && $this->options->orderBy() === Options::RANDOM_ORDER) {
             mt_srand($seed);
-
-            $keys      = array_keys($this->pending);
-            $new_array = [];
-            shuffle($keys);
-            foreach ($keys as $key) {
-                $new_array[$key] = $this->pending[$key];
-            }
-
-            $this->pending = $new_array;
+            shuffle($this->pending);
             mt_srand();
         }
 
