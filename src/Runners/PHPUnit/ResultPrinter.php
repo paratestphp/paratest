@@ -171,7 +171,7 @@ final class ResultPrinter
             ));
         }
 
-        if ($this->options->orderBy() === Options::ORDER_REVERSED) {
+        if ($this->options->orderBy() === Options::ORDER_REVERSE) {
             $this->output->write("Reversed tests order\n\n");
         }
 

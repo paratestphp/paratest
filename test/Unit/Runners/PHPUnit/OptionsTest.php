@@ -103,7 +103,7 @@ final class OptionsTest extends TestBase
 
         $this->createOptionsFromArgv([
             '--random-order-seed' => 123,
-            '--order-by' => Options::ORDER_REVERSED,
+            '--order-by' => Options::ORDER_REVERSE,
         ]);
     }
 

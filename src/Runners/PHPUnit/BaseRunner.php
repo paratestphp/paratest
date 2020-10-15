@@ -115,7 +115,7 @@ abstract class BaseRunner implements RunnerInterface
             mt_srand();
         }
 
-        if ($this->options->orderBy() !== Options::ORDER_REVERSED) {
+        if ($this->options->orderBy() !== Options::ORDER_REVERSE) {
             return;
         }
 

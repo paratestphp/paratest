@@ -235,7 +235,7 @@ final class BaseRunnerTest extends TestBase
     public function testRunnerReversed(): void
     {
         $this->bareOptions = [
-            '--order-by' => Options::ORDER_REVERSED,
+            '--order-by' => Options::ORDER_REVERSE,
             '--configuration' => $this->fixture('phpunit-passing.xml'),
         ];
 

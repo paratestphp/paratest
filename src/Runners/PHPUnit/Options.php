@@ -60,14 +60,14 @@ final class Options
     public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
     public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
 
-    public const ORDER_DEFAULT  = 'default';
-    public const ORDER_RANDOM   = 'random';
-    public const ORDER_REVERSED = 'reversed';
+    public const ORDER_DEFAULT = 'default';
+    public const ORDER_RANDOM  = 'random';
+    public const ORDER_REVERSE = 'reverse';
 
     public const ORDER_TYPES = [
         self::ORDER_DEFAULT,
         self::ORDER_RANDOM,
-        self::ORDER_REVERSED,
+        self::ORDER_REVERSE,
     ];
 
 
