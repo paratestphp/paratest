@@ -27,6 +27,7 @@ use function array_intersect;
 use function array_map;
 use function array_merge;
 use function array_unique;
+use function array_values;
 use function assert;
 use function count;
 use function in_array;
@@ -87,11 +88,11 @@ final class SuiteLoader
      * Returns all parsed suite objects as ExecutableTest
      * instances.
      *
-     * @return array<string, ExecutableTest>
+     * @return ExecutableTest[]
      */
     public function getSuites(): array
     {
-        return $this->loadedSuites;
+        return array_values($this->loadedSuites);
     }
 
     /**
