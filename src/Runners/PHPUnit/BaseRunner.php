@@ -11,7 +11,6 @@ use ParaTest\Logging\LogInterpreter;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function array_merge;
 use function assert;
 use function sprintf;
 
@@ -32,7 +31,7 @@ abstract class BaseRunner implements RunnerInterface
      * A collection of pending ExecutableTest objects that have
      * yet to run.
      *
-     * @var array<int|string, ExecutableTest>
+     * @var ExecutableTest[]
      */
     protected $pending = [];
 
@@ -93,8 +92,9 @@ abstract class BaseRunner implements RunnerInterface
     {
         $this->beforeLoadChecks();
         $loader->load();
-        $executables   = $this->options->functional() ? $loader->getTestMethods() : $loader->getSuites();
-        $this->pending = array_merge($this->pending, $executables);
+        $this->pending = $this->options->functional()
+            ? $loader->getTestMethods()
+            : $loader->getSuites();
         foreach ($this->pending as $pending) {
             $this->printer->addTest($pending);
         }
