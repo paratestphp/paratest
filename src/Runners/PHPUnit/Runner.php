@@ -65,8 +65,6 @@ final class Runner extends BaseRunner
             && ($token = array_shift($availableTokens)) !== null
         ) {
             $executebleTest = array_shift($this->pending);
-            /** @psalm-suppress RedundantConditionGivenDocblockType **/
-            assert($executebleTest !== null);
 
             $this->running[$token] = new RunnerWorker($executebleTest, $this->options, $token);
             $this->running[$token]->run();
