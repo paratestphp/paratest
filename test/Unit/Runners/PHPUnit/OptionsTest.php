@@ -103,7 +103,7 @@ final class OptionsTest extends TestBase
 
         $this->createOptionsFromArgv([
             '--random-order-seed' => 123,
-            '--order-by' => Options::REVERSED_ORDER,
+            '--order-by' => Options::ORDER_REVERSED,
         ]);
     }
 
@@ -152,7 +152,7 @@ final class OptionsTest extends TestBase
 
     public function testRandomOrderSeedAutoset(): void
     {
-        $options = $this->createOptionsFromArgv(['--order-by' => Options::RANDOM_ORDER]);
+        $options = $this->createOptionsFromArgv(['--order-by' => Options::ORDER_RANDOM]);
 
         static::assertGreaterThan(0, $options->randomOrderSeed());
     }
@@ -247,7 +247,7 @@ final class OptionsTest extends TestBase
         static::assertSame(TMP_DIR, $options->tmpDir());
         static::assertSame(0, $options->verbose());
         static::assertNull($options->whitelist());
-        static::assertSame(Options::DEFAULT_ORDER, $options->orderBy());
+        static::assertSame(Options::ORDER_DEFAULT, $options->orderBy());
         static::assertSame(0, $options->randomOrderSeed());
         static::assertFalse($options->hasLogTeamcity());
         static::assertFalse($options->hasCoverage());
@@ -255,7 +255,8 @@ final class OptionsTest extends TestBase
 
     public function testProvidedOptions(): void
     {
-        $argv = [
+        $expected_random_seed = 12345678;
+        $argv                 = [
             '--bootstrap' => 'BOOTSTRAP',
             '--colors' => true,
             '--configuration' => 'phpunit-ConfigurationTest.xml',
@@ -285,8 +286,8 @@ final class OptionsTest extends TestBase
             '--tmp-dir' => ($tmpDir = uniqid(TMP_DIR . DS . 't')),
             '--verbose' => 1,
             '--whitelist' => 'WHITELIST',
-            '--order-by' => Options::RANDOM_ORDER,
-            '--random-order-seed' => 12345678,
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => $expected_random_seed,
         ];
 
         $options = $this->createOptionsFromArgv($argv, __DIR__);
@@ -321,8 +322,8 @@ final class OptionsTest extends TestBase
         static::assertSame($tmpDir, $options->tmpDir());
         static::assertSame(1, $options->verbose());
         static::assertSame('WHITELIST', $options->whitelist());
-        static::assertSame(Options::RANDOM_ORDER, $options->orderBy());
-        static::assertSame(12345678, $options->randomOrderSeed());
+        static::assertSame(Options::ORDER_RANDOM, $options->orderBy());
+        static::assertSame($expected_random_seed, $options->randomOrderSeed());
 
         static::assertSame([
             'bootstrap' => 'BOOTSTRAP',
@@ -330,7 +331,7 @@ final class OptionsTest extends TestBase
             'exclude-group' => 'EXCLUDE-GROUP',
             'group' => 'GROUP',
             'order-by' => Options::ORDER_RANDOM,
-            'random-order-seed' => 12345678,
+            'random-order-seed' => $expected_random_seed,
             'stop-on-failure' => null,
             'whitelist' => 'WHITELIST',
         ], $options->filtered());

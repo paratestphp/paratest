@@ -64,6 +64,12 @@ final class Options
     public const ORDER_RANDOM   = 'random';
     public const ORDER_REVERSED = 'reversed';
 
+    public const ORDER_TYPES = [
+        self::ORDER_DEFAULT,
+        self::ORDER_RANDOM,
+        self::ORDER_REVERSED,
+    ];
+
 
     /**
      * @see \PHPUnit\Util\Configuration
@@ -330,12 +336,12 @@ final class Options
             throw new InvalidArgumentException('Option --filter is not implemented for non functional mode');
         }
 
-        if (isset($options['order-by']) && ! in_array($options['order-by'], [self::DEFAULT_ORDER, self::REVERSED_ORDER, self::RANDOM_ORDER], true)) {
-            throw new InvalidArgumentException('Option --order-by supports only default|random|reverse');
+        if (isset($options['order-by']) && ! in_array($options['order-by'], self::ORDER_TYPES, true)) {
+            throw new InvalidArgumentException('Option --order-by supports only ' . implode('|', self::ORDER_TYPES));
         }
 
         if (isset($options['random-order-seed']) && ! is_numeric($options['random-order-seed'])) {
-            throw new InvalidArgumentException('Option --order-by should be a number');
+            throw new InvalidArgumentException('Option --random-order-seed should have a number value');
         }
 
         if (isset($options['random-order-seed'])) {
@@ -343,7 +349,7 @@ final class Options
                 throw new InvalidArgumentException('Option --random-order-seed useless without --order-by=random');
             }
 
-            if ($options['order-by'] !== self::RANDOM_ORDER) {
+            if ($options['order-by'] !== self::ORDER_RANDOM) {
                 throw new InvalidArgumentException(sprintf('Option --random-order-seed useless in order-by=%s mode', $options['order-by']));
             }
         }
@@ -356,7 +362,7 @@ final class Options
             $filtered['order-by'] = $options['order-by'];
         }
 
-        if ($options['order-by'] === self::ORDER_DEFAULT) {
+        if ($options['order-by'] === self::ORDER_RANDOM) {
             if (! isset($options['random-order-seed'])) {
                 $options['random-order-seed'] = random_int(1, PHP_INT_MAX);
             }
@@ -547,7 +553,7 @@ final class Options
                 'coverage-text',
                 null,
                 InputOption::VALUE_NONE,
-                'Generate code coverage report in text format.',
+                'Generate code coverage report in text format.'
             ),
             new InputOption(
                 'coverage-xml',

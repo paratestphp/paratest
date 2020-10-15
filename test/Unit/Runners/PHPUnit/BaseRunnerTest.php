@@ -210,7 +210,7 @@ final class BaseRunnerTest extends TestBase
     public function testRunnerSort(): void
     {
         $this->bareOptions = [
-            '--order-by' => Options::RANDOM_ORDER,
+            '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => 123,
             '--configuration' => $this->fixture('phpunit-passing.xml'),
         ];
@@ -223,7 +223,7 @@ final class BaseRunnerTest extends TestBase
     public function testRunnerSortNoSeed(): void
     {
         $this->bareOptions = [
-            '--order-by' => Options::RANDOM_ORDER,
+            '--order-by' => Options::ORDER_RANDOM,
             '--configuration' => $this->fixture('phpunit-passing.xml'),
         ];
 
@@ -235,7 +235,7 @@ final class BaseRunnerTest extends TestBase
     public function testRunnerReversed(): void
     {
         $this->bareOptions = [
-            '--order-by' => Options::REVERSED_ORDER,
+            '--order-by' => Options::ORDER_REVERSED,
             '--configuration' => $this->fixture('phpunit-passing.xml'),
         ];
 

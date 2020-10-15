@@ -164,14 +164,14 @@ final class ResultPrinter
             ));
         }
 
-        if ($this->options->orderBy() === Options::RANDOM_ORDER) {
+        if ($this->options->orderBy() === Options::ORDER_RANDOM) {
             $this->output->write(sprintf(
                 "Random order seed %s\n\n",
                 (string) $this->options->randomOrderSeed()
             ));
         }
 
-        if ($this->options->orderBy() === Options::REVERSED_ORDER) {
+        if ($this->options->orderBy() === Options::ORDER_REVERSED) {
             $this->output->write("Reversed tests order\n\n");
         }
 

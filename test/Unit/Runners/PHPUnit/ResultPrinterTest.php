@@ -142,7 +142,7 @@ final class ResultPrinterTest extends ResultTester
         file_put_contents($pathToConfig, '<root />');
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
             '--configuration' => $pathToConfig,
-            '--order-by' => Options::REVERSED_ORDER,
+            '--order-by' => Options::ORDER_REVERSED,
         ]));
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
