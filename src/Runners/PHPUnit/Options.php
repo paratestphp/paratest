@@ -354,10 +354,8 @@ final class Options
         }
 
         if ($options['order-by'] === self::RANDOM_ORDER) {
-            if (isset($options['random-order-seed'])) {
-                $options['random-order-seed'] = (int) $options['random-order-seed'];
-            } else {
-                $options['random-order-seed'] = (int) hexdec(bin2hex(random_bytes(4)));
+            if (! isset($options['random-order-seed'])) {
+                $options['random-order-seed'] = random_int(PHP_INT_MIN, PHP_INT_MAX);
             }
         }
 
