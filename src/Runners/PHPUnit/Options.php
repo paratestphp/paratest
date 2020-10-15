@@ -48,7 +48,6 @@ use function unserialize;
 use const DIRECTORY_SEPARATOR;
 use const PHP_BINARY;
 use const PHP_INT_MAX;
-use const PHP_INT_MIN;
 
 /**
  * An object containing all configurable information used
@@ -355,7 +354,7 @@ final class Options
 
         if ($options['order-by'] === self::RANDOM_ORDER) {
             if (! isset($options['random-order-seed'])) {
-                $options['random-order-seed'] = random_int(PHP_INT_MIN, PHP_INT_MAX);
+                $options['random-order-seed'] = random_int(1, PHP_INT_MAX);
             }
         }
 
