@@ -329,6 +329,8 @@ final class OptionsTest extends TestBase
             'configuration' => $options->configuration()->filename(),
             'exclude-group' => 'EXCLUDE-GROUP',
             'group' => 'GROUP',
+            'order-by' => Options::ORDER_RANDOM,
+            'random-order-seed' => 12345678,
             'stop-on-failure' => null,
             'whitelist' => 'WHITELIST',
         ], $options->filtered());

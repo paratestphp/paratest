@@ -348,17 +348,22 @@ final class Options
             }
         }
 
+        $filtered = [];
+
         if (! isset($options['order-by'])) {
-            $options['order-by'] = self::DEFAULT_ORDER;
+            $options['order-by'] = self::ORDER_DEFAULT;
+        } else {
+            $filtered['order-by'] = $options['order-by'];
         }
 
-        if ($options['order-by'] === self::RANDOM_ORDER) {
+        if ($options['order-by'] === self::ORDER_DEFAULT) {
             if (! isset($options['random-order-seed'])) {
                 $options['random-order-seed'] = random_int(1, PHP_INT_MAX);
             }
+
+            $filtered['random-order-seed'] = $options['random-order-seed'];
         }
 
-        $filtered = [];
         if ($options['bootstrap'] !== null) {
             $filtered['bootstrap'] = $options['bootstrap'];
         }

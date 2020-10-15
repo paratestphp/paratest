@@ -39,7 +39,6 @@ final class ExecutableTestTest extends TestBase
 
         $expected = [
             $binary,
-            '--no-extensions',
             '--a',
             'b',
             '--no-coverage',
@@ -51,6 +50,7 @@ final class ExecutableTestTest extends TestBase
             $this->executableTestChild->getTeamcityTempFile(),
             '--coverage-php',
             $this->executableTestChild->getCoverageFileName(),
+            '--no-extensions',
             'pathToFile',
         ];
 
