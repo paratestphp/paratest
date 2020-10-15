@@ -118,19 +118,21 @@ final class ResultPrinterTest extends ResultTester
         $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
 
         file_put_contents($pathToConfig, '<root />');
+        $random_seed   = 1234;
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
             '--configuration' => $pathToConfig,
-            '--order-by' => Options::RANDOM_ORDER,
-            '--random-order-seed' => 1234,
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => $random_seed,
         ]));
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
-            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
+            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\nRandom order seed %s\n\n",
             PROCESSES_FOR_TESTS,
             $this->options->phpunit(),
-            $pathToConfig
+            $pathToConfig,
+            $random_seed
         );
-        static::assertStringStartsWith($expected, $contents);
+        static::assertEquals($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithReverseOrder(): void
@@ -144,12 +146,12 @@ final class ResultPrinterTest extends ResultTester
         ]));
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
-            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
+            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\nReversed tests order\n\n",
             PROCESSES_FOR_TESTS,
             $this->options->phpunit(),
             $pathToConfig
         );
-        static::assertStringStartsWith($expected, $contents);
+        static::assertEquals($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithFunctionalMode(): void
