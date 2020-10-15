@@ -467,7 +467,7 @@ final class Options
             (int) $options['verbose'],
             $options['whitelist'],
             $options['order-by'],
-            $options['random-order-seed']
+            (int) $options['random-order-seed']
         );
     }
 
