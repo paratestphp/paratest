@@ -61,9 +61,9 @@ final class Options
     public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
     public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
 
-    public const DEFAULT_ORDER  = 'default';
-    public const RANDOM_ORDER   = 'random';
-    public const REVERSED_ORDER = 'reversed';
+    public const ORDER_DEFAULT  = 'default';
+    public const ORDER_RANDOM   = 'random';
+    public const ORDER_REVERSED = 'reversed';
 
 
     /**
