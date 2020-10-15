@@ -29,4 +29,16 @@ final class WrapperRunnerTest extends RunnerTestCase
 
         $this->runRunner();
     }
+
+    /**
+     * @see github.com/paratestphp/paratest/pull/540
+     * we test that everything is okey with few tests
+     * was problem that phpunit reset global variables in phpunit-wrapper, and tests fails
+     */
+    public function testWrapperRunnerWorksWellWithManyTests(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('passing_tests' . DS . 'level1' . DS . 'level2');
+
+        $this->runRunner();
+    }
 }
