@@ -18,7 +18,6 @@ use Symfony\Component\Process\Process;
 
 use function array_shift;
 use function assert;
-use function bin2hex;
 use function count;
 use function dirname;
 use function escapeshellarg;
@@ -26,7 +25,6 @@ use function explode;
 use function fgets;
 use function file_exists;
 use function file_get_contents;
-use function hexdec;
 use function implode;
 use function in_array;
 use function intdiv;
@@ -39,7 +37,7 @@ use function pclose;
 use function popen;
 use function preg_match;
 use function preg_match_all;
-use function random_bytes;
+use function random_int;
 use function realpath;
 use function sprintf;
 use function strlen;
@@ -49,6 +47,8 @@ use function unserialize;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_BINARY;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 /**
  * An object containing all configurable information used
@@ -209,7 +209,7 @@ final class Options
     private $tmpDir;
     /** @var string */
     private $orderBy;
-    /** @var int|null */
+    /** @var int */
     private $randomOrderSeed;
 
     /**
@@ -254,7 +254,7 @@ final class Options
         int $verbose,
         ?string $whitelist,
         string $orderBy,
-        ?int $randomOrderSeed
+        int $randomOrderSeed
     ) {
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
