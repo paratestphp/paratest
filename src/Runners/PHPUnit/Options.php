@@ -991,7 +991,7 @@ final class Options
 
     public function randomOrderSeed(): int
     {
-        return $this->randomOrderSeed ?? 0;
+        return $this->randomOrderSeed;
     }
 
     /**
