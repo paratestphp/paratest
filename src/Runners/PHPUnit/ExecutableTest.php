@@ -162,6 +162,10 @@ abstract class ExecutableTest
 
         $arguments = [$binary];
 
+        if ($passthru !== null) {
+            $arguments = array_merge($arguments, $passthru);
+        }
+
         foreach ($options as $key => $value) {
             $arguments[] = "--{$key}";
             if ($value === null) {
@@ -169,10 +173,6 @@ abstract class ExecutableTest
             }
 
             $arguments[] = $value;
-        }
-
-        if ($passthru !== null) {
-            $arguments = array_merge($arguments, $passthru);
         }
 
         $arguments[] = $this->getPath();
