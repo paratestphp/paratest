@@ -10,11 +10,14 @@ use Symfony\Component\Process\Process;
 
 use function assert;
 use function count;
+use function explode;
 use function file_get_contents;
 use function glob;
 use function posix_mkfifo;
+use function implode;
 use function preg_match_all;
 use function simplexml_load_file;
+use function strpos;
 
 /**
  * @internal
@@ -220,7 +223,7 @@ final class BaseRunnerTest extends TestBase
         static::assertStringContainsString('Random order seed 123', $runnerResult->getOutput());
     }
 
-    public function testRunnerSortNoSeed(): void
+    public function testRunnerSortNoSeedProvided(): void
     {
         $this->bareOptions = [
             '--order-by' => Options::ORDER_RANDOM,
@@ -230,6 +233,47 @@ final class BaseRunnerTest extends TestBase
         $runnerResult = $this->runRunner();
 
         static::assertStringContainsString('Random order seed ', $runnerResult->getOutput());
+    }
+
+    public function testRunnerSortTestEqualBySeed(): void
+    {
+        $this->bareOptions = [
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => 123,
+            '-v' => 1,
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ];
+
+        $runnerResultFirst  = $this->runRunner();
+        $runnerResultSecond = $this->runRunner();
+
+        $firstOutput  = $this->prepareOutputForEqualityCheck($runnerResultFirst->getOutput(), 123);
+        $secondOutput = $this->prepareOutputForEqualityCheck($runnerResultSecond->getOutput(), 123);
+        static::assertEquals($firstOutput, $secondOutput);
+
+        $this->bareOptions['--random-order-seed'] = 321;
+
+        $runnerResultThird = $this->runRunner();
+
+        $thirdOutput = $this->prepareOutputForEqualityCheck($runnerResultThird->getOutput(), 321);
+
+        static::assertNotEquals($thirdOutput, $firstOutput);
+    }
+
+    public function testRunnerSortTestAlwaysNewSeed(): void
+    {
+        $this->bareOptions = [
+            '--order-by' => Options::ORDER_RANDOM,
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ];
+
+        $runnerResultFirst  = $this->runRunner();
+        $runnerResultSecond = $this->runRunner();
+
+        $firstOutput  = $this->prepareOutputForEqualityCheck($runnerResultFirst->getOutput());
+        $secondOutput = $this->prepareOutputForEqualityCheck($runnerResultSecond->getOutput());
+
+        static::assertNotEquals($firstOutput, $secondOutput);
     }
 
     public function testRunnerReversed(): void
@@ -242,5 +286,54 @@ final class BaseRunnerTest extends TestBase
         $runnerResult = $this->runRunner();
 
         static::assertStringContainsString('Reversed tests order', $runnerResult->getOutput());
+    }
+
+    private function prepareOutputForEqualityCheck(string $output, int $seed = 0): string
+    {
+        $lines        = explode("\n", $output);
+        $result_lines = [];
+
+        foreach ($lines as $line) {
+            if (($seed !== 0) && strpos($line, 'Random order seed ' . $seed) !== false) {
+                continue;
+            }
+
+            if (strpos($line, 'Time:') !== false && strpos($line, 'Memory:') !== false) {
+                continue;
+            }
+
+            $junit_line            = '--log-junit';
+            $random_order_seed_lin = '--random-order-seed';
+
+            if (strpos($line, 'Executing test via') !== false) {
+                $words            = explode(' ', $line);
+                $result_lines     = [];
+                $remove_next_word = false;
+                foreach ($words as $word) {
+                    if (strpos($word, $junit_line) !== false) {
+                        $remove_next_word = true;
+                        continue;
+                    }
+
+                    if (strpos($word, $random_order_seed_lin) !== false) { // log-junit param has tmp file name that we should skip
+                        $remove_next_word = true;
+                        continue;
+                    }
+
+                    if ($remove_next_word) {
+                        $remove_next_word = false;
+                        continue;
+                    }
+
+                    $result_lines[] = $word;
+                }
+
+                $line = implode(' ', $result_lines);
+            }
+
+            $result_lines[] = $line;
+        }
+
+        return implode("\n", $result_lines);
     }
 }
