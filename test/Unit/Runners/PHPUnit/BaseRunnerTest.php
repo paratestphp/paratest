@@ -181,4 +181,42 @@ final class BaseRunnerTest extends TestBase
 
         self::assertSame(66, preg_match_all('/^##teamcity/m', $content));
     }
+
+    public function testTeamcityLogFifo(): void
+    {
+      $outputPath = TMP_DIR . DS . 'test-output.teamcity2';
+
+      posix_mkfifo($outputPath, 0777);
+      $this->bareOptions = [
+        '--configuration' => $this->fixture('phpunit-passing.xml'),
+        '--log-teamcity' => $outputPath,
+      ];
+
+      $pid = pcntl_fork();
+
+      if ($pid === -1) {
+        die();
+      } else if ($pid) {
+        $file = fopen($outputPath, "r");
+
+        $count = 0;
+        while(!feof($file)) {
+          $line = fgets($file);
+          if (!$line) {
+            continue;
+          }
+          if (preg_match('/^##teamcity/m', $line)) {
+            $count++;
+          }
+        }
+
+        fclose($file);
+        self::assertSame(66, $count);
+
+        pcntl_wait($status);
+      } else {
+        $this->runRunner();
+        exit(1);
+      }
+    }
 }
