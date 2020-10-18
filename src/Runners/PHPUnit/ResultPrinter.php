@@ -112,13 +112,21 @@ final class ResultPrinter
     private $output;
     /** @var Options */
     private $options;
+  /**
+   * @var false|resource
+   */
+  private $teamcityLogFileHandle;
 
-    public function __construct(LogInterpreter $results, OutputInterface $output, Options $options)
+  public function __construct(LogInterpreter $results, OutputInterface $output, Options $options)
     {
         $this->results = $results;
         $this->output  = $output;
         $this->options = $options;
-    }
+        if (($teamcityLogFile = $this->options->logTeamcity()) !== null) {
+          $this->teamcityLogFileHandle = fopen($teamcityLogFile, "a+");
+          //stream_set_blocking($this->teamcityLogFileHandle, false);
+        }
+      }
 
     /**
      * Adds an ExecutableTest to the tracked results.
@@ -178,6 +186,9 @@ final class ResultPrinter
         $this->output->write($this->getHeader());
         $this->output->write(implode("---\n\n", $failures));
         $this->output->write($this->getFooter());
+        if ($this->teamcityLogFileHandle) {
+          fclose($this->teamcityLogFileHandle);
+        }
     }
 
     /**
@@ -214,7 +225,7 @@ final class ResultPrinter
 
             $result = file_get_contents($log_file);
             assert($result !== false);
-            file_put_contents($teamcityLogFile, $result, FILE_APPEND);
+            fwrite($this->teamcityLogFileHandle, $result);
         }
 
         $this->results->addReader($reader);
