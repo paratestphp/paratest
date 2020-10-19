@@ -36,7 +36,7 @@
         "doctrine/coding-standard": "^8.1.0",
         "ekino/phpstan-banned-code": "^0.3.1",
         "ergebnis/phpstan-rules": "^0.15.2",
-        "infection/infection": "^0.17.3",
+        "infection/infection": "^0.17.3 || ^0.18",
         "phpstan/phpstan": "^0.12.49",
         "phpstan/phpstan-deprecation-rules": "^0.12.5",
         "phpstan/phpstan-phpunit": "^0.12.16",
