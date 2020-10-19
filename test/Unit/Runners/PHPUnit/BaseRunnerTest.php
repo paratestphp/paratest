@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Tests\TestBase;
+use Symfony\Component\Process\Process;
 
 use function assert;
 use function count;
 use function file_get_contents;
 use function glob;
+use function posix_mkfifo;
 use function preg_match_all;
 use function simplexml_load_file;
 
@@ -180,5 +182,27 @@ final class BaseRunnerTest extends TestBase
         static::assertNotFalse($content);
 
         self::assertSame(66, preg_match_all('/^##teamcity/m', $content));
+    }
+
+    /**
+     * @requires OSFAMILY Linux
+     */
+    public function testTeamcityLogHandlesFifoFiles(): void
+    {
+        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
+
+        posix_mkfifo($outputPath, 0600);
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-teamcity' => $outputPath,
+        ];
+
+        $fifoReader = new Process(['cat', $outputPath]);
+        $fifoReader->start();
+
+        $this->runRunner();
+
+        self::assertSame(0, $fifoReader->wait());
+        self::assertSame(66, preg_match_all('/^##teamcity/m', $fifoReader->getOutput()));
     }
 }
