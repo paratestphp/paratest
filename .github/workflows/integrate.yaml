@@ -135,6 +135,10 @@ jobs:
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
 
+      - name: "Remove 'ext-posix' dep for Windows testing"
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: "composer remove --no-progress --no-update --no-scripts --dev 'ext-posix'"
+
       - name: "Install lowest dependencies"
         if: ${{ matrix.dependencies == 'lowest' && matrix.php-version != '8.0' }}
         run: "composer update --no-interaction --no-progress --prefer-lowest"
