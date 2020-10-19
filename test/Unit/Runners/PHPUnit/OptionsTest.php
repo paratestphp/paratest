@@ -87,7 +87,9 @@ final class OptionsTest extends TestBase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->createOptionsFromArgv(['--order-by' => 'not_a_valid_order']);
+        $this->createOptionsFromArgv([
+            '--order-by' => uniqid('not_a_valid_order_'),
+        ]);
     }
 
     public function testOrderWithoutOrderBy(): void
@@ -102,16 +104,20 @@ final class OptionsTest extends TestBase
         $this->expectException(InvalidArgumentException::class);
 
         $this->createOptionsFromArgv([
-            '--random-order-seed' => 123,
             '--order-by' => Options::ORDER_REVERSE,
+            '--random-order-seed' => 123,
         ]);
     }
 
     public function testSeedNotNumberic(): void
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/not_a_numeric_seed/');
 
-        $this->createOptionsFromArgv(['--random-order-seed' => 'not_a_numeric_seed']);
+        $this->createOptionsFromArgv([
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => 'not_a_numeric_seed',
+        ]);
     }
 
     public function testAutoProcessesMode(): void

@@ -166,8 +166,8 @@ final class ResultPrinter
 
         if ($this->options->orderBy() === Options::ORDER_RANDOM) {
             $this->output->write(sprintf(
-                "Random order seed %s\n\n",
-                (string) $this->options->randomOrderSeed()
+                "Random order seed %d\n\n",
+                $this->options->randomOrderSeed()
             ));
         }
 

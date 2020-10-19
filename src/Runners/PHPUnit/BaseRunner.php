@@ -108,11 +108,9 @@ abstract class BaseRunner implements RunnerInterface
 
     private function sortPending(): void
     {
-        $seed = $this->options->randomOrderSeed();
-        if ($seed > 0 && $this->options->orderBy() === Options::ORDER_RANDOM) {
-            mt_srand($seed);
+        if ($this->options->orderBy() === Options::ORDER_RANDOM) {
+            mt_srand($this->options->randomOrderSeed());
             shuffle($this->pending);
-            mt_srand();
         }
 
         if ($this->options->orderBy() !== Options::ORDER_REVERSE) {

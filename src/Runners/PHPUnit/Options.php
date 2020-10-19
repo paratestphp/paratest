@@ -37,17 +37,16 @@ use function pclose;
 use function popen;
 use function preg_match;
 use function preg_match_all;
-use function random_int;
 use function realpath;
 use function sprintf;
 use function strlen;
 use function sys_get_temp_dir;
+use function time;
 use function uniqid;
 use function unserialize;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_BINARY;
-use const PHP_INT_MAX;
 
 /**
  * An object containing all configurable information used
@@ -340,11 +339,14 @@ final class Options
             throw new InvalidArgumentException('Option --order-by supports only ' . implode('|', self::ORDER_TYPES));
         }
 
-        if (isset($options['random-order-seed']) && ! is_numeric($options['random-order-seed'])) {
-            throw new InvalidArgumentException('Option --random-order-seed should have a number value');
-        }
-
         if (isset($options['random-order-seed'])) {
+            if (! is_numeric($options['random-order-seed'])) {
+                throw new InvalidArgumentException(sprintf(
+                    'Option --random-order-seed should have a number value, "%s" given',
+                    (string) $options['random-order-seed']
+                ));
+            }
+
             if (! isset($options['order-by'])) {
                 throw new InvalidArgumentException('Option --random-order-seed useless without --order-by=random');
             }
@@ -356,18 +358,16 @@ final class Options
 
         $filtered = [];
 
-        if (! isset($options['order-by'])) {
-            $options['order-by'] = self::ORDER_DEFAULT;
-        } else {
+        if (isset($options['order-by'])) {
             $filtered['order-by'] = $options['order-by'];
-        }
 
-        if ($options['order-by'] === self::ORDER_RANDOM) {
-            if (! isset($options['random-order-seed'])) {
-                $options['random-order-seed'] = random_int(1, PHP_INT_MAX);
+            if ($options['order-by'] === self::ORDER_RANDOM) {
+                if (! isset($options['random-order-seed'])) {
+                    $options['random-order-seed'] = time();
+                }
+
+                $filtered['random-order-seed'] = $options['random-order-seed'];
             }
-
-            $filtered['random-order-seed'] = $options['random-order-seed'];
         }
 
         if ($options['bootstrap'] !== null) {
@@ -474,7 +474,7 @@ final class Options
             $options['tmp-dir'],
             (int) $options['verbose'],
             $options['whitelist'],
-            $options['order-by'],
+            $options['order-by'] ?? self::ORDER_DEFAULT,
             (int) $options['random-order-seed']
         );
     }

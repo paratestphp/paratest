@@ -8,16 +8,16 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
 use Symfony\Component\Process\Process;
 
+use function array_reverse;
 use function assert;
 use function count;
-use function explode;
 use function file_get_contents;
 use function glob;
-use function implode;
 use function posix_mkfifo;
 use function preg_match_all;
+use function preg_quote;
 use function simplexml_load_file;
-use function strpos;
+use function sprintf;
 
 /**
  * @internal
@@ -238,102 +238,65 @@ final class BaseRunnerTest extends TestBase
     public function testRunnerSortTestEqualBySeed(): void
     {
         $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => 123,
-            '-v' => 1,
-            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--verbose' => 1,
         ];
 
         $runnerResultFirst  = $this->runRunner();
         $runnerResultSecond = $this->runRunner();
 
-        $firstOutput  = $this->prepareOutputForEqualityCheck($runnerResultFirst->getOutput(), 123);
-        $secondOutput = $this->prepareOutputForEqualityCheck($runnerResultSecond->getOutput(), 123);
-        static::assertEquals($firstOutput, $secondOutput);
+        $firstOutput  = $this->prepareOutputForTestOrderCheck($runnerResultFirst->getOutput());
+        $secondOutput = $this->prepareOutputForTestOrderCheck($runnerResultSecond->getOutput());
+        static::assertSame($firstOutput, $secondOutput);
 
         $this->bareOptions['--random-order-seed'] = 321;
 
         $runnerResultThird = $this->runRunner();
 
-        $thirdOutput = $this->prepareOutputForEqualityCheck($runnerResultThird->getOutput(), 321);
+        $thirdOutput = $this->prepareOutputForTestOrderCheck($runnerResultThird->getOutput());
 
-        static::assertNotEquals($thirdOutput, $firstOutput);
-    }
-
-    public function testRunnerSortTestAlwaysNewSeed(): void
-    {
-        $this->bareOptions = [
-            '--order-by' => Options::ORDER_RANDOM,
-            '--configuration' => $this->fixture('phpunit-passing.xml'),
-        ];
-
-        $runnerResultFirst  = $this->runRunner();
-        $runnerResultSecond = $this->runRunner();
-
-        $firstOutput  = $this->prepareOutputForEqualityCheck($runnerResultFirst->getOutput());
-        $secondOutput = $this->prepareOutputForEqualityCheck($runnerResultSecond->getOutput());
-
-        static::assertNotEquals($firstOutput, $secondOutput);
+        static::assertNotSame($thirdOutput, $firstOutput);
     }
 
     public function testRunnerReversed(): void
     {
         $this->bareOptions = [
-            '--order-by' => Options::ORDER_REVERSE,
             '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--verbose' => 1,
         ];
 
         $runnerResult = $this->runRunner();
+        $defaultOrder = $this->prepareOutputForTestOrderCheck($runnerResult->getOutput());
 
-        static::assertStringContainsString('Reversed tests order', $runnerResult->getOutput());
+        $this->bareOptions['--order-by'] = Options::ORDER_REVERSE;
+
+        $runnerResult = $this->runRunner();
+        $reverseOrder = $this->prepareOutputForTestOrderCheck($runnerResult->getOutput());
+
+        $reverseOrderReversed = array_reverse($reverseOrder);
+
+        static::assertSame($defaultOrder, $reverseOrderReversed);
     }
 
-    private function prepareOutputForEqualityCheck(string $output, int $seed = 0): string
+    /**
+     * @return string[]
+     */
+    private function prepareOutputForTestOrderCheck(string $output): array
     {
-        $lines        = explode("\n", $output);
-        $result_lines = [];
+        $matchesCount = preg_match_all(
+            sprintf(
+                '/%s%s(?<filename>\S+\.php)/',
+                preg_quote(FIXTURES, '/'),
+                preg_quote(DS, '/')
+            ),
+            $output,
+            $matches
+        );
 
-        foreach ($lines as $line) {
-            if (($seed !== 0) && strpos($line, 'Random order seed ' . $seed) !== false) {
-                continue;
-            }
+        self::assertGreaterThan(0, $matchesCount);
 
-            if (strpos($line, 'Time:') !== false && strpos($line, 'Memory:') !== false) {
-                continue;
-            }
-
-            $junit_line            = '--log-junit';
-            $random_order_seed_lin = '--random-order-seed';
-
-            if (strpos($line, 'Executing test via') !== false) {
-                $words            = explode(' ', $line);
-                $result_lines     = [];
-                $remove_next_word = false;
-                foreach ($words as $word) {
-                    if (strpos($word, $junit_line) !== false) {
-                        $remove_next_word = true;
-                        continue;
-                    }
-
-                    if (strpos($word, $random_order_seed_lin) !== false) { // log-junit param has tmp file name that we should skip
-                        $remove_next_word = true;
-                        continue;
-                    }
-
-                    if ($remove_next_word) {
-                        $remove_next_word = false;
-                        continue;
-                    }
-
-                    $result_lines[] = $word;
-                }
-
-                $line = implode(' ', $result_lines);
-            }
-
-            $result_lines[] = $line;
-        }
-
-        return implode("\n", $result_lines);
+        return $matches['filename'];
     }
 }
