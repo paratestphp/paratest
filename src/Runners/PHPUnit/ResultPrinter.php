@@ -15,10 +15,12 @@ use function array_filter;
 use function array_map;
 use function assert;
 use function count;
+use function fclose;
 use function file_get_contents;
-use function file_put_contents;
 use function filesize;
 use function floor;
+use function fopen;
+use function fwrite;
 use function implode;
 use function is_array;
 use function max;
@@ -30,7 +32,6 @@ use function str_repeat;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
-use const FILE_APPEND;
 use const PHP_EOL;
 
 /**
@@ -112,21 +113,23 @@ final class ResultPrinter
     private $output;
     /** @var Options */
     private $options;
-  /**
-   * @var false|resource
-   */
-  private $teamcityLogFileHandle;
+    /** @var resource|null */
+    private $teamcityLogFileHandle;
 
-  public function __construct(LogInterpreter $results, OutputInterface $output, Options $options)
+    public function __construct(LogInterpreter $results, OutputInterface $output, Options $options)
     {
         $this->results = $results;
         $this->output  = $output;
         $this->options = $options;
-        if (($teamcityLogFile = $this->options->logTeamcity()) !== null) {
-          $this->teamcityLogFileHandle = fopen($teamcityLogFile, "a+");
-          //stream_set_blocking($this->teamcityLogFileHandle, false);
+
+        if (($teamcityLogFile = $this->options->logTeamcity()) === null) {
+            return;
         }
-      }
+
+        $teamcityLogFileHandle = fopen($teamcityLogFile, 'ab+');
+        assert($teamcityLogFileHandle !== false);
+        $this->teamcityLogFileHandle = $teamcityLogFileHandle;
+    }
 
     /**
      * Adds an ExecutableTest to the tracked results.
@@ -186,9 +189,14 @@ final class ResultPrinter
         $this->output->write($this->getHeader());
         $this->output->write(implode("---\n\n", $failures));
         $this->output->write($this->getFooter());
-        if ($this->teamcityLogFileHandle) {
-          fclose($this->teamcityLogFileHandle);
+
+        if ($this->teamcityLogFileHandle === null) {
+            return;
         }
+
+        $resource                    = $this->teamcityLogFileHandle;
+        $this->teamcityLogFileHandle = null;
+        fclose($resource);
     }
 
     /**
@@ -210,7 +218,7 @@ final class ResultPrinter
             ), 0, $invalidArgumentException);
         }
 
-        if (($teamcityLogFile = $this->options->logTeamcity()) !== null) {
+        if ($this->teamcityLogFileHandle !== null) {
             $log_file = $test->getTeamcityTempFile();
 
             if (filesize($log_file) === 0) {

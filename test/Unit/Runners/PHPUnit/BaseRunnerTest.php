@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Tests\TestBase;
+use Symfony\Component\Process\Process;
 
 use function assert;
 use function count;
 use function file_get_contents;
 use function glob;
+use function posix_mkfifo;
 use function preg_match_all;
 use function simplexml_load_file;
 
@@ -182,41 +184,25 @@ final class BaseRunnerTest extends TestBase
         self::assertSame(66, preg_match_all('/^##teamcity/m', $content));
     }
 
-    public function testTeamcityLogFifo(): void
+    /**
+     * @requires OSFAMILY Linux
+     */
+    public function testTeamcityLogHandlesFifoFiles(): void
     {
-      $outputPath = TMP_DIR . DS . 'test-output.teamcity2';
+        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
 
-      posix_mkfifo($outputPath, 0777);
-      $this->bareOptions = [
-        '--configuration' => $this->fixture('phpunit-passing.xml'),
-        '--log-teamcity' => $outputPath,
-      ];
+        posix_mkfifo($outputPath, 0600);
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-teamcity' => $outputPath,
+        ];
 
-      $pid = pcntl_fork();
+        $fifoReader = new Process(['cat', $outputPath]);
+        $fifoReader->start();
 
-      if ($pid === -1) {
-        die();
-      } else if ($pid) {
-        $file = fopen($outputPath, "r");
-
-        $count = 0;
-        while(!feof($file)) {
-          $line = fgets($file);
-          if (!$line) {
-            continue;
-          }
-          if (preg_match('/^##teamcity/m', $line)) {
-            $count++;
-          }
-        }
-
-        fclose($file);
-        self::assertSame(66, $count);
-
-        pcntl_wait($status);
-      } else {
         $this->runRunner();
-        exit(1);
-      }
+
+        self::assertSame(0, $fifoReader->wait());
+        self::assertSame(66, preg_match_all('/^##teamcity/m', $fifoReader->getOutput()));
     }
 }
