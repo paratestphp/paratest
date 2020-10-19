@@ -161,6 +161,7 @@ abstract class ExecutableTest
         }
 
         $arguments = [$binary];
+
         if ($passthru !== null) {
             $arguments = array_merge($arguments, $passthru);
         }

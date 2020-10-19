@@ -164,6 +164,17 @@ final class ResultPrinter
             ));
         }
 
+        if ($this->options->orderBy() === Options::ORDER_RANDOM) {
+            $this->output->write(sprintf(
+                "Random order seed %d\n\n",
+                $this->options->randomOrderSeed()
+            ));
+        }
+
+        if ($this->options->orderBy() === Options::ORDER_REVERSE) {
+            $this->output->write("Reversed tests order\n\n");
+        }
+
         $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($this->options);
     }
 

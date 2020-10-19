@@ -113,6 +113,47 @@ final class ResultPrinterTest extends ResultTester
         static::assertStringStartsWith($expected, $contents);
     }
 
+    public function testStartPrintsOptionInfoWithRandom(): void
+    {
+        $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
+
+        file_put_contents($pathToConfig, '<root />');
+        $random_seed   = 1234;
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
+            '--configuration' => $pathToConfig,
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => $random_seed,
+        ]));
+        $contents      = $this->getStartOutput();
+        $expected      = sprintf(
+            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\nRandom order seed %s\n\n",
+            PROCESSES_FOR_TESTS,
+            $this->options->phpunit(),
+            $pathToConfig,
+            $random_seed
+        );
+        static::assertEquals($expected, $contents);
+    }
+
+    public function testStartPrintsOptionInfoWithReverseOrder(): void
+    {
+        $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
+
+        file_put_contents($pathToConfig, '<root />');
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
+            '--configuration' => $pathToConfig,
+            '--order-by' => Options::ORDER_REVERSE,
+        ]));
+        $contents      = $this->getStartOutput();
+        $expected      = sprintf(
+            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\nReversed tests order\n\n",
+            PROCESSES_FOR_TESTS,
+            $this->options->phpunit(),
+            $pathToConfig
+        );
+        static::assertEquals($expected, $contents);
+    }
+
     public function testStartPrintsOptionInfoWithFunctionalMode(): void
     {
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--functional' => true]));

@@ -65,11 +65,13 @@ Options:
       --log-teamcity=LOG-TEAMCITY                Log test execution in Teamcity format to file.
   -m, --max-batch-size=MAX-BATCH-SIZE            Max batch size (only for functional mode). [default: 0]
       --no-test-tokens                           Disable TEST_TOKEN environment variables. (default: variable is set)
+      --order-by[=ORDER-BY]                      Run tests in order: default|random|reverse
       --parallel-suite                           Run the suites of the config in parallel.
       --passthru=PASSTHRU                        Pass the given arguments verbatim to the underlying test framework. Example: --passthru="'--prepend' 'xdebug-filter.php'"
       --passthru-php=PASSTHRU-PHP                Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="'-d' 'zend_extension=xdebug.so'"
       --path=PATH                                An alias for the path argument.
   -p, --processes=PROCESSES                      The number of test processes to run. [default: "auto"]
+      --random-order-seed=[RANDOM-ORDER-SEED]    Use a specific random seed <N> for random order
       --runner=RUNNER                            Runner or WrapperRunner. [default: "Runner"]
       --stop-on-failure                          Don't start any more processes after a failure.
       --testsuite=TESTSUITE                      Filter which testsuite to run
