@@ -1,7 +1,7 @@
 all: csfix static-analysis test
 	@echo "Done."
 
-vendor: composer.json composer.lock
+vendor: composer.json
 	composer update
 	touch vendor
 
