@@ -112,18 +112,21 @@ parameters:
             count: 1
             path: test/fixtures/wrapper_runner_exit_code_tests/FailureTest.php
         -
-            message: "#^Offset 'TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'TEST_TOKEN' \\=\\> int, \\?'UNIQUE_TEST_TOKEN' \\=\\> string\\)\\.$#"
+            message: "#^Offset 'TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'RANDOM_ORDER_SEED' \\=\\> int, \\?'TEST_TOKEN' \\=\\> int, \\?'UNIQUE_TEST_TOKEN' \\=\\> string\\)\\.$#"
             count: 1
             path: test/Unit/Runners/PHPUnit/OptionsTest.php
+        -
+             message: "#^Offset 'RANDOM_ORDER_SEED' does not exist on array\\('PARATEST' \\=\\> 1, \\'TEST_TOKEN' \\=\\> int, \\?'RANDOM_ORDER_SEED' \\=\\> int, \\'UNIQUE_TEST_TOKEN' \\=\\> string\\)\\.$#"
+             count: 1
+             path: test/Unit/Runners/PHPUnit/OptionsTest.php
+        -
+             message: "#^Offset 'UNIQUE_TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'RANDOM_ORDER_SEED' \\=\\> int, \\?'UNIQUE_TEST_TOKEN' \\=\\> string, 'TEST_TOKEN' \\=\\> int\\)\\.$#"
+             count: 1
+             path: test/Unit/Runners/PHPUnit/OptionsTest.php
         -
             message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertIsString\\(\\) with string will always evaluate to true\\.$#"
             count: 1
             path: test/Unit/Runners/PHPUnit/OptionsTest.php
-        -
-            message: "#^Offset 'UNIQUE_TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'UNIQUE_TEST_TOKEN' \\=\\> string, 'TEST_TOKEN' \\=\\> int\\)\\.$#"
-            count: 1
-            path: test/Unit/Runners/PHPUnit/OptionsTest.php
-
         # Level 7
         -
             message: "#^Method ParaTest\\\\Tests\\\\Unit\\\\Runners\\\\PHPUnit\\\\SuiteLoaderTest\\:\\:getLoadedPaths\\(\\) should return array\\<string\\> but returns array\\<int, int\\|string\\>\\.$#"

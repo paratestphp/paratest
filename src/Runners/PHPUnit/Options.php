@@ -25,6 +25,7 @@ use function explode;
 use function fgets;
 use function file_exists;
 use function file_get_contents;
+use function getenv;
 use function implode;
 use function in_array;
 use function intdiv;
@@ -56,8 +57,9 @@ use const PHP_BINARY;
  */
 final class Options
 {
-    public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
-    public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
+    public const ENV_KEY_TOKEN         = 'TEST_TOKEN';
+    public const ENV_KEY_UNIQUE_TOKEN  = 'UNIQUE_TEST_TOKEN';
+    public const ENV_RANDOM_ORDER_SEED = 'RANDOM_ORDER_SEED';
 
     public const ORDER_DEFAULT = 'default';
     public const ORDER_RANDOM  = 'random';
@@ -363,7 +365,12 @@ final class Options
 
             if ($options['order-by'] === self::ORDER_RANDOM) {
                 if (! isset($options['random-order-seed'])) {
-                    $options['random-order-seed'] = time();
+                    $env_param = (int) getenv(self::ENV_RANDOM_ORDER_SEED);
+                    if ($env_param !== 0) {
+                        $options['random-order-seed'] = $env_param;
+                    } else {
+                        $options['random-order-seed'] = time();
+                    }
                 }
 
                 $filtered['random-order-seed'] = $options['random-order-seed'];
@@ -1003,11 +1010,15 @@ final class Options
     }
 
     /**
-     * @return array{PARATEST: int, TEST_TOKEN?: int, UNIQUE_TEST_TOKEN?: string}
+     * @return array{PARATEST: int, RANDOM_ORDER_SEED?: int, TEST_TOKEN?: int, UNIQUE_TEST_TOKEN?: string}
      */
     public function fillEnvWithTokens(int $inc): array
     {
         $env = ['PARATEST' => 1];
+        if ($this->orderBy() === self::ORDER_RANDOM) {
+            $env[self::ENV_RANDOM_ORDER_SEED] = $this->randomOrderSeed;
+        }
+
         if (! $this->noTestTokens()) {
             $env[self::ENV_KEY_TOKEN]        = $inc;
             $env[self::ENV_KEY_UNIQUE_TOKEN] = uniqid($inc . '_');

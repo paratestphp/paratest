@@ -13,6 +13,7 @@ use function defined;
 use function file_put_contents;
 use function intdiv;
 use function mt_rand;
+use function putenv;
 use function sort;
 use function str_replace;
 use function uniqid;
@@ -41,6 +42,12 @@ final class OptionsTest extends TestBase
         ];
 
         $this->options = $this->createOptionsFromArgv($this->unfiltered);
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        putenv(Options::ENV_RANDOM_ORDER_SEED);
     }
 
     public function testOptionsAreOrdered(): void
@@ -118,6 +125,17 @@ final class OptionsTest extends TestBase
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => 'not_a_numeric_seed',
         ]);
+    }
+
+    public function testSeedGotFromEnvParam(): void
+    {
+        $env_seed = 43211234;
+        putenv(Options::ENV_RANDOM_ORDER_SEED . '=' . $env_seed);
+        $options = $this->createOptionsFromArgv([
+            '--order-by' => Options::ORDER_RANDOM,
+        ]);
+
+        static::assertEquals($options->randomOrderSeed(), $env_seed);
     }
 
     public function testAutoProcessesMode(): void
@@ -374,7 +392,14 @@ final class OptionsTest extends TestBase
 
     public function testFillEnvWithTokens(): void
     {
-        $options = $this->createOptionsFromArgv(['--no-test-tokens' => false]);
+        $options = $this->createOptionsFromArgv([
+            '--no-test-tokens' => false,
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => 12345678,
+        ]);
+
+        static::assertSame($options->orderBy(), 'random');
+        static::assertSame($options->randomOrderSeed(), 12345678);
 
         $inc = mt_rand(10, 99);
         $env = $options->fillEnvWithTokens($inc);
@@ -384,6 +409,8 @@ final class OptionsTest extends TestBase
         static::assertSame($inc, $env[Options::ENV_KEY_TOKEN]);
         static::assertArrayHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
         static::assertIsString($env[Options::ENV_KEY_UNIQUE_TOKEN]);
+        static::assertArrayHasKey(Options::ENV_RANDOM_ORDER_SEED, $env);
+        static::assertEquals($env[Options::ENV_RANDOM_ORDER_SEED], 12345678);
         static::assertStringContainsString($inc . '_', $env[Options::ENV_KEY_UNIQUE_TOKEN]);
 
         $options = $this->createOptionsFromArgv(['--no-test-tokens' => true]);
