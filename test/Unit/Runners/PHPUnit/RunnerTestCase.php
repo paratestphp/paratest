@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use ParaTest\Tests\TestBase;
 use PHPUnit\TextUI\TestRunner;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use Symfony\Component\Process\Process;
 
 use function array_merge;
+use function array_reverse;
 use function defined;
+use function file_get_contents;
+use function posix_mkfifo;
 use function preg_match;
+use function preg_match_all;
+use function preg_quote;
 use function sprintf;
 use function str_replace;
 use function substr_count;
@@ -352,5 +359,151 @@ abstract class RunnerTestCase extends TestBase
 
         $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505tokens'));
         $this->assertTestsPassed($runnerResult);
+    }
+
+    final public function testTeamcityLog(): void
+    {
+        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
+
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-teamcity' => $outputPath,
+        ];
+
+        $this->runRunner();
+
+        static::assertFileExists($outputPath);
+        $content = file_get_contents($outputPath);
+        static::assertNotFalse($content);
+
+        self::assertSame(66, preg_match_all('/^##teamcity/m', $content));
+    }
+
+    /**
+     * @requires OSFAMILY Linux
+     */
+    final public function testTeamcityLogHandlesFifoFiles(): void
+    {
+        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
+
+        posix_mkfifo($outputPath, 0600);
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-teamcity' => $outputPath,
+        ];
+
+        $fifoReader = new Process(['cat', $outputPath]);
+        $fifoReader->start();
+
+        $this->runRunner();
+
+        self::assertSame(0, $fifoReader->wait());
+        self::assertSame(66, preg_match_all('/^##teamcity/m', $fifoReader->getOutput()));
+    }
+
+    final public function testRunnerSort(): void
+    {
+        $this->bareOptions = [
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => 123,
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ];
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Random order seed 123', $runnerResult->getOutput());
+    }
+
+    final public function testRunnerSortNoSeedProvided(): void
+    {
+        $this->bareOptions = [
+            '--order-by' => Options::ORDER_RANDOM,
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+        ];
+
+        $runnerResult = $this->runRunner();
+
+        static::assertStringContainsString('Random order seed ', $runnerResult->getOutput());
+    }
+
+    final public function testRunnerSortTestEqualBySeed(): void
+    {
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => 123,
+            '--verbose' => 1,
+        ];
+
+        $runnerResultFirst  = $this->runRunner();
+        $runnerResultSecond = $this->runRunner();
+
+        $firstOutput  = $this->prepareOutputForTestOrderCheck($runnerResultFirst->getOutput());
+        $secondOutput = $this->prepareOutputForTestOrderCheck($runnerResultSecond->getOutput());
+        static::assertSame($firstOutput, $secondOutput);
+
+        $this->bareOptions['--random-order-seed'] = 321;
+
+        $runnerResultThird = $this->runRunner();
+
+        $thirdOutput = $this->prepareOutputForTestOrderCheck($runnerResultThird->getOutput());
+
+        static::assertNotSame($thirdOutput, $firstOutput);
+    }
+
+    /**
+     * A change in '--random-order-seed' must be reflected too in:
+     *
+     * @see \ParaTest\Tests\fixtures\deterministic_random\MtRandTest::testMtRandIsDeterministic
+     */
+    final public function testRandomnessIsDeterministic(): void
+    {
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-deterministic-random.xml'),
+            '--order-by' => Options::ORDER_RANDOM,
+            '--random-order-seed' => 123,
+        ];
+
+        $this->assertTestsPassed($this->runRunner());
+    }
+
+    final public function testRunnerReversed(): void
+    {
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--verbose' => 1,
+        ];
+
+        $runnerResult = $this->runRunner();
+        $defaultOrder = $this->prepareOutputForTestOrderCheck($runnerResult->getOutput());
+
+        $this->bareOptions['--order-by'] = Options::ORDER_REVERSE;
+
+        $runnerResult = $this->runRunner();
+        $reverseOrder = $this->prepareOutputForTestOrderCheck($runnerResult->getOutput());
+
+        $reverseOrderReversed = array_reverse($reverseOrder);
+
+        static::assertSame($defaultOrder, $reverseOrderReversed);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function prepareOutputForTestOrderCheck(string $output): array
+    {
+        $matchesCount = preg_match_all(
+            sprintf(
+                '/%s%s(?<filename>\S+\.php)/',
+                preg_quote(FIXTURES, '/'),
+                preg_quote(DS, '/')
+            ),
+            $output,
+            $matches
+        );
+
+        self::assertGreaterThan(0, $matchesCount);
+
+        return $matches['filename'];
     }
 }
