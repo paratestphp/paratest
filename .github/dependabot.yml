@@ -10,4 +10,4 @@ updates:
       prefix: "composer"
     labels:
       - "dependency-update"
-    versioning-strategy: "widen"
+    versioning-strategy: "increase"
