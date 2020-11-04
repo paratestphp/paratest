@@ -1,12 +1,13 @@
 # Code coverage generation with `paratest`
 `paratest` is able to generate code coverage in multiple output formats:
 ````
- --coverage-clover Generate code coverage report in Clover XML format.
- --coverage-crap4j Generate code coverage report in Crap4J XML format.
- --coverage-html   Generate code coverage report in HTML format.
- --coverage-php    Serialize PHP_CodeCoverage object to file.
- --coverage-text   Generate code coverage report in text format.
- --coverage-xml    Generate code coverage report in PHPUnit XML format.
+ --coverage-clover      Generate code coverage report in Clover XML format.
+ --coverage-cobertura   Generate code coverage report in Cobertura XML format.
+ --coverage-crap4j      Generate code coverage report in Crap4J XML format.
+ --coverage-html        Generate code coverage report in HTML format.
+ --coverage-php         Serialize PHP_CodeCoverage object to file.
+ --coverage-text        Generate code coverage report in text format.
+ --coverage-xml         Generate code coverage report in PHPUnit XML format.
 ````
 
 It uses the corresponding 

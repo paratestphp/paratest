@@ -25,6 +25,7 @@ final class BaseRunnerTest extends TestBase
         $this->bareOptions = [
             '--path' => $this->fixture('failing_tests'),
             '--coverage-clover' => TMP_DIR . DS . 'coverage.clover',
+            '--coverage-cobertura' => TMP_DIR . DS . 'coverage.cobertura',
             '--coverage-crap4j' => TMP_DIR . DS . 'coverage.crap4j',
             '--coverage-html' => TMP_DIR . DS . 'coverage.html',
             '--coverage-php' => TMP_DIR . DS . 'coverage.php',
@@ -49,6 +50,7 @@ final class BaseRunnerTest extends TestBase
     public function testGeneratesCoverageTypes(): void
     {
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-clover']);
+        static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-cobertura']);
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-crap4j']);
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-html']);
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-php']);
@@ -58,6 +60,7 @@ final class BaseRunnerTest extends TestBase
         $runnerResult                         = $this->runRunner();
 
         static::assertFileExists((string) $this->bareOptions['--coverage-clover']);
+        static::assertFileExists((string) $this->bareOptions['--coverage-cobertura']);
         static::assertFileExists((string) $this->bareOptions['--coverage-crap4j']);
         static::assertFileExists((string) $this->bareOptions['--coverage-html']);
         static::assertFileExists((string) $this->bareOptions['--coverage-php']);

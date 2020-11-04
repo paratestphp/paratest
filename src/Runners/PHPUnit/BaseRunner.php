@@ -192,6 +192,10 @@ abstract class BaseRunner implements RunnerInterface
             $reporter->clover($coverageClover);
         }
 
+        if (($coverageCobertura = $this->options->coverageCobertura()) !== null) {
+            $reporter->cobertura($coverageCobertura);
+        }
+
         if (($coverageCrap4j = $this->options->coverageCrap4j()) !== null) {
             $reporter->crap4j($coverageCrap4j);
         }
