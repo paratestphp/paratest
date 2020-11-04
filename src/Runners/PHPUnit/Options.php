@@ -192,6 +192,8 @@ final class Options
     /** @var string|null */
     private $coverageClover;
     /** @var string|null */
+    private $coverageCobertura;
+    /** @var string|null */
     private $coverageCrap4j;
     /** @var string|null */
     private $coverageHtml;
@@ -229,6 +231,7 @@ final class Options
         bool $colors,
         ?Configuration $configuration,
         ?string $coverageClover,
+        ?string $coverageCobertura,
         ?string $coverageCrap4j,
         ?string $coverageHtml,
         ?string $coveragePhp,
@@ -264,6 +267,7 @@ final class Options
         $this->colors            = $colors;
         $this->configuration     = $configuration;
         $this->coverageClover    = $coverageClover;
+        $this->coverageCobertura = $coverageCobertura;
         $this->coverageCrap4j    = $coverageCrap4j;
         $this->coverageHtml      = $coverageHtml;
         $this->coveragePhp       = $coveragePhp;
@@ -405,6 +409,10 @@ final class Options
                 $options['coverage-clover'] = $codeCoverage->clover()->target()->path();
             }
 
+            if ($options['coverage-cobertura'] === null && $codeCoverage->hasCobertura()) {
+                $options['coverage-cobertura'] = $codeCoverage->cobertura()->target()->path();
+            }
+
             if ($options['coverage-crap4j'] === null && $codeCoverage->hasCrap4j()) {
                 $options['coverage-crap4j'] = $codeCoverage->crap4j()->target()->path();
             }
@@ -446,6 +454,7 @@ final class Options
             $colors,
             $configuration,
             $options['coverage-clover'],
+            $options['coverage-cobertura'],
             $options['coverage-crap4j'],
             $options['coverage-html'],
             $options['coverage-php'],
@@ -482,6 +491,7 @@ final class Options
     public function hasCoverage(): bool
     {
         return $this->coverageClover !== null
+            || $this->coverageCobertura !== null
             || $this->coverageCrap4j !== null
             || $this->coverageHtml !== null
             || $this->coverageText
@@ -523,6 +533,12 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Generate code coverage report in Clover XML format.'
+            ),
+            new InputOption(
+                'coverage-cobertura',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Generate code coverage report in Cobertura XML format.'
             ),
             new InputOption(
                 'coverage-crap4j',
@@ -935,6 +951,11 @@ final class Options
     public function coverageClover(): ?string
     {
         return $this->coverageClover;
+    }
+
+    public function coverageCobertura(): ?string
+    {
+        return $this->coverageCobertura;
     }
 
     public function coverageCrap4j(): ?string

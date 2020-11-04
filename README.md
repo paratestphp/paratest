@@ -50,6 +50,7 @@ Options:
       --colors                                   Displays a colored bar as a test result.
   -c, --configuration=CONFIGURATION              The PHPUnit configuration file to use.
       --coverage-clover=COVERAGE-CLOVER          Generate code coverage report in Clover XML format.
+      --coverage-cobertura=COVERAGE-COBERTURA    Generate code coverage report in Cobertura XML format.
       --coverage-crap4j=COVERAGE-CRAP4J          Generate code coverage report in Crap4J XML format.
       --coverage-html=COVERAGE-HTML              Generate code coverage report in HTML format.
       --coverage-php=COVERAGE-PHP                Serialize PHP_CodeCoverage object to file.

@@ -225,6 +225,7 @@ final class OptionsTest extends TestBase
         static::assertFalse($options->colors());
         static::assertNull($options->configuration());
         static::assertNull($options->coverageClover());
+        static::assertNull($options->coverageCobertura());
         static::assertNull($options->coverageCrap4j());
         static::assertNull($options->coverageHtml());
         static::assertNull($options->coveragePhp());
@@ -267,6 +268,7 @@ final class OptionsTest extends TestBase
             '--colors' => true,
             '--configuration' => 'phpunit-ConfigurationTest.xml',
             '--coverage-clover' => 'COVERAGE-CLOVER',
+            '--coverage-cobertura' => 'COVERAGE-COBERTURA',
             '--coverage-crap4j' => 'COVERAGE-CRAP4J',
             '--coverage-html' => 'COVERAGE-HTML',
             '--coverage-php' => 'COVERAGE-PHP',
@@ -302,6 +304,7 @@ final class OptionsTest extends TestBase
         static::assertTrue($options->colors());
         static::assertNotNull($options->configuration());
         static::assertSame('COVERAGE-CLOVER', $options->coverageClover());
+        static::assertSame('COVERAGE-COBERTURA', $options->coverageCobertura());
         static::assertSame('COVERAGE-CRAP4J', $options->coverageCrap4j());
         static::assertSame('COVERAGE-HTML', $options->coverageHtml());
         static::assertSame('COVERAGE-PHP', $options->coveragePhp());
@@ -358,6 +361,8 @@ final class OptionsTest extends TestBase
         static::assertNotNull($options->configuration());
         static::assertNotNull($options->coverageClover());
         static::assertStringContainsString('clover.xml', $options->coverageClover());
+        static::assertNotNull($options->coverageCobertura());
+        static::assertStringContainsString('cobertura.xml', $options->coverageCobertura());
         static::assertNotNull($options->coverageCrap4j());
         static::assertStringContainsString('crap4j.xml', $options->coverageCrap4j());
         static::assertNotNull($options->coverageHtml());

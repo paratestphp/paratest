@@ -53,6 +53,18 @@ final class CoverageReporterTest extends TestBase
         static::assertTrue($reportXml->hasChildNodes(), 'Incorrect clover report xml was generated');
     }
 
+    public function testGenerateCobertura(): void
+    {
+        $target = TMP_DIR . DS . 'cobertura';
+
+        $this->coverageReporter->cobertura($target);
+
+        static::assertFileExists($target);
+
+        $reportXml = (new Xml\Loader())->loadFile($target);
+        static::assertTrue($reportXml->hasChildNodes(), 'Incorrect Cobertura report xml was generated');
+    }
+
     public function testGenerateCrap4j(): void
     {
         $target = TMP_DIR . DS . 'crap4j';

@@ -7,6 +7,7 @@ namespace ParaTest\Coverage;
 use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\CodeCoverage as CodeCoverageConfiguration;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Report\Clover;
+use SebastianBergmann\CodeCoverage\Report\Cobertura;
 use SebastianBergmann\CodeCoverage\Report\Crap4j;
 use SebastianBergmann\CodeCoverage\Report\Html;
 use SebastianBergmann\CodeCoverage\Report\PHP;
@@ -38,6 +39,12 @@ final class CoverageReporter
     public function clover(string $target): void
     {
         $clover = new Clover();
+        $clover->process($this->coverage, $target);
+    }
+
+    public function cobertura(string $target): void
+    {
+        $clover = new Cobertura();
         $clover->process($this->coverage, $target);
     }
 
