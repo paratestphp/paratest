@@ -79,7 +79,7 @@ abstract class ExecutableTest
         return $this->path;
     }
 
-    final private function touchTempFile(?string &$tempName, string $prefix): string
+    private function touchTempFile(?string &$tempName, string $prefix): string
     {
         if ($tempName === null) {
             $newFile = tempnam($this->tmpDir, $prefix);
@@ -91,7 +91,7 @@ abstract class ExecutableTest
         return $tempName;
     }
 
-    final private function unlinkTempFile(?string &$tempName): void
+    private function unlinkTempFile(?string &$tempName): void
     {
         if ($tempName === null) {
             return;
