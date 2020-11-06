@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - "master"
+  schedule:
+    - cron: '0 3 3 * *'
 
 jobs:
   composer-json-lint:
