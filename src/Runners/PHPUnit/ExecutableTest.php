@@ -148,9 +148,11 @@ abstract class ExecutableTest
      */
     final public function commandArguments(string $binary, array $options, ?array $passthru): array
     {
-        $options              = $this->prepareOptions($options);
-        $options['printer']   = NullPhpunitPrinter::class;
-        $options['log-junit'] = $this->getTempFile();
+        $options                = $this->prepareOptions($options);
+        $options['no-logging']  = null;
+        $options['no-coverage'] = null;
+        $options['printer']     = NullPhpunitPrinter::class;
+        $options['log-junit']   = $this->getTempFile();
 
         if ($this->needsTeamcity) {
             $options['log-teamcity'] = $this->getTeamcityTempFile();
