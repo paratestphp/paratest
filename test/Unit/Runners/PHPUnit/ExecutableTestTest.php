@@ -32,7 +32,7 @@ final class ExecutableTestTest extends TestBase
     public function testCommandRedirectsCoverage(): void
     {
         $binary   = uniqid('phpunit');
-        $options  = ['a' => 'b', 'no-coverage' => null];
+        $options  = ['a' => 'b'];
         $passthru = ['--no-extensions'];
 
         $commandArguments = $this->executableTestChild->commandArguments($binary, $options, $passthru);
@@ -42,6 +42,7 @@ final class ExecutableTestTest extends TestBase
             '--no-extensions',
             '--a',
             'b',
+            '--no-logging',
             '--no-coverage',
             '--printer',
             NullPhpunitPrinter::class,
