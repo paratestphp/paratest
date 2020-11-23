@@ -354,22 +354,24 @@ final class ResultPrinterTest extends ResultTester
             $firstRowColumns  -= 1;
             $secondRowColumns += 1;
         }
-var_dump([$firstRowColumns, $secondRowColumns]);
+var_dump([
+    $firstRowColumns,
+    ($firstRowColumns / 120),
+    ($firstRowColumns / 120 * 100),
+    (int) ($firstRowColumns / 120 * 100),
+]);
         //assert it is as expected
         $expected = '';
         for ($i = 0; $i < $firstRowColumns; ++$i) {
             $expected .= '.';
         }
-var_dump($expected);
+
         $expected .= sprintf("  %s / 120 ( %s%%)\n", $firstRowColumns, (int) ($firstRowColumns / 120 * 100));
-var_dump($expected);
         for ($i = 0; $i < $secondRowColumns; ++$i) {
             $expected .= '.';
         }
-var_dump($expected);
 
         $expected .= sprintf("%s 120 / 120 (100%%)\n", str_repeat(' ', $firstRowColumns - $secondRowColumns));
-var_dump($expected);
 
         static::assertSame($expected, $feedback);
     }
