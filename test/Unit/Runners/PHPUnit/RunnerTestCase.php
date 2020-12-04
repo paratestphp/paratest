@@ -201,7 +201,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         static::assertStringContainsString('Warnings', $runnerResult->getOutput());
-        static::assertEquals(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(TestRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testParatestEnvironmentVariable(): void
