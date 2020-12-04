@@ -28,7 +28,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, composer-normalize, composer-require-checker, composer-unused
+          tools: composer-normalize, composer-require-checker, composer-unused
 
       - name: "Get composer cache directory"
         id: composercache
@@ -75,7 +75,6 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1
 
       - name: "Get composer cache directory"
         id: composercache
@@ -124,7 +123,6 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: zend.assertions=1
-          tools: composer:v1
 
       - name: "Get composer cache directory"
         id: composercache
@@ -181,7 +179,6 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: zend.assertions=1
-          tools: composer:v1
 
       - name: "Get composer cache directory"
         id: composercache
@@ -236,7 +233,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, cs2pr
+          tools: cs2pr
 
       - name: "Get composer cache directory"
         id: composercache
@@ -274,7 +271,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: composer:v1, cs2pr
+          tools: cs2pr
 
       - name: "Get composer cache directory"
         id: composercache
