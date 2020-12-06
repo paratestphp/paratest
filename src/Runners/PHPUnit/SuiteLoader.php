@@ -22,6 +22,7 @@ use SebastianBergmann\Environment\Runtime;
 use SebastianBergmann\FileIterator\Facade;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 use function array_intersect;
 use function array_map;
@@ -323,7 +324,12 @@ final class SuiteLoader
             return $result;
         }
 
-        $providedData = Test::getProvidedData($class->getName(), $method->getName());
+        try {
+            $providedData = Test::getProvidedData($class->getName(), $method->getName());
+        } catch (Throwable $throwable) {
+            $providedData = null;
+        }
+
         if ($providedData !== null) {
             foreach ($providedData as $key => $value) {
                 $test = sprintf(
