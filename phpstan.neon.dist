@@ -123,6 +123,10 @@ parameters:
             message: "#^Offset 'UNIQUE_TEST_TOKEN' does not exist on array\\('PARATEST' \\=\\> 1, \\?'UNIQUE_TEST_TOKEN' \\=\\> string, 'TEST_TOKEN' \\=\\> int\\)\\.$#"
             count: 1
             path: test/Unit/Runners/PHPUnit/OptionsTest.php
+        -
+            message: "#^In method \"ParaTest\\\\Runners\\\\PHPUnit\\\\SuiteLoader\\:\\:getMethodTests\", caught \"Throwable\" must be rethrown\\. Either catch a more specific exception or add a \"throw\" clause in the \"catch\" block to propagate the exception\\. More info\\: http\\://bit\\.ly/failloud$#"
+            count: 1
+            path: src/Runners/PHPUnit/SuiteLoader.php
 
         # Level 7
         -

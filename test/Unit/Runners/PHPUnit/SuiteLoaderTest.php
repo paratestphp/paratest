@@ -370,6 +370,14 @@ final class SuiteLoaderTest extends TestBase
         static::assertCount(24, $loader->getTestMethods());
     }
 
+    public function testTestMethodsFromErroringDataProviderReturnTheSimpleMethodToBeRunInTheSubprocess(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('github' . DS . 'GH565');
+        $loader                      = $this->loadSuite();
+
+        static::assertCount(3, $loader->getTestMethods());
+    }
+
     /**
      * @return string[]
      */

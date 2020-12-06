@@ -6,7 +6,6 @@ namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
-use ParaTest\Parser\ParsedFunction;
 use ParaTest\Parser\Parser;
 use PHPUnit\Framework\ExecutionOrderDependency;
 use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\FilterMapper;
@@ -15,6 +14,7 @@ use PHPUnit\TextUI\XmlConfiguration\PhpHandler;
 use PHPUnit\TextUI\XmlConfiguration\TestSuite;
 use PHPUnit\Util\FileLoader;
 use PHPUnit\Util\Test;
+use ReflectionMethod;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\CacheWarmer;
@@ -22,6 +22,7 @@ use SebastianBergmann\Environment\Runtime;
 use SebastianBergmann\FileIterator\Facade;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 use function array_intersect;
 use function array_map;
@@ -312,12 +313,9 @@ final class SuiteLoader
      * With empty filter this method returns single test if doesn't have data provider or
      * data provider is not used and return all test if has data provider and data provider is used.
      *
-     * @param ParsedClass    $class  parsed class
-     * @param ParsedFunction $method parsed method
-     *
      * @return string[] array of test names
      */
-    private function getMethodTests(ParsedClass $class, ParsedFunction $method): array
+    private function getMethodTests(ParsedClass $class, ReflectionMethod $method): array
     {
         $result = [];
 
@@ -326,7 +324,12 @@ final class SuiteLoader
             return $result;
         }
 
-        $providedData = Test::getProvidedData($class->getName(), $method->getName());
+        try {
+            $providedData = Test::getProvidedData($class->getName(), $method->getName());
+        } catch (Throwable $throwable) {
+            $providedData = null;
+        }
+
         if ($providedData !== null) {
             foreach ($providedData as $key => $value) {
                 $test = sprintf(

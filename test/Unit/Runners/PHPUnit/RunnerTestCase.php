@@ -361,6 +361,19 @@ abstract class RunnerTestCase extends TestBase
         $this->assertTestsPassed($runnerResult);
     }
 
+    /**
+     * @group github
+     * @coversNothing
+     */
+    final public function testErrorsInDataProviderAreHandled(): void
+    {
+        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH565'));
+
+        static::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
+        static::assertStringContainsString('Skipped: 2', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
+    }
+
     final public function testTeamcityLog(): void
     {
         $outputPath = TMP_DIR . DS . 'test-output.teamcity';

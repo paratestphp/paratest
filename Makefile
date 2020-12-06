@@ -17,7 +17,7 @@ static-analysis: vendor
 
 .PHONY: test
 test: vendor
-	php -d zend.assertions=1 vendor/bin/phpunit --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml
+	php -d zend.assertions=1 vendor/bin/phpunit --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml ${arg}
 
 .PHONY: code-coverage
 code-coverage: test

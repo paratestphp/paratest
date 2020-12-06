@@ -4,38 +4,46 @@ declare(strict_types=1);
 
 namespace ParaTest\Parser;
 
+use ReflectionMethod;
+
 /**
  * @internal
- *
- * @method class-string getName()
  */
-final class ParsedClass extends ParsedObject
+final class ParsedClass
 {
     /** @var class-string */
-    protected $name;
-
-    /** @var string */
-    private $namespace;
+    private $name;
 
     /**
      * A collection of methods belonging
      * to the parsed class.
      *
-     * @var ParsedFunction[]
+     * @var ReflectionMethod[]
      */
     private $methods;
+
     /** @var int */
     private $parentsCount;
 
     /**
-     * @param ParsedFunction[] $methods
+     * @param class-string       $name
+     * @param ReflectionMethod[] $methods
      */
-    public function __construct(string $doc, string $name, string $namespace, array $methods, int $parentsCount)
+    public function __construct(string $name, array $methods, int $parentsCount)
     {
-        parent::__construct($doc, $name);
-        $this->namespace    = $namespace;
+        $this->name         = $name;
         $this->methods      = $methods;
         $this->parentsCount = $parentsCount;
+    }
+
+    /**
+     * Get the name of a parsed object.
+     *
+     * @return class-string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**
@@ -43,19 +51,11 @@ final class ParsedClass extends ParsedObject
      * optionally filtering on annotations present
      * on a method.
      *
-     * @return ParsedFunction[]
+     * @return ReflectionMethod[]
      */
     public function getMethods(): array
     {
         return $this->methods;
-    }
-
-    /**
-     * Return the namespace of the parsed class.
-     */
-    public function getNamespace(): string
-    {
-        return $this->namespace;
     }
 
     public function getParentsCount(): int
