@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Exception;
 use PHPUnit\Runner\StandardTestSuiteLoader;
 use ReflectionClass;
-use ReflectionMethod;
 
 use function array_diff;
 use function assert;
@@ -109,7 +108,6 @@ final class Parser
         }
 
         return new ParsedClass(
-            (string) $this->refl->getDocComment(),
             $this->getCleanReflectionName(),
             $this->refl->getNamespaceName(),
             $this->getMethods(),
@@ -133,7 +131,7 @@ final class Parser
     private function getMethods(): array
     {
         $tests   = [];
-        $methods = $this->refl->getMethods(ReflectionMethod::IS_PUBLIC);
+        $methods = $this->refl->getMethods();
         foreach ($methods as $method) {
             $hasTestName       = preg_match(self::$testName, $method->getName()) > 0;
             $docComment        = $method->getDocComment();
@@ -143,7 +141,7 @@ final class Parser
                 continue;
             }
 
-            $tests[] = new ParsedFunction((string) $method->getDocComment(), $method->getName());
+            $tests[] = new ParsedFunction($method->getName());
         }
 
         return $tests;

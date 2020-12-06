@@ -23,21 +23,11 @@ final class ParsedClassTest extends TestBase
     public function setUpTest(): void
     {
         $this->methods = [
-            new ParsedFunction(
-                '/**
-              * @group group1
-              */',
-                'testFunction'
-            ),
-            new ParsedFunction(
-                '/**
-              * @group group2
-              */',
-                'testFunction2'
-            ),
-            new ParsedFunction('', 'testFunction3'),
+            new ParsedFunction('testFunction'),
+            new ParsedFunction('testFunction2'),
+            new ParsedFunction('testFunction3'),
         ];
-        $this->class   = new ParsedClass('', 'MyTestClass', 'MyNamespace', $this->methods, 4);
+        $this->class   = new ParsedClass('MyTestClass', 'MyNamespace', $this->methods, 4);
     }
 
     public function testGetters(): void

@@ -17,18 +17,14 @@ final class ParsedObjectTest extends TestBase
 {
     /** @var ParsedClass  */
     private $parsedClass;
-    /** @var string */
-    private $docBlock;
 
     public function setUpTest(): void
     {
-        $this->docBlock    = "/**\n * @test\n @group group1\n*\\/";
-        $this->parsedClass = new ParsedClass($this->docBlock, self::class, 'My\\Name\\Space', [], 4);
+        $this->parsedClass = new ParsedClass(self::class, 'My\\Name\\Space', [], 4);
     }
 
     public function testGetters(): void
     {
         static::assertSame(self::class, $this->parsedClass->getName());
-        static::assertSame($this->docBlock, $this->parsedClass->getDocBlock());
     }
 }

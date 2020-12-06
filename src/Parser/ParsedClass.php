@@ -30,9 +30,9 @@ final class ParsedClass extends ParsedObject
     /**
      * @param ParsedFunction[] $methods
      */
-    public function __construct(string $doc, string $name, string $namespace, array $methods, int $parentsCount)
+    public function __construct(string $name, string $namespace, array $methods, int $parentsCount)
     {
-        parent::__construct($doc, $name);
+        parent::__construct($name);
         $this->namespace    = $namespace;
         $this->methods      = $methods;
         $this->parentsCount = $parentsCount;

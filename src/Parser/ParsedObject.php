@@ -9,13 +9,9 @@ abstract class ParsedObject
     /** @var string */
     protected $name;
 
-    /** @var string */
-    private $docBlock;
-
-    public function __construct(string $doc, string $name)
+    public function __construct(string $name)
     {
-        $this->docBlock = $doc;
-        $this->name     = $name;
+        $this->name = $name;
     }
 
     /**
@@ -24,13 +20,5 @@ abstract class ParsedObject
     final public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * Get the doc block comments of a parsed object.
-     */
-    final public function getDocBlock(): string
-    {
-        return $this->docBlock;
     }
 }
