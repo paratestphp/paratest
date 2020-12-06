@@ -19,7 +19,7 @@ final class ParsedObjectTest extends TestBase
 
     public function setUpTest(): void
     {
-        $this->parsedClass = new ParsedClass(self::class, 'My\\Name\\Space', [], 4);
+        $this->parsedClass = new ParsedClass(self::class, [], 4);
     }
 
     public function testGetters(): void

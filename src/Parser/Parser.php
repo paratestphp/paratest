@@ -96,7 +96,6 @@ final class Parser
 
         return new ParsedClass(
             $this->getCleanReflectionName(),
-            $this->refl->getNamespaceName(),
             $this->getMethods(),
             $parentsCount
         );

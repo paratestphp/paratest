@@ -67,12 +67,6 @@ final class ParserTest extends TestBase
         static::assertEquals(UnitTestWithClassAnnotationTest::class, $class->getName());
     }
 
-    public function testParsedClassHasNamespace(): void
-    {
-        $class = $this->parseFile($this->fixture('failing_tests' . DS . 'UnitTestWithClassAnnotationTest.php'));
-        static::assertEquals('ParaTest\\Tests\\fixtures\\failing_tests', $class->getNamespace());
-    }
-
     public function testParsedClassHasCorrectNumberOfTestMethods(): void
     {
         $class = $this->parseFile($this->fixture('failing_tests' . DS . 'UnitTestWithClassAnnotationTest.php'));

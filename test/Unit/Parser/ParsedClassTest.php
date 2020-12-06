@@ -25,12 +25,11 @@ final class ParsedClassTest extends TestBase
         $this->methods = [
             new ReflectionMethod(self::class, 'testGetters'),
         ];
-        $this->class   = new ParsedClass(self::class, 'MyNamespace', $this->methods, 4);
+        $this->class   = new ParsedClass(self::class, $this->methods, 4);
     }
 
     public function testGetters(): void
     {
-        static::assertSame('MyNamespace', $this->class->getNamespace());
         static::assertSame($this->methods, $this->class->getMethods());
         static::assertSame(4, $this->class->getParentsCount());
     }

@@ -16,9 +16,6 @@ final class ParsedClass extends ParsedObject
     /** @var class-string */
     protected $name;
 
-    /** @var string */
-    private $namespace;
-
     /**
      * A collection of methods belonging
      * to the parsed class.
@@ -33,10 +30,9 @@ final class ParsedClass extends ParsedObject
     /**
      * @param ReflectionMethod[] $methods
      */
-    public function __construct(string $name, string $namespace, array $methods, int $parentsCount)
+    public function __construct(string $name, array $methods, int $parentsCount)
     {
         parent::__construct($name);
-        $this->namespace    = $namespace;
         $this->methods      = $methods;
         $this->parentsCount = $parentsCount;
     }
@@ -51,14 +47,6 @@ final class ParsedClass extends ParsedObject
     public function getMethods(): array
     {
         return $this->methods;
-    }
-
-    /**
-     * Return the namespace of the parsed class.
-     */
-    public function getNamespace(): string
-    {
-        return $this->namespace;
     }
 
     public function getParentsCount(): int
