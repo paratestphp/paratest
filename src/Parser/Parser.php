@@ -18,7 +18,6 @@ use function assert;
 use function get_declared_classes;
 use function is_file;
 use function realpath;
-use function str_replace;
 
 /**
  * @internal
@@ -95,18 +94,10 @@ final class Parser
         }
 
         return new ParsedClass(
-            $this->getCleanReflectionName(),
+            $this->refl->getName(),
             $this->getMethods(),
             $parentsCount
         );
-    }
-
-    /**
-     * Return reflection name with null bytes stripped.
-     */
-    private function getCleanReflectionName(): string
-    {
-        return str_replace("\x00", '', $this->refl->getName());
     }
 
     /**

@@ -30,6 +30,7 @@ final class ParsedClassTest extends TestBase
 
     public function testGetters(): void
     {
+        static::assertSame(self::class, $this->class->getName());
         static::assertSame($this->methods, $this->class->getMethods());
         static::assertSame(4, $this->class->getParentsCount());
     }

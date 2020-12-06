@@ -8,13 +8,11 @@ use ReflectionMethod;
 
 /**
  * @internal
- *
- * @method class-string getName()
  */
-final class ParsedClass extends ParsedObject
+final class ParsedClass
 {
     /** @var class-string */
-    protected $name;
+    private $name;
 
     /**
      * A collection of methods belonging
@@ -28,13 +26,24 @@ final class ParsedClass extends ParsedObject
     private $parentsCount;
 
     /**
+     * @param class-string       $name
      * @param ReflectionMethod[] $methods
      */
     public function __construct(string $name, array $methods, int $parentsCount)
     {
-        parent::__construct($name);
+        $this->name         = $name;
         $this->methods      = $methods;
         $this->parentsCount = $parentsCount;
+    }
+
+    /**
+     * Get the name of a parsed object.
+     *
+     * @return class-string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**
