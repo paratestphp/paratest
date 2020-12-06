@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace ParaTest\Parser;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Exception;
 use PHPUnit\Runner\StandardTestSuiteLoader;
+use PHPUnit\Util\Test as TestUtil;
 use ReflectionClass;
+use ReflectionMethod;
 
 use function array_diff;
 use function assert;
 use function get_declared_classes;
 use function is_file;
-use function preg_match;
 use function realpath;
 use function str_replace;
 
@@ -25,21 +27,6 @@ final class Parser
 {
     /** @var ReflectionClass<TestCase> */
     private $refl;
-
-    /**
-     * Matches a test method beginning with the conventional "test"
-     * word.
-     *
-     * @var string
-     */
-    private static $testName = '/^test/';
-
-    /**
-     * A pattern for matching test methods that use the @test annotation.
-     *
-     * @var string
-     */
-    private static $testAnnotation = '/@test\b/';
 
     /** @var ReflectionClass<TestCase>[] */
     private static $alreadyLoadedSources = [];
@@ -126,24 +113,28 @@ final class Parser
     /**
      * Return all test methods present in the file.
      *
-     * @return ParsedFunction[]
+     * @return ReflectionMethod[]
      */
     private function getMethods(): array
     {
-        $tests   = [];
-        $methods = $this->refl->getMethods();
-        foreach ($methods as $method) {
-            $hasTestName       = preg_match(self::$testName, $method->getName()) > 0;
-            $docComment        = $method->getDocComment();
-            $hasTestAnnotation = $docComment !== false && preg_match(self::$testAnnotation, $docComment) > 0;
-            $isTestMethod      = $hasTestName || $hasTestAnnotation;
-            if (! $isTestMethod) {
+        $methods = [];
+        // @see \PHPUnit\Framework\TestSuite::__construct
+        foreach ($this->refl->getMethods() as $method) {
+            if ($method->getDeclaringClass()->getName() === Assert::class) {
                 continue;
             }
 
-            $tests[] = new ParsedFunction($method->getName());
+            if ($method->getDeclaringClass()->getName() === TestCase::class) {
+                continue;
+            }
+
+            if (! TestUtil::isTestMethod($method)) {
+                continue;
+            }
+
+            $methods[] = $method;
         }
 
-        return $tests;
+        return $methods;
     }
 }

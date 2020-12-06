@@ -11,7 +11,6 @@ use ParaTest\Tests\TestBase;
  * @internal
  *
  * @covers \ParaTest\Parser\ParsedObject
- * @covers \ParaTest\Parser\ParsedFunction
  */
 final class ParsedObjectTest extends TestBase
 {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Parser;
 
+use ReflectionMethod;
+
 /**
  * @internal
  *
@@ -21,14 +23,15 @@ final class ParsedClass extends ParsedObject
      * A collection of methods belonging
      * to the parsed class.
      *
-     * @var ParsedFunction[]
+     * @var ReflectionMethod[]
      */
     private $methods;
+
     /** @var int */
     private $parentsCount;
 
     /**
-     * @param ParsedFunction[] $methods
+     * @param ReflectionMethod[] $methods
      */
     public function __construct(string $name, string $namespace, array $methods, int $parentsCount)
     {
@@ -43,7 +46,7 @@ final class ParsedClass extends ParsedObject
      * optionally filtering on annotations present
      * on a method.
      *
-     * @return ParsedFunction[]
+     * @return ReflectionMethod[]
      */
     public function getMethods(): array
     {

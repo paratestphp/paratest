@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Parser;
 
 use ParaTest\Parser\ParsedClass;
-use ParaTest\Parser\ParsedFunction;
 use ParaTest\Tests\TestBase;
+use ReflectionMethod;
 
 /**
  * @internal
@@ -17,17 +17,15 @@ final class ParsedClassTest extends TestBase
 {
     /** @var ParsedClass  */
     private $class;
-    /** @var ParsedFunction[]  */
+    /** @var ReflectionMethod[]  */
     private $methods;
 
     public function setUpTest(): void
     {
         $this->methods = [
-            new ParsedFunction('testFunction'),
-            new ParsedFunction('testFunction2'),
-            new ParsedFunction('testFunction3'),
+            new ReflectionMethod(self::class, 'testGetters'),
         ];
-        $this->class   = new ParsedClass('MyTestClass', 'MyNamespace', $this->methods, 4);
+        $this->class   = new ParsedClass(self::class, 'MyNamespace', $this->methods, 4);
     }
 
     public function testGetters(): void
