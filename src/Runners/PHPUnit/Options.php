@@ -69,6 +69,9 @@ final class Options
         self::ORDER_REVERSE,
     ];
 
+    public const VERBOSITY_NORMAL       = 1;
+    public const VERBOSITY_VERBOSE      = 2;
+    public const VERBOSITY_VERY_VERBOSE = 4;
 
     /**
      * @see \PHPUnit\Util\Configuration
@@ -171,12 +174,8 @@ final class Options
      */
     private $passthruPhp;
 
-    /**
-     * Verbosity. If true, debug output will be printed.
-     *
-     * @var int
-     */
-    private $verbose;
+    /** @var int */
+    private $verbosity;
 
     /**
      * Limit the number of tests recorded in coverage reports
@@ -258,7 +257,7 @@ final class Options
         bool $stopOnFailure,
         array $testsuite,
         string $tmpDir,
-        int $verbose,
+        int $verbosity,
         ?string $whitelist,
         string $orderBy,
         int $randomOrderSeed
@@ -294,7 +293,7 @@ final class Options
         $this->stopOnFailure     = $stopOnFailure;
         $this->testsuite         = $testsuite;
         $this->tmpDir            = $tmpDir;
-        $this->verbose           = $verbose;
+        $this->verbosity         = $verbosity;
         $this->whitelist         = $whitelist;
         $this->orderBy           = $orderBy;
         $this->randomOrderSeed   = $randomOrderSeed;
@@ -449,6 +448,22 @@ final class Options
         // is strictly coupled with PHPUnit pinned version
         $phpunit = self::getPhpunitBinary();
 
+        $verbosity = self::VERBOSITY_NORMAL;
+        if (
+            $input->hasParameterOption('-vv', true)
+            || $input->hasParameterOption('--verbose=2', true)
+            || $input->getParameterOption('--verbose', false, true) === 2
+        ) {
+            $verbosity = self::VERBOSITY_VERY_VERBOSE;
+        } elseif (
+            $input->hasParameterOption('-v', true)
+            || $input->hasParameterOption('--verbose=1', true)
+            || $input->hasParameterOption('--verbose', true)
+            || $input->getParameterOption('--verbose', false, true) === 1
+        ) {
+            $verbosity = self::VERBOSITY_VERBOSE;
+        }
+
         return new self(
             $options['bootstrap'],
             $colors,
@@ -481,7 +496,7 @@ final class Options
             $options['stop-on-failure'],
             $testsuite,
             $options['tmp-dir'],
-            (int) $options['verbose'],
+            $verbosity,
             $options['whitelist'],
             $options['order-by'] ?? self::ORDER_DEFAULT,
             (int) $options['random-order-seed']
@@ -705,10 +720,9 @@ final class Options
             ),
             new InputOption(
                 'verbose',
-                'v',
-                InputOption::VALUE_REQUIRED,
-                'If given, debug output is printed. Example: --verbose=1',
-                0
+                'v|vv',
+                InputOption::VALUE_NONE,
+                'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output'
             ),
             new InputOption(
                 'whitelist',
@@ -933,9 +947,9 @@ final class Options
         return $this->passthruPhp;
     }
 
-    public function verbose(): int
+    public function verbosity(): int
     {
-        return $this->verbose;
+        return $this->verbosity;
     }
 
     public function coverageTestLimit(): int

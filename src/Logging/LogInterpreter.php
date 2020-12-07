@@ -229,4 +229,17 @@ final class LogInterpreter implements MetaProviderInterface
 
         return $messages;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSkipped(): array
+    {
+        $messages = [];
+        foreach ($this->readers as $reader) {
+            $messages = array_merge($messages, $reader->getSkipped());
+        }
+
+        return $messages;
+    }
 }

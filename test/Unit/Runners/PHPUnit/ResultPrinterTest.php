@@ -282,6 +282,21 @@ final class ResultPrinterTest extends ResultTester
         static::assertSame($eq, $failures);
     }
 
+    public function testGetSkipped(): void
+    {
+        $this->printer->addTest($this->skipped);
+
+        $this->prepareReaders();
+
+        $failures = $this->printer->getSkipped();
+
+        $eq  = "There was 1 skipped:\n\n";
+        $eq .= "1) UnitTestWithMethodAnnotationsTest::testIncomplete\n\n";
+        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:51\n\n";
+
+        static::assertSame($eq, $failures);
+    }
+
     public function testGetFooterWithFailures(): void
     {
         $this->printer->addTest($this->errorSuite);
@@ -446,7 +461,24 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($this->skipped);
         $this->printer->printResults();
 
-        static::assertStringContainsString('OK', $this->output->fetch());
+        $output = $this->output->fetch();
+        static::assertStringContainsString('OK', $output);
+        static::assertStringNotContainsString('UnitTestWithMethodAnnotationsTest', $output);
+    }
+
+    public function testSkippedOutpusMessagesWithVerbose(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true, '--verbose' => 1]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->skipped);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->skipped);
+        $this->printer->printResults();
+
+        $output = $this->output->fetch();
+        static::assertStringContainsString('OK', $output);
+        static::assertStringContainsString('UnitTestWithMethodAnnotationsTest', $output);
     }
 
     public function testColorsForPassing(): void

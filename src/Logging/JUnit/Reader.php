@@ -335,4 +335,22 @@ final class Reader implements MetaProviderInterface
 
         return $messages;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSkipped(): array
+    {
+        $messages = [];
+        $suites   = $this->isSingle ? $this->suites : $this->suites[0]->suites;
+        foreach ($suites as $suite) {
+            foreach ($suite->cases as $case) {
+                foreach ($case->skipped as $msg) {
+                    $messages[] = $msg['text'];
+                }
+            }
+        }
+
+        return $messages;
+    }
 }

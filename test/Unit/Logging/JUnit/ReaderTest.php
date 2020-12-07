@@ -324,6 +324,33 @@ final class ReaderTest extends TestBase
         );
     }
 
+    public function testGetSkippedMessagesForSkippingTest(): void
+    {
+        $reader  = new Reader(FIXTURES . DS . 'results' . DS . 'single-skipped.xml');
+        $skipped = $reader->getSkipped();
+        static::assertCount(1, $skipped);
+        static::assertSame(
+            "UnitTestWithMethodAnnotationsTest::testIncomplete\n\n" .
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:51',
+            $skipped[0]
+        );
+    }
+
+    public function testGetSkippedMessagesForSkippingDataProviders(): void
+    {
+        $reader  = new Reader(FIXTURES . DS . 'results' . DS . 'data-provider-errors.xml');
+        $skipped = $reader->getSkipped();
+        static::assertCount(2, $skipped);
+        static::assertSame(
+            'ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider',
+            $skipped[0]
+        );
+        static::assertSame(
+            'ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider',
+            $skipped[1]
+        );
+    }
+
     public function testMixedGetFeedback(): void
     {
         $feedback = $this->mixed->getFeedback();

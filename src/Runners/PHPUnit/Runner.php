@@ -69,7 +69,7 @@ final class Runner extends BaseRunner
             $this->running[$token] = new RunnerWorker($executableTest, $this->options, $token);
             $this->running[$token]->run();
 
-            if ($this->options->verbose() === 0) {
+            if ($this->options->verbosity() < Options::VERBOSITY_VERY_VERBOSE) {
                 continue;
             }
 
