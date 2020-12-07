@@ -129,6 +129,17 @@ final class LogInterpreterTest extends ResultTester
         static::assertSame($errors, $this->interpreter->getRisky());
     }
 
+    public function testGetSkippedReturnsArrayOfTestNames(): void
+    {
+        $interpreter = new LogInterpreter();
+        $interpreter->addReader(new Reader($this->skipped->getTempFile()));
+        $skipped = [
+            "UnitTestWithMethodAnnotationsTest::testIncomplete\n\n" .
+            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:51',
+        ];
+        static::assertSame($skipped, $interpreter->getSkipped());
+    }
+
     public function testGetCasesReturnsAllCases(): void
     {
         $cases = $this->interpreter->getCases();

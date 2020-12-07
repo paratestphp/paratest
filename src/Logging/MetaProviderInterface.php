@@ -15,9 +15,9 @@ interface MetaProviderInterface
 
     public function getTotalErrors(): int;
 
-    public function getTotalFailures(): int;
-
     public function getTotalWarnings(): int;
+
+    public function getTotalFailures(): int;
 
     public function getTotalSkipped(): int;
 
@@ -34,4 +34,7 @@ interface MetaProviderInterface
 
     /** @return string[] */
     public function getRisky(): array;
+
+    /** @return string[] */
+    public function getSkipped(): array;
 }

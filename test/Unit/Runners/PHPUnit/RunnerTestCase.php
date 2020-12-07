@@ -445,7 +445,7 @@ abstract class RunnerTestCase extends TestBase
             '--configuration' => $this->fixture('phpunit-passing.xml'),
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => 123,
-            '--verbose' => 1,
+            '--verbose' => 2,
         ];
 
         $runnerResultFirst  = $this->runRunner();
@@ -484,7 +484,7 @@ abstract class RunnerTestCase extends TestBase
     {
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-passing.xml'),
-            '--verbose' => 1,
+            '--verbose' => 2,
         ];
 
         $runnerResult = $this->runRunner();

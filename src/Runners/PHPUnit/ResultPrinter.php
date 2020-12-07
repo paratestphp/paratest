@@ -190,12 +190,17 @@ final class ResultPrinter
      */
     public function printResults(): void
     {
-        $failures = array_filter([
+        $toFilter = [
             $this->getErrors(),
             $this->getWarnings(),
             $this->getFailures(),
             $this->getRisky(),
-        ]);
+        ];
+        if ($this->options->verbosity() >= Options::VERBOSITY_VERBOSE) {
+            $toFilter[] = $this->getSkipped();
+        }
+
+        $failures = array_filter($toFilter);
 
         $this->output->write($this->getHeader());
         $this->output->write(implode("---\n\n", $failures));
@@ -313,13 +318,23 @@ final class ResultPrinter
     }
 
     /**
-     * Returns the failure messages.
+     * Returns the risky messages.
      */
     public function getRisky(): string
     {
         $risky = $this->results->getRisky();
 
         return $this->getDefects($risky, 'risky');
+    }
+
+    /**
+     * Returns the skipped messages.
+     */
+    public function getSkipped(): string
+    {
+        $risky = $this->results->getSkipped();
+
+        return $this->getDefects($risky, 'skipped');
     }
 
     /**

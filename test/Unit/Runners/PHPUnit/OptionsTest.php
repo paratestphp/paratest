@@ -252,7 +252,7 @@ final class OptionsTest extends TestBase
         static::assertFalse($options->stopOnFailure());
         static::assertEmpty($options->testsuite());
         static::assertSame(TMP_DIR, $options->tmpDir());
-        static::assertSame(0, $options->verbose());
+        static::assertSame(Options::VERBOSITY_NORMAL, $options->verbosity());
         static::assertNull($options->whitelist());
         static::assertSame(Options::ORDER_DEFAULT, $options->orderBy());
         static::assertSame(0, $options->randomOrderSeed());
@@ -292,7 +292,7 @@ final class OptionsTest extends TestBase
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',
             '--tmp-dir' => ($tmpDir = uniqid(TMP_DIR . DS . 't')),
-            '--verbose' => 1,
+            '--verbose' => 2,
             '--whitelist' => 'WHITELIST',
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => $expected_random_seed,
@@ -329,7 +329,7 @@ final class OptionsTest extends TestBase
         static::assertTrue($options->stopOnFailure());
         static::assertSame(['TESTSUITE'], $options->testsuite());
         static::assertSame($tmpDir, $options->tmpDir());
-        static::assertSame(1, $options->verbose());
+        static::assertSame(Options::VERBOSITY_VERY_VERBOSE, $options->verbosity());
         static::assertSame('WHITELIST', $options->whitelist());
         static::assertSame(Options::ORDER_RANDOM, $options->orderBy());
         static::assertSame($expected_random_seed, $options->randomOrderSeed());
@@ -347,6 +347,13 @@ final class OptionsTest extends TestBase
 
         static::assertTrue($options->hasLogTeamcity());
         static::assertTrue($options->hasCoverage());
+    }
+
+    public function testSingleVerboseFlag(): void
+    {
+        $options = $this->createOptionsFromArgv(['--verbose' => 1], __DIR__);
+
+        static::assertSame(Options::VERBOSITY_VERBOSE, $options->verbosity());
     }
 
     public function testGatherOptionsFromConfiguration(): void

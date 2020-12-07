@@ -11,6 +11,7 @@ use function assert;
 use function class_exists;
 use function is_subclass_of;
 use function iterator_to_array;
+use function sprintf;
 use function trim;
 
 /**
@@ -118,6 +119,25 @@ final class TestCase
         ];
 
         foreach ($defect_groups as $group => $defects) {
+            if ($group === 'skipped' && $defects !== []) {
+                $text = (string) $node['name'];
+                if ((string) $node['class'] !== '') {
+                    $text = sprintf(
+                        "%s::%s\n\n%s:%s",
+                        (string) $node['class'],
+                        (string) $node['name'],
+                        (string) $node['file'],
+                        (string) $node['line']
+                    );
+                }
+
+                $case->skipped[] = [
+                    'type' => '',
+                    'text' => $text,
+                ];
+                continue;
+            }
+
             foreach ($defects as $defect) {
                 assert($defect !== false);
 
