@@ -36,50 +36,8 @@ This is because of the following reasons:
 
 # Usage
 
-After installation, the binary can be found at `vendor/bin/paratest`. Usage is as follows:
-
-```
-Usage:
-  paratest [options] [--] [<path>]
-
-Arguments:
-  path                                           The path to a directory or file containing tests.
-
-Options:
-      --bootstrap=BOOTSTRAP                      The bootstrap file to be used by PHPUnit.
-      --colors                                   Displays a colored bar as a test result.
-  -c, --configuration=CONFIGURATION              The PHPUnit configuration file to use.
-      --coverage-clover=COVERAGE-CLOVER          Generate code coverage report in Clover XML format.
-      --coverage-cobertura=COVERAGE-COBERTURA    Generate code coverage report in Cobertura XML format.
-      --coverage-crap4j=COVERAGE-CRAP4J          Generate code coverage report in Crap4J XML format.
-      --coverage-html=COVERAGE-HTML              Generate code coverage report in HTML format.
-      --coverage-php=COVERAGE-PHP                Serialize PHP_CodeCoverage object to file.
-      --coverage-test-limit=COVERAGE-TEST-LIMIT  Limit the number of tests to record for each line of code. Helps to reduce memory and size of coverage reports.
-      --coverage-text                            Generate code coverage report in text format.
-      --coverage-xml=COVERAGE-XML                Generate code coverage report in PHPUnit XML format.
-      --exclude-group=EXCLUDE-GROUP              Don't run tests from the specified group(s).
-      --filter=FILTER                            Filter (only for functional mode).
-  -f, --functional                               Run test methods instead of classes in separate processes.
-  -g, --group=GROUP                              Only runs tests from the specified group(s).
-  -h, --help                                     Display this help message.
-      --log-junit=LOG-JUNIT                      Log test execution in JUnit XML format to file.
-      --log-teamcity=LOG-TEAMCITY                Log test execution in Teamcity format to file.
-  -m, --max-batch-size=MAX-BATCH-SIZE            Max batch size (only for functional mode). [default: 0]
-      --no-test-tokens                           Disable TEST_TOKEN environment variables. (default: variable is set)
-      --order-by[=ORDER-BY]                      Run tests in order: default|random|reverse
-      --parallel-suite                           Run the suites of the config in parallel.
-      --passthru=PASSTHRU                        Pass the given arguments verbatim to the underlying test framework. Example: --passthru="'--prepend' 'xdebug-filter.php'"
-      --passthru-php=PASSTHRU-PHP                Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="'-d' 'zend_extension=xdebug.so'"
-      --path=PATH                                An alias for the path argument.
-  -p, --processes=PROCESSES                      The number of test processes to run. [default: "auto"]
-      --random-order-seed=[RANDOM-ORDER-SEED]    Use a specific random seed <N> for random order
-      --runner=RUNNER                            Runner or WrapperRunner. [default: "Runner"]
-      --stop-on-failure                          Don't start any more processes after a failure.
-      --testsuite=TESTSUITE                      Filter which testsuite to run
-      --tmp-dir=TMP-DIR                          Temporary directory for internal ParaTest files [default: sys_get_temp_dir()]
-  -v, --verbose=VERBOSE                          If given, debug output is printed. Example: --verbose=1 [default: 0]
-      --whitelist=WHITELIST                      Directory to add to the coverage whitelist.
-```
+After installation, the binary can be found at `vendor/bin/paratest`. Run it
+with `--help` option to see a complete list of the available options.
 
 ### Optimizing Speed
 
@@ -93,14 +51,7 @@ To get the most out of paratest, you have to adjust the parameters carefully.
     (e.g. if you have 8 logical cores, you might try `16`), but keep in mind that each process generates a little bit
     of overhead as well.
 
- 2. **Choose between per-testcase- and per-testmethod-parallelization with `-f`**
-
-    Given you have few testcases (classes) with many long running methods, you should use the `-f` option to enable the
-    `functional mode` and allow different methods of the same class to be executed in parallel. Keep in mind that the
-    default is per-testcase-parallelization to address inter-testmethod dependencies. Note that in most projects, using
-    `-f` is **slower** since each test **method** will need to be bootstrapped separately.
-
- 3. **Use the WrapperRunner if possible**
+ 2. **Use the WrapperRunner if possible**
 
     The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides
     the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process.
@@ -108,6 +59,13 @@ To get the most out of paratest, you have to adjust the parameters carefully.
     with `--runner WrapperRunner`. It spawns one "worker"-process for each parallel process (`-p`), executes the
     bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and
     bootstrapping is reduced to the minimum.
+
+ 3. **Choose between per-testcase- and per-testmethod-parallelization with `-f`**
+
+    Given you have few testcases (classes) with many long running methods, you should use the `-f` option to enable the
+    `functional mode` and allow different methods of the same class to be executed in parallel. Keep in mind that the
+    default is per-testcase-parallelization to address inter-testmethod dependencies. Note that in most projects, using
+    `-f` is **slower** since each test **method** will need to be bootstrapped separately.
 
  4. **Tune batch max size `--max-batch-size`**
 
