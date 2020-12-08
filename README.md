@@ -192,7 +192,7 @@ if (getenv('TEST_TOKEN') !== false) {  // Using paratest
 
 # Caveats
 
-1. Constants exposed by test classes consumed by other test classes are not supported. This is due to a limitation of the current implementation of `WrapperRunner` and how PHPUnit searches for classes. The fix is put the constants into classes which are not tests _themselves_.
+1. Constants, static methods, static variables and everything exposed by test classes consumed by other test classes (including Reflection) are not supported. This is due to a limitation of the current implementation of `WrapperRunner` and how PHPUnit searches for classes. The fix is put shared code into classes which are not tests _themselves_.
 
 # For Contributors: Testing paratest itself
 
