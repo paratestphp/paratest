@@ -31,7 +31,10 @@ final class RunnerWorker
     {
         $this->executableTest = $executableTest;
 
-        $args = [(new PhpExecutableFinder())->find()];
+        $phpFinder = new PhpExecutableFinder();
+        $args      = [$phpFinder->find(false)];
+        $args      = array_merge($args, $phpFinder->findArguments());
+
         if (($passthruPhp = $options->passthruPhp()) !== null) {
             $args = array_merge($args, $passthruPhp);
         }
