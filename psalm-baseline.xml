@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.3.2@57b53ff26237074fdf5cbcb034f7da5172be4524">
+  <file src="src/Logging/JUnit/TestCase.php">
+    <RedundantConditionGivenDocblockType occurrences="2">
+      <code>$attributes !== null</code>
+      <code>assert($attributes !== null)</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="src/Parser/Parser.php">
+    <DeprecatedClass occurrences="1">
+      <code>new StandardTestSuiteLoader()</code>
+    </DeprecatedClass>
+  </file>
+  <file src="src/Runners/PHPUnit/Worker/NullPhpunitPrinter.php">
+    <DeprecatedInterface occurrences="1">
+      <code>NullPhpunitPrinter</code>
+    </DeprecatedInterface>
+    <DeprecatedTrait occurrences="1">
+      <code>TestListenerDefaultImplementation</code>
+    </DeprecatedTrait>
+  </file>
+</files>
