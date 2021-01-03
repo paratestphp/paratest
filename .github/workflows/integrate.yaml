@@ -292,5 +292,5 @@ jobs:
 
       - name: "Run PSalm for type-coverage"
         run: |
-          vendor/bin/psalm --no-progress --show-info=false > /dev/null || true
-          vendor/bin/psalm --no-progress --shepherd --show-info=false --stats
+          vendor/bin/psalm --set-baseline=psalm-baseline.xml --no-progress --show-info=false > /dev/null || true
+          vendor/bin/psalm --set-baseline=psalm-baseline.xml --no-progress --shepherd --show-info=false --stats
