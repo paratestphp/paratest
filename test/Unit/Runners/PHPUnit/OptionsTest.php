@@ -262,7 +262,7 @@ final class OptionsTest extends TestBase
         static::assertSame($this->tmpDir, $options->tmpDir());
         static::assertFalse($options->verbose());
         static::assertFalse($options->debug());
-        static::assertNull($options->whitelist());
+        static::assertNull($options->coverageFilter());
         static::assertSame(Options::ORDER_DEFAULT, $options->orderBy());
         static::assertSame(0, $options->randomOrderSeed());
         static::assertFalse($options->teamcity());
@@ -308,7 +308,7 @@ final class OptionsTest extends TestBase
             '--tmp-dir' => ($tmpDir = uniqid($this->tmpDir . DS . 't')),
             '--verbose' => true,
             '--debug' => true,
-            '--whitelist' => 'WHITELIST',
+            '--coverage-filter' => 'FILTER',
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => (string) $expected_random_seed,
             '--repeat' => '2',
@@ -350,7 +350,7 @@ final class OptionsTest extends TestBase
         static::assertSame($tmpDir, $options->tmpDir());
         static::assertTrue($options->verbose());
         static::assertTrue($options->debug());
-        static::assertSame('WHITELIST', $options->whitelist());
+        static::assertSame('FILTER', $options->coverageFilter());
         static::assertSame(Options::ORDER_RANDOM, $options->orderBy());
         static::assertSame($expected_random_seed, $options->randomOrderSeed());
         static::assertSame(2, $options->repeat());
@@ -359,13 +359,13 @@ final class OptionsTest extends TestBase
         static::assertSame([
             'bootstrap' => 'BOOTSTRAP',
             'configuration' => $options->configuration()->filename(),
+            'coverage-filter' => 'FILTER',
             'exclude-group' => 'EXCLUDE-GROUP',
             'group' => 'GROUP',
             'order-by' => Options::ORDER_RANDOM,
             'random-order-seed' => (string) $expected_random_seed,
             'repeat' => '2',
             'stop-on-failure' => null,
-            'whitelist' => 'WHITELIST',
         ], $options->filtered());
 
         static::assertTrue($options->hasLogTeamcity());

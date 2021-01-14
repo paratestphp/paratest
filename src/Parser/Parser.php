@@ -8,14 +8,12 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Exception;
-use PHPUnit\Runner\StandardTestSuiteLoader;
+use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Util\Test as TestUtil;
 use ReflectionClass;
 use ReflectionMethod;
 
-use function array_diff;
 use function assert;
-use function get_declared_classes;
 use function is_file;
 use function realpath;
 
@@ -28,9 +26,6 @@ final class Parser
     /** @var ReflectionClass<TestCase>[] */
     private static $alreadyLoadedSources = [];
 
-    /** @var class-string[]  */
-    private static $externalClassesFound = [];
-
     public function __construct(string $srcPath)
     {
         if (! is_file($srcPath)) {
@@ -41,20 +36,13 @@ final class Parser
         assert($srcPath !== false);
 
         if (! isset(self::$alreadyLoadedSources[$srcPath])) {
-            $declaredClasses = get_declared_classes();
             try {
-                $refClass = (new StandardTestSuiteLoader())->load($srcPath);
+                $refClass = (new TestSuiteLoader())->load($srcPath);
                 if (! $refClass->isSubclassOf(TestCase::class)) {
                     throw new NoClassInFileException($srcPath);
                 }
 
                 self::$alreadyLoadedSources[$srcPath] = $refClass;
-
-                self::$externalClassesFound += array_diff(
-                    get_declared_classes(),
-                    $declaredClasses,
-                    [self::$alreadyLoadedSources[$srcPath]->getName()],
-                );
             } catch (Exception $exception) {
                 self::$externalClassesFound += array_diff(get_declared_classes(), $declaredClasses);
 

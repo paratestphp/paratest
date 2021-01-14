@@ -32,9 +32,9 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testResultsAreCorrect(): void
     {
-        $this->bareOptions['--path']         = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
-        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
-        $this->bareOptions['--whitelist']    = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--path']            = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
 
         $this->assertTestsPassed($this->runRunner());
 
@@ -125,7 +125,7 @@ abstract class RunnerTestCase extends TestBase
             '--parallel-suite' => true,
             '--processes' => '2',
             '--verbose' => true,
-            '--whitelist' => $this->fixture('parallel_suite'),
+            '--coverage-filter' => $this->fixture('parallel_suite'),
         ]);
 
         $this->assertTestsPassed($this->runRunner());
@@ -147,9 +147,9 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
     {
-        $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
-        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
-        $this->bareOptions['--whitelist']    = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
+        $this->bareOptions['--path']            = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
         $this->expectExceptionMessageMatches('/UnitTestThatExitsSilentlyTest/');
@@ -159,9 +159,9 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testRaiseExceptionWhenATestCallsExitLoudlyWithCoverage(): void
     {
-        $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
-        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
-        $this->bareOptions['--whitelist']    = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
+        $this->bareOptions['--path']            = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
         $this->expectExceptionMessageMatches('/UnitTestThatExitsLoudlyTest/');
