@@ -122,7 +122,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
             '--configuration' => $pathToConfig,
             '--order-by' => Options::ORDER_RANDOM,
-            '--random-order-seed' => $random_seed,
+            '--random-order-seed' => (string) $random_seed,
         ]));
         $contents      = $this->getStartOutput();
         $expected      = sprintf(
@@ -168,7 +168,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
     {
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--processes' => 1]));
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--processes' => '1']));
         $contents      = $this->getStartOutput();
         $expected      = sprintf("Running phpunit in 1 process with %s\n\n", $this->options->phpunit());
         static::assertStringStartsWith($expected, $contents);

@@ -51,7 +51,7 @@ jobs:
         run: "composer-normalize --dry-run"
 
       - name: "Check composer.json explicit dependencies"
-        run: "composer-require-checker check --config-file=$(realpath composer-require-checker.json)"
+        run: "composer-require-checker check"
 
       - name: "Check composer.json unused dependencies"
         run: "composer-unused"
@@ -291,6 +291,4 @@ jobs:
         run: "vendor/bin/phpstan analyse --no-progress --error-format=checkstyle | cs2pr"
 
       - name: "Run PSalm for type-coverage"
-        run: |
-          vendor/bin/psalm --set-baseline=psalm-baseline.xml --no-progress --show-info=false > /dev/null || true
-          vendor/bin/psalm --set-baseline=psalm-baseline.xml --no-progress --shepherd --show-info=false --stats
+        run: "vendor/bin/psalm --no-progress --shepherd --output-format=github --show-info=false --stats"

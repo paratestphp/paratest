@@ -90,6 +90,7 @@ final class TestCase
         );
 
         $system_output = $node->{'system-out'};
+        assert($system_output instanceof SimpleXMLElement);
 
         /** @var SimpleXMLElement[] $errors */
         $errors = (array) $node->xpath('error');

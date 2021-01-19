@@ -13,12 +13,19 @@ csfix: vendor
 .PHONY: static-analysis
 static-analysis: vendor
 	vendor/bin/phpstan analyse
-	vendor/bin/psalm --set-baseline=psalm-baseline.xml
+	vendor/bin/psalm
 
 .PHONY: test
 test: vendor
-	php -d zend.assertions=1 vendor/bin/phpunit --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml ${arg}
+	php -d zend.assertions=1 vendor/bin/phpunit \
+		--coverage-xml=coverage/coverage-xml \
+		--coverage-html=coverage/html \
+		--log-junit=coverage/junit.xml \
+		${arg}
 
 .PHONY: code-coverage
 code-coverage: test
-	php -d zend.assertions=1 vendor/bin/infection --threads=$(shell nproc) --coverage=coverage --skip-initial-tests
+	php -d zend.assertions=1 vendor/bin/infection \
+		--threads=$(shell nproc) \
+		--coverage=coverage \
+		--skip-initial-tests

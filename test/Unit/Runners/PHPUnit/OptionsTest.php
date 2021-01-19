@@ -32,7 +32,7 @@ final class OptionsTest extends TestBase
     public function setUpTest(): void
     {
         $this->unfiltered = [
-            '--processes' => 5,
+            '--processes' => '5',
             '--path' => '/path/to/tests',
             '--functional' => true,
             '--group' => 'group1',
@@ -96,7 +96,7 @@ final class OptionsTest extends TestBase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->createOptionsFromArgv(['--random-order-seed' => 123]);
+        $this->createOptionsFromArgv(['--random-order-seed' => '123']);
     }
 
     public function testOrderBadOrder(): void
@@ -105,7 +105,7 @@ final class OptionsTest extends TestBase
 
         $this->createOptionsFromArgv([
             '--order-by' => Options::ORDER_REVERSE,
-            '--random-order-seed' => 123,
+            '--random-order-seed' => '123',
         ]);
     }
 
@@ -262,7 +262,7 @@ final class OptionsTest extends TestBase
 
     public function testProvidedOptions(): void
     {
-        $expected_random_seed = 12345678;
+        $expected_random_seed = mt_rand(100, 199);
         $argv                 = [
             '--bootstrap' => 'BOOTSTRAP',
             '--colors' => true,
@@ -287,7 +287,7 @@ final class OptionsTest extends TestBase
             '--passthru' => '-v',
             '--passthru-php' => '-d a=1',
             '--path' => 'PATH',
-            '--processes' => 999,
+            '--processes' => '999',
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',
@@ -295,7 +295,7 @@ final class OptionsTest extends TestBase
             '--verbose' => 2,
             '--whitelist' => 'WHITELIST',
             '--order-by' => Options::ORDER_RANDOM,
-            '--random-order-seed' => $expected_random_seed,
+            '--random-order-seed' => (string) $expected_random_seed,
         ];
 
         $options = $this->createOptionsFromArgv($argv, __DIR__);
@@ -340,7 +340,7 @@ final class OptionsTest extends TestBase
             'exclude-group' => 'EXCLUDE-GROUP',
             'group' => 'GROUP',
             'order-by' => Options::ORDER_RANDOM,
-            'random-order-seed' => $expected_random_seed,
+            'random-order-seed' => (string) $expected_random_seed,
             'stop-on-failure' => null,
             'whitelist' => 'WHITELIST',
         ], $options->filtered());
