@@ -51,7 +51,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         Options::setInputDefinition($inputDefinition);
 
         if (! isset($argv['--processes'])) {
-            $argv['--processes'] = PROCESSES_FOR_TESTS;
+            $argv['--processes'] = (string) PROCESSES_FOR_TESTS;
         }
 
         if (! isset($argv['--tmp-dir'])) {

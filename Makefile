@@ -13,7 +13,7 @@ csfix: vendor
 .PHONY: static-analysis
 static-analysis: vendor
 	vendor/bin/phpstan analyse
-	vendor/bin/psalm --set-baseline=psalm-baseline.xml
+	vendor/bin/psalm
 
 .PHONY: test
 test: vendor
