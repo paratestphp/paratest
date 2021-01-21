@@ -44,7 +44,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testRunningFewerTestsThanTheWorkersIsPossible(): void
     {
         $this->bareOptions['--path']      = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
-        $this->bareOptions['--processes'] = 10;
+        $this->bareOptions['--processes'] = '10';
 
         $this->assertTestsPassed($this->runRunner());
     }
@@ -52,7 +52,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testRunningMoreTestsThanTheWorkersIsPossible(): void
     {
         $this->bareOptions['--path']      = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
-        $this->bareOptions['--processes'] = 1;
+        $this->bareOptions['--processes'] = '1';
 
         $this->assertTestsPassed($this->runRunner());
     }
@@ -93,7 +93,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions = array_merge($this->bareOptions, [
             '--configuration' => $this->fixture('phpunit-parallel-suite.xml'),
             '--parallel-suite' => true,
-            '--processes' => 2,
+            '--processes' => '2',
             '--verbose' => 1,
             '--whitelist' => $this->fixture('parallel_suite'),
         ]);
@@ -148,7 +148,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testRaiseExceptionWhenATestCallsExitWithoutCoverageSingleProcess(): void
     {
         $this->bareOptions['--path']      = $this->fixture('exit_tests');
-        $this->bareOptions['--processes'] = 1;
+        $this->bareOptions['--processes'] = '1';
 
         $this->expectException(WorkerCrashedException::class);
         $this->expectExceptionMessageMatches('/UnitTestThatExits(Silently|Loudly)Test/');
@@ -272,7 +272,7 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testStopOnFailureEndsRunBeforeWholeTestSuite(): void
     {
-        $this->bareOptions['--processes'] = 1;
+        $this->bareOptions['--processes'] = '1';
         $this->bareOptions['--path']      = $this->fixture('failing_tests');
         $runnerResult                     = $this->runRunner();
 
@@ -331,7 +331,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testTokensAreAbsentWhenNoTestTokensIsSpecified(): void
     {
         $this->bareOptions['--no-test-tokens'] = true;
-        $this->bareOptions['--processes']      = 1;
+        $this->bareOptions['--processes']      = '1';
 
         $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505'));
         $this->assertTestsPassed($runnerResult);
@@ -343,7 +343,7 @@ abstract class RunnerTestCase extends TestBase
      */
     final public function testChildProcessPipeOverflow(): void
     {
-        $this->bareOptions['--processes'] = 1;
+        $this->bareOptions['--processes'] = '1';
 
         $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH431'));
         $this->assertTestsPassed($runnerResult);
@@ -355,7 +355,7 @@ abstract class RunnerTestCase extends TestBase
      */
     final public function testTokensArePresentByDefault(): void
     {
-        $this->bareOptions['--processes'] = 1;
+        $this->bareOptions['--processes'] = '1';
 
         $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505tokens'));
         $this->assertTestsPassed($runnerResult);
@@ -418,7 +418,7 @@ abstract class RunnerTestCase extends TestBase
     {
         $this->bareOptions = [
             '--order-by' => Options::ORDER_RANDOM,
-            '--random-order-seed' => 123,
+            '--random-order-seed' => '123',
             '--configuration' => $this->fixture('phpunit-passing.xml'),
         ];
 
@@ -444,7 +444,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-passing.xml'),
             '--order-by' => Options::ORDER_RANDOM,
-            '--random-order-seed' => 123,
+            '--random-order-seed' => '123',
             '--verbose' => 2,
         ];
 
@@ -455,7 +455,7 @@ abstract class RunnerTestCase extends TestBase
         $secondOutput = $this->prepareOutputForTestOrderCheck($runnerResultSecond->getOutput());
         static::assertSame($firstOutput, $secondOutput);
 
-        $this->bareOptions['--random-order-seed'] = 321;
+        $this->bareOptions['--random-order-seed'] = '321';
 
         $runnerResultThird = $this->runRunner();
 
@@ -474,7 +474,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-deterministic-random.xml'),
             '--order-by' => Options::ORDER_RANDOM,
-            '--random-order-seed' => 123,
+            '--random-order-seed' => '123',
         ];
 
         $this->assertTestsPassed($this->runRunner());

@@ -317,7 +317,7 @@ final class SuiteLoaderTest extends TestBase
     {
         $this->bareOptions['--configuration']  = $this->fixture('phpunit-parallel-suite.xml');
         $this->bareOptions['--parallel-suite'] = true;
-        $this->bareOptions['--processes']      = 2;
+        $this->bareOptions['--processes']      = '2';
         $loader                                = $this->loadSuite();
         $suites                                = $loader->getSuites();
 

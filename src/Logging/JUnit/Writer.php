@@ -13,6 +13,7 @@ use function count;
 use function file_put_contents;
 use function get_object_vars;
 use function htmlspecialchars;
+use function is_float;
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -113,6 +114,7 @@ final class Writer
             }
 
             if ($name === 'time') {
+                assert(is_float($value));
                 $value = sprintf('%F', $value);
             }
 
@@ -144,6 +146,7 @@ final class Writer
             }
 
             if ($name === 'time') {
+                assert(is_float($value));
                 $value = sprintf('%F', $value);
             }
 

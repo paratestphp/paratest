@@ -28,6 +28,7 @@ use function file_get_contents;
 use function implode;
 use function in_array;
 use function intdiv;
+use function is_bool;
 use function is_dir;
 use function is_file;
 use function is_numeric;
@@ -301,21 +302,51 @@ final class Options
 
     public static function fromConsoleInput(InputInterface $input, string $cwd): self
     {
+        /** @var array<string, (bool|int|string|null)> $options */
         $options = $input->getOptions();
+
+        assert($options['bootstrap'] === null || is_string($options['bootstrap']));
+        assert(is_bool($options['colors']));
+        assert($options['configuration'] === null || is_string($options['configuration']));
+        assert($options['coverage-clover'] === null || is_string($options['coverage-clover']));
+        assert($options['coverage-cobertura'] === null || is_string($options['coverage-cobertura']));
+        assert($options['coverage-crap4j'] === null || is_string($options['coverage-crap4j']));
+        assert($options['coverage-html'] === null || is_string($options['coverage-html']));
+        assert($options['coverage-php'] === null || is_string($options['coverage-php']));
+        assert(is_bool($options['coverage-text']));
+        assert($options['coverage-xml'] === null || is_string($options['coverage-xml']));
+        assert($options['filter'] === null || is_string($options['filter']));
+        assert(is_bool($options['functional']));
+        assert($options['log-junit'] === null || is_string($options['log-junit']));
+        assert($options['log-teamcity'] === null || is_string($options['log-teamcity']));
+        assert(is_bool($options['no-test-tokens']));
+        assert($options['order-by'] === null || is_string($options['order-by']));
+        assert(is_bool($options['parallel-suite']));
+        assert($options['passthru'] === null || is_string($options['passthru']));
+        assert($options['passthru-php'] === null || is_string($options['passthru-php']));
+        assert(is_string($options['processes']));
+        assert($options['random-order-seed'] === null || is_string($options['random-order-seed']));
+        assert(is_string($options['runner']));
+        assert(is_bool($options['stop-on-failure']));
+        assert(is_string($options['tmp-dir']));
+        assert($options['whitelist'] === null || is_string($options['whitelist']));
+
         if ($options['path'] === null) {
             $options['path'] = $input->getArgument('path');
         }
 
         assert($options['path'] === null || is_string($options['path']));
 
-        if ($options['processes'] === 'auto') {
-            $options['processes'] = self::getNumberOfCPUCores();
+        if (is_numeric($options['processes'])) {
+            $options['processes'] = (int) $options['processes'];
         } elseif ($options['processes'] === 'half') {
             $options['processes'] = intdiv(self::getNumberOfCPUCores(), 2);
+        } else {
+            $options['processes'] = self::getNumberOfCPUCores();
         }
 
         $testsuite = [];
-        if ($options['testsuite'] !== null) {
+        if (is_string($options['testsuite'])) {
             $testsuite = Str::explodeWithCleanup(
                 self::TEST_SUITE_FILTER_SEPARATOR,
                 $options['testsuite']
@@ -327,30 +358,30 @@ final class Options
         // phpunit command line generation (it will add them in command line with no value
         // and it's wrong because group and exclude-group options require value when passed
         // to phpunit)
-        $group        = isset($options['group']) && $options['group'] !== ''
+        $group        = is_string($options['group']) && $options['group'] !== ''
             ? explode(',', $options['group'])
             : [];
-        $excludeGroup = isset($options['exclude-group']) && $options['exclude-group'] !== ''
+        $excludeGroup = is_string($options['exclude-group']) && $options['exclude-group'] !== ''
             ? explode(',', $options['exclude-group'])
             : [];
 
-        if (isset($options['filter']) && strlen($options['filter']) > 0 && ! $options['functional']) {
+        if (is_string($options['filter']) && strlen($options['filter']) > 0 && ! $options['functional']) {
             throw new InvalidArgumentException('Option --filter is not implemented for non functional mode');
         }
 
-        if (isset($options['order-by']) && ! in_array($options['order-by'], self::ORDER_TYPES, true)) {
+        if (is_string($options['order-by']) && ! in_array($options['order-by'], self::ORDER_TYPES, true)) {
             throw new InvalidArgumentException('Option --order-by supports only ' . implode('|', self::ORDER_TYPES));
         }
 
-        if (isset($options['random-order-seed'])) {
+        if (is_string($options['random-order-seed'])) {
             if (! is_numeric($options['random-order-seed'])) {
                 throw new InvalidArgumentException(sprintf(
                     'Option --random-order-seed should have a number value, "%s" given',
-                    (string) $options['random-order-seed']
+                    $options['random-order-seed']
                 ));
             }
 
-            if (! isset($options['order-by'])) {
+            if (! is_string($options['order-by'])) {
                 throw new InvalidArgumentException('Option --random-order-seed useless without --order-by=random');
             }
 
@@ -361,19 +392,19 @@ final class Options
 
         $filtered = [];
 
-        if (isset($options['order-by'])) {
+        if (is_string($options['order-by'])) {
             $filtered['order-by'] = $options['order-by'];
 
             if ($options['order-by'] === self::ORDER_RANDOM) {
                 if (! isset($options['random-order-seed'])) {
-                    $options['random-order-seed'] = time();
+                    $options['random-order-seed'] = (string) time();
                 }
 
                 $filtered['random-order-seed'] = $options['random-order-seed'];
             }
         }
 
-        if ($options['bootstrap'] !== null) {
+        if (is_string($options['bootstrap'])) {
             $filtered['bootstrap'] = $options['bootstrap'];
         }
 
@@ -385,7 +416,7 @@ final class Options
             $filtered['exclude-group'] = implode(',', $excludeGroup);
         }
 
-        if ($options['whitelist'] !== null) {
+        if (is_string($options['whitelist'])) {
             $filtered['whitelist'] = $options['whitelist'];
         }
 
@@ -487,11 +518,11 @@ final class Options
             (int) $options['max-batch-size'],
             $options['no-test-tokens'],
             $options['parallel-suite'],
-            self::parsePassthru($options['passthru'] ?? null),
-            self::parsePassthru($options['passthru-php'] ?? null),
+            self::parsePassthru($options['passthru']),
+            self::parsePassthru($options['passthru-php']),
             $options['path'],
             $phpunit,
-            (int) $options['processes'],
+            $options['processes'],
             $options['runner'],
             $options['stop-on-failure'],
             $testsuite,
@@ -841,6 +872,7 @@ final class Options
         );
         $stringToArgumentProcess->mustRun();
 
+        /** @var string[] $passthruAsArguments */
         $passthruAsArguments = unserialize($stringToArgumentProcess->getOutput());
         array_shift($passthruAsArguments);
 

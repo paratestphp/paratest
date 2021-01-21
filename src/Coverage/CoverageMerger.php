@@ -10,6 +10,7 @@ use SebastianBergmann\Environment\Runtime;
 
 use function array_map;
 use function array_slice;
+use function assert;
 use function filesize;
 use function is_file;
 use function unlink;
@@ -59,7 +60,9 @@ final class CoverageMerger
         }
 
         /** @psalm-suppress UnresolvableInclude **/
-        $this->addCoverage(include $coverageFile);
+        $coverage = include $coverageFile;
+        assert($coverage instanceof CodeCoverage);
+        $this->addCoverage($coverage);
 
         unlink($coverageFile);
     }

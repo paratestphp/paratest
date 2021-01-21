@@ -51,7 +51,7 @@ jobs:
         run: "composer-normalize --dry-run"
 
       - name: "Check composer.json explicit dependencies"
-        run: "composer-require-checker check --config-file=$(realpath composer-require-checker.json)"
+        run: "composer-require-checker check"
 
       - name: "Check composer.json unused dependencies"
         run: "composer-unused"
@@ -134,6 +134,9 @@ jobs:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
+
+      - name: "Remove infection"
+        run: "composer remove --no-progress --no-update --no-scripts --dev 'infection/infection'"
 
       - name: "Remove 'ext-posix' dep for Windows testing"
         if: ${{ matrix.os == 'windows-latest' }}
@@ -222,7 +225,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.3"
+          - "7.4"
 
     steps:
       - name: "Checkout"
@@ -291,6 +294,4 @@ jobs:
         run: "vendor/bin/phpstan analyse --no-progress --error-format=checkstyle | cs2pr"
 
       - name: "Run PSalm for type-coverage"
-        run: |
-          vendor/bin/psalm --set-baseline=psalm-baseline.xml --no-progress --show-info=false > /dev/null || true
-          vendor/bin/psalm --set-baseline=psalm-baseline.xml --no-progress --shepherd --show-info=false --stats
+        run: "vendor/bin/psalm --no-progress --shepherd --output-format=github --show-info=false --stats"
