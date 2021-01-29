@@ -1045,11 +1045,6 @@ final class Options
         return $this->coverageXml;
     }
 
-    public function noCoverage(): bool
-    {
-        return $this->noCoverage;
-    }
-
     public function cwd(): string
     {
         return $this->cwd;
