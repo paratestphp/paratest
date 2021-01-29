@@ -183,8 +183,7 @@ final class Reader implements MetaProviderInterface
     private function getCaseNodes(): array
     {
         $caseNodes = $this->xml->xpath('//testcase');
-        assert($caseNodes !== false);
-        $cases = [];
+        $cases     = [];
         foreach ($caseNodes as $node) {
             $caseFilename = (string) $node['file'];
             if (! isset($cases[$caseFilename])) {
@@ -204,12 +203,10 @@ final class Reader implements MetaProviderInterface
      */
     private function initSuite(): void
     {
-        $suiteNodes = $this->xml->xpath('/testsuites/testsuite/testsuite');
-        assert($suiteNodes !== false);
+        $suiteNodes     = $this->xml->xpath('/testsuites/testsuite/testsuite');
         $this->isSingle = count($suiteNodes) === 0;
 
         $node = $this->xml->xpath('/testsuites/testsuite');
-        assert($node !== false);
         $node = current($node);
 
         if ($node !== false) {
