@@ -232,7 +232,6 @@ final class OptionsTest extends TestBase
         static::assertSame(0, $options->coverageTestLimit());
         static::assertFalse($options->coverageText());
         static::assertNull($options->coverageXml());
-        static::assertFalse($options->noCoverage());
         static::assertSame(__DIR__, $options->cwd());
         static::assertEmpty($options->excludeGroup());
         static::assertNull($options->filter());
@@ -276,7 +275,6 @@ final class OptionsTest extends TestBase
             '--coverage-test-limit' => 3,
             '--coverage-text' => true,
             '--coverage-xml' => 'COVERAGE-XML',
-            '--no-coverage' => true,
             '--exclude-group' => 'EXCLUDE-GROUP',
             '--filter' => 'FILTER',
             '--functional' => true,
@@ -313,7 +311,6 @@ final class OptionsTest extends TestBase
         static::assertSame(3, $options->coverageTestLimit());
         static::assertTrue($options->coverageText());
         static::assertSame('COVERAGE-XML', $options->coverageXml());
-        static::assertTrue($options->noCoverage());
         static::assertSame(__DIR__, $options->cwd());
         static::assertSame(['EXCLUDE-GROUP'], $options->excludeGroup());
         static::assertSame('FILTER', $options->filter());
@@ -349,7 +346,7 @@ final class OptionsTest extends TestBase
         ], $options->filtered());
 
         static::assertTrue($options->hasLogTeamcity());
-        static::assertFalse($options->hasCoverage());
+        static::assertTrue($options->hasCoverage());
     }
 
     public function testSingleVerboseFlag(): void
@@ -387,7 +384,25 @@ final class OptionsTest extends TestBase
         static::assertTrue($options->hasCoverage());
     }
 
-    public function testNoCoverageOptionDisablesCoverage(): void
+    public function testNoCoverageOptionDisablesCoverageOptions(): void
+    {
+        $argv = [
+            '--coverage-clover' => 'COVERAGE-CLOVER',
+            '--coverage-cobertura' => 'COVERAGE-COBERTURA',
+            '--coverage-crap4j' => 'COVERAGE-CRAP4J',
+            '--coverage-html' => 'COVERAGE-HTML',
+            '--coverage-php' => 'COVERAGE-PHP',
+            '--coverage-text' => true,
+            '--coverage-xml' => 'COVERAGE-XML',
+            '--no-coverage' => true,
+        ];
+
+        $options = $this->createOptionsFromArgv($argv, __DIR__);
+
+        static::assertFalse($options->hasCoverage());
+    }
+
+    public function testNoCoverageOptionDisablesCoverageConfiguration(): void
     {
         $argv = [
             '--configuration' => $this->fixture('phpunit-fully-configured.xml'),
