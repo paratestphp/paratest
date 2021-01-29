@@ -384,6 +384,36 @@ final class OptionsTest extends TestBase
         static::assertTrue($options->hasCoverage());
     }
 
+    public function testNoCoverageOptionDisablesCoverageOptions(): void
+    {
+        $argv = [
+            '--coverage-clover' => 'COVERAGE-CLOVER',
+            '--coverage-cobertura' => 'COVERAGE-COBERTURA',
+            '--coverage-crap4j' => 'COVERAGE-CRAP4J',
+            '--coverage-html' => 'COVERAGE-HTML',
+            '--coverage-php' => 'COVERAGE-PHP',
+            '--coverage-text' => true,
+            '--coverage-xml' => 'COVERAGE-XML',
+            '--no-coverage' => true,
+        ];
+
+        $options = $this->createOptionsFromArgv($argv, __DIR__);
+
+        static::assertFalse($options->hasCoverage());
+    }
+
+    public function testNoCoverageOptionDisablesCoverageConfiguration(): void
+    {
+        $argv = [
+            '--configuration' => $this->fixture('phpunit-fully-configured.xml'),
+            '--no-coverage' => true,
+        ];
+
+        $options = $this->createOptionsFromArgv($argv, __DIR__);
+
+        static::assertFalse($options->hasCoverage());
+    }
+
     public function testFillEnvWithTokens(): void
     {
         $options = $this->createOptionsFromArgv(['--no-test-tokens' => false]);

@@ -203,6 +203,8 @@ final class Options
     private $coverageText;
     /** @var string|null */
     private $coverageXml;
+    /** @var bool */
+    private $noCoverage;
     /** @var string */
     private $cwd;
     /** @var string|null */
@@ -247,6 +249,7 @@ final class Options
         ?string $logJunit,
         ?string $logTeamcity,
         ?int $maxBatchSize,
+        bool $noCoverage,
         bool $noTestTokens,
         bool $parallelSuite,
         ?array $passthru,
@@ -283,6 +286,7 @@ final class Options
         $this->logJunit          = $logJunit;
         $this->logTeamcity       = $logTeamcity;
         $this->maxBatchSize      = $maxBatchSize;
+        $this->noCoverage        = $noCoverage;
         $this->noTestTokens      = $noTestTokens;
         $this->parallelSuite     = $parallelSuite;
         $this->passthru          = $passthru;
@@ -319,6 +323,7 @@ final class Options
         assert(is_bool($options['functional']));
         assert($options['log-junit'] === null || is_string($options['log-junit']));
         assert($options['log-teamcity'] === null || is_string($options['log-teamcity']));
+        assert(is_bool($options['no-coverage']));
         assert(is_bool($options['no-test-tokens']));
         assert($options['order-by'] === null || is_string($options['order-by']));
         assert(is_bool($options['parallel-suite']));
@@ -516,6 +521,7 @@ final class Options
             $options['log-junit'],
             $options['log-teamcity'],
             (int) $options['max-batch-size'],
+            $options['no-coverage'],
             $options['no-test-tokens'],
             $options['parallel-suite'],
             self::parsePassthru($options['passthru']),
@@ -536,6 +542,10 @@ final class Options
 
     public function hasCoverage(): bool
     {
+        if ($this->noCoverage) {
+            return false;
+        }
+
         return $this->coverageClover !== null
             || $this->coverageCobertura !== null
             || $this->coverageCrap4j !== null
@@ -671,6 +681,12 @@ final class Options
                 InputOption::VALUE_REQUIRED,
                 'Max batch size (only for functional mode).',
                 0
+            ),
+            new InputOption(
+                'no-coverage',
+                null,
+                InputOption::VALUE_NONE,
+                'Ignore code coverage configuration.'
             ),
             new InputOption(
                 'no-test-tokens',
