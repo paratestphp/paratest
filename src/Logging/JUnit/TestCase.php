@@ -92,8 +92,7 @@ final class TestCase
         $system_output = $node->{'system-out'};
         assert($system_output instanceof SimpleXMLElement);
 
-        /** @var SimpleXMLElement[] $errors */
-        $errors = (array) $node->xpath('error');
+        $errors = $node->xpath('error');
         $risky  = [];
         foreach ($errors as $index => $error) {
             $attributes = $error->attributes();
@@ -112,10 +111,10 @@ final class TestCase
         }
 
         $defect_groups = [
-            'failures' => (array) $node->xpath('failure'),
+            'failures' => $node->xpath('failure'),
             'errors' => $errors,
-            'warnings' => (array) $node->xpath('warning'),
-            'skipped' => (array) $node->xpath('skipped'),
+            'warnings' => $node->xpath('warning'),
+            'skipped' => $node->xpath('skipped'),
             'risky' => $risky,
         ];
 
@@ -140,8 +139,6 @@ final class TestCase
             }
 
             foreach ($defects as $defect) {
-                assert($defect !== false);
-
                 $message  = (string) $defect;
                 $message .= (string) $system_output;
 
