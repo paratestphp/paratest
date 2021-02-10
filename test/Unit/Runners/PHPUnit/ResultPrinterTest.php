@@ -58,7 +58,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldAddTest(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false, false, TMP_DIR);
+        $suite = new Suite('/path/to/ResultSuite.php', '', [], false, false, TMP_DIR);
 
         $this->printer->addTest($suite);
 
@@ -80,10 +80,10 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, [], false, false, TMP_DIR);
+            $funcs[] = new TestMethod((string) $i, '', [], false, false, TMP_DIR);
         }
 
-        $suite = new Suite('/path', $funcs, false, false, TMP_DIR);
+        $suite = new Suite('/path', '', $funcs, false, false, TMP_DIR);
         $this->printer->addTest($suite);
         $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
@@ -176,9 +176,9 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
-        $suite = new Suite('/path', [
-            new TestMethod('funcOne', [], false, false, TMP_DIR),
-            new TestMethod('funcTwo', [], false, false, TMP_DIR),
+        $suite = new Suite('/path', '', [
+            new TestMethod('funcOne', '', [], false, false, TMP_DIR),
+            new TestMethod('funcTwo', '', [], false, false, TMP_DIR),
         ], false, false, TMP_DIR);
         $this->printer->addTest($suite);
         static::assertSame(2, $this->printer->getTotalCases());
@@ -186,7 +186,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod'], false, false, TMP_DIR);
+        $method = new TestMethod('/path', '', ['testThisMethod'], false, false, TMP_DIR);
         $this->printer->addTest($method);
         static::assertSame(1, $this->printer->getTotalCases());
     }
@@ -514,7 +514,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testEmptyLogFileRaiseExceptionWithLastCommand(): void
     {
-        $test = new ExecutableTestChild(uniqid(), false, false, TMP_DIR);
+        $test = new ExecutableTestChild(uniqid(), '', false, false, TMP_DIR);
         $test->setLastCommand(uniqid());
 
         $this->expectException(RuntimeException::class);

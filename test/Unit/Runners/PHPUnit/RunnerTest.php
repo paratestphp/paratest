@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
+use function array_map;
+use function array_slice;
+use function explode;
+use function implode;
+
 /**
  * @internal
  *
@@ -14,6 +19,17 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
  */
 final class RunnerTest extends RunnerTestCase
 {
+    /**
+     * @param array<class-string> $classes
+     */
+    protected function expectExceptionMessageContainsClasses(array $classes): void
+    {
+        $classes = array_map(static function (string $class): string {
+            return implode('', array_slice(explode('\\', $class), -1));
+        }, $classes);
+        $this->expectExceptionMessageMatches('/' . implode('|', $classes) . '/');
+    }
+
     public function testFunctionalMode(): void
     {
         $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');

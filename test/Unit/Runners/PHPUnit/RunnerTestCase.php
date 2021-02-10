@@ -6,6 +6,8 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\WorkerCrashedException;
+use ParaTest\Tests\fixtures\exit_tests\UnitTestThatExitsLoudlyTest;
+use ParaTest\Tests\fixtures\exit_tests\UnitTestThatExitsSilentlyTest;
 use ParaTest\Tests\TestBase;
 use PHPUnit\TextUI\TestRunner;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
@@ -101,6 +103,11 @@ abstract class RunnerTestCase extends TestBase
         $this->assertTestsPassed($this->runRunner());
     }
 
+    /**
+     * @param array<class-string> $classes
+     */
+    abstract protected function expectExceptionMessageContainsClasses(array $classes): void;
+
     final public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
     {
         $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
@@ -108,7 +115,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--whitelist']    = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
-        $this->expectExceptionMessageMatches('/UnitTestThatExitsSilentlyTest/');
+        $this->expectExceptionMessageContainsClasses([UnitTestThatExitsSilentlyTest::class]);
 
         $this->runRunner();
     }
@@ -120,7 +127,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--whitelist']    = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
-        $this->expectExceptionMessageMatches('/UnitTestThatExitsLoudlyTest/');
+        $this->expectExceptionMessageContainsClasses([UnitTestThatExitsLoudlyTest::class]);
 
         $this->runRunner();
     }
@@ -130,7 +137,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
-        $this->expectExceptionMessageMatches('/UnitTestThatExitsSilentlyTest/');
+        $this->expectExceptionMessageContainsClasses([UnitTestThatExitsSilentlyTest::class]);
 
         $this->runRunner();
     }
@@ -140,7 +147,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
-        $this->expectExceptionMessageMatches('/UnitTestThatExitsLoudlyTest/');
+        $this->expectExceptionMessageContainsClasses([UnitTestThatExitsLoudlyTest::class]);
 
         $this->runRunner();
     }
@@ -151,7 +158,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--processes'] = '1';
 
         $this->expectException(WorkerCrashedException::class);
-        $this->expectExceptionMessageMatches('/UnitTestThatExits(Silently|Loudly)Test/');
+        $this->expectExceptionMessageContainsClasses([UnitTestThatExitsLoudlyTest::class, UnitTestThatExitsSilentlyTest::class]);
 
         $this->runRunner();
     }
@@ -388,7 +395,6 @@ abstract class RunnerTestCase extends TestBase
         static::assertFileExists($outputPath);
         $content = file_get_contents($outputPath);
         static::assertNotFalse($content);
-
         self::assertSame(66, preg_match_all('/^##teamcity/m', $content));
     }
 
@@ -507,8 +513,9 @@ abstract class RunnerTestCase extends TestBase
     {
         $matchesCount = preg_match_all(
             sprintf(
-                '/%s%s(?<filename>\S+\.php)/',
+                '/(%s|%s)%s(?<filename>\S+\.php)/',
                 preg_quote(FIXTURES, '/'),
+                preg_quote(TMP_DIR, '/'),
                 preg_quote(DS, '/')
             ),
             $output,

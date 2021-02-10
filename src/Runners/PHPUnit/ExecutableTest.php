@@ -9,8 +9,13 @@ use ParaTest\Runners\PHPUnit\Worker\NullPhpunitPrinter;
 use function array_map;
 use function array_merge;
 use function assert;
+use function file_put_contents;
+use function sha1;
+use function sprintf;
 use function tempnam;
 use function unlink;
+
+use const DIRECTORY_SEPARATOR;
 
 abstract class ExecutableTest
 {
@@ -20,6 +25,9 @@ abstract class ExecutableTest
      * @var string
      */
     private $path;
+
+    /** @var string */
+    private $class;
 
     /**
      * A path to the temp JUnit file created
@@ -44,6 +52,9 @@ abstract class ExecutableTest
      */
     private $tempTeamcity;
 
+    /** @var string|null */
+    private $tempWrapperClass = null;
+
     /**
      * Last executed process command.
      *
@@ -58,9 +69,10 @@ abstract class ExecutableTest
     /** @var string */
     private $tmpDir;
 
-    public function __construct(string $path, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
+    public function __construct(string $path, string $class, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {
         $this->path          = $path;
+        $this->class         = $class;
         $this->needsCoverage = $needsCoverage;
         $this->needsTeamcity = $needsTeamcity;
         $this->tmpDir        = $tmpDir;
@@ -77,6 +89,47 @@ abstract class ExecutableTest
     final public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * PHPUnit doesn't like loading test classes which are already loaded.
+     * It normally only loads the test suite once so it considers this an error.
+     * This gets around that by generating a dynamic test suite for each test class
+     */
+    private function getWrappedPath(): string
+    {
+        if ($this->class === '') {
+            return $this->getPath();
+        }
+
+        $testSuiteClassName     = 'TestSuite' . sha1($this->class);
+        $this->tempWrapperClass = $this->tmpDir . DIRECTORY_SEPARATOR . $testSuiteClassName . '.php';
+
+        $template = <<<EOF
+        <?php
+        class %s {
+            public static function suite() {
+                if (!class_exists('%s')) {
+                    include_once('%s');
+                }
+                return new \PHPUnit\Framework\TestSuite(new \ReflectionClass('%s'));
+            }
+        }
+        EOF;
+        file_put_contents($this->tempWrapperClass, sprintf(
+            $template,
+            $testSuiteClassName,
+            $this->class,
+            $this->path,
+            $this->class
+        ));
+
+        return $this->tempWrapperClass;
+    }
+
+    final public function deleteWrappedTestSuite(): void
+    {
+        $this->unlinkTempFile($this->tempWrapperClass);
     }
 
     private function touchTempFile(?string &$tempName, string $prefix): string
@@ -119,6 +172,7 @@ abstract class ExecutableTest
         $this->unlinkTempFile($this->tempJUnit);
         $this->unlinkTempFile($this->tempTeamcity);
         $this->unlinkTempFile($this->coverageFileName);
+        $this->unlinkTempFile($this->tempWrapperClass);
     }
 
   /**
@@ -146,7 +200,7 @@ abstract class ExecutableTest
      *
      * @return string[] command line arguments
      */
-    final public function commandArguments(string $binary, array $options, ?array $passthru): array
+    final public function commandArguments(string $binary, array $options, ?array $passthru, bool $wrap_test_suite = false): array
     {
         $options                = $this->prepareOptions($options);
         $options['no-logging']  = null;
@@ -177,7 +231,7 @@ abstract class ExecutableTest
             $arguments[] = $value;
         }
 
-        $arguments[] = $this->getPath();
+        $arguments[] = $wrap_test_suite ? $this->getWrappedPath() : $this->getPath();
         $arguments   = array_map('strval', $arguments);
 
         return $arguments;

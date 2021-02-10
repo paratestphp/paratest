@@ -7,6 +7,10 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 
+use function array_map;
+use function implode;
+use function sha1;
+
 /**
  * @internal
  *
@@ -19,6 +23,21 @@ final class WrapperRunnerTest extends RunnerTestCase
 {
     /** {@inheritdoc } */
     protected $runnerClass = WrapperRunner::class;
+
+    /**
+     * Wrapper runner will use a TestSuite wrapper class based on the sha1 hash
+     * of the class name.
+     *
+     * @param array<class-string> $classes
+     */
+    protected function expectExceptionMessageContainsClasses(array $classes): void
+    {
+        $classes = array_map(static function (string $class): string {
+            return 'TestSuite' . sha1($class);
+        }, $classes);
+
+        $this->expectExceptionMessageMatches('/' . implode('|', $classes) . '/');
+    }
 
     public function testWrapperRunnerNotAvailableInFunctionalMode(): void
     {

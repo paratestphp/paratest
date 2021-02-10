@@ -35,9 +35,9 @@ final class TestMethod extends ExecutableTest
      * @param string   $testPath path to phpunit test case file
      * @param string[] $filters  array of filters or single filter
      */
-    public function __construct(string $testPath, array $filters, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
+    public function __construct(string $testPath, string $class, array $filters, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {
-        parent::__construct($testPath, $needsCoverage, $needsTeamcity, $tmpDir);
+        parent::__construct($testPath, $class, $needsCoverage, $needsTeamcity, $tmpDir);
         // for compatibility with other code (tests), which can pass string (one filter)
         // instead of array of filters
         $this->filters = $filters;

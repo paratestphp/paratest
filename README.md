@@ -24,7 +24,7 @@ Why use `paratest` over the alternative parallel test runners out there?
 To install with composer run the following command:
 
     composer require --dev brianium/paratest
-    
+
 # Versions
 
 Only the latest version of PHPUnit is supported, and thus only the latest version of ParaTest is actively maintained.
@@ -140,7 +140,7 @@ Code Coverage Report:
   Lines:   59.38% (896/1509)
 ````
 
-**Caution**: Generating coverage is an art in itself. Please refer to our extensive guide on setting up everything correctly for 
+**Caution**: Generating coverage is an art in itself. Please refer to our extensive guide on setting up everything correctly for
 [code coverage generation with `paratest`](docs/code-coverage.md).
 
 ### Windows
@@ -189,10 +189,6 @@ if (getenv('TEST_TOKEN') !== false) {  // Using paratest
     $dbname = 'testdb';
 }
 ```
-
-# Caveats
-
-1. Constants, static methods, static variables and everything exposed by test classes consumed by other test classes (including Reflection) are not supported. This is due to a limitation of the current implementation of `WrapperRunner` and how PHPUnit searches for classes. The fix is put shared code into classes which are not tests _themselves_.
 
 # For Contributors: Testing paratest itself
 
