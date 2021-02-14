@@ -110,7 +110,7 @@ PHPUnit output: during a debugging run remove that option to restore the output 
 ### Generating code coverage
 
 Beginning from PHPUnit 9.3.4, it is strongly advised to set a coverage cache directory,
-see [PHPUnit Changlog @ 9.3.4](https://github.com/sebastianbergmann/phpunit/blob/master/ChangeLog-9.3.md#934---2020-08-10).
+see [PHPUnit Changlog @ 9.3.4](https://github.com/sebastianbergmann/phpunit/blob/9.3.4/ChangeLog-9.3.md#934---2020-08-10).
 
 The cache is always warmed by ParaTest before executing the test suite.
 
