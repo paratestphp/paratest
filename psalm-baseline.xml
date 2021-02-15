@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.4.1@9fd7a7d885b3a216cff8dec9d8c21a132f275224">
+<files psalm-version="4.5.2@15a9eece1305fd26eb1336a78e5a2ee7a4b36214">
   <file src="src/Logging/JUnit/TestCase.php">
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$attributes !== null</code>
@@ -10,11 +10,11 @@
     <DeprecatedClass occurrences="1">
       <code>new StandardTestSuiteLoader()</code>
     </DeprecatedClass>
-    <MixedPropertyTypeCoercion occurrences="3">
+    <PropertyTypeCoercion occurrences="3">
       <code>self::$alreadyLoadedSources</code>
       <code>self::$alreadyLoadedSources</code>
       <code>self::$alreadyLoadedSources[$srcPath]</code>
-    </MixedPropertyTypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="src/Runners/PHPUnit/Runner.php">
     <MixedArgumentTypeCoercion occurrences="1">
