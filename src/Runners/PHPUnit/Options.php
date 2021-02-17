@@ -219,6 +219,8 @@ final class Options
     private $orderBy;
     /** @var int */
     private $randomOrderSeed;
+    /** @var int */
+    private $repeat;
 
     /**
      * @param array<string, string|null> $filtered
@@ -264,7 +266,8 @@ final class Options
         int $verbosity,
         ?string $whitelist,
         string $orderBy,
-        int $randomOrderSeed
+        int $randomOrderSeed,
+        int $repeat
     ) {
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
@@ -302,6 +305,7 @@ final class Options
         $this->whitelist         = $whitelist;
         $this->orderBy           = $orderBy;
         $this->randomOrderSeed   = $randomOrderSeed;
+        $this->repeat            = $repeat;
     }
 
     public static function fromConsoleInput(InputInterface $input, string $cwd): self
@@ -335,6 +339,7 @@ final class Options
         assert(is_bool($options['stop-on-failure']));
         assert(is_string($options['tmp-dir']));
         assert($options['whitelist'] === null || is_string($options['whitelist']));
+        assert($options['repeat'] === null || is_string($options['repeat']));
 
         if ($options['path'] === null) {
             $options['path'] = $input->getArgument('path');
@@ -393,6 +398,17 @@ final class Options
             if ($options['order-by'] !== self::ORDER_RANDOM) {
                 throw new InvalidArgumentException(sprintf('Option --random-order-seed useless in order-by=%s mode', $options['order-by']));
             }
+        }
+
+        if (is_string($options['repeat'])) {
+            if (! is_numeric($options['repeat'])) {
+                throw new InvalidArgumentException(sprintf(
+                    'Option --repeat should have a number value, "%s" given',
+                    $options['repeat']
+                ));
+            }
+        } else {
+            $options['repeat'] = 1;
         }
 
         $filtered = [];
@@ -536,7 +552,8 @@ final class Options
             $verbosity,
             $options['whitelist'],
             $options['order-by'] ?? self::ORDER_DEFAULT,
-            (int) $options['random-order-seed']
+            (int) $options['random-order-seed'],
+            (int) $options['repeat']
         );
     }
 
@@ -738,6 +755,12 @@ final class Options
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Use a specific random seed <N> for random order'
+            ),
+            new InputOption(
+                'repeat',
+                'r',
+                InputOption::VALUE_OPTIONAL,
+                'Runs the test(s) repeatedly.'
             ),
             new InputOption(
                 'runner',
@@ -1083,6 +1106,11 @@ final class Options
     public function randomOrderSeed(): int
     {
         return $this->randomOrderSeed;
+    }
+
+    public function repeat(): int
+    {
+        return $this->repeat;
     }
 
     /**
