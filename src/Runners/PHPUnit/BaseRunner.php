@@ -31,13 +31,6 @@ abstract class BaseRunner implements RunnerInterface
     protected $printer;
 
     /**
-     * Indicates whether the starting messages were printed or not.
-     *
-     * @var bool
-     */
-    protected $printerStarted = false;
-
-    /**
      * A collection of pending ExecutableTest objects that have
      * yet to run.
      *
@@ -83,17 +76,9 @@ abstract class BaseRunner implements RunnerInterface
     final public function run(): void
     {
         $this->load(new SuiteLoader($this->options, $this->output));
-        if (! $this->isPrinterStarted()) {
-            $this->printer->start();
-            $this->printerStarted = true;
-        }
+        $this->printer->start();
 
         $this->doRun();
-
-        // Single-run is self-completed
-        if ($this->options->repeat() !== 1) {
-            return;
-        }
 
         $this->complete();
     }
@@ -143,7 +128,7 @@ abstract class BaseRunner implements RunnerInterface
      * logs any results to JUnit, and cleans up temporary
      * files.
      */
-    final public function complete(): void
+    private function complete(): void
     {
         $this->printer->printResults();
         $this->log();
@@ -234,11 +219,6 @@ abstract class BaseRunner implements RunnerInterface
         $this->output->writeln(
             sprintf('done [%s]', $timer->stop()->asString())
         );
-    }
-
-    final public function isPrinterStarted(): bool
-    {
-        return $this->printerStarted;
     }
 
     final protected function hasCoverage(): bool

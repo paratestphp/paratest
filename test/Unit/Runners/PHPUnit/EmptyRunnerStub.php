@@ -15,36 +15,21 @@ final class EmptyRunnerStub implements RunnerInterface
     private $options;
     /** @var OutputInterface */
     private $output;
-    /** @var int */
-    private $runs;
 
     public function __construct(Options $options, OutputInterface $output)
     {
         $this->options = $options;
         $this->output  = $output;
-        $this->runs    = 0;
     }
 
     public function run(): void
     {
-        $this->runs++;
         $this->output->writeln('Path: ' . $this->options->path());
         $this->output->writeln('Configuration: ' . (($conf = $this->options->configuration()) !== null
             ? $conf->filename()
             : ''
         ));
-
-        // Single-run is self-completed
-        if ($this->options->repeat() !== 1) {
-            return;
-        }
-
-        $this->complete();
-    }
-
-    public function complete(): void
-    {
-        $this->output->writeln(self::OUTPUT . ' ' . $this->runs . ' TIMES');
+        $this->output->writeln(self::OUTPUT);
     }
 
     public function getExitCode(): int

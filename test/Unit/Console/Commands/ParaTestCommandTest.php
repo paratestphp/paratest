@@ -81,23 +81,6 @@ final class ParaTestCommandTest extends TestBase
         ]);
 
         static::assertStringContainsString($directory, $this->commandTester->getDisplay());
-        static::assertStringContainsString('EmptyRunnerStub EXECUTED 1 TIMES', $this->commandTester->getDisplay());
-    }
-
-    /**
-     * @dataProvider provideConfigurationDirectories
-     */
-    public function testRepeatingRunner(): void
-    {
-        $application = ParaTestCommand::applicationFactory(FIXTURES . DS . 'config-from-phpunit.xml');
-
-        $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
-        $this->commandTester->execute([
-            '--runner' => EmptyRunnerStub::class,
-            '--repeat' => '3',
-        ]);
-
-        static::assertStringContainsString('EmptyRunnerStub EXECUTED 3 TIMES', $this->commandTester->getDisplay());
     }
 
     /**

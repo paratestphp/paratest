@@ -265,7 +265,7 @@ final class OptionsTest extends TestBase
         static::assertSame(0, $options->randomOrderSeed());
         static::assertFalse($options->hasLogTeamcity());
         static::assertFalse($options->hasCoverage());
-        static::assertEquals(1, $options->repeat());
+        static::assertNull($options->repeat());
     }
 
     public function testProvidedOptions(): void
@@ -342,7 +342,7 @@ final class OptionsTest extends TestBase
         static::assertSame('WHITELIST', $options->whitelist());
         static::assertSame(Options::ORDER_RANDOM, $options->orderBy());
         static::assertSame($expected_random_seed, $options->randomOrderSeed());
-        static::assertSame(2, $options->repeat());
+        static::assertSame('2', $options->repeat());
 
         static::assertSame([
             'bootstrap' => 'BOOTSTRAP',
@@ -351,6 +351,7 @@ final class OptionsTest extends TestBase
             'group' => 'GROUP',
             'order-by' => Options::ORDER_RANDOM,
             'random-order-seed' => (string) $expected_random_seed,
+            'repeat' => '2',
             'stop-on-failure' => null,
             'whitelist' => 'WHITELIST',
         ], $options->filtered());

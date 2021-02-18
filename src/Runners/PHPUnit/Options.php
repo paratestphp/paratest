@@ -219,7 +219,7 @@ final class Options
     private $orderBy;
     /** @var int */
     private $randomOrderSeed;
-    /** @var int */
+    /** @var string|null */
     private $repeat;
 
     /**
@@ -267,7 +267,7 @@ final class Options
         ?string $whitelist,
         string $orderBy,
         int $randomOrderSeed,
-        int $repeat
+        ?string $repeat
     ) {
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
@@ -400,17 +400,6 @@ final class Options
             }
         }
 
-        if (is_string($options['repeat'])) {
-            if (! is_numeric($options['repeat'])) {
-                throw new InvalidArgumentException(sprintf(
-                    'Option --repeat should have a number value, "%s" given',
-                    $options['repeat']
-                ));
-            }
-        } else {
-            $options['repeat'] = 1;
-        }
-
         $filtered = [];
 
         if (is_string($options['order-by'])) {
@@ -439,6 +428,17 @@ final class Options
 
         if (is_string($options['whitelist'])) {
             $filtered['whitelist'] = $options['whitelist'];
+        }
+
+        if (is_string($options['repeat'])) {
+            if (! is_numeric($options['repeat'])) {
+                throw new InvalidArgumentException(sprintf(
+                    'Option --repeat should have a number value, "%s" given',
+                    $options['repeat']
+                ));
+            }
+
+            $filtered['repeat'] = $options['repeat'];
         }
 
         if ($options['stop-on-failure']) {
@@ -553,7 +553,7 @@ final class Options
             $options['whitelist'],
             $options['order-by'] ?? self::ORDER_DEFAULT,
             (int) $options['random-order-seed'],
-            (int) $options['repeat']
+            $options['repeat']
         );
     }
 
@@ -1108,7 +1108,7 @@ final class Options
         return $this->randomOrderSeed;
     }
 
-    public function repeat(): int
+    public function repeat(): ?string
     {
         return $this->repeat;
     }

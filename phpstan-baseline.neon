@@ -95,8 +95,13 @@ parameters:
 			path: src/Runners/PHPUnit/Options.php
 
 		-
+			message: "#^Parameter \\#37 \\$repeat of class ParaTest\\\\Runners\\\\PHPUnit\\\\Options constructor expects string\\|null, array\\<string\\>\\|bool\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Runners/PHPUnit/Options.php
+
+		-
 			message: "#^Cannot cast array\\<string\\>\\|bool\\|int\\|string\\|null to int\\.$#"
-			count: 4
+			count: 3
 			path: src/Runners/PHPUnit/Options.php
 
 		-

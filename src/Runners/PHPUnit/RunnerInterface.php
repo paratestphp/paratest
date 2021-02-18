@@ -8,7 +8,5 @@ interface RunnerInterface
 {
     public function run(): void;
 
-    public function complete(): void;
-
     public function getExitCode(): int;
 }

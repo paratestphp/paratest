@@ -23,6 +23,16 @@ final class RunnerTest extends RunnerTestCase
         $this->assertTestsPassed($this->runRunner(), '1150', '1150');
     }
 
+    public function testFunctionalRepeatMode(): void
+    {
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--functional']     = true;
+        $this->bareOptions['--repeat']         = '3';
+        $this->bareOptions['--max-batch-size'] = 50;
+
+        $this->assertTestsPassed($this->runRunner(), '3450', '3450');
+    }
+
     public function testNumericDataSetInFunctionalModeWithMethodFilter(): void
     {
         $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
@@ -31,6 +41,17 @@ final class RunnerTest extends RunnerTestCase
         $this->bareOptions['--filter']         = 'testNumericDataProvider50';
 
         $this->assertTestsPassed($this->runRunner(), '50', '50');
+    }
+
+    public function testNumericDataSetInFunctionalModeWithMethodFilterRepeating(): void
+    {
+        $this->bareOptions['--path']           = $this->fixture('dataprovider_tests' . DS . 'DataProviderTest.php');
+        $this->bareOptions['--functional']     = true;
+        $this->bareOptions['--max-batch-size'] = 50;
+        $this->bareOptions['--repeat']         = '3';
+        $this->bareOptions['--filter']         = 'testNumericDataProvider50';
+
+        $this->assertTestsPassed($this->runRunner(), '150', '150');
     }
 
     public function testNumericDataSetInFunctionalModeWithCustomFilter(): void

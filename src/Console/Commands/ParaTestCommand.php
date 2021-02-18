@@ -19,7 +19,6 @@ use function assert;
 use function class_exists;
 use function is_string;
 use function is_subclass_of;
-use function range;
 use function sprintf;
 
 /**
@@ -82,27 +81,9 @@ final class ParaTestCommand extends Command
         $runnerClass = $this->getRunnerClass($input);
 
         $runner = new $runnerClass($options, $output);
+        $runner->run();
 
-        $repeat     = $options->repeat();
-        $statusCode = 0;
-        foreach (range(1, $repeat) as $step) {
-            $runner->run();
-            $status = $runner->getExitCode();
-
-            // Failed previous status code exists?
-            if ($statusCode !== 0 || $status === 0) {
-                continue;
-            }
-
-            $statusCode = $status;
-        }
-
-        if ($repeat > 1) {
-            //Single-run is self-completed
-            $runner->complete();
-        }
-
-        return $statusCode;
+        return $runner->getExitCode();
     }
 
     /**
