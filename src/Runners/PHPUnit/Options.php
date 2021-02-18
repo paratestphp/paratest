@@ -219,7 +219,7 @@ final class Options
     private $orderBy;
     /** @var int */
     private $randomOrderSeed;
-    /** @var string|null */
+    /** @var int */
     private $repeat;
 
     /**
@@ -267,7 +267,7 @@ final class Options
         ?string $whitelist,
         string $orderBy,
         int $randomOrderSeed,
-        ?string $repeat
+        int $repeat
     ) {
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
@@ -431,9 +431,9 @@ final class Options
         }
 
         if (is_string($options['repeat'])) {
-            if (! is_numeric($options['repeat'])) {
+            if ($options['repeat'] !== (string) (int) $options['repeat']) {
                 throw new InvalidArgumentException(sprintf(
-                    'Option --repeat should have a number value, "%s" given',
+                    'Option --repeat should have an integer value, "%s" given',
                     $options['repeat']
                 ));
             }
@@ -553,7 +553,7 @@ final class Options
             $options['whitelist'],
             $options['order-by'] ?? self::ORDER_DEFAULT,
             (int) $options['random-order-seed'],
-            $options['repeat']
+            (int) $options['repeat']
         );
     }
 
@@ -758,7 +758,7 @@ final class Options
             ),
             new InputOption(
                 'repeat',
-                'r',
+                null,
                 InputOption::VALUE_OPTIONAL,
                 'Runs the test(s) repeatedly.'
             ),
@@ -1108,7 +1108,7 @@ final class Options
         return $this->randomOrderSeed;
     }
 
-    public function repeat(): ?string
+    public function repeat(): int
     {
         return $this->repeat;
     }
