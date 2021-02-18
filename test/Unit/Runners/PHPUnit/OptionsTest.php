@@ -109,6 +109,13 @@ final class OptionsTest extends TestBase
         ]);
     }
 
+    public function testOrderBadRepeat(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->createOptionsFromArgv(['--repeat' => 'invalid']);
+    }
+
     public function testSeedNotNumberic(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -258,6 +265,7 @@ final class OptionsTest extends TestBase
         static::assertSame(0, $options->randomOrderSeed());
         static::assertFalse($options->hasLogTeamcity());
         static::assertFalse($options->hasCoverage());
+        static::assertSame(0, $options->repeat());
     }
 
     public function testProvidedOptions(): void
@@ -296,6 +304,7 @@ final class OptionsTest extends TestBase
             '--whitelist' => 'WHITELIST',
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => (string) $expected_random_seed,
+            '--repeat' => '2',
         ];
 
         $options = $this->createOptionsFromArgv($argv, __DIR__);
@@ -333,6 +342,7 @@ final class OptionsTest extends TestBase
         static::assertSame('WHITELIST', $options->whitelist());
         static::assertSame(Options::ORDER_RANDOM, $options->orderBy());
         static::assertSame($expected_random_seed, $options->randomOrderSeed());
+        static::assertSame(2, $options->repeat());
 
         static::assertSame([
             'bootstrap' => 'BOOTSTRAP',
@@ -341,6 +351,7 @@ final class OptionsTest extends TestBase
             'group' => 'GROUP',
             'order-by' => Options::ORDER_RANDOM,
             'random-order-seed' => (string) $expected_random_seed,
+            'repeat' => '2',
             'stop-on-failure' => null,
             'whitelist' => 'WHITELIST',
         ], $options->filtered());
