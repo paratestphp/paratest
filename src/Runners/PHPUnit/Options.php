@@ -209,6 +209,8 @@ final class Options
     private $cwd;
     /** @var string|null */
     private $logJunit;
+    /** @var bool */
+    private $teamcity;
     /** @var string|null */
     private $logTeamcity;
     /** @var string|null */
@@ -249,6 +251,7 @@ final class Options
         bool $functional,
         array $group,
         ?string $logJunit,
+        bool $teamcity,
         ?string $logTeamcity,
         ?int $maxBatchSize,
         bool $noCoverage,
@@ -287,6 +290,7 @@ final class Options
         $this->functional        = $functional;
         $this->group             = $group;
         $this->logJunit          = $logJunit;
+        $this->teamcity          = $teamcity;
         $this->logTeamcity       = $logTeamcity;
         $this->maxBatchSize      = $maxBatchSize;
         $this->noCoverage        = $noCoverage;
@@ -326,6 +330,7 @@ final class Options
         assert($options['filter'] === null || is_string($options['filter']));
         assert(is_bool($options['functional']));
         assert($options['log-junit'] === null || is_string($options['log-junit']));
+        assert(is_bool($options['teamcity']));
         assert($options['log-teamcity'] === null || is_string($options['log-teamcity']));
         assert(is_bool($options['no-coverage']));
         assert(is_bool($options['no-test-tokens']));
@@ -535,6 +540,7 @@ final class Options
             $options['functional'],
             $group,
             $options['log-junit'],
+            $options['teamcity'],
             $options['log-teamcity'],
             (int) $options['max-batch-size'],
             $options['no-coverage'],
@@ -685,6 +691,12 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Log test execution in JUnit XML format to file.'
+            ),
+            new InputOption(
+                'teamcity',
+                null,
+                InputOption::VALUE_NONE,
+                'Output test results in Teamcity format.'
             ),
             new InputOption(
                 'log-teamcity',
@@ -1078,6 +1090,11 @@ final class Options
         return $this->logJunit;
     }
 
+    public function teamcity(): bool
+    {
+        return $this->teamcity;
+    }
+
     public function logTeamcity(): ?string
     {
         return $this->logTeamcity;
@@ -1085,7 +1102,7 @@ final class Options
 
     public function hasLogTeamcity(): bool
     {
-        return $this->logTeamcity !== null;
+        return $this->teamcity || $this->logTeamcity !== null;
     }
 
     public function tmpDir(): string
