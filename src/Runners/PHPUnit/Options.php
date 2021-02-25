@@ -1102,7 +1102,12 @@ final class Options
 
     public function hasLogTeamcity(): bool
     {
-        return $this->teamcity || $this->logTeamcity !== null;
+        return $this->logTeamcity !== null;
+    }
+
+    public function needsTeamcity(): bool
+    {
+        return $this->teamcity() || $this->hasLogTeamcity();
     }
 
     public function tmpDir(): string

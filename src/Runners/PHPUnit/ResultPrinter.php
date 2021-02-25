@@ -127,7 +127,7 @@ final class ResultPrinter
         $this->options = $options;
 
         $this->printsTeamcity = $this->options->teamcity();
-        $this->needsTeamcity = $this->printsTeamcity || $this->options->logTeamcity();
+        $this->needsTeamcity = $this->options->needsTeamcity();
 
         if (($teamcityLogFile = $this->options->logTeamcity()) === null) {
             return;
