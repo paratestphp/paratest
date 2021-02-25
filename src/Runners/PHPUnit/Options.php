@@ -693,12 +693,6 @@ final class Options
                 'Log test execution in JUnit XML format to file.'
             ),
             new InputOption(
-                'teamcity',
-                null,
-                InputOption::VALUE_NONE,
-                'Output test results in Teamcity format.'
-            ),
-            new InputOption(
                 'log-teamcity',
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -786,6 +780,12 @@ final class Options
                 null,
                 InputOption::VALUE_NONE,
                 'Don\'t start any more processes after a failure.'
+            ),
+            new InputOption(
+                'teamcity',
+                null,
+                InputOption::VALUE_NONE,
+                'Output test results in Teamcity format.'
             ),
             new InputOption(
                 'testsuite',
