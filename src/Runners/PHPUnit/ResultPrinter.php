@@ -127,7 +127,7 @@ final class ResultPrinter
         $this->options = $options;
 
         $this->printsTeamcity = $this->options->teamcity();
-        $this->needsTeamcity = $this->options->needsTeamcity();
+        $this->needsTeamcity  = $this->options->needsTeamcity();
 
         if (($teamcityLogFile = $this->options->logTeamcity()) === null) {
             return;
@@ -268,7 +268,7 @@ final class ResultPrinter
 
         $this->results->addReader($reader);
 
-        if (!$this->printsTeamcity) {
+        if (! $this->printsTeamcity) {
             $this->processReaderFeedback($reader, $test->getTestCount());
         }
 
