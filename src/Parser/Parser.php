@@ -57,9 +57,6 @@ final class Parser
 
                 $reflFound = null;
                 foreach (self::$externalClassesFound as $newClass) {
-                    // DocType is untruth but needed to make SA happy
-                    // Real checks are done below
-                    /** @var ReflectionClass<TestCase> $refClass */
                     $refClass = new ReflectionClass($newClass);
                     if ($refClass->getFileName() !== $srcPath) {
                         continue;

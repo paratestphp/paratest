@@ -163,8 +163,8 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
         static::assertSame(TestRunner::FAILURE_EXIT, $runnerResult->getExitCode());
 
-        $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
         $this->bareOptions['--passthru']     = sprintf("'-d' 'highlight.string=%s'", self::PASSTHRU_PHPUNIT_CUSTOM);
+        $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $this->bareOptions['--passthru']     = str_replace('\'', '"', (string) $this->bareOptions['--passthru']);
             $this->bareOptions['--passthru-php'] = str_replace('\'', '"', (string) $this->bareOptions['--passthru-php']);
