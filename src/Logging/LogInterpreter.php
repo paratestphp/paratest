@@ -79,29 +79,6 @@ final class LogInterpreter implements MetaProviderInterface
     }
 
     /**
-     * Fix problem with empty testcase from DataProvider.
-     *
-     * @param TestCase[] $cases
-     */
-    private function extendEmptyCasesFromSuites(array $cases, TestSuite $suite): void
-    {
-        $class = $suite->name;
-        $file  = $suite->file;
-
-        foreach ($cases as $case) {
-            if ($case->class === '') {
-                $case->class = $class;
-            }
-
-            if ($case->file !== '') {
-                continue;
-            }
-
-            $case->file = $file;
-        }
-    }
-
-    /**
      * Flattens all cases into their respective suites.
      *
      * @return TestSuite[] A collection of suites and their cases
@@ -241,5 +218,28 @@ final class LogInterpreter implements MetaProviderInterface
         }
 
         return $messages;
+    }
+
+    /**
+     * Fix problem with empty testcase from DataProvider.
+     *
+     * @param TestCase[] $cases
+     */
+    private function extendEmptyCasesFromSuites(array $cases, TestSuite $suite): void
+    {
+        $class = $suite->name;
+        $file  = $suite->file;
+
+        foreach ($cases as $case) {
+            if ($case->class === '') {
+                $case->class = $class;
+            }
+
+            if ($case->file !== '') {
+                continue;
+            }
+
+            $case->file = $file;
+        }
     }
 }

@@ -30,17 +30,6 @@ final class CoverageMerger
         $this->testLimit = $testLimit;
     }
 
-    private function addCoverage(CodeCoverage $coverage): void
-    {
-        if ($this->coverage === null) {
-            $this->coverage = $coverage;
-        } else {
-            $this->coverage->merge($coverage);
-        }
-
-        $this->limitCoverageTests($this->coverage);
-    }
-
     /**
      * Adds the coverage contained in $coverageFile and deletes the file afterwards.
      *
@@ -70,6 +59,17 @@ final class CoverageMerger
     public function getCodeCoverageObject(): ?CodeCoverage
     {
         return $this->coverage;
+    }
+
+    private function addCoverage(CodeCoverage $coverage): void
+    {
+        if ($this->coverage === null) {
+            $this->coverage = $coverage;
+        } else {
+            $this->coverage->merge($coverage);
+        }
+
+        $this->limitCoverageTests($this->coverage);
     }
 
     private function limitCoverageTests(CodeCoverage $coverage): void
