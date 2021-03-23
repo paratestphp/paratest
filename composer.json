@@ -39,7 +39,7 @@
     "require-dev": {
         "ext-posix": "*",
         "doctrine/coding-standard": "^8.2.0",
-        "ekino/phpstan-banned-code": "^0.3.1",
+        "ekino/phpstan-banned-code": "^0.3.1 || ^0.4.0",
         "ergebnis/phpstan-rules": "^0.15.3",
         "infection/infection": "^0.21.4",
         "phpstan/phpstan": "^0.12.81",
