@@ -697,7 +697,7 @@ final class Options
                 'm',
                 InputOption::VALUE_REQUIRED,
                 'Max batch size (only for functional mode).',
-                0
+                '0'
             ),
             new InputOption(
                 'no-coverage',
@@ -814,8 +814,8 @@ final class Options
         ];
 
         foreach ($tryPaths as $path) {
-            if (($realPath = realpath($path)) !== false && file_exists($path)) {
-                return $path;
+            if (($realPath = realpath($path)) !== false && file_exists($realPath)) {
+                return $realPath;
             }
         }
 

@@ -124,7 +124,7 @@ final class Reader implements MetaProviderInterface
     {
         $this->initSuite();
         $cases = $this->getCaseNodes();
-        foreach ($cases as $file => $nodeArray) {
+        foreach ($cases as $nodeArray) {
             $this->initSuiteFromCases($nodeArray);
         }
     }
