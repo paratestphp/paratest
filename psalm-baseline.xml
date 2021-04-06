@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.5.2@15a9eece1305fd26eb1336a78e5a2ee7a4b36214">
+<files psalm-version="4.7.0@d4377c0baf3ffbf0b1ec6998e8d1be2a40971005">
+  <file src="src/Logging/JUnit/Reader.php">
+    <MixedArrayAccess occurrences="9">
+      <code>$node['assertions']</code>
+      <code>$node['errors']</code>
+      <code>$node['failures']</code>
+      <code>$node['file']</code>
+      <code>$node['name']</code>
+      <code>$node['skipped']</code>
+      <code>$node['tests']</code>
+      <code>$node['time']</code>
+      <code>$node['warnings']</code>
+    </MixedArrayAccess>
+    <MixedAssignment occurrences="1">
+      <code>$node</code>
+    </MixedAssignment>
+  </file>
   <file src="src/Logging/JUnit/TestCase.php">
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$attributes !== null</code>
@@ -32,6 +48,10 @@
       <code>$this-&gt;files</code>
       <code>array_unique($this-&gt;files)</code>
     </MixedPropertyTypeCoercion>
+    <UnusedVariable occurrences="2">
+      <code>$loadedSuite</code>
+      <code>$value</code>
+    </UnusedVariable>
   </file>
   <file src="src/Runners/PHPUnit/Worker/NullPhpunitPrinter.php">
     <DeprecatedInterface occurrences="1">

@@ -54,7 +54,7 @@ final class WrapperRunner extends BaseRunner
         $phpunitOptions = $this->options->filtered();
 
         while (count($this->pending) > 0 && count($this->workers) > 0) {
-            foreach ($this->workers as $key => $worker) {
+            foreach ($this->workers as $worker) {
                 if (! $worker->isRunning()) {
                     throw $worker->getWorkerCrashedException();
                 }

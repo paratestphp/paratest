@@ -75,7 +75,7 @@ final class ParaTestCommand extends Command
     {
         $options = Options::fromConsoleInput($input, $this->cwd);
         if ($options->configuration() === null && $options->path() === null) {
-            return $this->displayHelp($input, $output);
+            return $this->displayHelp($output);
         }
 
         $runnerClass = $this->getRunnerClass($input);
@@ -89,7 +89,7 @@ final class ParaTestCommand extends Command
     /**
      * Displays help for the ParaTestCommand.
      */
-    private function displayHelp(InputInterface $input, OutputInterface $output): int
+    private function displayHelp(OutputInterface $output): int
     {
         $app = $this->getApplication();
         assert($app !== null);

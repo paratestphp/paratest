@@ -23,13 +23,13 @@ final class Str
         $stringValues = explode($delimiter, $string);
         assert($stringValues !== false);
         $parsedValues = [];
-        foreach ($stringValues as $k => $v) {
-            $v = trim($v);
-            if ($v === '') {
+        foreach ($stringValues as $value) {
+            $value = trim($value);
+            if ($value === '') {
                 continue;
             }
 
-            $parsedValues[] = $v;
+            $parsedValues[] = $value;
         }
 
         return $parsedValues;
