@@ -29,7 +29,7 @@ final class BaseRunnerTest extends TestBase
             '--coverage-crap4j' => TMP_DIR . DS . 'coverage.crap4j',
             '--coverage-html' => TMP_DIR . DS . 'coverage.html',
             '--coverage-php' => TMP_DIR . DS . 'coverage.php',
-            '--coverage-text' => TMP_DIR . DS . 'coverage.txt',
+            '--coverage-text' => null,
             '--coverage-xml' => TMP_DIR . DS . 'coverage.xml',
             '--bootstrap' => BOOTSTRAP,
             '--whitelist' => $this->fixture('failing_tests'),
