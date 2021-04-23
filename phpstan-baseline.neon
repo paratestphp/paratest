@@ -100,7 +100,7 @@ parameters:
 			path: src/Runners/PHPUnit/Options.php
 
 		-
-			message: "#^Parameter \\#10 \\$coverageText of class ParaTest\\\\Runners\\\\PHPUnit\\\\Options constructor expects bool, array\\<string\\>\\|bool\\|int\\|string\\|null given\\.$#"
+			message: "#^Parameter \\#10 \\$coverageText of class ParaTest\\\\Runners\\\\PHPUnit\\\\Options constructor expects string|null, array\\<string\\>\\|bool\\|int\\|string\\|null given\\.$#"
 			count: 1
 			path: src/Runners/PHPUnit/Options.php
 

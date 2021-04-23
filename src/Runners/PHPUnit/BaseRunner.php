@@ -16,6 +16,7 @@ use function assert;
 use function mt_srand;
 use function shuffle;
 use function sprintf;
+use function file_put_contents;
 
 /**
  * @internal
@@ -203,7 +204,7 @@ abstract class BaseRunner implements RunnerInterface
         if (($coverageHtml = $this->options->coverageHtml()) !== null) {
             $reporter->html($coverageHtml);
         }
-        
+
         if (($coverageText = $this->options->coverageText()) !== null) {
             if ($coverageText === '') {
                 $this->output->write($reporter->text());
