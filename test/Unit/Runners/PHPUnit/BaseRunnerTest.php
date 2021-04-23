@@ -65,7 +65,6 @@ final class BaseRunnerTest extends TestBase
         static::assertFileExists((string) $this->bareOptions['--coverage-crap4j']);
         static::assertFileExists((string) $this->bareOptions['--coverage-html']);
         static::assertFileExists((string) $this->bareOptions['--coverage-php']);
-        static::assertFileExists((string) $this->bareOptions['--coverage-text']);
         static::assertFileExists((string) $this->bareOptions['--coverage-xml']);
 
         static::assertStringContainsString('Code Coverage Report:', $runnerResult->getOutput());

@@ -13,10 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_reverse;
 use function assert;
+use function file_put_contents;
 use function mt_srand;
 use function shuffle;
 use function sprintf;
-use function file_put_contents;
 
 /**
  * @internal
