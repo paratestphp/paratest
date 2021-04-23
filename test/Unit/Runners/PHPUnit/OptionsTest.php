@@ -403,7 +403,7 @@ final class OptionsTest extends TestBase
             '--coverage-crap4j' => 'COVERAGE-CRAP4J',
             '--coverage-html' => 'COVERAGE-HTML',
             '--coverage-php' => 'COVERAGE-PHP',
-            '--coverage-text' => true,
+            '--coverage-text' => false,
             '--coverage-xml' => 'COVERAGE-XML',
             '--no-coverage' => true,
         ];

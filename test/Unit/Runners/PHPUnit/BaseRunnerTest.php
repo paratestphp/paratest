@@ -29,7 +29,7 @@ final class BaseRunnerTest extends TestBase
             '--coverage-crap4j' => TMP_DIR . DS . 'coverage.crap4j',
             '--coverage-html' => TMP_DIR . DS . 'coverage.html',
             '--coverage-php' => TMP_DIR . DS . 'coverage.php',
-            '--coverage-text' => true,
+            '--coverage-text' => TMP_DIR . DS . 'coverage.txt',
             '--coverage-xml' => TMP_DIR . DS . 'coverage.xml',
             '--bootstrap' => BOOTSTRAP,
             '--whitelist' => $this->fixture('failing_tests'),
@@ -54,6 +54,7 @@ final class BaseRunnerTest extends TestBase
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-crap4j']);
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-html']);
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-php']);
+        static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-text']);
         static::assertFileDoesNotExist((string) $this->bareOptions['--coverage-xml']);
 
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-fully-configured.xml');
@@ -64,6 +65,7 @@ final class BaseRunnerTest extends TestBase
         static::assertFileExists((string) $this->bareOptions['--coverage-crap4j']);
         static::assertFileExists((string) $this->bareOptions['--coverage-html']);
         static::assertFileExists((string) $this->bareOptions['--coverage-php']);
+        static::assertFileExists((string) $this->bareOptions['--coverage-text']);
         static::assertFileExists((string) $this->bareOptions['--coverage-xml']);
 
         static::assertStringContainsString('Code Coverage Report:', $runnerResult->getOutput());
