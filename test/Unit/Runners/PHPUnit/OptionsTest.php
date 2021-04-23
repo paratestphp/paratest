@@ -281,7 +281,7 @@ final class OptionsTest extends TestBase
             '--coverage-html' => 'COVERAGE-HTML',
             '--coverage-php' => 'COVERAGE-PHP',
             '--coverage-test-limit' => 3,
-            '--coverage-text' => true,
+            '--coverage-text' => null,
             '--coverage-xml' => 'COVERAGE-XML',
             '--exclude-group' => 'EXCLUDE-GROUP',
             '--filter' => 'FILTER',
