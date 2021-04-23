@@ -203,9 +203,13 @@ abstract class BaseRunner implements RunnerInterface
         if (($coverageHtml = $this->options->coverageHtml()) !== null) {
             $reporter->html($coverageHtml);
         }
-
-        if ($this->options->coverageText()) {
-            $this->output->write($reporter->text());
+        
+        if (($coverageText = $this->options->coverageText()) !== null) {
+            if ($coverageText === '') {
+                $this->output->write($reporter->text());
+            } else {
+                file_put_contents($coverageText, $reporter->text());
+            }
         }
 
         if (($coverageXml = $this->options->coverageXml()) !== null) {

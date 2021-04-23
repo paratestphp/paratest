@@ -237,7 +237,7 @@ final class OptionsTest extends TestBase
         static::assertNull($options->coverageHtml());
         static::assertNull($options->coveragePhp());
         static::assertSame(0, $options->coverageTestLimit());
-        static::assertFalse($options->coverageText());
+        static::assertNull($options->coverageText());
         static::assertNull($options->coverageXml());
         static::assertSame(__DIR__, $options->cwd());
         static::assertEmpty($options->excludeGroup());
@@ -318,7 +318,7 @@ final class OptionsTest extends TestBase
         static::assertSame('COVERAGE-HTML', $options->coverageHtml());
         static::assertSame('COVERAGE-PHP', $options->coveragePhp());
         static::assertSame(3, $options->coverageTestLimit());
-        static::assertTrue($options->coverageText());
+        static::assertSame('', $options->coverageText());
         static::assertSame('COVERAGE-XML', $options->coverageXml());
         static::assertSame(__DIR__, $options->cwd());
         static::assertSame(['EXCLUDE-GROUP'], $options->excludeGroup());

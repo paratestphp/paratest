@@ -199,7 +199,7 @@ final class Options
     private $coverageHtml;
     /** @var string|null */
     private $coveragePhp;
-    /** @var bool */
+    /** @var string|null */
     private $coverageText;
     /** @var string|null */
     private $coverageXml;
@@ -240,7 +240,7 @@ final class Options
         ?string $coverageHtml,
         ?string $coveragePhp,
         int $coverageTestLimit,
-        bool $coverageText,
+        ?string $coverageText,
         ?string $coverageXml,
         string $cwd,
         array $excludeGroup,
@@ -321,7 +321,7 @@ final class Options
         assert($options['coverage-crap4j'] === null || is_string($options['coverage-crap4j']));
         assert($options['coverage-html'] === null || is_string($options['coverage-html']));
         assert($options['coverage-php'] === null || is_string($options['coverage-php']));
-        assert(is_bool($options['coverage-text']));
+        assert($options['coverage-text'] === false || $options['coverage-text'] === null || is_string($options['coverage-text']));
         assert($options['coverage-xml'] === null || is_string($options['coverage-xml']));
         assert($options['filter'] === null || is_string($options['filter']));
         assert(is_bool($options['functional']));
@@ -526,7 +526,7 @@ final class Options
             $options['coverage-html'],
             $options['coverage-php'],
             (int) $options['coverage-test-limit'],
-            $options['coverage-text'],
+            $options['coverage-text'] === false ? null : $options['coverage-text'] ?? '',
             $options['coverage-xml'],
             $cwd,
             $excludeGroup,
@@ -567,7 +567,7 @@ final class Options
             || $this->coverageCobertura !== null
             || $this->coverageCrap4j !== null
             || $this->coverageHtml !== null
-            || $this->coverageText
+            || $this->coverageText !== null
             || $this->coveragePhp !== null
             || $this->coverageXml !== null;
     }
@@ -641,8 +641,9 @@ final class Options
             new InputOption(
                 'coverage-text',
                 null,
-                InputOption::VALUE_NONE,
-                'Generate code coverage report in text format.'
+                InputOption::VALUE_OPTIONAL,
+                'Generate code coverage report in text format.',
+                false
             ),
             new InputOption(
                 'coverage-xml',
@@ -1058,7 +1059,7 @@ final class Options
         return $this->coveragePhp;
     }
 
-    public function coverageText(): bool
+    public function coverageText(): ?string
     {
         return $this->coverageText;
     }
