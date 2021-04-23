@@ -80,11 +80,11 @@ final class BaseRunnerTest extends TestBase
             '--whitelist' => $this->fixture('failing_tests'),
         ];
 
-        static::assertFileDoesNotExist((string) $file);
+        static::assertFileDoesNotExist($file);
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-fully-configured.xml');
         $runnerResult                         = $this->runRunner();
 
-        static::assertFileExists((string) $file);
+        static::assertFileExists($file);
         static::assertStringNotContainsString('Code Coverage Report:', $runnerResult->getOutput());
         static::assertStringContainsString('Generating code coverage', $runnerResult->getOutput());
     }
