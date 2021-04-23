@@ -25,7 +25,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
 {
     /** @var class-string<RunnerInterface> */
     protected $runnerClass = Runner::class;
-    /** @var array<string, string|bool|int> */
+    /** @var array<string, string|bool|int|null> */
     protected $bareOptions = [];
 
     final protected function setUp(): void
@@ -43,7 +43,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param array<string, string|bool|int> $argv
+     * @param array<string, string|bool|int|null> $argv
      */
     final protected function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
     {
