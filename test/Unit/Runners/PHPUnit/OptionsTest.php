@@ -237,7 +237,7 @@ final class OptionsTest extends TestBase
         static::assertNull($options->coverageHtml());
         static::assertNull($options->coveragePhp());
         static::assertSame(0, $options->coverageTestLimit());
-        static::assertFalse($options->coverageText());
+        static::assertNull($options->coverageText());
         static::assertNull($options->coverageXml());
         static::assertSame(__DIR__, $options->cwd());
         static::assertEmpty($options->excludeGroup());
@@ -281,7 +281,7 @@ final class OptionsTest extends TestBase
             '--coverage-html' => 'COVERAGE-HTML',
             '--coverage-php' => 'COVERAGE-PHP',
             '--coverage-test-limit' => 3,
-            '--coverage-text' => true,
+            '--coverage-text' => null,
             '--coverage-xml' => 'COVERAGE-XML',
             '--exclude-group' => 'EXCLUDE-GROUP',
             '--filter' => 'FILTER',
@@ -318,7 +318,7 @@ final class OptionsTest extends TestBase
         static::assertSame('COVERAGE-HTML', $options->coverageHtml());
         static::assertSame('COVERAGE-PHP', $options->coveragePhp());
         static::assertSame(3, $options->coverageTestLimit());
-        static::assertTrue($options->coverageText());
+        static::assertSame('', $options->coverageText());
         static::assertSame('COVERAGE-XML', $options->coverageXml());
         static::assertSame(__DIR__, $options->cwd());
         static::assertSame(['EXCLUDE-GROUP'], $options->excludeGroup());
@@ -389,6 +389,8 @@ final class OptionsTest extends TestBase
         static::assertStringContainsString('coverage.php', $options->coveragePhp());
         static::assertNotNull($options->coverageXml());
         static::assertStringContainsString('xml-coverage', $options->coverageXml());
+        static::assertNotNull($options->coverageText());
+        static::assertStringContainsString('coverage.txt', $options->coverageText());
         static::assertNotNull($options->logJunit());
         static::assertStringContainsString('junit.xml', $options->logJunit());
 
@@ -403,7 +405,7 @@ final class OptionsTest extends TestBase
             '--coverage-crap4j' => 'COVERAGE-CRAP4J',
             '--coverage-html' => 'COVERAGE-HTML',
             '--coverage-php' => 'COVERAGE-PHP',
-            '--coverage-text' => true,
+            '--coverage-text' => false,
             '--coverage-xml' => 'COVERAGE-XML',
             '--no-coverage' => true,
         ];

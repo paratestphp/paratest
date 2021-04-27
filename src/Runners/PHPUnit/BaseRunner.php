@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_reverse;
 use function assert;
+use function file_put_contents;
 use function mt_srand;
 use function shuffle;
 use function sprintf;
@@ -204,8 +205,12 @@ abstract class BaseRunner implements RunnerInterface
             $reporter->html($coverageHtml);
         }
 
-        if ($this->options->coverageText()) {
-            $this->output->write($reporter->text());
+        if (($coverageText = $this->options->coverageText()) !== null) {
+            if ($coverageText === '') {
+                $this->output->write($reporter->text());
+            } else {
+                file_put_contents($coverageText, $reporter->text());
+            }
         }
 
         if (($coverageXml = $this->options->coverageXml()) !== null) {
