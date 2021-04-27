@@ -14,6 +14,7 @@ use function file_put_contents;
 use function get_object_vars;
 use function htmlspecialchars;
 use function is_float;
+use function is_scalar;
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -113,6 +114,8 @@ final class Writer
                 continue;
             }
 
+            assert(is_scalar($value));
+
             if ($name === 'time') {
                 assert(is_float($value));
                 $value = sprintf('%F', $value);
@@ -140,6 +143,8 @@ final class Writer
             if ($matchCount === 0) {
                 continue;
             }
+
+            assert(is_scalar($value));
 
             if ($this->isEmptyLineAttribute($name, $value)) {
                 continue;
