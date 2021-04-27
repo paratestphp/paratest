@@ -456,6 +456,10 @@ final class Options
 
             $codeCoverage = $configuration->codeCoverage();
 
+            if ($options['coverage-text'] === false && $codeCoverage->hasText()) {
+                $options['coverage-text'] = $codeCoverage->text()->target()->path();
+            }
+
             if ($options['coverage-clover'] === null && $codeCoverage->hasClover()) {
                 $options['coverage-clover'] = $codeCoverage->clover()->target()->path();
             }

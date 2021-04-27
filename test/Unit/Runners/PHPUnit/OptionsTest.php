@@ -389,6 +389,8 @@ final class OptionsTest extends TestBase
         static::assertStringContainsString('coverage.php', $options->coveragePhp());
         static::assertNotNull($options->coverageXml());
         static::assertStringContainsString('xml-coverage', $options->coverageXml());
+        static::assertNotNull($options->coverageText());
+        static::assertStringContainsString('coverage.txt', $options->coverageText());
         static::assertNotNull($options->logJunit());
         static::assertStringContainsString('junit.xml', $options->logJunit());
 
