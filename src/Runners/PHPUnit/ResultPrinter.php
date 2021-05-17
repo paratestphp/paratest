@@ -23,6 +23,7 @@ use function fopen;
 use function fwrite;
 use function implode;
 use function is_array;
+use function is_int;
 use function max;
 use function preg_split;
 use function rtrim;
@@ -617,6 +618,7 @@ final class ResultPrinter
         $lines = preg_split('/\r\n|\r|\n/', $buffer);
         assert(is_array($lines));
         $padding = max(array_map('\strlen', $lines));
+        assert(is_int($padding));
 
         $styledLines = [];
         foreach ($lines as $line) {
