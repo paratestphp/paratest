@@ -22,7 +22,7 @@ use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
         }
     }
 
-    assert(is_string($opts['write-to']));
+    assert(isset($opts['write-to']) && is_string($opts['write-to']));
     $writeTo = fopen($opts['write-to'], 'wb');
     assert(is_resource($writeTo));
 
