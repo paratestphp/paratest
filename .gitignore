@@ -3,6 +3,7 @@
 /test/fixtures/generated_tests
 /test/fixtures/wrapper_batchsize_suite/tmp
 /vendor
+/.phpunit.cache
 composer.lock
 .phpunit.result.cache
 .php_cs.cache
