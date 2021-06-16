@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Util;
 
-use function assert;
 use function explode;
 use function trim;
 

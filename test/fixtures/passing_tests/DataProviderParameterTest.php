@@ -16,10 +16,8 @@ final class DataProviderParameterTest extends TestCase
     }
 
     /** @return array<int, array<string, bool>> */
-    public function dataProviderWithParameter(string $testName): array
+    public function dataProviderWithParameter(): array
     {
-        $this->assertEquals($testName, 'testWithDataProvider');
-
         return [
             ['expected' => true],
         ];

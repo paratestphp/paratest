@@ -44,24 +44,7 @@ final class Parser
 
                 self::$alreadyLoadedSources[$srcPath] = $refClass;
             } catch (Exception $exception) {
-                self::$externalClassesFound += array_diff(get_declared_classes(), $declaredClasses);
-
-                $reflFound = null;
-                foreach (self::$externalClassesFound as $newClass) {
-                    $refClass = new ReflectionClass($newClass);
-                    if ($refClass->getFileName() !== $srcPath) {
-                        continue;
-                    }
-
-                    $reflFound = $refClass;
-                    break;
-                }
-
-                if ($reflFound === null || ! $reflFound->isSubclassOf(TestCase::class) || $reflFound->isAbstract()) {
-                    throw new NoClassInFileException($srcPath, 0, $exception);
-                }
-
-                self::$alreadyLoadedSources[$srcPath] = $reflFound;
+                throw new NoClassInFileException($srcPath, 0, $exception);
             }
         }
 
