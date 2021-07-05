@@ -59,7 +59,8 @@
     },
     "config": {
         "preferred-install": {
-            "*": "dist"
+            "*": "dist",
+            "phpunit/phpunit": "source"
         }
     },
     "autoload": {
