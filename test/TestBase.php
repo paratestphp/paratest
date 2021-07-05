@@ -24,9 +24,9 @@ use function sprintf;
 abstract class TestBase extends TestCase
 {
     /** @var class-string<RunnerInterface> */
-    protected $runnerClass = Runner::class;
+    protected string $runnerClass = Runner::class;
     /** @var array<string, string|bool|int|null> */
-    protected $bareOptions = [];
+    protected array $bareOptions = [];
     /** @var string */
     protected $tmpDir;
 

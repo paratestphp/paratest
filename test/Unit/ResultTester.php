@@ -34,20 +34,13 @@ abstract class ResultTester extends TestBase
 EOF;
 
 
-    /** @var Suite */
-    protected $failureSuite;
-    /** @var Suite */
-    protected $otherFailureSuite;
-    /** @var Suite */
-    protected $mixedSuite;
-    /** @var Suite */
-    protected $passingSuite;
-    /** @var Suite */
-    protected $errorSuite;
-    /** @var Suite */
-    protected $warningSuite;
-    /** @var Suite */
-    protected $skipped;
+    protected Suite $failureSuite;
+    protected Suite $otherFailureSuite;
+    protected Suite $mixedSuite;
+    protected Suite $passingSuite;
+    protected Suite $errorSuite;
+    protected Suite $warningSuite;
+    protected Suite $skipped;
 
     final public function setUpTest(): void
     {

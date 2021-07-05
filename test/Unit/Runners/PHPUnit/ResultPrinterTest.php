@@ -34,16 +34,11 @@ use const PHP_VERSION;
  */
 final class ResultPrinterTest extends ResultTester
 {
-    /** @var ResultPrinter */
-    private $printer;
-    /** @var BufferedOutput */
-    private $output;
-    /** @var LogInterpreter */
-    private $interpreter;
-    /** @var Suite */
-    private $passingSuiteWithWrongTestCountEstimation;
-    /** @var Options */
-    private $options;
+    private ResultPrinter $printer;
+    private BufferedOutput $output;
+    private LogInterpreter $interpreter;
+    private Suite $passingSuiteWithWrongTestCountEstimation;
+    private Options $options;
 
     protected function setUpInterpreter(): void
     {

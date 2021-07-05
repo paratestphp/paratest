@@ -29,7 +29,7 @@ final class WrapperRunnerTest extends RunnerTestCase
     protected const NUMBER_OF_CLASS_TESTS_FOR_BATCH_SIZE = 4;
     protected const UNPROCESSABLE_FILENAMES              =  ['..', '.', '.gitignore'];
     /** {@inheritdoc } */
-    protected $runnerClass = WrapperRunner::class;
+    protected string $runnerClass = WrapperRunner::class;
 
     public function testWrapperRunnerNotAvailableInFunctionalMode(): void
     {
