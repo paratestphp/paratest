@@ -13,26 +13,6 @@ namespace ParaTest\Logging\JUnit;
  */
 final class TestSuite
 {
-    public string $name;
-
-    public int $tests;
-
-    public int $assertions;
-
-    public int $failures;
-
-    public int $errors;
-
-    public int $warnings;
-
-    public int $risky;
-
-    public int $skipped;
-
-    public float $time;
-
-    public string $file;
-
     /**
      * Nested suites.
      *
@@ -52,16 +32,16 @@ final class TestSuite
      * @param TestCase[]               $cases
      */
     public function __construct(
-        string $name,
-        int $tests,
-        int $assertions,
-        int $failures,
-        int $errors,
-        int $warnings,
-        int $risky,
+        public string $name,
+        public int $tests,
+        public int $assertions,
+        public int $failures,
+        public int $errors,
+        public int $warnings,
+        public int $risky,
         int $skipped,
-        float $time,
-        string $file,
+        public float $time,
+        public string $file,
         array $suites,
         array $cases
     ) {
@@ -74,8 +54,20 @@ final class TestSuite
         $this->warnings   = $warnings;
         $this->time       = $time;
         $this->file       = $file;
-        $this->suites     = $suites;
-        $this->cases      = $cases;
-        $this->risky      = $risky;
+    }
+
+    public static function empty(): self
+    {
+        return new self(
+            '',
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.0,
+            '',
+        );
     }
 }

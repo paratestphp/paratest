@@ -187,7 +187,7 @@ final class SuiteLoader
                     if (count($suite->getFunctions()) > 0) {
                         $loadedSuites[$class->getParentsCount()][$path] = $suite;
                     }
-                } catch (NoClassInFileException $e) {
+                } catch (NoClassInFileException) {
                     continue;
                 }
             }
@@ -318,7 +318,7 @@ final class SuiteLoader
 
         try {
             $providedData = (new DataProvider())->providedData($class->getName(), $method->getName());
-        } catch (Throwable $throwable) {
+        } catch (Throwable) {
             $providedData = null;
         }
 

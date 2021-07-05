@@ -26,39 +26,19 @@ use function sprintf;
  */
 abstract class TestCase
 {
-    public string $name;
-
-    public string $class;
-
-    public string $file;
-
-    public int $line;
-
-    public int $assertions;
-
-    public float $time;
-
     public function __construct(
-        string $name,
-        string $class,
-        string $file,
-        int $line,
-        int $assertions,
-        float $time
+        public string $name,
+        public string $class,
+        public string $file,
+        public int $line,
+        public int $assertions,
+        public float $time
     ) {
-        $this->name       = $name;
-        $this->class      = $class;
-        $this->file       = $file;
-        $this->line       = $line;
-        $this->assertions = $assertions;
-        $this->time       = $time;
     }
 
     /**
      * Factory method that creates a TestCase object
      * from a SimpleXMLElement.
-     *
-     * @return TestCase
      */
     final public static function caseFromNode(SimpleXMLElement $node): self
     {
