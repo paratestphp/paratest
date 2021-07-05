@@ -25,16 +25,12 @@ final class Writer
     /**
      * The name attribute of the testsuite being
      * written.
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
-    /** @var LogInterpreter */
-    private $interpreter;
+    private LogInterpreter $interpreter;
 
-    /** @var DOMDocument */
-    private $document;
+    private DOMDocument $document;
 
     public function __construct(LogInterpreter $interpreter, string $name)
     {

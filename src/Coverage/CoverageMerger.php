@@ -18,10 +18,8 @@ use function unlink;
 /** @internal */
 final class CoverageMerger
 {
-    /** @var CodeCoverage|null */
-    private $coverage;
-    /** @var int */
-    private $testLimit;
+    private ?CodeCoverage $coverage = null;
+    private int $testLimit;
 
     public function __construct(int $testLimit)
     {

@@ -21,10 +21,8 @@ use const DIRECTORY_SEPARATOR;
 /** @internal */
 final class RunnerWorker
 {
-    /** @var ExecutableTest */
-    private $executableTest;
-    /** @var Process */
-    private $process;
+    private ExecutableTest $executableTest;
+    private Process $process;
 
     public function __construct(ExecutableTest $executableTest, Options $options, int $token)
     {

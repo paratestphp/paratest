@@ -18,10 +18,8 @@ use SebastianBergmann\CodeCoverage\Version;
 /** @internal */
 final class CoverageReporter
 {
-    /** @var CodeCoverage */
-    private $coverage;
-    /** @var CodeCoverageConfiguration|null */
-    private $codeCoverageConfiguration;
+    private CodeCoverage $coverage;
+    private ?CodeCoverageConfiguration $codeCoverageConfiguration;
 
     public function __construct(CodeCoverage $coverage, ?CodeCoverageConfiguration $codeCoverageConfiguration)
     {

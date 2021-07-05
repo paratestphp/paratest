@@ -23,7 +23,7 @@ final class Runner extends BaseRunner
      *
      * @var RunnerWorker[]
      */
-    private $running = [];
+    private array $running = [];
 
     /**
      * The money maker. Runs all ExecutableTest objects in separate processes.

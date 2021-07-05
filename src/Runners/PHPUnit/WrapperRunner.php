@@ -17,7 +17,7 @@ use function usleep;
 final class WrapperRunner extends BaseRunner
 {
     /** @var array<int,WrapperWorker> */
-    private $workers = [];
+    private array $workers = [];
 
     /** @var array<int,int> */
     private $batches = [];

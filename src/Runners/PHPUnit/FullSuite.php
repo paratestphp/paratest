@@ -9,8 +9,7 @@ use function array_merge;
 /** @internal */
 final class FullSuite extends ExecutableTest
 {
-    /** @var string */
-    private $suiteName;
+    private string $suiteName;
 
     public function __construct(string $suiteName, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {

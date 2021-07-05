@@ -26,23 +26,17 @@ use function sprintf;
  */
 abstract class TestCase
 {
-    /** @var string */
-    public $name;
+    public string $name;
 
-    /** @var string */
-    public $class;
+    public string $class;
 
-    /** @var string */
-    public $file;
+    public string $file;
 
-    /** @var int */
-    public $line;
+    public int $line;
 
-    /** @var int */
-    public $assertions;
+    public int $assertions;
 
-    /** @var float */
-    public $time;
+    public float $time;
 
     public function __construct(
         string $name,

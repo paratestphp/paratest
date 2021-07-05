@@ -21,10 +21,10 @@ use function realpath;
 final class Parser
 {
     /** @var ReflectionClass<TestCase> */
-    private $refl;
+    private ReflectionClass $refl;
 
     /** @var ReflectionClass<TestCase>[] */
-    private static $alreadyLoadedSources = [];
+    private static array $alreadyLoadedSources = [];
 
     public function __construct(string $srcPath)
     {

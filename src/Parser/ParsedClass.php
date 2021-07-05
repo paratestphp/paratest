@@ -10,7 +10,7 @@ use ReflectionMethod;
 final class ParsedClass
 {
     /** @var class-string */
-    private $name;
+    private string $name;
 
     /**
      * A collection of methods belonging
@@ -18,10 +18,9 @@ final class ParsedClass
      *
      * @var ReflectionMethod[]
      */
-    private $methods;
+    private array $methods;
 
-    /** @var int */
-    private $parentsCount;
+    private int $parentsCount;
 
     /**
      * @param class-string       $name

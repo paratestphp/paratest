@@ -23,11 +23,8 @@ use function unlink;
 /** @internal */
 final class Reader implements MetaProviderInterface
 {
-    /** @var TestSuite */
-    private $suite;
-
-    /** @var string */
-    private $logFile;
+    private TestSuite $suite;
+    private string $logFile;
 
     public function __construct(string $logFile)
     {

@@ -27,11 +27,9 @@ abstract class BaseRunner implements RunnerInterface
 
     protected const CYCLE_SLEEP = 10000;
 
-    /** @var Options */
-    protected $options;
+    protected Options $options;
 
-    /** @var ResultPrinter */
-    protected $printer;
+    protected ResultPrinter $printer;
 
     /**
      * A collection of pending ExecutableTest objects that have
@@ -39,28 +37,22 @@ abstract class BaseRunner implements RunnerInterface
      *
      * @var ExecutableTest[]
      */
-    protected $pending = [];
+    protected array $pending = [];
 
     /**
      * A tallied exit code that returns the highest exit
      * code returned out of the entire collection of tests.
-     *
-     * @var int
      */
-    protected $exitcode = 0;
+    protected int $exitcode = -1;
 
-    /** @var OutputInterface */
-    protected $output;
+    protected OutputInterface $output;
 
-    /** @var LogInterpreter */
-    private $interpreter;
+    private LogInterpreter $interpreter;
 
     /**
      * CoverageMerger to hold track of the accumulated coverage.
-     *
-     * @var CoverageMerger|null
      */
-    private $coverage = null;
+    private ?CoverageMerger $coverage = null;
 
     public function __construct(Options $options, OutputInterface $output)
     {
