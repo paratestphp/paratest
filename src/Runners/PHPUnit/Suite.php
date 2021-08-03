@@ -43,6 +43,8 @@ final class Suite extends ExecutableTest
 
     /**
      * Get the expected count of tests to be executed.
+     *
+     * @psalm-return 0|positive-int
      */
     public function getTestCount(): int
     {

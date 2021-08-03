@@ -105,6 +105,7 @@ final class LogInterpreter implements MetaProviderInterface
      * Flattens all cases into their respective suites.
      *
      * @return TestSuite[] A collection of suites and their cases
+     * @psalm-return list<TestSuite>
      */
     public function flattenCases(): array
     {

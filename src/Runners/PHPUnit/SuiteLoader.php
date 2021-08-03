@@ -25,6 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 use function array_intersect;
+use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_unique;
@@ -90,6 +91,7 @@ final class SuiteLoader
      * instances.
      *
      * @return ExecutableTest[]
+     * @psalm-return list<ExecutableTest>
      */
     public function getSuites(): array
     {
@@ -202,7 +204,7 @@ final class SuiteLoader
                 }
             }
 
-            foreach ($loadedSuites as $key => $loadedSuite) {
+            foreach (array_keys($loadedSuites) as $key) {
                 ksort($loadedSuites[$key]);
             }
 
@@ -216,6 +218,7 @@ final class SuiteLoader
 
     /**
      * @return TestMethod[]
+     * @psalm-return list<TestMethod>
      */
     private function executableTests(string $path, ParsedClass $class): array
     {
@@ -314,6 +317,7 @@ final class SuiteLoader
      * data provider is not used and return all test if has data provider and data provider is used.
      *
      * @return string[] array of test names
+     * @psalm-return list<string>
      */
     private function getMethodTests(ParsedClass $class, ReflectionMethod $method): array
     {
@@ -331,7 +335,7 @@ final class SuiteLoader
         }
 
         if ($providedData !== null) {
-            foreach ($providedData as $key => $value) {
+            foreach (array_keys($providedData) as $key) {
                 $test = sprintf(
                     '%s with data set %s',
                     $method->getName(),

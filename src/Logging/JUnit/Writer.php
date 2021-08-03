@@ -223,7 +223,8 @@ final class Writer
      *
      * @param TestSuite[] $suites
      *
-     * @return array<string, int|float|string>
+     * @return (float|int|string)[]
+     * @psalm-return array{name: string, tests: int, assertions: int, errors: int, warnings: int, failures: int, skipped: int, time: 0|float}
      */
     private function getSuiteRootAttributes(array $suites): array
     {
