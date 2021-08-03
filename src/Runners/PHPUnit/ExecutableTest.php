@@ -145,6 +145,7 @@ abstract class ExecutableTest
      * @param string[]|null              $passthru
      *
      * @return string[] command line arguments
+     * @psalm-return array<string>
      */
     final public function commandArguments(string $binary, array $options, ?array $passthru): array
     {

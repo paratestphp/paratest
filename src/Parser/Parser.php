@@ -101,6 +101,7 @@ final class Parser
      * Return all test methods present in the file.
      *
      * @return ReflectionMethod[]
+     * @psalm-return list<ReflectionMethod>
      */
     private function getMethods(): array
     {

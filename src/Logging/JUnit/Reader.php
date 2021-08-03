@@ -82,6 +82,7 @@ final class Reader implements MetaProviderInterface
      * TODO: Update this, skipped was added in phpunit.
      *
      * @return string[]
+     * @psalm-return list<string>
      */
     public function getFeedback(): array
     {
@@ -178,7 +179,8 @@ final class Reader implements MetaProviderInterface
      * Return a collection of testcase nodes
      * from the xml document.
      *
-     * @return array<string, SimpleXMLElement[]>
+     * @return SimpleXMLElement[][]
+     * @psalm-return array<string, list<SimpleXMLElement>>
      */
     private function getCaseNodes(): array
     {

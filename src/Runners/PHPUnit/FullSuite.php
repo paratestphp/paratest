@@ -32,6 +32,9 @@ final class FullSuite extends ExecutableTest
         );
     }
 
+    /**
+     * @psalm-return 1
+     */
     public function getTestCount(): int
     {
         return 1; //There is no simple way of knowing this
