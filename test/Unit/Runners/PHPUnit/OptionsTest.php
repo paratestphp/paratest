@@ -432,7 +432,8 @@ final class OptionsTest extends TestBase
         $options = $this->createOptionsFromArgv(['--no-test-tokens' => false]);
 
         $inc = mt_rand(10, 99);
-        $env = $options->fillEnvWithTokens($inc);
+        $runToken = uniqid();
+        $env = $options->fillEnvWithTokens($inc, $runToken);
 
         static::assertSame(1, $env['PARATEST']);
         static::assertArrayHasKey(Options::ENV_KEY_TOKEN, $env);
@@ -440,14 +441,18 @@ final class OptionsTest extends TestBase
         static::assertArrayHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
         static::assertIsString($env[Options::ENV_KEY_UNIQUE_TOKEN]);
         static::assertStringContainsString($inc . '_', $env[Options::ENV_KEY_UNIQUE_TOKEN]);
+        static::assertArrayHasKey(Options::ENV_KEY_RUN_TOKEN, $env);
+        static::assertSame($runToken, $env[Options::ENV_KEY_RUN_TOKEN]);
 
         $options = $this->createOptionsFromArgv(['--no-test-tokens' => true]);
 
         $inc = mt_rand(10, 99);
-        $env = $options->fillEnvWithTokens($inc);
+        $runToken = uniqid();
+        $env = $options->fillEnvWithTokens($inc, $runToken);
 
         static::assertSame(1, $env['PARATEST']);
         static::assertArrayNotHasKey(Options::ENV_KEY_TOKEN, $env);
         static::assertArrayNotHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
+        static::assertArrayNotHasKey(Options::ENV_KEY_RUN_TOKEN, $env);
     }
 }

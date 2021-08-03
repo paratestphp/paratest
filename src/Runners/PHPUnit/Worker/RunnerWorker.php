@@ -27,7 +27,7 @@ final class RunnerWorker
     /** @var Process */
     private $process;
 
-    public function __construct(ExecutableTest $executableTest, Options $options, int $token)
+    public function __construct(ExecutableTest $executableTest, Options $options, int $token, string $runToken)
     {
         $this->executableTest = $executableTest;
 
@@ -48,7 +48,7 @@ final class RunnerWorker
             )
         );
 
-        $this->process = new Process($args, $options->cwd(), $options->fillEnvWithTokens($token));
+        $this->process = new Process($args, $options->cwd(), $options->fillEnvWithTokens($token, $runToken));
 
         $cmd = $this->process->getCommandLine();
         $this->assertValidCommandLineLength($cmd);

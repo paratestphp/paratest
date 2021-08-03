@@ -59,7 +59,7 @@ final class WrapperWorker
     /** @var InputStream */
     private $input;
 
-    public function __construct(OutputInterface $output, Options $options, int $token)
+    public function __construct(OutputInterface $output, Options $options, int $token, string $runToken)
     {
         $wrapper = realpath(
             dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
@@ -100,7 +100,7 @@ final class WrapperWorker
         $this->process = new Process(
             $parameters,
             $options->cwd(),
-            $options->fillEnvWithTokens($token),
+            $options->fillEnvWithTokens($token, $runToken),
             $this->input,
             null
         );

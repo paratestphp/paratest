@@ -59,6 +59,7 @@ final class Options
 {
     public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
     public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
+    public const ENV_KEY_RUN_TOKEN    = 'TESTRUN_TOKEN';
 
     public const ORDER_DEFAULT = 'default';
     public const ORDER_RANDOM  = 'random';
@@ -1121,12 +1122,13 @@ final class Options
     /**
      * @return array{PARATEST: int, TEST_TOKEN?: int, UNIQUE_TEST_TOKEN?: string}
      */
-    public function fillEnvWithTokens(int $inc): array
+    public function fillEnvWithTokens(int $inc, string $runToken): array
     {
         $env = ['PARATEST' => 1];
         if (! $this->noTestTokens()) {
             $env[self::ENV_KEY_TOKEN]        = $inc;
             $env[self::ENV_KEY_UNIQUE_TOKEN] = uniqid($inc . '_');
+            $env[self::ENV_KEY_RUN_TOKEN]    = $runToken;
         }
 
         return $env;

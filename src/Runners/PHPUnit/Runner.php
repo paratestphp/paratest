@@ -13,6 +13,7 @@ use function assert;
 use function count;
 use function max;
 use function range;
+use function uniqid;
 use function usleep;
 
 /**
@@ -33,9 +34,10 @@ final class Runner extends BaseRunner
      */
     protected function doRun(): void
     {
+        $runToken = uniqid();
         $availableTokens = range(1, $this->options->processes());
         while (count($this->running) > 0 || count($this->pending) > 0) {
-            $this->fillRunQueue($availableTokens);
+            $this->fillRunQueue($availableTokens, $runToken);
             usleep(self::CYCLE_SLEEP);
 
             $availableTokens = [];
@@ -57,7 +59,7 @@ final class Runner extends BaseRunner
      *
      * @param int[] $availableTokens
      */
-    private function fillRunQueue(array $availableTokens): void
+    private function fillRunQueue(array $availableTokens, string $runToken): void
     {
         while (
             count($this->pending) > 0
@@ -66,7 +68,7 @@ final class Runner extends BaseRunner
         ) {
             $executableTest = array_shift($this->pending);
 
-            $this->running[$token] = new RunnerWorker($executableTest, $this->options, $token);
+            $this->running[$token] = new RunnerWorker($executableTest, $this->options, $token, $runToken);
             $this->running[$token]->run();
 
             if ($this->options->verbosity() < Options::VERBOSITY_VERY_VERBOSE) {

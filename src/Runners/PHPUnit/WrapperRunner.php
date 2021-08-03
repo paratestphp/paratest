@@ -12,6 +12,7 @@ use function array_shift;
 use function assert;
 use function count;
 use function max;
+use function uniqid;
 use function usleep;
 
 /**
@@ -42,8 +43,9 @@ final class WrapperRunner extends BaseRunner
 
     private function startWorkers(): void
     {
+        $runToken = uniqid();
         for ($token = 1; $token <= $this->options->processes(); ++$token) {
-            $this->workers[$token] = new WrapperWorker($this->output, $this->options, $token);
+            $this->workers[$token] = new WrapperWorker($this->output, $this->options, $token, $runToken);
             $this->workers[$token]->start();
         }
     }
