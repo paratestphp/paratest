@@ -38,6 +38,7 @@ use function is_int;
 use function ksort;
 use function preg_match;
 use function sprintf;
+use function strpos;
 use function strrpos;
 use function substr;
 use function trim;
@@ -323,7 +324,12 @@ final class SuiteLoader
     {
         $result = [];
 
+        /** @var string[] $groups */
         $groups = Test::getGroups($class->getName(), $method->getName());
+        if ($this->containsOnlyVirtualGroups($groups)) {
+            $groups[] = 'default';
+        }
+
         if (! $this->testMatchGroupOptions($groups)) {
             return $result;
         }
@@ -505,5 +511,21 @@ final class SuiteLoader
         );
 
         $this->output->writeln('done [' . $timer->stop()->asString() . ']');
+    }
+
+    /**
+     * @see PHPUnit\Framework\TestCase::containsOnlyVirtualGroups
+     *
+     * @param string[] $groups
+     */
+    private function containsOnlyVirtualGroups(array $groups): bool
+    {
+        foreach ($groups as $group) {
+            if (strpos($group, '__phpunit_') !== 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
