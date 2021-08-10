@@ -378,6 +378,14 @@ final class SuiteLoaderTest extends TestBase
         static::assertCount(3, $loader->getTestMethods());
     }
 
+    public function testUngroupedTestShouldHaveDefaultGroupAssigned(): void
+    {
+        $this->bareOptions['--path']  = $this->fixture('group_default');
+        $this->bareOptions['--group'] = 'default';
+        $loader                       = $this->loadSuite();
+        static::assertCount(2, $loader->getTestMethods());
+    }
+
     /**
      * @return string[]
      */
