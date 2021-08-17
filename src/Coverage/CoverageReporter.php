@@ -98,6 +98,14 @@ final class CoverageReporter
     public function text(): string
     {
         $text = new Text();
+        if ($this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasText()) {
+            $text = new Text(
+                50,
+                90,
+                $this->codeCoverageConfiguration->text()->showUncoveredFiles(),
+                $this->codeCoverageConfiguration->text()->showOnlySummary()
+            );
+        }
 
         return $text->process($this->coverage);
     }
