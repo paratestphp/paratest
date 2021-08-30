@@ -70,9 +70,22 @@ final class WriterTest extends TestBase
         static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
     }
 
-    public function testWrite(): void
+    public function testWriteToFile(): void
     {
         $output = FIXTURES . DS . 'logs' . DS . 'passing.xml';
+        $this->addPassingReader();
+        $this->writer->write($output);
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), (string) file_get_contents($output));
+        if (! file_exists($output)) {
+            return;
+        }
+
+        unlink($output);
+    }
+
+    public function testWriteToFileInNonExistentDir(): void
+    {
+        $output = FIXTURES . DS . 'logs' . DS . 'new' . DS . 'dir' . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
         static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), (string) file_get_contents($output));
