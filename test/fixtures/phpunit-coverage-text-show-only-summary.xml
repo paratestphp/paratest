@@ -31,7 +31,7 @@
             <crap4j outputFile="../tmp/crap4j.xml" threshold="50"/>
             <html outputDirectory="../tmp/html-coverage" lowUpperBound="50" highLowerBound="90"/>
             <php outputFile="../tmp/coverage.php"/>
-            <text outputFile="../tmp/coverage.txt" showUncoveredFiles="false" showOnlySummary="false"/>
+            <text outputFile="../tmp/coverage.txt" showUncoveredFiles="false" showOnlySummary="true"/>
             <xml outputDirectory="../tmp/xml-coverage"/>
         </report>
     </coverage>

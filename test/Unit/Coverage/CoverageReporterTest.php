@@ -29,6 +29,11 @@ final class CoverageReporterTest extends TestBase
     {
         static::skipIfCodeCoverageNotEnabled();
 
+        $this->createCoverageReporter('phpunit-fully-configured.xml');
+    }
+
+    private function createCoverageReporter(string $fixtureFile): void
+    {
         $filter = new Filter();
         $filter->includeFile(__FILE__);
         $codeCoverage = new CodeCoverage((new Selector())->forLineCoverage($filter), $filter);
@@ -36,7 +41,7 @@ final class CoverageReporterTest extends TestBase
             __FILE__ => [__LINE__ => 1],
         ]), uniqid());
 
-        $configuration = (new Loader())->load($this->fixture('phpunit-fully-configured.xml'));
+        $configuration = (new Loader())->load($this->fixture($fixtureFile));
 
         $this->coverageReporter = new CoverageReporter($codeCoverage, $configuration->codeCoverage());
     }
@@ -99,11 +104,32 @@ final class CoverageReporterTest extends TestBase
         static::assertFileExists($target);
     }
 
-    public function testGenerateText(): void
+    /**
+     * @dataProvider generateTextProvider
+     */
+    public function testGenerateText(string $fixtureFile, string $expectedContainedString): void
     {
+        $this->createCoverageReporter($fixtureFile);
         $output = $this->coverageReporter->text();
 
-        static::assertStringContainsString('Code Coverage Report:', $output);
+        static::assertStringContainsString($expectedContainedString, $output);
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function generateTextProvider(): array
+    {
+        return [
+            'showOnlySummary = false' => [
+                'fixtureFile' => 'phpunit-fully-configured.xml',
+                'expectedContainedString' => 'Code Coverage Report:',
+            ],
+            'showOnlySummary = true' => [
+                'fixtureFile' => 'phpunit-coverage-text-show-only-summary.xml',
+                'expectedContainedString' => 'Code Coverage Report Summary:',
+            ],
+        ];
     }
 
     public function testGenerateXml(): void
