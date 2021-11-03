@@ -99,9 +99,10 @@ final class CoverageReporter
     {
         $text = new Text();
         if ($this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasText()) {
-            $text = new Text(
-                50,
-                90,
+            $hasHtml = $this->codeCoverageConfiguration->hasHtml();
+            $text    = new Text(
+                $hasHtml ? $this->codeCoverageConfiguration->html()->lowUpperBound() : 50,
+                $hasHtml ? $this->codeCoverageConfiguration->html()->highLowerBound() : 90,
                 $this->codeCoverageConfiguration->text()->showUncoveredFiles(),
                 $this->codeCoverageConfiguration->text()->showOnlySummary()
             );
