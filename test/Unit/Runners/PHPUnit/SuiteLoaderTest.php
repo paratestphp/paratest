@@ -42,8 +42,18 @@ final class SuiteLoaderTest extends TestBase
         $this->bareOptions['--path'] = '/path/to/nowhere';
 
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Invalid path /path/to/nowhere provided');
 
         $this->loadSuite();
+    }
+
+    public function testLoadPathWithoutTests(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('no_tests');
+
+        $loader = $this->loadSuite();
+        $files  = $this->getObjectValue($loader, 'files');
+        static::assertEmpty($files);
     }
 
     public function testLoadBarePathWithNoPathAndNoConfiguration(): void
@@ -152,10 +162,9 @@ final class SuiteLoaderTest extends TestBase
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-non-existent-testsuite-dir.xml');
         $this->bareOptions['--testsuite']     = uniqid();
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches('/Suite path \w+ could not be found/');
-
-        $this->loadSuite();
+        $loader = $this->loadSuite();
+        $files  = $this->getObjectValue($loader, 'files');
+        static::assertEmpty($files);
     }
 
     public function testLoadFileGetsPathOfFile(): void
