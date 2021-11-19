@@ -24,6 +24,7 @@ use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
+use function array_filter;
 use function array_intersect;
 use function array_keys;
 use function array_map;
@@ -132,6 +133,7 @@ final class SuiteLoader
             if (realpath($path) === false) {
                 throw new RuntimeException("Invalid path {$path} provided");
             }
+
             $this->files = array_merge(
                 $this->files,
                 (new Facade())->getFilesAsArray($path, ['Test.php'])
@@ -142,7 +144,7 @@ final class SuiteLoader
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
             $testSuiteCollection = $this->configuration->testSuite()->asArray();
-            $this->suitesName = array_map(static function (TestSuite $testSuite): string {
+            $this->suitesName    = array_map(static function (TestSuite $testSuite): string {
                 return $testSuite->name();
             }, $testSuiteCollection);
         } elseif (
@@ -151,9 +153,8 @@ final class SuiteLoader
         ) {
             $testSuiteCollection = array_filter(
                 $this->configuration->testSuite()->asArray(),
-                function (TestSuite  $testSuite): bool {
-                    return
-                        empty($this->options->testsuite()) ||
+                function (TestSuite $testSuite): bool {
+                    return $this->options->testsuite() === [] ||
                         in_array($testSuite->name(), $this->options->testsuite(), true);
                 }
             );
