@@ -57,6 +57,35 @@ abstract class RunnerTestCase extends TestBase
         $this->assertTestsPassed($this->runRunner());
     }
 
+    final public function testExitCodesPathWithoutTests(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('no_tests');
+        $runnerResult                = $this->runRunner();
+
+        static::assertStringContainsString('OK (0 tests, 0 assertions)', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testExitCodesGroupWithoutTests(): void
+    {
+        $this->bareOptions['--path']  = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
+        $this->bareOptions['--group'] = uniqid(); // setting non-existing group to select no tests
+        $runnerResult                 = $this->runRunner();
+
+        static::assertStringContainsString('OK (0 tests, 0 assertions)', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
+    }
+
+    final public function testExitCodesSuiteWithoutTests(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-non-existent-testsuite-dir.xml');
+        $this->bareOptions['--testsuite']     = uniqid(); // setting non-existing suite to select no tests
+        $runnerResult                         = $this->runRunner();
+
+        static::assertStringContainsString('OK (0 tests, 0 assertions)', $runnerResult->getOutput());
+        static::assertEquals(TestRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
+    }
+
     final public function testExitCodes(): void
     {
         $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests' . DS . 'ErrorTest.php');

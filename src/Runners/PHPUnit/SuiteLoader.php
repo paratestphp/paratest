@@ -24,6 +24,7 @@ use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
+use function array_filter;
 use function array_intersect;
 use function array_keys;
 use function array_map;
@@ -37,6 +38,7 @@ use function is_array;
 use function is_int;
 use function ksort;
 use function preg_match;
+use function realpath;
 use function sprintf;
 use function strpos;
 use function strrpos;
@@ -126,7 +128,12 @@ final class SuiteLoader
     {
         $this->loadConfiguration();
 
+        $testSuiteCollection = null;
         if (($path = $this->options->path()) !== null) {
+            if (realpath($path) === false) {
+                throw new RuntimeException("Invalid path {$path} provided");
+            }
+
             $this->files = array_merge(
                 $this->files,
                 (new Facade())->getFilesAsArray($path, ['Test.php'])
@@ -136,39 +143,28 @@ final class SuiteLoader
             && $this->configuration !== null
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
-            $this->suitesName = array_map(static function (TestSuite $testSuite): string {
+            $testSuiteCollection = $this->configuration->testSuite()->asArray();
+            $this->suitesName    = array_map(static function (TestSuite $testSuite): string {
                 return $testSuite->name();
-            }, $this->configuration->testSuite()->asArray());
+            }, $testSuiteCollection);
         } elseif (
             $this->configuration !== null
             && ! $this->configuration->testSuite()->isEmpty()
         ) {
-            $testSuiteCollection = $this->configuration->testSuite()->asArray();
-            if (count($this->options->testsuite()) > 0) {
-                $suitesName = array_map(static function (TestSuite $testSuite): string {
-                    return $testSuite->name();
-                }, $testSuiteCollection);
-                foreach ($this->options->testsuite() as $testSuiteName) {
-                    if (! in_array($testSuiteName, $suitesName, true)) {
-                        throw new RuntimeException("Suite path {$testSuiteName} could not be found");
-                    }
+            $testSuiteCollection = array_filter(
+                $this->configuration->testSuite()->asArray(),
+                function (TestSuite $testSuite): bool {
+                    return $this->options->testsuite() === [] ||
+                        in_array($testSuite->name(), $this->options->testsuite(), true);
                 }
-
-                foreach ($testSuiteCollection as $index => $testSuite) {
-                    if (in_array($testSuite->name(), $this->options->testsuite(), true)) {
-                        continue;
-                    }
-
-                    unset($testSuiteCollection[$index]);
-                }
-            }
+            );
 
             foreach ($testSuiteCollection as $testSuite) {
                 $this->loadFilesFromTestSuite($testSuite);
             }
         }
 
-        if (count($this->files) === 0 && ! is_array($this->suitesName)) {
+        if ($path === null && $testSuiteCollection === null) {
             throw new RuntimeException('No path or configuration provided (tests must end with Test.php)');
         }
 

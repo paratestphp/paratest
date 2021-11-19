@@ -45,7 +45,7 @@ abstract class BaseRunner implements RunnerInterface
      *
      * @var int
      */
-    protected $exitcode = -1;
+    protected $exitcode = 0;
 
     /** @var OutputInterface */
     protected $output;
