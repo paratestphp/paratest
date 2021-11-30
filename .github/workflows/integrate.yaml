@@ -138,6 +138,9 @@ jobs:
       - name: "Remove infection"
         run: "composer remove --no-progress --no-update --no-scripts --dev 'infection/infection'"
 
+      - name: "Remove PSALM"
+        run: "composer remove --no-progress --no-update --no-scripts --dev 'vimeo/psalm'"
+
       - name: "Remove 'ext-posix' dep for Windows testing"
         if: ${{ matrix.os == 'windows-latest' }}
         run: "composer remove --no-progress --no-update --no-scripts --dev 'ext-posix'"
@@ -185,6 +188,9 @@ jobs:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
+
+      - name: "Remove PSALM"
+        run: "composer remove --no-progress --no-update --no-scripts --dev 'vimeo/psalm'"
 
       - name: "Install dependencies"
         run: "composer update --no-interaction --no-progress"
