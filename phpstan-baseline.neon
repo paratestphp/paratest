@@ -69,26 +69,6 @@ parameters:
 			path: src/Runners/PHPUnit/Worker/NullPhpunitPrinter.php
 
 		-
-			message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\RunnerWorker\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
-			count: 1
-			path: src/Runners/PHPUnit/Worker/RunnerWorker.php
-
-		-
-			message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\WrapperWorker\\:\\:\\$input type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\InputStream\\.$#"
-			count: 1
-			path: src/Runners/PHPUnit/Worker/WrapperWorker.php
-
-		-
-			message: "#^Property ParaTest\\\\Runners\\\\PHPUnit\\\\Worker\\\\WrapperWorker\\:\\:\\$process type has no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
-			count: 1
-			path: src/Runners/PHPUnit/Worker/WrapperWorker.php
-
-		-
-			message: "#^Method ParaTest\\\\Runners\\\\PHPUnit\\\\WorkerCrashedException\\:\\:fromProcess\\(\\) has parameter \\$process with no value type specified in iterable type Symfony\\\\Component\\\\Process\\\\Process\\.$#"
-			count: 1
-			path: src/Runners/PHPUnit/WorkerCrashedException.php
-
-		-
 			message: "#^Method ParaTest\\\\Tests\\\\TestBase\\:\\:setUpTest\\(\\) is not final, but since the containing class is abstract, it should be\\.$#"
 			count: 1
 			path: test/TestBase.php
