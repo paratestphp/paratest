@@ -137,7 +137,9 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--processes']     = '1';
 
         $this->expectException(WorkerCrashedException::class);
-        $this->expectExceptionMessageMatches('/TEST_TOKEN=\'1\'.+TestWithFailingListenerTest.+lorem/s');
+        $this->expectExceptionMessageMatches(
+            sprintf('/TEST_TOKEN=%s.+TestWithFailingListenerTest.+lorem/s', preg_quote(escapeshellarg('1')))
+        );
 
         $this->runRunner();
     }
