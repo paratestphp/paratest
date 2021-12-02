@@ -10,11 +10,14 @@ use ParaTest\Logging\LogInterpreter;
 
 use function assert;
 use function count;
+use function dirname;
 use function file_put_contents;
 use function get_object_vars;
 use function htmlspecialchars;
+use function is_dir;
 use function is_float;
 use function is_scalar;
+use function mkdir;
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -96,6 +99,11 @@ final class Writer
      */
     public function write(string $path): void
     {
+        $dir = dirname($path);
+        if (! is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
         file_put_contents($path, $this->getXml());
     }
 
