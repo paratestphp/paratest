@@ -14,6 +14,7 @@ use Symfony\Component\Process\Process;
 use function array_merge;
 use function array_reverse;
 use function defined;
+use function escapeshellarg;
 use function file_get_contents;
 use function posix_mkfifo;
 use function preg_match;
@@ -128,6 +129,20 @@ abstract class RunnerTestCase extends TestBase
         ]);
 
         $this->assertTestsPassed($this->runRunner());
+    }
+
+    final public function testRaiseVerboseExceptionWhenATestCallsErrorsOnListenerWithLogging(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-failing-listener.xml');
+        $this->bareOptions['--log-junit']     = TMP_DIR . DS . uniqid('result_');
+        $this->bareOptions['--processes']     = '1';
+
+        $this->expectException(WorkerCrashedException::class);
+        $this->expectExceptionMessageMatches(
+            sprintf('/TEST_TOKEN=%s.+TestWithFailingListenerTest.+lorem/s', preg_quote(escapeshellarg('1')))
+        );
+
+        $this->runRunner();
     }
 
     final public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
