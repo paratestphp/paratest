@@ -10,20 +10,18 @@ use ParaTest\Logging\LogInterpreter;
 
 use function assert;
 use function count;
-use function file_exists;
+use function dirname;
 use function file_put_contents;
 use function get_object_vars;
 use function htmlspecialchars;
+use function is_dir;
 use function is_float;
 use function is_scalar;
 use function mkdir;
 use function preg_match;
 use function sprintf;
 use function str_replace;
-use function strrpos;
-use function substr;
 
-use const DIRECTORY_SEPARATOR;
 use const ENT_XML1;
 
 /**
@@ -101,11 +99,9 @@ final class Writer
      */
     public function write(string $path): void
     {
-        $dsPos = strrpos($path, DIRECTORY_SEPARATOR);
-        $dir   = substr($path, 0, $dsPos !== false ? $dsPos : null);
-
-        if (file_exists($dir) === false) {
-            mkdir($dir, 0755, true);
+        $dir = dirname($path);
+        if (! is_dir($dir)) {
+            mkdir($dir, 0777, true);
         }
 
         file_put_contents($path, $this->getXml());

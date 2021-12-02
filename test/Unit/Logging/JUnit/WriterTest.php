@@ -72,10 +72,10 @@ final class WriterTest extends TestBase
 
     public function testWriteToFile(): void
     {
-        $output = FIXTURES . DS . 'logs' . DS . 'passing.xml';
+        $output = TMP_DIR . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
-        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), (string) file_get_contents($output));
+        static::assertXmlFileEqualsXmlFile($this->passing, $output);
         if (! file_exists($output)) {
             return;
         }
@@ -85,10 +85,10 @@ final class WriterTest extends TestBase
 
     public function testWriteToFileInNonExistentDir(): void
     {
-        $output = FIXTURES . DS . 'logs' . DS . 'new' . DS . 'dir' . DS . 'passing.xml';
+        $output = TMP_DIR . DS . 'logs' . DS . 'new' . DS . 'dir' . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
-        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), (string) file_get_contents($output));
+        static::assertXmlFileEqualsXmlFile($this->passing, $output);
         if (! file_exists($output)) {
             return;
         }
