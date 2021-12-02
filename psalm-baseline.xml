@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.9.2@00c062267d6e3229d91a1939992987e2d46f2393">
+<files psalm-version="4.13.1@5cf660f63b548ccd4a56f62d916ee4d6028e01a3">
   <file src="src/Logging/JUnit/Reader.php">
     <MixedArrayAccess occurrences="9">
       <code>$node['assertions']</code>
@@ -52,9 +52,6 @@
     </MixedArgumentTypeCoercion>
   </file>
   <file src="src/Runners/PHPUnit/SuiteLoader.php">
-    <MixedArgumentTypeCoercion occurrences="1">
-      <code>$groups</code>
-    </MixedArgumentTypeCoercion>
     <MixedPropertyTypeCoercion occurrences="4">
       <code>$this-&gt;files</code>
       <code>array_unique($this-&gt;files)</code>
@@ -72,5 +69,10 @@
     <MixedArgument occurrences="1">
       <code>$parameters</code>
     </MixedArgument>
+  </file>
+  <file src="src/Runners/PHPUnit/WorkerCrashedException.php">
+    <MixedAssignment occurrences="1">
+      <code>$value</code>
+    </MixedAssignment>
   </file>
 </files>

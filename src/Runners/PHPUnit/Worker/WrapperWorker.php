@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit\Worker;
 
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Runners\PHPUnit\EmptyLogFileException;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 use function array_map;
 use function array_merge;
@@ -116,12 +118,12 @@ final class WrapperWorker
         $this->process->start();
     }
 
-    public function getWorkerCrashedException(): WorkerCrashedException
+    public function getWorkerCrashedException(?Throwable $previousException = null): WorkerCrashedException
     {
         $command = end($this->commands);
         assert($command !== false);
 
-        return WorkerCrashedException::fromProcess($this->process, $command);
+        return WorkerCrashedException::fromProcess($this->process, $command, $previousException);
     }
 
     /**
@@ -150,7 +152,13 @@ final class WrapperWorker
             return null;
         }
 
-        return $printer->printFeedback($this->currentlyExecuting);
+        try {
+            $reader = $printer->printFeedback($this->currentlyExecuting);
+        } catch (EmptyLogFileException $emptyLogException) {
+            throw $this->getWorkerCrashedException($emptyLogException);
+        }
+
+        return $reader;
     }
 
     public function reset(): void

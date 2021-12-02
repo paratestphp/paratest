@@ -224,30 +224,21 @@ final class ResultPrinter
         try {
             $reader = new Reader($test->getTempFile());
         } catch (InvalidArgumentException $invalidArgumentException) {
-            throw new EmptyLogFileException(sprintf(
-                "%s\n" .
-                "The process: %s\n" .
-                "This means a PHPUnit process was unable to run \"%s\"\n",
+            throw new EmptyLogFileException(
                 $invalidArgumentException->getMessage(),
-                $test->getLastCommand(),
-                $test->getPath()
-            ), 0, $invalidArgumentException);
+                0,
+                $invalidArgumentException
+            );
         }
 
         if ($this->teamcityLogFileHandle !== null) {
-            $log_file = $test->getTeamcityTempFile();
+            $teamcityLogFile = $test->getTeamcityTempFile();
 
-            if (filesize($log_file) === 0) {
-                throw new EmptyLogFileException(sprintf(
-                    "Teamcity format file is empty.\n" .
-                    "The process: %s\n" .
-                    "This means a PHPUnit process was unable to run \"%s\"\n",
-                    $test->getLastCommand(),
-                    $test->getPath()
-                ));
+            if (filesize($teamcityLogFile) === 0) {
+                throw new EmptyLogFileException("Teamcity format file ${teamcityLogFile} is empty");
             }
 
-            $result = file_get_contents($log_file);
+            $result = file_get_contents($teamcityLogFile);
             assert($result !== false);
             fwrite($this->teamcityLogFileHandle, $result);
         }

@@ -512,18 +512,16 @@ final class ResultPrinterTest extends ResultTester
         static::assertStringContainsString('FAILURES', $this->output->fetch());
     }
 
-    public function testEmptyLogFileRaiseExceptionWithLastCommand(): void
+    public function testEmptyLogFileRaiseException(): void
     {
         $test = new ExecutableTestChild(uniqid(), false, false, TMP_DIR);
-        $test->setLastCommand(uniqid());
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches(sprintf('/%s/', $test->getLastCommand()));
 
         $this->printer->printFeedback($test);
     }
 
-    public function testTeamcityEmptyLogFileRaiseExceptionWithLastCommand(): void
+    public function testTeamcityEmptyLogFileRaiseException(): void
     {
         $teamcityLog = TMP_DIR . DS . 'teamcity.log';
 
@@ -531,11 +529,10 @@ final class ResultPrinterTest extends ResultTester
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
 
         $test = $this->getSuiteWithResult('single-passing.xml', 1);
-        $test->setLastCommand(uniqid());
 
         file_put_contents($test->getTeamcityTempFile(), '');
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches(sprintf('/Teamcity.+%s/s', $test->getLastCommand()));
+        $this->expectExceptionMessageMatches('/Teamcity/');
 
         $this->printer->printFeedback($test);
     }

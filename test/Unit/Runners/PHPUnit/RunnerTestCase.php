@@ -130,6 +130,18 @@ abstract class RunnerTestCase extends TestBase
         $this->assertTestsPassed($this->runRunner());
     }
 
+    final public function testRaiseVerboseExceptionWhenATestCallsErrorsOnListenerWithLogging(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-failing-listener.xml');
+        $this->bareOptions['--log-junit']     = TMP_DIR . DS . uniqid('result_');
+        $this->bareOptions['--processes']     = '1';
+
+        $this->expectException(WorkerCrashedException::class);
+        $this->expectExceptionMessageMatches('/TEST_TOKEN=\'1\'.+TestWithFailingListenerTest.+lorem/s');
+
+        $this->runRunner();
+    }
+
     final public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
     {
         $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
