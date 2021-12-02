@@ -14,6 +14,7 @@ use Symfony\Component\Process\Process;
 use function array_merge;
 use function array_reverse;
 use function defined;
+use function escapeshellarg;
 use function file_get_contents;
 use function posix_mkfifo;
 use function preg_match;
