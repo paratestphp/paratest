@@ -94,8 +94,10 @@ final class CoverageReporter
 
     /**
      * Generate text coverage report.
+     *
+     * @param bool $colors Coverage colors
      */
-    public function text(): string
+    public function text(bool $colors): string
     {
         $text = new Text();
         if ($this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasText()) {
@@ -108,7 +110,7 @@ final class CoverageReporter
             );
         }
 
-        return $text->process($this->coverage);
+        return $text->process($this->coverage, $colors);
     }
 
     /**

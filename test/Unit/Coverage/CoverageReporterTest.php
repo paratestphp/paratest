@@ -110,7 +110,7 @@ final class CoverageReporterTest extends TestBase
     public function testGenerateText(string $fixtureFile, string $expectedContainedString): void
     {
         $this->createCoverageReporter($fixtureFile);
-        $output = $this->coverageReporter->text();
+        $output = $this->coverageReporter->text(false);
 
         static::assertStringContainsString($expectedContainedString, $output);
     }
@@ -128,6 +128,64 @@ final class CoverageReporterTest extends TestBase
             'showOnlySummary = true' => [
                 'fixtureFile' => 'phpunit-coverage-text-show-only-summary.xml',
                 'expectedContainedString' => 'Code Coverage Report Summary:',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider generateTextWithColorsProvider
+     */
+    public function testGenerateTextWithColors(string $fixtureFile, string $expectedPattern): void
+    {
+        $this->createCoverageReporter($fixtureFile);
+        $output = $this->coverageReporter->text(true);
+
+        static::assertMatchesRegularExpression($expectedPattern, $output);
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function generateTextWithColorsProvider(): array
+    {
+        return [
+            'showOnlySummary = false' => [
+                'fixtureFile' => 'phpunit-fully-configured.xml',
+                'expectedPattern' => '~\\e\[(?:\d+;){0,1}\d+;\d+mCode Coverage Report:~',
+            ],
+            'showOnlySummary = true' => [
+                'fixtureFile' => 'phpunit-coverage-text-show-only-summary.xml',
+                'expectedPattern' => '~\\e\[(?:\d+;){0,1}\d+;\d+mCode Coverage Report Summary:~',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider generateTextCoveredFilesProvider
+     */
+    public function testGenerateTextCoveredFiles(string $expectedPattern, bool $colors): void
+    {
+        $this->createCoverageReporter('phpunit-fully-configured.xml');
+        $output = $this->coverageReporter->text($colors);
+
+        static::assertMatchesRegularExpression($expectedPattern, $output);
+    }
+
+    /**
+     * @return  array<string, array<string, bool|string>>
+     */
+    public function generateTextCoveredFilesProvider(): array
+    {
+        return [
+            'colors = false' => [
+                'expectedPattern' => '~Methods:\s*\d+\.\d{2}%\s*\(\s*\d+/\s*\d+\)'
+                    . '\s*Lines:\s*\d+\.\d{2}%\s*\(\s*\d+/\s*\d+\)~',
+                'colors' => false,
+            ],
+            'colors = true' => [
+                'expectedPattern' => '~\\e\[\d+;\d+mMethods:\s\d+\.\d{2}%\s\(\s*\d+/\s*\d+\)\\e\[0m'
+                    . '\s*\\e\[(?:\d+;){0,1}\d+;\d+mLines:\s*\d+\.\d{2}%\s*\(\s*\d+/\s*\d+\)\\e\[0m~',
+                'colors' => true,
             ],
         ];
     }
