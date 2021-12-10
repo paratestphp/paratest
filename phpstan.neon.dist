@@ -34,6 +34,7 @@ parameters:
         - bin/paratest
         - src/
         - test/
-    excludes_analyse:
-        - test/fixtures/*
-        - test/tmp/*
+    excludePaths:
+        analyseAndScan:
+            - test/fixtures/*
+            - test/tmp/*

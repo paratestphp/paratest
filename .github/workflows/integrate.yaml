@@ -289,8 +289,5 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-interaction --no-progress"
 
-      - name: "Run static analysis"
-        run: "vendor/bin/phpstan analyse --no-progress --error-format=checkstyle | cs2pr"
-
       - name: "Run PSalm for type-coverage"
         run: "vendor/bin/psalm --no-progress --shepherd --output-format=github --show-info=false --stats"

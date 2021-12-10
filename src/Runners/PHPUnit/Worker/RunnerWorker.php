@@ -13,6 +13,7 @@ use Symfony\Component\Process\Process;
 use Throwable;
 
 use function array_merge;
+use function assert;
 use function strlen;
 
 use const DIRECTORY_SEPARATOR;
@@ -32,8 +33,10 @@ final class RunnerWorker
         $this->executableTest = $executableTest;
 
         $phpFinder = new PhpExecutableFinder();
-        $args      = [$phpFinder->find(false)];
-        $args      = array_merge($args, $phpFinder->findArguments());
+        $phpBin    = $phpFinder->find(false);
+        assert($phpBin !== false);
+        $args = [$phpBin];
+        $args = array_merge($args, $phpFinder->findArguments());
 
         if (($passthruPhp = $options->passthruPhp()) !== null) {
             $args = array_merge($args, $passthruPhp);

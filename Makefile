@@ -12,7 +12,6 @@ csfix: vendor
 
 .PHONY: static-analysis
 static-analysis: vendor
-	vendor/bin/phpstan analyse
 	vendor/bin/psalm
 
 .PHONY: test
