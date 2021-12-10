@@ -1,15 +1,14 @@
 {
     "name": "brianium/paratest",
-    "type": "library",
     "description": "Parallel testing for PHP",
+    "license": "MIT",
+    "type": "library",
     "keywords": [
         "testing",
         "PHPUnit",
         "concurrent",
         "parallel"
     ],
-    "homepage": "https://github.com/paratestphp/paratest",
-    "license": "MIT",
     "authors": [
         {
             "name": "Brian Scaturro",
@@ -20,6 +19,17 @@
             "name": "Filippo Tessarotto",
             "email": "zoeslam@gmail.com",
             "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/paratestphp/paratest",
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/Slamdunk"
+        },
+        {
+            "type": "paypal",
+            "url": "https://paypal.me/filippotessarotto"
         }
     ],
     "require": {
@@ -59,15 +69,5 @@
     },
     "bin": [
         "bin/paratest"
-    ],
-    "funding": [
-        {
-            "type": "github",
-            "url": "https://github.com/sponsors/Slamdunk"
-        },
-        {
-            "type": "paypal",
-            "url": "https://paypal.me/filippotessarotto"
-        }
     ]
 }
