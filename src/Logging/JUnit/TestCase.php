@@ -96,7 +96,6 @@ final class TestCase
         $risky  = [];
         foreach ($errors as $index => $error) {
             $attributes = $error->attributes();
-            assert($attributes !== null);
             $attributes = iterator_to_array($attributes);
             $type       = (string) $attributes['type'];
             if (

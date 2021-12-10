@@ -79,8 +79,10 @@ final class WrapperWorker
         );
         touch($this->writeToPathname);
 
-        $phpFinder  = new PhpExecutableFinder();
-        $parameters = [$phpFinder->find(false)];
+        $phpFinder = new PhpExecutableFinder();
+        $phpBin    = $phpFinder->find(false);
+        assert($phpBin !== false);
+        $parameters = [$phpBin];
         $parameters = array_merge($parameters, $phpFinder->findArguments());
 
         if (($passthruPhp = $options->passthruPhp()) !== null) {

@@ -212,6 +212,7 @@ final class Reader implements MetaProviderInterface
         $node = current($node);
 
         if ($node !== false) {
+            assert($node instanceof SimpleXMLElement);
             $this->suites[] = new TestSuite(
                 (string) $node['name'],
                 (int) $node['tests'],

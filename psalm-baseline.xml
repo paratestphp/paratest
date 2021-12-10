@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.13.1@5cf660f63b548ccd4a56f62d916ee4d6028e01a3">
+<files psalm-version="v4.15.0@a1b5e489e6fcebe40cb804793d964e99fc347820">
   <file src="src/Logging/JUnit/Reader.php">
-    <MixedArrayAccess occurrences="9">
-      <code>$node['assertions']</code>
-      <code>$node['errors']</code>
-      <code>$node['failures']</code>
-      <code>$node['file']</code>
-      <code>$node['name']</code>
-      <code>$node['skipped']</code>
-      <code>$node['tests']</code>
-      <code>$node['time']</code>
-      <code>$node['warnings']</code>
-    </MixedArrayAccess>
     <MixedAssignment occurrences="1">
       <code>$node</code>
     </MixedAssignment>
@@ -20,10 +9,6 @@
     <MixedArrayAssignment occurrences="1">
       <code>$case-&gt;{$group}[]</code>
     </MixedArrayAssignment>
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$attributes !== null</code>
-      <code>assert($attributes !== null)</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Parser/Parser.php">
     <DeprecatedClass occurrences="1">
@@ -34,17 +19,6 @@
       <code>self::$alreadyLoadedSources</code>
       <code>self::$alreadyLoadedSources[$srcPath]</code>
     </PropertyTypeCoercion>
-  </file>
-  <file src="src/Runners/PHPUnit/Options.php">
-    <MixedAssignment occurrences="1">
-      <code>$options['path']</code>
-    </MixedAssignment>
-  </file>
-  <file src="src/Runners/PHPUnit/ResultPrinter.php">
-    <RedundantConditionGivenDocblockType occurrences="2">
-      <code>$padding !== false</code>
-      <code>assert($padding !== false)</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Runners/PHPUnit/Runner.php">
     <MixedArgumentTypeCoercion occurrences="1">
@@ -65,10 +39,18 @@
       <code>TestListenerDefaultImplementation</code>
     </DeprecatedTrait>
   </file>
+  <file src="src/Runners/PHPUnit/Worker/RunnerWorker.php">
+    <ReservedWord occurrences="1">
+      <code>$phpFinder-&gt;find(false)</code>
+    </ReservedWord>
+  </file>
   <file src="src/Runners/PHPUnit/Worker/WrapperWorker.php">
     <MixedArgument occurrences="1">
       <code>$parameters</code>
     </MixedArgument>
+    <ReservedWord occurrences="1">
+      <code>$phpFinder-&gt;find(false)</code>
+    </ReservedWord>
   </file>
   <file src="src/Runners/PHPUnit/WorkerCrashedException.php">
     <MixedAssignment occurrences="1">

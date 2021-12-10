@@ -342,7 +342,9 @@ final class Options
         assert($options['repeat'] === null || is_string($options['repeat']));
 
         if ($options['path'] === null) {
-            $options['path'] = $input->getArgument('path');
+            $path = $input->getArgument('path');
+            assert($path === null || is_string($path));
+            $options['path'] = $path;
         }
 
         assert($options['path'] === null || is_string($options['path']));
