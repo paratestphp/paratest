@@ -1,4 +1,4 @@
-all: csfix static-analysis test
+all: csfix static-analysis code-coverage
 	@echo "Done."
 
 vendor: composer.json

@@ -7,8 +7,8 @@
     "timeout": 10,
     "logs": {
         "text": "infections.log",
-        "badge": {
-            "branch": "master"
+        "stryker": {
+            "report": "master"
         }
     },
     "mutators": {
