@@ -5,9 +5,8 @@
         ]
     },
     "timeout": 10,
-    "logger": {
+    "logs": {
         "stryker": {
-            "badge": "master",
             "report": "master"
         }
     },
