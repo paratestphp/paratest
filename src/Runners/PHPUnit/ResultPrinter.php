@@ -9,6 +9,7 @@ use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
 use PHPUnit\Util\Color;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_filter;
@@ -200,10 +201,13 @@ final class ResultPrinter
             $toFilter[] = $this->getSkipped();
         }
 
-        $failures = array_filter($toFilter);
+        $failures        = array_filter($toFilter);
+        $escapedFailures = array_map(static function (string $failure): string {
+            return OutputFormatter::escape($failure);
+        }, $failures);
 
         $this->output->write($this->getHeader());
-        $this->output->write(implode("---\n\n", $failures));
+        $this->output->write(implode("---\n\n", $escapedFailures));
         $this->output->write($this->getFooter());
 
         if ($this->teamcityLogFileHandle === null) {

@@ -147,9 +147,9 @@ final class BaseRunnerTest extends TestBase
 
         // these numbers represent the tests in fixtures/failing_tests
         // so will need to be updated when tests are added or removed
-        static::assertCount(6, $suites);
-        static::assertCount(24, $cases);
-        static::assertCount(6, $failures);
+        static::assertCount(7, $suites);
+        static::assertCount(25, $cases);
+        static::assertCount(7, $failures);
         static::assertCount(2, $warnings);
         static::assertCount(4, $skipped);
         static::assertCount(3, $errors);

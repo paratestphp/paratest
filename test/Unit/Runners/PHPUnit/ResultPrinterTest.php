@@ -466,6 +466,22 @@ final class ResultPrinterTest extends ResultTester
         static::assertStringNotContainsString('UnitTestWithMethodAnnotationsTest', $output);
     }
 
+    public function testColorsParsing(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--colors' => true, '--verbose' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->otherFailureSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->otherFailureSuite);
+        $this->printer->printResults();
+
+        $output = $this->output->fetch();
+        static::assertStringContainsString('FAILURES', $output);
+        static::assertStringContainsString('FailingSymfonyOutputCollisionTest', $output);
+        static::assertStringContainsString('<bg=%s>', $output);
+    }
+
     public function testSkippedOutpusMessagesWithVerbose(): void
     {
         $this->options = $this->createOptionsFromArgv(['--colors' => true, '--verbose' => 1]);

@@ -376,7 +376,7 @@ final class SuiteLoaderTest extends TestBase
         $this->bareOptions['--path'] = $this->fixture('failing_tests');
         $loader                      = $this->loadSuite();
 
-        static::assertCount(24, $loader->getTestMethods());
+        static::assertCount(25, $loader->getTestMethods());
     }
 
     public function testTestMethodsFromErroringDataProviderReturnTheSimpleMethodToBeRunInTheSubprocess(): void
