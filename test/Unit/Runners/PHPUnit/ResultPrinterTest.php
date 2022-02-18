@@ -80,7 +80,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, [], false, false, TMP_DIR);
+            $funcs[] = new TestMethod((string) $i, ['testMe'], false, false, TMP_DIR);
         }
 
         $suite = new Suite('/path', $funcs, false, false, TMP_DIR);
@@ -177,8 +177,8 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new TestMethod('funcOne', [], false, false, TMP_DIR),
-            new TestMethod('funcTwo', [], false, false, TMP_DIR),
+            new TestMethod('funcOne', ['testMe'], false, false, TMP_DIR),
+            new TestMethod('funcTwo', ['testMe'], false, false, TMP_DIR),
         ], false, false, TMP_DIR);
         $this->printer->addTest($suite);
         static::assertSame(2, $this->printer->getTotalCases());

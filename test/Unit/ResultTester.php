@@ -50,7 +50,7 @@ abstract class ResultTester extends TestBase
     {
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
-            $functions[] = new TestMethod((string) $i, [], false, true, TMP_DIR);
+            $functions[] = new TestMethod((string) $i, ['testMe'], false, true, TMP_DIR);
         }
 
         $suite = new Suite('', $functions, false, true, TMP_DIR);
