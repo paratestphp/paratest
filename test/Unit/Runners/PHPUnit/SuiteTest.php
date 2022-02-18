@@ -20,8 +20,8 @@ final class SuiteTest extends TestBase
     public function testConstructor(): void
     {
         $file        = uniqid('pathToFile_');
-        $testMethod1 = new TestMethod($file, [], false, false, TMP_DIR);
-        $testMethod2 = new TestMethod($file, [], false, false, TMP_DIR);
+        $testMethod1 = new TestMethod($file, ['testOne', 'testTwo'], false, false, TMP_DIR);
+        $testMethod2 = new TestMethod($file, ['testThree'], false, false, TMP_DIR);
         $testMethods = [$testMethod1, $testMethod2];
         $suite       = new Suite($file, $testMethods, false, false, TMP_DIR);
 
@@ -30,6 +30,6 @@ final class SuiteTest extends TestBase
         static::assertNotContains('--filter', $commandArguments);
         static::assertContains($file, $commandArguments);
         static::assertSame($testMethods, $suite->getFunctions());
-        static::assertSame(2, $suite->getTestCount());
+        static::assertSame(3, $suite->getTestCount());
     }
 }
