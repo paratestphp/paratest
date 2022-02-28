@@ -82,11 +82,12 @@ To get the most out of paratest, you have to adjust the parameters carefully.
     all method tests (one or all from data provider).
     Max batch size = 1 means that each batch will contain only one test from data provider or one
     method if data provider is not used.
-    Bigger max batch size can significantly increase phpunit command line length so process can failed.
+    Bigger max batch size can significantly increase phpunit command line length so process can fail.
     Decrease max batch size to reduce command line length.
-    Windows has limit around 32k, Linux - 2048k, Mac OS X - 256k.
+    Windows has a limit around 32k, Linux - 2048k, Mac OS X - 256k.
 
 ### Examples
+
 Examples assume your tests are located under `./test/unit`.
 
 ```
@@ -100,7 +101,61 @@ vendor/bin/paratest -p8 test/unit
 vendor/bin/paratest -p4 --runner=WrapperRunner --coverage-html=/tmp/coverage test/unit
 ```
 
+### Initial setup for all tests
+
+Because ParaTest runs multiple processes in parallel, each with their own instance of the PHP interpreter,
+techniques used to perform an initialization step exactly once for each test work different from PHPUnit.
+The following pattern will not work as expected - run the initialization exactly once - and instead run the
+initialization once per process:
+
+```php
+static bool $initialized = false;
+
+public function setUp(): void
+{
+    if (! self::$initialized) {
+         self::initialize();
+         self::$initialized = true;
+    }
+}
+```
+
+You can use the following pattern to ensure your initialization runs exactly once for the entire test invocation:
+
+```php
+/**
+ * Marks that the schema cache was refreshed.
+ *
+ * Static variables persist during the execution of a single process.
+ * In parallel testing each process has a separate instance of this class.
+ *
+ * @var bool
+ */
+static bool $initialized = false;
+
+public function setUp(): void
+{
+    if (! self::$initialized) {
+        // We utilize the filesystem as shared mutable state to coordinate between processes
+        touch('/tmp/test-initialization-lock-file');
+        $lockFile = fopen('/tmp/test-initialization-lock-file', 'r');
+
+        // Attempt to get an exclusive lock - first process wins
+        if (flock($lockFile, LOCK_EX | LOCK_NB)) {
+            // Since we are the single process that has an exclusive lock, we run the initialization
+            self::initialize();
+        } else {
+            // If no exclusive lock is available, block until the first process is done with initialization
+            flock($lockFile, LOCK_SH);
+        }
+
+        self::$initialized = true;
+    }
+}
+```
+
 ### Troubleshooting
+
 If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via `--verbose=1`.
 
 When a sub-process fails, the originating command is given in the output and can then be copy-pasted in the terminal
@@ -153,7 +208,7 @@ An example being:
 
 ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests.
 
-For convenience paratest windows version use 79 columns mode to prevent blank lines in standard
+For convenience, ParaTest for Windows uses 79 columns mode to prevent blank lines in standard
 80x25 windows console.
 
 # PHPUnit Xml Config Support
@@ -196,7 +251,7 @@ if (getenv('TEST_TOKEN') !== false) {  // Using paratest
 
 # For Contributors: Testing paratest itself
 
-**Note that The `display_errors` php.ini directive must be set to `stderr` to run the test suite.**
+**Note that the `display_errors` php.ini directive must be set to `stderr` to run the test suite.**
 
 Before creating a Pull Request be sure to run all the necessary checks with `make` command.
 
