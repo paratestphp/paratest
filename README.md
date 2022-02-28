@@ -109,7 +109,7 @@ The following pattern will not work as expected - run the initialization exactly
 initialization once per process:
 
 ```php
-static bool $initialized = false;
+private static bool $initialized = false;
 
 public function setUp(): void
 {
@@ -120,17 +120,11 @@ public function setUp(): void
 }
 ```
 
+This is because static variables persist during the execution of a single process.
+In parallel testing each process has a separate instance of `$initialized`.
 You can use the following pattern to ensure your initialization runs exactly once for the entire test invocation:
 
 ```php
-/**
- * Marks that the schema cache was refreshed.
- *
- * Static variables persist during the execution of a single process.
- * In parallel testing each process has a separate instance of this class.
- *
- * @var bool
- */
 static bool $initialized = false;
 
 public function setUp(): void
