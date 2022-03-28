@@ -883,7 +883,7 @@ final class Options
         // @codeCoverageIgnoreStart
         } elseif (DIRECTORY_SEPARATOR === '\\') {
             // Windows
-            if (($process = @popen('wmic cpu get NumberOfCores', 'rb')) !== false) {
+            if (($process = @popen('wmic cpu get NumberOfLogicalProcessors', 'rb')) !== false) {
                 fgets($process);
                 $cores = (int) fgets($process);
                 pclose($process);
