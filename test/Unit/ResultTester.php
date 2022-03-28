@@ -16,6 +16,8 @@ abstract class ResultTester extends TestBase
     /** @var Suite */
     protected $failureSuite;
     /** @var Suite */
+    protected $otherFailureSuite;
+    /** @var Suite */
     protected $otherErrorSuite;
     /** @var Suite */
     protected $mixedSuite;
@@ -36,6 +38,7 @@ abstract class ResultTester extends TestBase
         $this->warningSuite      = $this->getSuiteWithResult('single-warning.xml', 1);
         $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);
         $this->failureSuite      = $this->getSuiteWithResult('single-wfailure.xml', 3);
+        $this->otherFailureSuite = $this->getSuiteWithResult('single-wfailure2.xml', 3);
         $this->mixedSuite        = $this->getSuiteWithResult('mixed-results.xml', 7);
         $this->skipped           = $this->getSuiteWithResult('single-skipped.xml', 1);
         $this->passingSuite      = $this->getSuiteWithResult('single-passing.xml', 3);
