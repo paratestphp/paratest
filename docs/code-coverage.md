@@ -11,15 +11,15 @@
 ````
 
 It uses the corresponding 
-[code coverage options on the underlying `phpunit` library](https://phpunit.readthedocs.io/en/7.4/code-coverage-analysis.html). 
+[code coverage options on the underlying `phpunit` library](https://phpunit.readthedocs.io/en/latest/code-coverage-analysis.html). 
 `phpunit` itself relies on "external" help
 to get the coverage information (usually either via `xdebug` or `phpdbg`). Further, it requires
 a correctly set-up `phpunit.xml` configuration file (including a `whitelist` filter).
 
 ## Preparing the `phpunit.xml` configuration file
 The configuration file **must** include a `<filter>` element that specifies a `<whitelist>`, see
-- [Whitelisting Files](https://phpunit.readthedocs.io/en/7.4/code-coverage-analysis.html#whitelisting-files)
-- [Whitelisting Files for Code Coverage](https://phpunit.readthedocs.io/en/7.4/configuration.html#whitelisting-files-for-code-coverage)
+- [Including Files](https://phpunit.readthedocs.io/en/latest/code-coverage-analysis.html#including-files)
+- [Coverage Include Configuration](https://phpunit.readthedocs.io/en/latest/configuration.html#the-include-element)
 
 **CAUTION: Making a mistake here is very often the reason for failing code coverage reports!**
 
