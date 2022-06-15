@@ -45,4 +45,8 @@
     <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
         <severity>0</severity>
     </rule>
+
+    <rule ref="Squiz.Functions.FunctionDeclaration.Found">
+        <severity>0</severity>
+    </rule>
 </ruleset>
