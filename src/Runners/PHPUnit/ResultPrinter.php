@@ -239,7 +239,7 @@ final class ResultPrinter
             $teamcityLogFile = $test->getTeamcityTempFile();
 
             if (filesize($teamcityLogFile) === 0) {
-                throw new EmptyLogFileException("Teamcity format file ${teamcityLogFile} is empty");
+                throw new EmptyLogFileException("Teamcity format file {$teamcityLogFile} is empty");
             }
 
             $result = file_get_contents($teamcityLogFile);
