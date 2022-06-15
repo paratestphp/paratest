@@ -9,16 +9,13 @@ use function array_splice;
 final class ParatestFunction
 {
     /**
-     * @param array<int, string> $arg
+     * @param array<int, string> $argv
      */
-    public static function createScriptForParatest(array &$arg, string $dir): string
+    public static function handleArgvFromPhpstorm(array &$argv): string
     {
-        unset($arg[1]);
-        array_splice($arg, -3);
-        $script = $dir . '/paratest';
-        $arg[]  = '--log-teamcity';
-        $arg[]  = 'php://stdout';
-
-        return $script;
+        unset($argv[1]);
+        array_pop($argv);
+        $argv[]  = '--log-teamcity';
+        $argv[]  = 'php://stdout';
     }
 }

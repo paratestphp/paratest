@@ -4,5 +4,7 @@
 declare(strict_types=1);
 
 use ParaTest\Util\ParatestFunction;
+
 require dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Util' . DIRECTORY_SEPARATOR . 'ParatestFunction.php';
-require ParatestFunction::createScriptForParatest($_SERVER['argv'], __DIR__);
+ParatestFunction::handleArgvFromPhpstorm($_SERVER['argv']);
+require __DIR__ . '/paratest';

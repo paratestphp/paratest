@@ -26,7 +26,7 @@ final class ParatestFunctionTest extends TestCase
         $argv[] = '/home/user/repos/test/phpunit.xml';
         $argv[] = '--teamcity';
 
-        $script     = ParatestFunction::createScriptForParatest($argv, __DIR__);
+        ParatestFunction::handleArgvFromPhpstorm($argv);
         $expected   = [];
         $expected[] = './vendor/brianium/paratest/bin/paratest_for_phpstorm';
         $expected[] = '--runner';
@@ -35,6 +35,5 @@ final class ParatestFunctionTest extends TestCase
         $expected[] = '--log-teamcity';
         $expected[] = 'php://stdout';
         static::assertSame($expected, $argv);
-        static::assertSame(__DIR__ . '/paratest', $script);
     }
 }
