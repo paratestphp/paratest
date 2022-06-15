@@ -41,8 +41,8 @@ final class ParaTestCommandTest extends TestBase
         static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
         static::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
         static::assertSame(
-            'Paratest ' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion(),
-            $application->getVersion()
+            'Paratest <info>' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion() . '</info>',
+            $application->getLongVersion()
         );
     }
 

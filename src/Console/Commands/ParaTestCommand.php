@@ -48,7 +48,8 @@ final class ParaTestCommand extends Command
         $application = new Application();
         $command     = new self($cwd, self::COMMAND_NAME);
 
-        $application->setVersion('Paratest ' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion());
+        $application->setName('Paratest');
+        $application->setVersion(PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion());
         $application->add($command);
         $application->setDefaultCommand((string) $command->getName(), true);
 
