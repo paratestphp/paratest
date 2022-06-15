@@ -38,6 +38,7 @@
         "ext-pcre": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
+        "jean85/pretty-package-versions": "^1.6 || ^2.0",
         "phpunit/php-code-coverage": "^9.2.15",
         "phpunit/php-file-iterator": "^3.0.6",
         "phpunit/php-timer": "^5.0.3",
