@@ -156,12 +156,16 @@ jobs:
   code-coverage:
     name: "Code Coverage"
 
-    runs-on: "ubuntu-latest"
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os:
+          - "ubuntu-latest"
         php-version:
           - "8.1"
+        dependencies:
+          - "highest"
 
     steps:
       - name: "Checkout"
@@ -185,7 +189,8 @@ jobs:
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
 
-      - name: "Install dependencies"
+      - name: "Install highest dependencies"
+        if: ${{ matrix.dependencies == 'highest' }}
         run: "composer update --no-interaction --no-progress"
 
       - name: "Run tests"
