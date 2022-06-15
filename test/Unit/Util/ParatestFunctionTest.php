@@ -16,8 +16,17 @@ final class ParatestFunctionTest extends TestCase
 {
     public function testCreateScriptForParatest(): void
     {
-        self::setArgvParameter();
-        ParatestFunction::createScriptForParatest($_SERVER['argv'], __DIR__);
+        $argv   = [];
+        $argv[] = './vendor/brianium/paratest/bin/paratest_for_phpstorm';
+        $argv[] = '/home/user/repos/test/vendor/phpunit/phpunit/phpunit';
+        $argv[] = '--runner';
+        $argv[] = 'WrapperRunner';
+        $argv[] = '--no-coverage';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $script     = ParatestFunction::createScriptForParatest($argv, __DIR__);
         $expected   = [];
         $expected[] = './vendor/brianium/paratest/bin/paratest_for_phpstorm';
         $expected[] = '--runner';
@@ -25,19 +34,7 @@ final class ParatestFunctionTest extends TestCase
         $expected[] = '--no-coverage';
         $expected[] = '--log-teamcity';
         $expected[] = 'php://stdout';
-        static::assertEquals($expected, $_SERVER['argv']);
-    }
-
-    private function setArgvParameter(): void
-    {
-        unset($_SERVER['argv']);
-        $_SERVER['argv'][] = './vendor/brianium/paratest/bin/paratest_for_phpstorm';
-        $_SERVER['argv'][] = '/home/user/repos/test/vendor/phpunit/phpunit/phpunit';
-        $_SERVER['argv'][] = '--runner';
-        $_SERVER['argv'][] = 'WrapperRunner';
-        $_SERVER['argv'][] = '--no-coverage';
-        $_SERVER['argv'][] = '--configuration';
-        $_SERVER['argv'][] = '/home/user/repos/test/phpunit.xml';
-        $_SERVER['argv'][] = '--teamcity';
+        static::assertSame($expected, $argv);
+        static::assertSame(__DIR__ . '/paratest', $script);
     }
 }

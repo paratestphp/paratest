@@ -27,7 +27,7 @@ To install with composer run the following command:
     
 # Versions
 
-Only the latest version of PHPUnit is supported, and this only the latest version of ParaTest is actively maintained.
+Only the latest version of PHPUnit is supported, and thus only the latest version of ParaTest is actively maintained.
 
 This is because of the following reasons:
 
@@ -251,12 +251,12 @@ Before creating a Pull Request be sure to run all the necessary checks with `mak
 
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).
 
-# PHPStorm integration with paratest
+# PHPStorm integration
 
-To configure Paratest with PhpStorm, go to Run->Edit Configurations... and add a new PHPUnit configuration:
+To configure Paratest with PhpStorm, go to `Run` -> `Edit Configurations...` -> `Add New Configuration` and select PHPUnit:
 
 ![](docs/ParatestConfiguration.png)
 
-The result of running Paratest is this:
+The result of running Paratest against your repository should be the following:
 
 ![](docs/ParatestResult.png)
