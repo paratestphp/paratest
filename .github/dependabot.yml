@@ -11,3 +11,13 @@ updates:
     labels:
       - "dependency-update"
     versioning-strategy: "widen"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      include: "scope"
+      prefix: "github-actions"
+    labels:
+      - "dependency-update"
