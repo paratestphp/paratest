@@ -14,7 +14,8 @@
     "mutators": {
         "@default": true,
         "global-ignoreSourceCodeByRegex": [
-            "assert\\(.+\\);"
+            "assert\\(.+\\);",
+            "mkdir\\(\\$dir, 0777, true\\);"
         ]
     },
     "minMsi": 79,

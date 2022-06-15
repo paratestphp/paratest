@@ -30,16 +30,26 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
 
     final protected function setUp(): void
     {
-        $glob = glob(TMP_DIR . DS . '*');
-        static::assertNotFalse($glob);
-
-        (new Filesystem())->remove($glob);
+        $this->clearTmpDir();
 
         $this->setUpTest();
     }
 
+    final protected function tearDown(): void
+    {
+        $this->clearTmpDir();
+    }
+
     protected function setUpTest(): void
     {
+    }
+
+    private function clearTmpDir(): void
+    {
+        $glob = glob(TMP_DIR . DS . '*');
+        static::assertNotFalse($glob);
+
+        (new Filesystem())->remove($glob);
     }
 
     /**
