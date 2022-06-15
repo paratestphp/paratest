@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Util;
 
-use RuntimeException;
-
-use function count;
+use function array_splice;
 
 final class ParatestFunction
 {
@@ -15,14 +13,9 @@ final class ParatestFunction
      */
     public static function createScriptForParatest(array $arg, string $dir): string
     {
-        if (5 < count($arg)) {
-            throw new RuntimeException('Do not use other options. Only the default ones are handled.');
-        }
-
-        $directory = $arg[0];
-        unset($arg);
+        unset($arg[1]);
+        array_splice($arg, -3);
         $script          = $dir . '/paratest';
-        $arg[]           = $directory;
         $arg[]           = '--log-teamcity';
         $arg[]           = 'php://stdout';
         $_SERVER['argv'] = $arg;

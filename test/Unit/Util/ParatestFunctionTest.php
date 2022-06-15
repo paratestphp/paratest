@@ -16,20 +16,26 @@ final class ParatestFunctionTest extends TestCase
 {
     public function testCreateScriptForParatest(): void
     {
-        self::setDefaultArgvParameter();
+        self::setArgvParameter();
         ParatestFunction::createScriptForParatest($_SERVER['argv'], __DIR__);
         $expected   = [];
         $expected[] = './vendor/brianium/paratest/bin/paratest_for_phpstorm';
+        $expected[] = '--runner';
+        $expected[] = 'WrapperRunner';
+        $expected[] = '--no-coverage';
         $expected[] = '--log-teamcity';
         $expected[] = 'php://stdout';
         static::assertEquals($expected, $_SERVER['argv']);
     }
 
-    private function setDefaultArgvParameter(): void
+    private function setArgvParameter(): void
     {
         unset($_SERVER['argv']);
         $_SERVER['argv'][] = './vendor/brianium/paratest/bin/paratest_for_phpstorm';
         $_SERVER['argv'][] = '/home/user/repos/test/vendor/phpunit/phpunit/phpunit';
+        $_SERVER['argv'][] = '--runner';
+        $_SERVER['argv'][] = 'WrapperRunner';
+        $_SERVER['argv'][] = '--no-coverage';
         $_SERVER['argv'][] = '--configuration';
         $_SERVER['argv'][] = '/home/user/repos/test/phpunit.xml';
         $_SERVER['argv'][] = '--teamcity';
