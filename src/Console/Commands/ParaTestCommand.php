@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Console\Commands;
 
 use InvalidArgumentException;
+use Jean85\PrettyVersions;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
@@ -47,6 +48,8 @@ final class ParaTestCommand extends Command
         $application = new Application();
         $command     = new self($cwd, self::COMMAND_NAME);
 
+        $application->setName('Paratest');
+        $application->setVersion(PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion());
         $application->add($command);
         $application->setDefaultCommand((string) $command->getName(), true);
 

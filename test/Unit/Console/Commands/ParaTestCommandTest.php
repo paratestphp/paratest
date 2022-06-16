@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Console\Commands;
 
 use InvalidArgumentException;
+use Jean85\PrettyVersions;
 use ParaTest\Console\Commands\ParaTestCommand;
 use ParaTest\Tests\TestBase;
 use ParaTest\Tests\Unit\Runners\PHPUnit\EmptyRunnerStub;
@@ -39,6 +40,10 @@ final class ParaTestCommandTest extends TestBase
 
         static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
         static::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
+        static::assertSame(
+            'Paratest <info>' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion() . '</info>',
+            $application->getLongVersion()
+        );
     }
 
     public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
