@@ -13,7 +13,7 @@ jobs:
           days-before-close: 14
           days-before-pr-stale: -1
           days-before-pr-close: -1
-          debug-only: false # set to true for a dry-run
+          debug-only: true # set to true for a dry-run
 
           exempt-issue-labels: "Backlog,In Progress"
           stale-issue-label: "Stale"
