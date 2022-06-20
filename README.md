@@ -250,3 +250,16 @@ if (getenv('TEST_TOKEN') !== false) {  // Using paratest
 Before creating a Pull Request be sure to run all the necessary checks with `make` command.
 
 For an example of ParaTest out in the wild check out the [example](https://github.com/brianium/paratest-selenium).
+
+# Integration with PHPStorm
+
+ParaTest provides a dedicated binary to work with PHPStorm; follow these steps to have ParaTest working within it:
+
+1. Be sure you have PHPUnit already configured in PHPStorm: https://www.jetbrains.com/help/phpstorm/using-phpunit-framework.html#php_test_frameworks_phpunit_integrate
+2. Go to `Run` -> `Edit configurations...`
+3. Select `Add new Configuration`, select the `PHPUnit` type and name it `ParaTest`
+4. In the `Command Line` -> `Interpreter options` add `./vendor/bin/paratest_for_phpstorm`
+5. Any additional ParaTest options you want to pass to ParaTest should go within the `Test runner` -> `Test runner options` section
+
+You should now have a `ParaTest` run within your configurations list.
+It should natively work with the `Rerun failed tests` and `Toggle auto-test` buttons of the `Run` overlay.
