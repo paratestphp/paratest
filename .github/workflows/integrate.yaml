@@ -204,11 +204,16 @@ jobs:
           file: ./coverage/clover.xml
           fail_ci_if_error: true
 
+      - name: "Gather base branch for diff"
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin --no-tags --prune --depth=1 ${{ github.base_ref }} ${{ github.event.pull_request.base.sha }}
+
       - name: "Infection on DIFF"
         if: ${{ github.event_name == 'pull_request' }}
         timeout-minutes: 10
-        run: make code-coverage INFECTION_ARGS="--ansi"
+        run: make code-coverage INFECTION_ARGS="--logger-github"
         env:
+          BASE_BRANCH: origin/${{ github.base_ref }}
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
 
       - name: "Infection on complete code base"

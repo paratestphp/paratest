@@ -14,10 +14,12 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Filesystem\Filesystem;
 
 use function array_keys;
 use function array_shift;
 use function count;
+use function glob;
 use function preg_match;
 use function strstr;
 use function uniqid;
@@ -324,6 +326,8 @@ final class SuiteLoaderTest extends TestBase
 
     public function testParallelSuite(): void
     {
+        (new Filesystem())->remove(glob(FIXTURES . DS . 'parallel_suite' . DS . 'tmp' . DS . '*'));
+
         $this->bareOptions['--configuration']  = $this->fixture('phpunit-parallel-suite.xml');
         $this->bareOptions['--parallel-suite'] = true;
         $this->bareOptions['--processes']      = '2';
