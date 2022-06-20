@@ -6,9 +6,8 @@
     },
     "timeout": 10,
     "logs": {
-        "text": "infections.log",
         "stryker": {
-            "report": "master"
+            "report": "/^\\d+\\.x$/"
         }
     },
     "mutators": {
@@ -17,7 +16,5 @@
             "assert\\(.+\\);",
             "mkdir\\(\\$dir, 0777, true\\);"
         ]
-    },
-    "minMsi": 79,
-    "minCoveredMsi": 80
+    }
 }

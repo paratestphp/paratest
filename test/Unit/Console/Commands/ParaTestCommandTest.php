@@ -27,7 +27,7 @@ final class ParaTestCommandTest extends TestBase
 
     public function setUpTest(): void
     {
-        $application = ParaTestCommand::applicationFactory(TMP_DIR);
+        $application = ParaTestCommand::applicationFactory($this->tmpDir);
         $application->add(new HelpCommand());
 
         $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
@@ -35,7 +35,7 @@ final class ParaTestCommandTest extends TestBase
 
     public function testApplicationFactory(): void
     {
-        $application = ParaTestCommand::applicationFactory(TMP_DIR);
+        $application = ParaTestCommand::applicationFactory($this->tmpDir);
         $commands    = $application->all();
 
         static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
@@ -49,7 +49,7 @@ final class ParaTestCommandTest extends TestBase
     public function testMessagePrintedWhenInvalidConfigFileSupplied(): void
     {
         static::expectException(Exception::class);
-        static::expectExceptionMessage(sprintf('Could not read "%s%snope.xml"', TMP_DIR, DS));
+        static::expectExceptionMessage(sprintf('Could not read "%s%snope.xml"', $this->tmpDir, DS));
 
         $this->commandTester->execute(['--configuration' => 'nope.xml']);
     }

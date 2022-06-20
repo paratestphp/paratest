@@ -24,13 +24,13 @@ final class BaseRunnerTest extends TestBase
 
         $this->bareOptions = [
             '--path' => $this->fixture('failing_tests'),
-            '--coverage-clover' => TMP_DIR . DS . 'coverage.clover',
-            '--coverage-cobertura' => TMP_DIR . DS . 'coverage.cobertura',
-            '--coverage-crap4j' => TMP_DIR . DS . 'coverage.crap4j',
-            '--coverage-html' => TMP_DIR . DS . 'coverage.html',
-            '--coverage-php' => TMP_DIR . DS . 'coverage.php',
+            '--coverage-clover' => $this->tmpDir . DS . 'coverage.clover',
+            '--coverage-cobertura' => $this->tmpDir . DS . 'coverage.cobertura',
+            '--coverage-crap4j' => $this->tmpDir . DS . 'coverage.crap4j',
+            '--coverage-html' => $this->tmpDir . DS . 'coverage.html',
+            '--coverage-php' => $this->tmpDir . DS . 'coverage.php',
             '--coverage-text' => null,
-            '--coverage-xml' => TMP_DIR . DS . 'coverage.xml',
+            '--coverage-xml' => $this->tmpDir . DS . 'coverage.xml',
             '--bootstrap' => BOOTSTRAP,
             '--whitelist' => $this->fixture('failing_tests'),
         ];
@@ -41,7 +41,7 @@ final class BaseRunnerTest extends TestBase
      */
     private function globTempDir(string $pattern): array
     {
-        $glob = glob(TMP_DIR . DS . $pattern);
+        $glob = glob($this->tmpDir . DS . $pattern);
         assert($glob !== false);
 
         return $glob;
@@ -72,7 +72,7 @@ final class BaseRunnerTest extends TestBase
 
     public function testGeneateTextCoverageToFile(): void
     {
-        $file              = TMP_DIR . DS . 'coverage.txt';
+        $file              = $this->tmpDir . DS . 'coverage.txt';
         $this->bareOptions = [
             '--path' => $this->fixture('failing_tests'),
             '--coverage-text' => $file,
@@ -93,7 +93,7 @@ final class BaseRunnerTest extends TestBase
     {
         // Needed for one line coverage on early exit CS Fix :\
         unset($this->bareOptions['--coverage-php']);
-        $this->bareOptions['--log-teamcity'] = TMP_DIR . DS . 'test-output.teamcity';
+        $this->bareOptions['--log-teamcity'] = $this->tmpDir . DS . 'test-output.teamcity';
 
         $countBefore         = count($this->globTempDir('PT_*'));
         $countCoverageBefore = count($this->globTempDir('CV_*'));
@@ -108,23 +108,23 @@ final class BaseRunnerTest extends TestBase
         static::assertSame(
             $countAfter,
             $countBefore,
-            "Test Runner failed to clean up the 'PT_*' file in " . TMP_DIR
+            "Test Runner failed to clean up the 'PT_*' file in " . $this->tmpDir
         );
         static::assertSame(
             $countCoverageAfter,
             $countCoverageBefore,
-            "Test Runner failed to clean up the 'CV_*' file in " . TMP_DIR
+            "Test Runner failed to clean up the 'CV_*' file in " . $this->tmpDir
         );
         static::assertSame(
             $countTeamcityAfter,
             $countTeamcityBefore,
-            "Test Runner failed to clean up the 'TF_*' file in " . TMP_DIR
+            "Test Runner failed to clean up the 'TF_*' file in " . $this->tmpDir
         );
     }
 
     public function testLogJUnitCreatesXmlFile(): void
     {
-        $outputPath = TMP_DIR . DS . 'test-output.xml';
+        $outputPath = $this->tmpDir . DS . 'test-output.xml';
 
         $this->bareOptions['--log-junit'] = $outputPath;
 
@@ -157,7 +157,7 @@ final class BaseRunnerTest extends TestBase
 
     public function testWritesLogWithEmptyNameWhenPathIsNotProvided(): void
     {
-        $outputPath = TMP_DIR . DS . 'test-output.xml';
+        $outputPath = $this->tmpDir . DS . 'test-output.xml';
 
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-passing.xml'),

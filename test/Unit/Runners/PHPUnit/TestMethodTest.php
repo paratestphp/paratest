@@ -19,7 +19,7 @@ final class TestMethodTest extends TestBase
     public function testConstructor(): void
     {
         $file       = uniqid('pathToFile_');
-        $testMethod = new TestMethod($file, ['method1', 'method2'], false, false, TMP_DIR);
+        $testMethod = new TestMethod($file, ['method1', 'method2'], false, false, $this->tmpDir);
 
         $commandArguments = $testMethod->commandArguments(uniqid(), [], null);
 

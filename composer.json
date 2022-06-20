@@ -38,11 +38,11 @@
         "ext-pcre": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
-        "jean85/pretty-package-versions": "^2.0",
+        "jean85/pretty-package-versions": "^2.0.5",
         "phpunit/php-code-coverage": "^9.2.15",
         "phpunit/php-file-iterator": "^3.0.6",
         "phpunit/php-timer": "^5.0.3",
-        "phpunit/phpunit": "^9.5.20",
+        "phpunit/phpunit": "^9.5.21",
         "sebastian/environment": "^5.1.4",
         "symfony/console": "^5.4.9 || ^6.1.1",
         "symfony/process": "^5.4.8 || ^6.1.0"
@@ -52,7 +52,7 @@
         "doctrine/coding-standard": "^9.0.0",
         "infection/infection": "^0.26.11",
         "malukenho/mcbumpface": "^1.1.5",
-        "squizlabs/php_codesniffer": "^3.7.0",
+        "squizlabs/php_codesniffer": "^3.7.1",
         "symfony/filesystem": "^5.4.9 || ^6.1.0",
         "vimeo/psalm": "^4.23.0"
     },

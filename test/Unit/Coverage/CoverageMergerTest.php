@@ -65,8 +65,8 @@ final class CoverageMergerTest extends TestBase
             'Test2'
         );
 
-        $target1   = TMP_DIR . DS . 'coverage1.php';
-        $target2   = TMP_DIR . DS . 'coverage2.php';
+        $target1   = $this->tmpDir . DS . 'coverage1.php';
+        $target2   = $this->tmpDir . DS . 'coverage2.php';
         $phpReport = new PHP();
         $phpReport->process($coverage1, $target1);
         $phpReport->process($coverage2, $target2);
@@ -108,7 +108,7 @@ final class CoverageMergerTest extends TestBase
 
     public function testCoverageFileIsEmpty(): void
     {
-        $filename = TMP_DIR . DS . 'coverage.php';
+        $filename = $this->tmpDir . DS . 'coverage.php';
         touch($filename);
         $coverageMerger = new CoverageMerger(0);
 

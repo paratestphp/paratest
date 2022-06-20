@@ -33,7 +33,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testResultsAreCorrect(): void
     {
         $this->bareOptions['--path']         = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
-        $this->bareOptions['--coverage-php'] = TMP_DIR . DS . uniqid('result_');
+        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--whitelist']    = $this->fixture('passing_tests' . DS . 'GroupsTest.php');
 
         $this->assertTestsPassed($this->runRunner());
@@ -134,7 +134,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testRaiseVerboseExceptionWhenATestCallsErrorsOnListenerWithLogging(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-failing-listener.xml');
-        $this->bareOptions['--log-junit']     = TMP_DIR . DS . uniqid('result_');
+        $this->bareOptions['--log-junit']     = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--processes']     = '1';
 
         $this->expectException(WorkerCrashedException::class);
@@ -148,7 +148,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
     {
         $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
-        $this->bareOptions['--coverage-php'] = TMP_DIR . DS . uniqid('result_');
+        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--whitelist']    = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
@@ -160,7 +160,7 @@ abstract class RunnerTestCase extends TestBase
     final public function testRaiseExceptionWhenATestCallsExitLoudlyWithCoverage(): void
     {
         $this->bareOptions['--path']         = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
-        $this->bareOptions['--coverage-php'] = TMP_DIR . DS . uniqid('result_');
+        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--whitelist']    = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
@@ -377,31 +377,8 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--no-test-tokens'] = true;
         $this->bareOptions['--processes']      = '1';
 
-        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505'));
-        $this->assertTestsPassed($runnerResult);
-    }
-
-    /**
-     * @group github
-     * @coversNothing
-     */
-    final public function testChildProcessPipeOverflow(): void
-    {
-        $this->bareOptions['--processes'] = '1';
-
-        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH431'));
-        $this->assertTestsPassed($runnerResult);
-    }
-
-    /**
-     * @group github
-     * @coversNothing
-     */
-    final public function testTokensArePresentByDefault(): void
-    {
-        $this->bareOptions['--processes'] = '1';
-
-        $runnerResult = $this->runRunner($this->fixture('github' . DS . 'GH505tokens'));
+        $cwd          = $this->fixture('github' . DS . 'GH505');
+        $runnerResult = $this->runRunner($cwd);
         $this->assertTestsPassed($runnerResult);
     }
 
@@ -420,7 +397,7 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testTeamcityLog(): void
     {
-        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
+        $outputPath = $this->tmpDir . DS . 'test-output.teamcity';
 
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-passing.xml'),
@@ -441,7 +418,7 @@ abstract class RunnerTestCase extends TestBase
      */
     final public function testTeamcityLogHandlesFifoFiles(): void
     {
-        $outputPath = TMP_DIR . DS . 'test-output.teamcity';
+        $outputPath = $this->tmpDir . DS . 'test-output.teamcity';
 
         posix_mkfifo($outputPath, 0600);
         $this->bareOptions = [

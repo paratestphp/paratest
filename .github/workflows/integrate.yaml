@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - "master"
+      - "*.x"
 
 jobs:
   composer-json-lint:
@@ -194,24 +194,34 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Run tests"
-        timeout-minutes: 3
-        run: "vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml"
+        timeout-minutes: 5
+        run: "make test"
 
       - name: "Send code coverage report to Codecov.io"
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
+          file: ./coverage/clover.xml
           fail_ci_if_error: true
 
-      - name: "Infection"
+      - name: "Gather base branch for diff"
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin --no-tags --prune --depth=1 ${{ github.base_ref }} ${{ github.event.pull_request.base.sha }}
+
+      - name: "Infection on DIFF"
+        if: ${{ github.event_name == 'pull_request' }}
         timeout-minutes: 10
-        run: "vendor/bin/infection --ansi --threads=$(nproc) --coverage=coverage --skip-initial-tests"
+        run: make code-coverage INFECTION_ARGS="--logger-github"
         env:
+          BASE_BRANCH: origin/${{ github.base_ref }}
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
 
-      - name: "Output infections"
-        run: "cat infections.log"
+      - name: "Infection on complete code base"
+        if: ${{ github.event_name != 'pull_request' }}
+        timeout-minutes: 10
+        run: "vendor/bin/infection --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
+        env:
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
 
   coding-standards:
     name: "Coding Standards"

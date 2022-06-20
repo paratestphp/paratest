@@ -17,7 +17,7 @@ abstract class ParallelBase extends TestCase
     final public function testToken(): void
     {
         $refClass = new ReflectionClass(static::class);
-        $file     = TMP_DIR . DS . 'token_' . str_replace(['\\', '/'], '_', $refClass->getNamespaceName());
+        $file     = __DIR__ . DS . 'tmp' . DS . 'token_' . str_replace(['\\', '/'], '_', $refClass->getNamespaceName());
 
         $token = getenv('TEST_TOKEN');
         static::assertIsString($token);
