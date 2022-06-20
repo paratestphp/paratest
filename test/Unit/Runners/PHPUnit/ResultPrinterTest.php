@@ -58,7 +58,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestShouldAddTest(): void
     {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false, false, TMP_DIR);
+        $suite = new Suite('/path/to/ResultSuite.php', [], false, false, $this->tmpDir);
 
         $this->printer->addTest($suite);
 
@@ -80,10 +80,10 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, ['testMe'], false, false, TMP_DIR);
+            $funcs[] = new TestMethod((string) $i, ['testMe'], false, false, $this->tmpDir);
         }
 
-        $suite = new Suite('/path', $funcs, false, false, TMP_DIR);
+        $suite = new Suite('/path', $funcs, false, false, $this->tmpDir);
         $this->printer->addTest($suite);
         $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
@@ -99,7 +99,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void
     {
-        $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
+        $pathToConfig = $this->tmpDir . DS . 'phpunit-myconfig.xml';
 
         file_put_contents($pathToConfig, '<root />');
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--configuration' => $pathToConfig]));
@@ -115,7 +115,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithRandom(): void
     {
-        $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
+        $pathToConfig = $this->tmpDir . DS . 'phpunit-myconfig.xml';
 
         file_put_contents($pathToConfig, '<root />');
         $random_seed   = 1234;
@@ -137,7 +137,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testStartPrintsOptionInfoWithReverseOrder(): void
     {
-        $pathToConfig = TMP_DIR . DS . 'phpunit-myconfig.xml';
+        $pathToConfig = $this->tmpDir . DS . 'phpunit-myconfig.xml';
 
         file_put_contents($pathToConfig, '<root />');
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
@@ -177,16 +177,16 @@ final class ResultPrinterTest extends ResultTester
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
         $suite = new Suite('/path', [
-            new TestMethod('funcOne', ['testMe'], false, false, TMP_DIR),
-            new TestMethod('funcTwo', ['testMe'], false, false, TMP_DIR),
-        ], false, false, TMP_DIR);
+            new TestMethod('funcOne', ['testMe'], false, false, $this->tmpDir),
+            new TestMethod('funcTwo', ['testMe'], false, false, $this->tmpDir),
+        ], false, false, $this->tmpDir);
         $this->printer->addTest($suite);
         static::assertSame(2, $this->printer->getTotalCases());
     }
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod'], false, false, TMP_DIR);
+        $method = new TestMethod('/path', ['testThisMethod'], false, false, $this->tmpDir);
         $this->printer->addTest($method);
         static::assertSame(1, $this->printer->getTotalCases());
     }
@@ -530,7 +530,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testEmptyLogFileRaiseException(): void
     {
-        $test = new ExecutableTestChild(uniqid(), false, false, TMP_DIR);
+        $test = new ExecutableTestChild(uniqid(), false, false, $this->tmpDir);
 
         $this->expectException(RuntimeException::class);
 
@@ -539,7 +539,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testTeamcityEmptyLogFileRaiseException(): void
     {
-        $teamcityLog = TMP_DIR . DS . 'teamcity.log';
+        $teamcityLog = $this->tmpDir . DS . 'teamcity.log';
 
         $this->options = $this->createOptionsFromArgv(['--log-teamcity' => $teamcityLog]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
@@ -555,7 +555,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testTeamcityFeedback(): void
     {
-        $teamcityLog = TMP_DIR . DS . 'teamcity2.log';
+        $teamcityLog = $this->tmpDir . DS . 'teamcity2.log';
 
         $this->options = $this->createOptionsFromArgv(['--log-teamcity' => $teamcityLog]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);

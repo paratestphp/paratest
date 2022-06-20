@@ -48,7 +48,7 @@ final class CoverageReporterTest extends TestBase
 
     public function testGenerateClover(): void
     {
-        $target = TMP_DIR . DS . 'clover';
+        $target = $this->tmpDir . DS . 'clover';
 
         $this->coverageReporter->clover($target);
 
@@ -60,7 +60,7 @@ final class CoverageReporterTest extends TestBase
 
     public function testGenerateCobertura(): void
     {
-        $target = TMP_DIR . DS . 'cobertura';
+        $target = $this->tmpDir . DS . 'cobertura';
 
         $this->coverageReporter->cobertura($target);
 
@@ -72,7 +72,7 @@ final class CoverageReporterTest extends TestBase
 
     public function testGenerateCrap4j(): void
     {
-        $target = TMP_DIR . DS . 'crap4j';
+        $target = $this->tmpDir . DS . 'crap4j';
 
         $this->coverageReporter->crap4j($target);
 
@@ -87,7 +87,7 @@ final class CoverageReporterTest extends TestBase
 
     public function testGenerateHtml(): void
     {
-        $target = TMP_DIR . DS . 'html';
+        $target = $this->tmpDir . DS . 'html';
 
         $this->coverageReporter->html($target);
 
@@ -97,7 +97,7 @@ final class CoverageReporterTest extends TestBase
 
     public function testGeneratePhp(): void
     {
-        $target = TMP_DIR . DS . 'php';
+        $target = $this->tmpDir . DS . 'php';
 
         $this->coverageReporter->php($target);
 
@@ -192,7 +192,7 @@ final class CoverageReporterTest extends TestBase
 
     public function testGenerateXml(): void
     {
-        $target = TMP_DIR . DS . 'xml';
+        $target = $this->tmpDir . DS . 'xml';
 
         $this->coverageReporter->xml($target);
 

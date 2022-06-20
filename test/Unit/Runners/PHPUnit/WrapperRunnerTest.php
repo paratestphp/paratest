@@ -38,7 +38,7 @@ final class WrapperRunnerTest extends RunnerTestCase
     public function testWrapperRunnerWorksWellWithManyTests(): void
     {
         $this->bareOptions['--path']          = $this->fixture('passing_tests' . DS . 'level1' . DS . 'level2');
-        $this->bareOptions['--configuration'] = $this->bareOptions['--configuration']  = $this->fixture('phpunit-parallel-suite-with-globals.xml');
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-parallel-suite-with-globals.xml');
 
         $this->runRunner();
     }

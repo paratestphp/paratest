@@ -143,17 +143,17 @@ final class OptionsTest extends TestBase
 
     public function testConfigurationShouldReturnXmlIfConfigNotSpecifiedAndFileExistsInCwd(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml', TMP_DIR);
+        $this->assertConfigurationFileFiltered('phpunit.xml', $this->tmpDir);
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigAndXmlNotSpecifiedAndFileExistsInCwd(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml.dist', TMP_DIR);
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', $this->tmpDir);
     }
 
     public function testConfigurationShouldReturnSpecifiedConfigurationIfFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', TMP_DIR, 'phpunit-myconfig.xml');
+        $this->assertConfigurationFileFiltered('phpunit-myconfig.xml', $this->tmpDir, 'phpunit-myconfig.xml');
     }
 
     public function testConfigurationKeyIsNotPresentIfNoConfigGiven(): void
@@ -196,12 +196,12 @@ final class OptionsTest extends TestBase
 
     public function testConfigurationShouldReturnXmlIfConfigSpecifiedAsDirectoryAndFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml', TMP_DIR, TMP_DIR);
+        $this->assertConfigurationFileFiltered('phpunit.xml', $this->tmpDir, $this->tmpDir);
     }
 
     public function testConfigurationShouldReturnXmlDistIfConfigSpecifiedAsDirectoryAndFileExists(): void
     {
-        $this->assertConfigurationFileFiltered('phpunit.xml.dist', TMP_DIR, TMP_DIR);
+        $this->assertConfigurationFileFiltered('phpunit.xml.dist', $this->tmpDir, $this->tmpDir);
     }
 
     private function assertConfigurationFileFiltered(
@@ -209,17 +209,17 @@ final class OptionsTest extends TestBase
         string $path,
         ?string $configurationParameter = null
     ): void {
-        file_put_contents(TMP_DIR . DS . $configFileName, '<?xml version="1.0" encoding="UTF-8"?><phpunit />');
+        file_put_contents($this->tmpDir . DS . $configFileName, '<?xml version="1.0" encoding="UTF-8"?><phpunit />');
         $this->unfiltered['path'] = $path;
         if ($configurationParameter !== null) {
             $this->unfiltered['--configuration'] = $configurationParameter;
         }
 
-        $options       = $this->createOptionsFromArgv($this->unfiltered, TMP_DIR);
+        $options       = $this->createOptionsFromArgv($this->unfiltered, $this->tmpDir);
         $configuration = $options->configuration();
         static::assertNotNull($configuration);
         static::assertEquals(
-            TMP_DIR . DS . $configFileName,
+            $this->tmpDir . DS . $configFileName,
             $configuration->filename()
         );
     }
@@ -258,7 +258,7 @@ final class OptionsTest extends TestBase
         static::assertSame('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
         static::assertEmpty($options->testsuite());
-        static::assertSame(TMP_DIR, $options->tmpDir());
+        static::assertSame($this->tmpDir, $options->tmpDir());
         static::assertSame(Options::VERBOSITY_NORMAL, $options->verbosity());
         static::assertNull($options->whitelist());
         static::assertSame(Options::ORDER_DEFAULT, $options->orderBy());
@@ -299,7 +299,7 @@ final class OptionsTest extends TestBase
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',
-            '--tmp-dir' => ($tmpDir = uniqid(TMP_DIR . DS . 't')),
+            '--tmp-dir' => ($tmpDir = uniqid($this->tmpDir . DS . 't')),
             '--verbose' => 2,
             '--whitelist' => 'WHITELIST',
             '--order-by' => Options::ORDER_RANDOM,

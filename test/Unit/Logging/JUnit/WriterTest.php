@@ -72,7 +72,7 @@ final class WriterTest extends TestBase
 
     public function testWriteToFile(): void
     {
-        $output = TMP_DIR . DS . 'passing.xml';
+        $output = $this->tmpDir . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
         static::assertXmlFileEqualsXmlFile($this->passing, $output);
@@ -85,7 +85,7 @@ final class WriterTest extends TestBase
 
     public function testWriteToFileInNonExistentDir(): void
     {
-        $output = TMP_DIR . DS . 'logs' . DS . 'new' . DS . 'dir' . DS . 'passing.xml';
+        $output = $this->tmpDir . DS . 'logs' . DS . 'new' . DS . 'dir' . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
         static::assertXmlFileEqualsXmlFile($this->passing, $output);

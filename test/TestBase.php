@@ -8,48 +8,37 @@ use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
-use PHPUnit;
 use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Filesystem\Filesystem;
 
 use function file_exists;
-use function glob;
+use function getenv;
+use function putenv;
 use function sprintf;
 
-abstract class TestBase extends PHPUnit\Framework\TestCase
+abstract class TestBase extends TestCase
 {
     /** @var class-string<RunnerInterface> */
     protected $runnerClass = Runner::class;
     /** @var array<string, string|bool|int|null> */
     protected $bareOptions = [];
+    /** @var string */
+    protected $tmpDir;
 
     final protected function setUp(): void
     {
-        $this->clearTmpDir();
+        $this->tmpDir = (new TmpDirCreator())->create();
 
         $this->setUpTest();
     }
 
-    final protected function tearDown(): void
-    {
-        $this->clearTmpDir();
-    }
-
     protected function setUpTest(): void
     {
-    }
-
-    private function clearTmpDir(): void
-    {
-        $glob = glob(TMP_DIR . DS . '*');
-        static::assertNotFalse($glob);
-
-        (new Filesystem())->remove($glob);
     }
 
     /**
@@ -65,7 +54,7 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         }
 
         if (! isset($argv['--tmp-dir'])) {
-            $argv['--tmp-dir'] = TMP_DIR;
+            $argv['--tmp-dir'] = $this->tmpDir;
         }
 
         $input = new ArrayInput($argv, $inputDefinition);
@@ -78,8 +67,26 @@ abstract class TestBase extends PHPUnit\Framework\TestCase
         $output      = new BufferedOutput();
         $runnerClass = $this->runnerClass;
 
-        $runner = new $runnerClass($this->createOptionsFromArgv($this->bareOptions, $cwd), $output);
+        $options                              = $this->createOptionsFromArgv($this->bareOptions, $cwd);
+        $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens();
+        $runner                               = new $runnerClass($options, $output);
+        if ($shouldPutEnvForParatestTestingItSelf) {
+            $prevToken       = getenv(Options::ENV_KEY_TOKEN);
+            $prevUniqueToken = getenv(Options::ENV_KEY_UNIQUE_TOKEN);
+
+            putenv(Options::ENV_KEY_TOKEN);
+            putenv(Options::ENV_KEY_UNIQUE_TOKEN);
+            unset($_SERVER[Options::ENV_KEY_TOKEN]);
+            unset($_SERVER[Options::ENV_KEY_UNIQUE_TOKEN]);
+        }
+
         $runner->run();
+        if ($shouldPutEnvForParatestTestingItSelf) {
+            putenv(Options::ENV_KEY_TOKEN . '=' . $prevToken);
+            putenv(Options::ENV_KEY_UNIQUE_TOKEN . '=' . $prevUniqueToken);
+            $_SERVER[Options::ENV_KEY_TOKEN]        = $prevToken;
+            $_SERVER[Options::ENV_KEY_UNIQUE_TOKEN] = $prevUniqueToken;
+        }
 
         return new RunnerResult($runner->getExitCode(), $output->fetch());
     }
