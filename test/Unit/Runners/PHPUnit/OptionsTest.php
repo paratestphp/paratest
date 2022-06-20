@@ -455,4 +455,15 @@ final class OptionsTest extends TestBase
         static::assertArrayNotHasKey(Options::ENV_KEY_TOKEN, $env);
         static::assertArrayNotHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
     }
+
+    public function testNeedsTeamcityGetsActivatedBothByLogTeamcityAndTeamcityFlags(): void
+    {
+        $options = $this->createOptionsFromArgv(['--teamcity' => true], __DIR__);
+
+        self::assertTrue($options->needsTeamcity());
+
+        $options = $this->createOptionsFromArgv(['--log-teamcity' => 'LOG-TEAMCITY'], __DIR__);
+
+        self::assertTrue($options->needsTeamcity());
+    }
 }

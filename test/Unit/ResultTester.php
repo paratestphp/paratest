@@ -13,6 +13,27 @@ use function file_put_contents;
 
 abstract class ResultTester extends TestBase
 {
+    protected const SINGLE_PASSING_TEAMCITY_OUTPUT = <<<'EOF'
+##teamcity[testCount count='3' flowId='118852']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest' locationHint='php_qn:///repos/paratest/test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php::\ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest' flowId='118852']
+
+##teamcity[testStarted name='testTruth' locationHint='php_qn:///repos/paratest/test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php::\ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest::testTruth' flowId='118852']
+
+##teamcity[testFinished name='testTruth' duration='1' flowId='118852']
+
+##teamcity[testStarted name='testFalsehood' locationHint='php_qn:///repos/paratest/test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php::\ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest::testFalsehood' flowId='118852']
+
+##teamcity[testFinished name='testFalsehood' duration='0' flowId='118852']
+
+##teamcity[testStarted name='testArrayLength' locationHint='php_qn:///repos/paratest/test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php::\ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest::testArrayLength' flowId='118852']
+
+##teamcity[testFinished name='testArrayLength' duration='0' flowId='118852']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest' flowId='118852']
+EOF;
+
+
     /** @var Suite */
     protected $failureSuite;
     /** @var Suite */
@@ -58,7 +79,12 @@ abstract class ResultTester extends TestBase
 
         $suite = new Suite('', $functions, false, true, $this->tmpDir);
         file_put_contents($suite->getTempFile(), (string) file_get_contents(FIXTURES . DS . 'results' . DS . $result));
-        file_put_contents($suite->getTeamcityTempFile(), 'no data');
+        $teamcityData = 'no data';
+        if ($result === 'single-passing.xml') {
+            $teamcityData = self::SINGLE_PASSING_TEAMCITY_OUTPUT;
+        }
+
+        file_put_contents($suite->getTeamcityTempFile(), $teamcityData);
 
         return $suite;
     }
