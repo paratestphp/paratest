@@ -54,5 +54,6 @@ code-coverage: coverage/junit.xml
 		--skip-initial-tests \
 		--coverage=coverage \
 		--show-mutations \
+		--verbose \
 		--min-msi=100 \
 		$(INFECTION_ARGS)

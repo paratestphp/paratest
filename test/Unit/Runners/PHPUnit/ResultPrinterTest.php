@@ -14,7 +14,9 @@ use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function defined;
+use function file_get_contents;
 use function file_put_contents;
+use function preg_match_all;
 use function sprintf;
 use function str_repeat;
 use function uniqid;
@@ -553,7 +555,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->printFeedback($test);
     }
 
-    public function testTeamcityFeedback(): void
+    public function testTeamcityFeedbackOnFile(): void
     {
         $teamcityLog = $this->tmpDir . DS . 'teamcity2.log';
 
@@ -567,6 +569,26 @@ final class ResultPrinterTest extends ResultTester
 
         static::assertStringContainsString('OK', $this->output->fetch());
         static::assertFileExists($teamcityLog);
+
+        $logContent = file_get_contents($teamcityLog);
+
+        self::assertNotFalse($logContent);
+        self::assertSame(9, preg_match_all('/^##teamcity/m', $logContent));
+    }
+
+    public function testTeamcityFeedbackOnStdout(): void
+    {
+        $this->options = $this->createOptionsFromArgv(['--teamcity' => true]);
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
+        $this->printer->addTest($this->passingSuite);
+
+        $this->printer->start();
+        $this->printer->printFeedback($this->passingSuite);
+        $this->printer->printResults();
+
+        $output = $this->output->fetch();
+        static::assertStringContainsString('OK', $output);
+        self::assertSame(9, preg_match_all('/^##teamcity/m', $output));
     }
 
     private function getStartOutput(): string
