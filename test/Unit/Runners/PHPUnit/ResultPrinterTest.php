@@ -43,7 +43,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $this->interpreter = new LogInterpreter();
         $this->output      = new BufferedOutput();
-        $this->options     = $this->createOptionsFromArgv([], __DIR__);
+        $this->options     = $this->createOptionsFromArgv(['--verbose' => true], __DIR__);
         $this->printer     = new ResultPrinter($this->interpreter, $this->output, $this->options);
 
         $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);
@@ -70,11 +70,8 @@ final class ResultPrinterTest extends ResultTester
     public function testStartPrintsOptionInfo(): void
     {
         $contents = $this->getStartOutput();
-        $expected = sprintf(
-            "Running phpunit in %s processes with %s\n\n",
-            PROCESSES_FOR_TESTS,
-            $this->options->phpunit()
-        );
+        $expected = sprintf("Processes:     %s\n", PROCESSES_FOR_TESTS);
+
         static::assertStringStartsWith($expected, $contents);
     }
 
@@ -104,15 +101,13 @@ final class ResultPrinterTest extends ResultTester
         $pathToConfig = $this->tmpDir . DS . 'phpunit-myconfig.xml';
 
         file_put_contents($pathToConfig, '<root />');
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--configuration' => $pathToConfig]));
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
+            '--configuration' => $pathToConfig,
+            '--verbose' => true,
+        ]));
         $contents      = $this->getStartOutput();
-        $expected      = sprintf(
-            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\n",
-            PROCESSES_FOR_TESTS,
-            $this->options->phpunit(),
-            $pathToConfig
-        );
-        static::assertStringStartsWith($expected, $contents);
+        $expected      = sprintf("Configuration: %s\n\n", $pathToConfig);
+        static::assertStringEndsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithRandom(): void
@@ -125,55 +120,34 @@ final class ResultPrinterTest extends ResultTester
             '--configuration' => $pathToConfig,
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => (string) $random_seed,
+            '--verbose' => true,
         ]));
         $contents      = $this->getStartOutput();
-        $expected      = sprintf(
-            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\nRandom order seed %s\n\n",
-            PROCESSES_FOR_TESTS,
-            $this->options->phpunit(),
-            $pathToConfig,
-            $random_seed
-        );
-        static::assertEquals($expected, $contents);
-    }
+        $expected      = sprintf("Random Seed:   %s\n\n", $random_seed);
 
-    public function testStartPrintsOptionInfoWithReverseOrder(): void
-    {
-        $pathToConfig = $this->tmpDir . DS . 'phpunit-myconfig.xml';
-
-        file_put_contents($pathToConfig, '<root />');
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
-            '--configuration' => $pathToConfig,
-            '--order-by' => Options::ORDER_REVERSE,
-        ]));
-        $contents      = $this->getStartOutput();
-        $expected      = sprintf(
-            "Running phpunit in %s processes with %s\n\nConfiguration read from %s\n\nReversed tests order\n\n",
-            PROCESSES_FOR_TESTS,
-            $this->options->phpunit(),
-            $pathToConfig
-        );
-        static::assertEquals($expected, $contents);
+        static::assertStringEndsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithFunctionalMode(): void
     {
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--functional' => true]));
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
+            '--functional' => true,
+            '--verbose' => true,
+        ]));
         $contents      = $this->getStartOutput();
-        $expected      = sprintf(
-            "Running phpunit in %s processes with %s. Functional mode is ON.\n\n",
-            PROCESSES_FOR_TESTS,
-            $this->options->phpunit()
-        );
+        $expected      = sprintf("Processes:     %s. Functional mode is ON.\n", $this->options->processes());
         static::assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
     {
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--processes' => '1']));
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
+            '--processes' => '1',
+            '--verbose' => true,
+        ]));
         $contents      = $this->getStartOutput();
-        $expected      = sprintf("Running phpunit in 1 process with %s\n\n", $this->options->phpunit());
-        static::assertStringStartsWith($expected, $contents);
+
+        static::assertStringStartsWith("Processes:     1\n", $contents);
     }
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void

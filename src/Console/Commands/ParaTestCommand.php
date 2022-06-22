@@ -10,6 +10,7 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
+use PHPUnit\Runner\Version;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -48,7 +49,7 @@ final class ParaTestCommand extends Command
         $application = new Application();
         $command     = new self($cwd, self::COMMAND_NAME);
 
-        $application->setName('Paratest');
+        $application->setName('ParaTest');
         $application->setVersion(PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion());
         $application->add($command);
         $application->setDefaultCommand((string) $command->getName(), true);
@@ -76,6 +77,16 @@ final class ParaTestCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $application = $this->getApplication();
+        assert($application !== null);
+
+        $output->writeln(sprintf(
+            '%s upon %s',
+            $application->getLongVersion(),
+            Version::getVersionString()
+        ));
+        $output->writeln('');
+
         $options = Options::fromConsoleInput($input, $this->cwd);
         if ($options->configuration() === null && $options->path() === null) {
             return $this->displayHelp($output);
