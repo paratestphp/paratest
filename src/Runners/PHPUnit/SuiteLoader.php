@@ -482,7 +482,8 @@ final class SuiteLoader
     private function warmCoverageCache(): void
     {
         if (
-            ! (new Runtime())->canCollectCodeCoverage()
+            ! $this->options->hasCoverage()
+            || ! (new Runtime())->canCollectCodeCoverage()
             || ($configuration = $this->options->configuration()) === null
             || ! $configuration->codeCoverage()->hasCacheDirectory()
         ) {
@@ -506,11 +507,11 @@ final class SuiteLoader
             $filter
         );
 
-        $this->output->writeln('done [' . $timer->stop()->asString() . ']');
+        $this->output->write(sprintf("done [%s]\n\n", $timer->stop()->asString()));
     }
 
     /**
-     * @see PHPUnit\Framework\TestCase::containsOnlyVirtualGroups
+     * @see \PHPUnit\Framework\TestSuite::containsOnlyVirtualGroups
      *
      * @param string[] $groups
      */

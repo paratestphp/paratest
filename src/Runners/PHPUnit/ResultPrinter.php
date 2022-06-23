@@ -167,7 +167,7 @@ final class ResultPrinter
             // @see \PHPUnit\TextUI\TestRunner::writeMessage()
             $output = $this->output;
             $write  = static function (string $type, string $message) use ($output): void {
-                $output->writeln(sprintf('%-15s%s', $type . ':', $message));
+                $output->write(sprintf("%-15s%s\n", $type . ':', $message));
             };
 
             // @see \PHPUnit\TextUI\TestRunner::run()
@@ -202,7 +202,7 @@ final class ResultPrinter
                 $write('Random Seed', (string) $this->options->randomOrderSeed());
             }
 
-            $output->writeln('');
+            $output->write("\n");
         }
 
         $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($this->options);

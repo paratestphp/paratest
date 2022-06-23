@@ -80,12 +80,12 @@ final class ParaTestCommand extends Command
         $application = $this->getApplication();
         assert($application !== null);
 
-        $output->writeln(sprintf(
-            '%s upon %s',
+        $output->write(sprintf(
+            "%s upon %s\n",
             $application->getLongVersion(),
             Version::getVersionString()
         ));
-        $output->writeln('');
+        $output->write("\n");
 
         $options = Options::fromConsoleInput($input, $this->cwd);
         if ($options->configuration() === null && $options->path() === null) {

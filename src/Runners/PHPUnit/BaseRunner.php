@@ -192,7 +192,7 @@ abstract class BaseRunner implements RunnerInterface
             $timer->start();
         };
         $stop   = static function () use ($output, $timer): void {
-            $output->writeln(sprintf('done [%s]', $timer->stop()->asString()));
+            $output->write(sprintf("done [%s]\n", $timer->stop()->asString()));
         };
 
         if (($coverageClover = $this->options->coverageClover()) !== null) {
