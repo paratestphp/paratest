@@ -11,15 +11,19 @@ use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\Unit\ResultTester;
 use RuntimeException;
+use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function defined;
 use function file_get_contents;
 use function file_put_contents;
+use function phpversion;
 use function preg_match_all;
 use function sprintf;
 use function str_repeat;
 use function uniqid;
+
+use const PHP_VERSION;
 
 /**
  * @internal
@@ -73,6 +77,33 @@ final class ResultPrinterTest extends ResultTester
         $expected = sprintf("Processes:     %s\n", PROCESSES_FOR_TESTS);
 
         static::assertStringStartsWith($expected, $contents);
+    }
+
+    public function testStartPrintsRuntimeInfosWithoutCcDriver(): void
+    {
+        if ((new Runtime())->hasPCOV()) {
+            $this->markTestSkipped('PCOV loaded');
+        }
+
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv(['--verbose' => true]));
+        $contents      = $this->getStartOutput();
+
+        static::assertStringContainsString(sprintf("Runtime:       PHP %s\n", PHP_VERSION), $contents);
+    }
+
+    public function testStartPrintsRuntimeInfosWithCcDriver(): void
+    {
+        if (! (new Runtime())->hasPCOV()) {
+            $this->markTestSkipped('PCOV not loaded');
+        }
+
+        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->createOptionsFromArgv([
+            '--verbose' => true,
+            '--coverage-text' => 'php://stdout',
+        ]));
+        $contents      = $this->getStartOutput();
+
+        static::assertStringContainsString(sprintf("Runtime:       PHP %s with PCOV %s\n", PHP_VERSION, phpversion('pcov')), $contents);
     }
 
     public function testStartSetsWidthAndMaxColumn(): void
