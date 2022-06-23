@@ -523,6 +523,7 @@ final class Options
             || $input->hasParameterOption('--verbose=1', true)
             || $input->hasParameterOption('--verbose', true)
             || $input->getParameterOption('--verbose', false, true) === 1
+            || ($configuration !== null && $configuration->phpunit()->verbose())
         ) {
             $verbosity = self::VERBOSITY_VERBOSE;
         }

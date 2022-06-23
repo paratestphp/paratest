@@ -304,7 +304,7 @@ abstract class RunnerTestCase extends TestBase
 
     final protected function assertContainsNSkippedTests(int $n, string $output): void
     {
-        preg_match('/\n\n([\.ISEF].*)\n\nTime/s', $output, $matches);
+        preg_match('/^([\.ISEF].*)\n\nTime/s', $output, $matches);
         static::assertCount(2, $matches);
         $numberOfS = substr_count($matches[1], 'S');
         static::assertEquals(
@@ -453,11 +453,12 @@ abstract class RunnerTestCase extends TestBase
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => '123',
             '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--verbose' => true,
         ];
 
         $runnerResult = $this->runRunner();
 
-        static::assertStringContainsString('Random order seed 123', $runnerResult->getOutput());
+        static::assertStringContainsString('Random Seed:   123', $runnerResult->getOutput());
     }
 
     final public function testRunnerSortNoSeedProvided(): void
@@ -465,11 +466,12 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions = [
             '--order-by' => Options::ORDER_RANDOM,
             '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--verbose' => true,
         ];
 
         $runnerResult = $this->runRunner();
 
-        static::assertStringContainsString('Random order seed ', $runnerResult->getOutput());
+        static::assertStringContainsString('Random Seed:', $runnerResult->getOutput());
     }
 
     final public function testRunnerSortTestEqualBySeed(): void

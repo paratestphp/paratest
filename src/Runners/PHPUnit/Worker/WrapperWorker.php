@@ -94,8 +94,8 @@ final class WrapperWorker
         $parameters[] = $this->writeToPathname;
 
         if ($options->verbosity() >= Options::VERBOSITY_VERY_VERBOSE) {
-            $this->output->writeln(sprintf(
-                'Starting WrapperWorker via: %s',
+            $this->output->write(sprintf(
+                "Starting WrapperWorker via: %s\n",
                 implode(' ', array_map('\escapeshellarg', $parameters))
             ));
         }

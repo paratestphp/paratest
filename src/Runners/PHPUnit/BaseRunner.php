@@ -184,25 +184,45 @@ abstract class BaseRunner implements RunnerInterface
 
         $reporter = new CoverageReporter($codeCoverage, $codeCoverageConfiguration);
 
-        $this->output->write('Generating code coverage report ... ');
+        $output = $this->output;
+        $timer  = new Timer();
+        $start  = static function (string $format) use ($output, $timer): void {
+            $output->write(sprintf("\nGenerating code coverage report in %s format ... ", $format));
 
-        $timer = new Timer();
-        $timer->start();
+            $timer->start();
+        };
+        $stop   = static function () use ($output, $timer): void {
+            $output->write(sprintf("done [%s]\n", $timer->stop()->asString()));
+        };
 
         if (($coverageClover = $this->options->coverageClover()) !== null) {
+            $start('Clover XML');
             $reporter->clover($coverageClover);
+            $stop();
         }
 
         if (($coverageCobertura = $this->options->coverageCobertura()) !== null) {
+            $start('Cobertura XML');
             $reporter->cobertura($coverageCobertura);
+            $stop();
         }
 
         if (($coverageCrap4j = $this->options->coverageCrap4j()) !== null) {
+            $start('Crap4J XML');
             $reporter->crap4j($coverageCrap4j);
+            $stop();
         }
 
         if (($coverageHtml = $this->options->coverageHtml()) !== null) {
+            $start('HTML');
             $reporter->html($coverageHtml);
+            $stop();
+        }
+
+        if (($coveragePhp = $this->options->coveragePhp()) !== null) {
+            $start('PHP');
+            $reporter->php($coveragePhp);
+            $stop();
         }
 
         if (($coverageText = $this->options->coverageText()) !== null) {
@@ -213,17 +233,13 @@ abstract class BaseRunner implements RunnerInterface
             }
         }
 
-        if (($coverageXml = $this->options->coverageXml()) !== null) {
-            $reporter->xml($coverageXml);
+        if (($coverageXml = $this->options->coverageXml()) === null) {
+            return;
         }
 
-        if (($coveragePhp = $this->options->coveragePhp()) !== null) {
-            $reporter->php($coveragePhp);
-        }
-
-        $this->output->writeln(
-            sprintf('done [%s]', $timer->stop()->asString())
-        );
+        $start('PHPUnit XML');
+        $reporter->xml($coverageXml);
+        $stop();
     }
 
     final protected function hasCoverage(): bool

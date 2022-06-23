@@ -8,6 +8,8 @@ use InvalidArgumentException;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\LogInterpreter;
 use PHPUnit\Util\Color;
+use SebastianBergmann\CodeCoverage\Driver\Selector;
+use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,6 +36,8 @@ use function strlen;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
+use const PHP_SAPI;
+use const PHP_VERSION;
 
 /**
  * Used for outputting ParaTest results
@@ -158,29 +162,47 @@ final class ResultPrinter
         $this->maxColumn     = $this->numberOfColumns
                          + (DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
                          - strlen($this->getProgress());
-        $this->output->write(sprintf(
-            "Running phpunit in %d process%s with %s%s\n\n",
-            $this->options->processes(),
-            $this->options->processes() > 1 ? 'es' : '',
-            $this->options->phpunit(),
-            $this->options->functional() ? '. Functional mode is ON.' : ''
-        ));
-        if (($configuration = $this->options->configuration()) !== null) {
-            $this->output->write(sprintf(
-                "Configuration read from %s\n\n",
-                $configuration->filename()
-            ));
-        }
 
-        if ($this->options->orderBy() === Options::ORDER_RANDOM) {
-            $this->output->write(sprintf(
-                "Random order seed %d\n\n",
-                $this->options->randomOrderSeed()
-            ));
-        }
+        if ($this->options->verbosity() >= Options::VERBOSITY_VERBOSE) {
+            // @see \PHPUnit\TextUI\TestRunner::writeMessage()
+            $output = $this->output;
+            $write  = static function (string $type, string $message) use ($output): void {
+                $output->write(sprintf("%-15s%s\n", $type . ':', $message));
+            };
 
-        if ($this->options->orderBy() === Options::ORDER_REVERSE) {
-            $this->output->write("Reversed tests order\n\n");
+            // @see \PHPUnit\TextUI\TestRunner::run()
+            $write('Processes', $this->options->processes() . ($this->options->functional() ? '. Functional mode is ON.' : ''));
+
+            $configuration = $this->options->configuration();
+
+            if (PHP_SAPI === 'phpdbg') {
+                $write('Runtime', 'PHPDBG ' . PHP_VERSION); // @codeCoverageIgnore
+            } else {
+                $runtime = 'PHP ' . PHP_VERSION;
+
+                if ($this->options->hasCoverage()) {
+                    $filter = new Filter();
+                    if ($configuration !== null && $configuration->codeCoverage()->pathCoverage()) {
+                        $codeCoverageDriver = (new Selector())->forLineAndPathCoverage($filter); // @codeCoverageIgnore
+                    } else {
+                        $codeCoverageDriver = (new Selector())->forLineCoverage($filter);
+                    }
+
+                    $runtime .= ' with ' . $codeCoverageDriver->nameAndVersion();
+                }
+
+                $write('Runtime', $runtime);
+            }
+
+            if ($configuration !== null) {
+                $write('Configuration', $configuration->filename());
+            }
+
+            if ($this->options->orderBy() === Options::ORDER_RANDOM) {
+                $write('Random Seed', (string) $this->options->randomOrderSeed());
+            }
+
+            $output->write("\n");
         }
 
         $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($this->options);

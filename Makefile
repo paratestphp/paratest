@@ -32,7 +32,10 @@ coverage/junit.xml: vendor $(SRCS) Makefile
 		--no-coverage \
 		--processes=1 \
 		$(PARATEST_ARGS)
-	php -d zend.assertions=1 bin/paratest \
+	php -d zend.assertions=1 \
+		-d pcov.enabled=1 \
+		bin/paratest \
+		--passthru-php="'-d' 'pcov.enabled=1'" \
 		--coverage-clover=coverage/clover.xml \
 		--coverage-xml=coverage/xml \
 		--coverage-html=coverage/html \
@@ -47,11 +50,14 @@ test: coverage/junit.xml
 .PHONY: code-coverage
 code-coverage: coverage/junit.xml
 	echo "Base branch: $(BASE_BRANCH)"
-	php -d zend.assertions=1 vendor/bin/infection \
+	php -d zend.assertions=1 \
+		-d pcov.enabled=1 \
+		vendor/bin/infection \
 		--threads=$(shell nproc) \
 		--git-diff-lines \
 		--git-diff-base=$(BASE_BRANCH) \
 		--skip-initial-tests \
+		--initial-tests-php-options="'-d' 'pcov.enabled=1'" \
 		--coverage=coverage \
 		--show-mutations \
 		--verbose \

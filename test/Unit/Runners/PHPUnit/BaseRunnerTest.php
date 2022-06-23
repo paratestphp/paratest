@@ -66,8 +66,14 @@ final class BaseRunnerTest extends TestBase
         static::assertFileExists((string) $this->bareOptions['--coverage-php']);
         static::assertFileExists((string) $this->bareOptions['--coverage-xml']);
 
-        static::assertStringContainsString('Code Coverage Report:', $runnerResult->getOutput());
-        static::assertStringContainsString('Generating code coverage', $runnerResult->getOutput());
+        $output = $runnerResult->getOutput();
+        static::assertStringContainsString('Generating code coverage report in Clover XML format ... done', $output);
+        static::assertStringContainsString('Generating code coverage report in Cobertura XML format ... done', $output);
+        static::assertStringContainsString('Generating code coverage report in Crap4J XML format ... done', $output);
+        static::assertStringContainsString('Generating code coverage report in HTML format ... done', $output);
+        static::assertStringContainsString('Generating code coverage report in PHP format ... done', $output);
+        static::assertStringContainsString('Generating code coverage report in PHPUnit XML format ... done', $output);
+        static::assertStringContainsString('Code Coverage Report:', $output);
     }
 
     public function testGeneateTextCoverageToFile(): void

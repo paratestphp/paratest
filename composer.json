@@ -48,9 +48,10 @@
         "symfony/process": "^5.4.8 || ^6.1.0"
     },
     "require-dev": {
+        "ext-pcov": "*",
         "ext-posix": "*",
         "doctrine/coding-standard": "^9.0.0",
-        "infection/infection": "^0.26.11",
+        "infection/infection": "^0.26.12",
         "malukenho/mcbumpface": "^1.1.5",
         "squizlabs/php_codesniffer": "^3.7.1",
         "symfony/filesystem": "^5.4.9 || ^6.1.0",

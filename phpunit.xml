@@ -11,7 +11,7 @@
         beStrictAboutOutputDuringTests="true"
         beStrictAboutTodoAnnotatedTests="true"
 >
-  <coverage processUncoveredFiles="true">
+  <coverage processUncoveredFiles="true" cacheDirectory="coverage/phpunit-cache">
     <include>
       <directory suffix=".php">src</directory>
     </include>

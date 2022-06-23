@@ -41,7 +41,7 @@ final class ParaTestCommandTest extends TestBase
         static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
         static::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
         static::assertSame(
-            'Paratest <info>' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion() . '</info>',
+            'ParaTest <info>' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion() . '</info>',
             $application->getLongVersion()
         );
     }
@@ -85,7 +85,9 @@ final class ParaTestCommandTest extends TestBase
             '--runner' => EmptyRunnerStub::class,
         ]);
 
-        static::assertStringContainsString($directory, $this->commandTester->getDisplay());
+        $display = $this->commandTester->getDisplay();
+        static::assertStringContainsString($directory, $display);
+        static::assertMatchesRegularExpression("/ParaTest .+ upon PHPUnit .+\n\n/", $display);
     }
 
     /**

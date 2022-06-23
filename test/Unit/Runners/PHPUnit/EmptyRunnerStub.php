@@ -24,12 +24,12 @@ final class EmptyRunnerStub implements RunnerInterface
 
     public function run(): void
     {
-        $this->output->writeln('Path: ' . $this->options->path());
-        $this->output->writeln('Configuration: ' . (($conf = $this->options->configuration()) !== null
+        $this->output->write('Path: ' . $this->options->path() . "\n");
+        $this->output->write('Configuration: ' . (($conf = $this->options->configuration()) !== null
             ? $conf->filename()
             : ''
-        ));
-        $this->output->writeln(self::OUTPUT);
+        ) . "\n");
+        $this->output->write(self::OUTPUT . "\n");
     }
 
     public function getExitCode(): int
