@@ -24,7 +24,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           tools: composer-normalize, composer-require-checker
 
@@ -68,7 +68,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
 
       - name: "Get composer cache directory"
@@ -240,7 +240,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           tools: cs2pr
 
@@ -278,7 +278,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           tools: cs2pr
 
