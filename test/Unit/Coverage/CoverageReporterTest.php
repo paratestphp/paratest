@@ -11,7 +11,7 @@ use PHPUnit\Util\Xml;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
-use SebastianBergmann\CodeCoverage\RawCodeCoverageData;
+use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
 
 use function uniqid;
 

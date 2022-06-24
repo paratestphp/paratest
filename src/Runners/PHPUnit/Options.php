@@ -8,10 +8,12 @@ use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
 use InvalidArgumentException;
 use ParaTest\Util\Str;
+use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\DefaultResultPrinter;
 use PHPUnit\TextUI\XmlConfiguration\LoadedFromFileConfiguration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
+use SebastianBergmann\Environment\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -280,7 +282,7 @@ final class Options
         $options = $input->getOptions();
 
         assert($options['bootstrap'] === null || is_string($options['bootstrap']));
-        assert($options['colors'] === false || $options['colors'] === null || is_string($options['colors']));
+        assert($options['colors'] === false || $options['colors'] === null || is_string($options['colors']) || is_string($options['colors']));
         assert($options['configuration'] === null || is_string($options['configuration']));
         assert($options['coverage-clover'] === null || is_string($options['coverage-clover']));
         assert($options['coverage-cobertura'] === null || is_string($options['coverage-cobertura']));

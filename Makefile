@@ -9,7 +9,8 @@ BASE_BRANCH ?= $(LOCAL_BASE_BRANCH)
 
 FIXTURE_RESULT_DIR := test/fixtures/results
 
-all: csfix static-analysis code-coverage
+#all: csfix static-analysis code-coverage
+all: csfix test 
 	@echo "Done."
 
 vendor: composer.json

@@ -10,8 +10,12 @@ use SebastianBergmann\CodeCoverage\Report\Clover;
 use SebastianBergmann\CodeCoverage\Report\Cobertura;
 use SebastianBergmann\CodeCoverage\Report\Crap4j;
 use SebastianBergmann\CodeCoverage\Report\Html;
+use SebastianBergmann\CodeCoverage\Report\Html\Colors;
+use SebastianBergmann\CodeCoverage\Report\Html\CustomCssFile;
+use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use SebastianBergmann\CodeCoverage\Report\Text;
+use SebastianBergmann\CodeCoverage\Report\Thresholds;
 use SebastianBergmann\CodeCoverage\Report\Xml\Facade as XmlReport;
 use SebastianBergmann\CodeCoverage\Version;
 
@@ -63,13 +67,28 @@ final class CoverageReporter
      */
     public function html(string $target): void
     {
-        $html = new Html\Facade();
-        if ($this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml()) {
-            $html = new Html\Facade(
-                $this->codeCoverageConfiguration->html()->lowUpperBound(),
-                $this->codeCoverageConfiguration->html()->highLowerBound(),
-            );
-        }
+        $defaultColors     = Colors::default();
+        $defaultThresholds = Thresholds::default();
+        $customCssFile = CustomCssFile::default();
+        $hasHtml = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml();
+
+        $html = new Html\Facade(
+            ' and ParaTest',
+            Colors::from(
+                $hasHtml ? $this->codeCoverageConfiguration->html()->colorSuccessLow() : $defaultColors->successLow(),
+                $hasHtml ? $this->codeCoverageConfiguration->html()->colorSuccessMedium() : $defaultColors->successMedium(),
+                $hasHtml ? $this->codeCoverageConfiguration->html()->colorSuccessHigh() : $defaultColors->successHigh(),
+                $hasHtml ? $this->codeCoverageConfiguration->html()->colorWarning() : $defaultColors->warning(),
+                $hasHtml ? $this->codeCoverageConfiguration->html()->colorDanger() : $defaultColors->danger(),
+            ),
+            Thresholds::from(
+                $hasHtml ? $this->codeCoverageConfiguration->html()->lowUpperBound() : $defaultThresholds->lowUpperBound(),
+                $hasHtml ? $this->codeCoverageConfiguration->html()->highLowerBound() : $defaultThresholds->highLowerBound(),
+            ),
+            $hasHtml && $this->codeCoverageConfiguration->html()->hasCustomCssFile()
+                ? CustomCssFile::from($this->codeCoverageConfiguration->html()->customCssFile())
+                : $customCssFile
+        );
 
         $html->process($this->coverage, $target);
     }
@@ -92,16 +111,17 @@ final class CoverageReporter
      */
     public function text(bool $colors): string
     {
-        $text = new Text();
-        if ($this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasText()) {
-            $hasHtml = $this->codeCoverageConfiguration->hasHtml();
-            $text    = new Text(
-                $hasHtml ? $this->codeCoverageConfiguration->html()->lowUpperBound() : 50,
-                $hasHtml ? $this->codeCoverageConfiguration->html()->highLowerBound() : 90,
-                $this->codeCoverageConfiguration->text()->showUncoveredFiles(),
-                $this->codeCoverageConfiguration->text()->showOnlySummary(),
-            );
-        }
+        $defaultThresholds = Thresholds::default();
+        $hasText = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasText();
+        $hasHtml = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml();
+        $text    = new Text(
+            Thresholds::from(
+                $hasHtml ? $this->codeCoverageConfiguration->html()->lowUpperBound() : $defaultThresholds->lowUpperBound(),
+                $hasHtml ? $this->codeCoverageConfiguration->html()->highLowerBound() : $defaultThresholds->highLowerBound(),
+            ),
+            $hasText && $this->codeCoverageConfiguration->text()->showUncoveredFiles(),
+            $hasText && $this->codeCoverageConfiguration->text()->showOnlySummary(),
+        );
 
         return $text->process($this->coverage, $colors);
     }

@@ -7,6 +7,8 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
+use PHPUnit\TextUI\Configuration\Configuration;
+use SebastianBergmann\Environment\Console;
 use PHPUnit\TextUI\DefaultResultPrinter;
 use Symfony\Component\Console\Input\InputDefinition;
 

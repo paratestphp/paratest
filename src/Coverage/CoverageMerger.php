@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Coverage;
 
 use SebastianBergmann\CodeCoverage\CodeCoverage;
-use SebastianBergmann\CodeCoverage\ProcessedCodeCoverageData;
+use SebastianBergmann\CodeCoverage\Data\ProcessedCodeCoverageData;
 use SebastianBergmann\Environment\Runtime;
 
 use function array_map;

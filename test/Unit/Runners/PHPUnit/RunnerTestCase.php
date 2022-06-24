@@ -6,8 +6,10 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use ParaTest\Tests\TestBase;
+use PHPUnit\TextUI\Application;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
@@ -64,7 +66,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('OK (0 tests, 0 assertions)', $runnerResult->getOutput());
-        static::assertEquals(TestRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testExitCodesGroupWithoutTests(): void
@@ -74,7 +76,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult                 = $this->runRunner();
 
         static::assertStringContainsString('OK (0 tests, 0 assertions)', $runnerResult->getOutput());
-        static::assertEquals(TestRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testExitCodesSuiteWithoutTests(): void
@@ -84,7 +86,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult                         = $this->runRunner();
 
         static::assertStringContainsString('OK (0 tests, 0 assertions)', $runnerResult->getOutput());
-        static::assertEquals(TestRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testExitCodes(): void
@@ -94,20 +96,20 @@ abstract class RunnerTestCase extends TestBase
 
         static::assertStringContainsString('Tests: 1', $runnerResult->getOutput());
         static::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests' . DS . 'FailureTest.php');
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('Tests: 1', $runnerResult->getOutput());
         static::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests' . DS . 'SuccessTest.php');
         $runnerResult                = $this->runRunner();
 
         static::assertStringContainsString('OK (1 test, 1 assertion)', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::SUCCESS_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['--path'] = $this->fixture('wrapper_runner_exit_code_tests');
         $runnerResult                = $this->runRunner();
@@ -115,7 +117,7 @@ abstract class RunnerTestCase extends TestBase
         static::assertStringContainsString('Tests: 3', $runnerResult->getOutput());
         static::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
         static::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testParallelSuiteOption(): void
@@ -205,7 +207,7 @@ abstract class RunnerTestCase extends TestBase
         $this->bareOptions['--path'] = $this->fixture('passthru_tests' . DS . 'PassthruTest.php');
 
         $runnerResult = $this->runRunner();
-        static::assertSame(BaseRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+        static::assertSame(RunnerInterface::FAILURE_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['--passthru']     = sprintf("'-d' 'highlight.string=%s'", self::PASSTHRU_PHPUNIT_CUSTOM);
         $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
@@ -234,7 +236,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         static::assertStringContainsString('Warnings', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testTestsWithOtherWarningsResultInFailure(): void
@@ -245,7 +247,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         static::assertStringContainsString('Warnings', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testParatestEnvironmentVariable(): void
@@ -263,7 +265,7 @@ abstract class RunnerTestCase extends TestBase
         $runnerResult = $this->runRunner();
 
         static::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::FAILURE_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testSkippedInDefaultMode(): void
@@ -392,7 +394,7 @@ abstract class RunnerTestCase extends TestBase
 
         static::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
         static::assertStringContainsString('Skipped: 2', $runnerResult->getOutput());
-        static::assertEquals(BaseRunner::EXCEPTION_EXIT, $runnerResult->getExitCode());
+        static::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->getExitCode());
     }
 
     final public function testTeamcityLog(): void
