@@ -1,47 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="test/fixtures/tests/" tests="7" skipped="0" assertions="6" failures="2" errors="1" time="0.007625">
-    <testsuite name="UnitTestWithClassAnnotationTest" tests="3" assertions="3" failures="1" errors="0" time="0.006109" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php">
-      <testcase name="testTruth" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="10" assertions="1" time="0.001760"/>
-      <testcase name="testFalsehood" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="18" assertions="1" time="0.001195">
-        <failure type="PHPUnit\Framework\ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
+  <testsuite name="ParaTest\Tests\fixtures\system_out\SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" tests="4" assertions="2" errors="2" warnings="0" failures="1" skipped="0" time="0.001989">
+    <testcase name="testError" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="9" assertions="0" time="0.001426">
+      <error type="Error">ParaTest\Tests\fixtures\system_out\SystemOutTest::testError
+Error: Call to undefined function ParaTest\Tests\fixtures\system_out\foo()
+
+./test/fixtures/system_out/SystemOutTest.php:12</error>
+      <system-out>myError</system-out>
+    </testcase>
+    <testcase name="testFailure" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="15" assertions="1" time="0.000451">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\system_out\SystemOutTest::testFailure
 Failed asserting that true is false.
 
-/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18
-</failure>
-      </testcase>
-      <testcase name="testArrayLength" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="26" assertions="1" time="0.003154"/>
-    </testsuite>
-    <testsuite name="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" tests="1" assertions="0" failures="0" errors="1" time="0.000397">
-      <testcase name="testTruth" class="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" line="10" assertions="0" time="0.000397">
-        <error type="Exception">UnitTestWithErrorTest::testTruth
-Exception: Error!!!
+./test/fixtures/system_out/SystemOutTest.php:18</failure>
+      <system-out>myFailure</system-out>
+    </testcase>
+    <testcase name="testRisky" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="21" assertions="0" time="0.000040">
+      <error type="PHPUnit\Framework\RiskyTestError">ParaTest\Tests\fixtures\system_out\SystemOutTest::testRisky
+This test did not perform any assertions
 
-/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12
-</error>
-      </testcase>
-    </testsuite>
-      <testsuite name="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" tests="1" assertions="0" failures="0" errors="1" time="0.000397">
-          <testcase name="testTruth" class="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" line="10" assertions="0" time="0.000397">
-              <error type="Exception">UnitTestWithErrorTest::testTruth
-Exception: Error!!!
-
-/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12
-</error>
-          <system-out>Custom error log on result test with error!</system-out>
-          </testcase>
-      </testsuite>
-    <testsuite name="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" tests="3" assertions="3" failures="1" errors="0" time="0.001119">
-      <testcase name="testTruth" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="7" assertions="1" time="0.000341"/>
-      <testcase name="testFalsehood" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="16" assertions="1" time="0.000402">
-        <failure type="PHPUnit\Framework\ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
-Failed asserting that true is false.
-
-/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18
-</failure>
-          <system-out>Custom error log on result test with failure!</system-out>
-      </testcase>
-      <testcase name="testArrayLength" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="25" assertions="1" time="0.000376"/>
-    </testsuite>
+./test/fixtures/system_out/SystemOutTest.php:21</error>
+      <system-out>myRisky</system-out>
+    </testcase>
+    <testcase name="testSuccess" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="26" assertions="1" time="0.000072">
+      <system-out>mySuccess</system-out>
+    </testcase>
   </testsuite>
 </testsuites>

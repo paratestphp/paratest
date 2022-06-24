@@ -39,12 +39,9 @@ final class ReaderTest extends TestBase
     {
         $this->mixedPath    = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
         $this->mixed        = new Reader($this->mixedPath);
-        $single             = FIXTURES . DS . 'results' . DS . 'single-wfailure.xml';
-        $this->single       = new Reader($single);
-        $empty              = FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml';
-        $this->empty        = new Reader($empty);
-        $multi_errors       = FIXTURES . DS . 'results' . DS . 'multiple-errors-with-system-out.xml';
-        $this->multi_errors = new Reader($multi_errors);
+        $this->single       = new Reader(FIXTURES . DS . 'results' . DS . 'single-wfailure.xml');
+        $this->empty        = new Reader(FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml');
+        $this->multi_errors = new Reader(FIXTURES . DS . 'results' . DS . 'multiple-errors-with-system-out.xml');
     }
 
     public function testInvalidPathThrowsException(): void
@@ -372,7 +369,7 @@ final class ReaderTest extends TestBase
      *
      * @return stdClass $log
      */
-    public static function extractLog(): stdClass
+    private static function extractLog(): stdClass
     {
         $log          = new stdClass();
         $result       = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';

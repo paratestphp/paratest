@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest" file="/mnt/data/repos-tessarotto/paratest/test/fixtures/github/GH565/IssueTest.php" tests="3" assertions="0" errors="1" warnings="0" failures="0" skipped="2" time="0.001816">
-    <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider" tests="1" assertions="0" errors="0" warnings="0" failures="0" skipped="1" time="0.001326">
-      <testcase name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider" assertions="0" time="0.001326">
-        <skipped/>
-      </testcase>
-    </testsuite>
-    <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider" tests="1" assertions="0" errors="0" warnings="0" failures="0" skipped="1" time="0.000258">
-      <testcase name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider" assertions="0" time="0.000258">
-        <skipped/>
-      </testcase>
-    </testsuite>
-    <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testErrorByDataProvider" tests="1" assertions="0" errors="1" warnings="0" failures="0" skipped="0" time="0.000232">
-      <testcase name="Error" assertions="0" time="0.000232">
-        <error type="PHPUnit\Framework\Error">Error
+  <testsuite name="" tests="3" assertions="0" errors="1" warnings="0" failures="0" skipped="2" time="0.002469">
+    <testsuite name="Github issue" tests="3" assertions="0" errors="1" warnings="0" failures="0" skipped="2" time="0.002469">
+      <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest" file="./test/fixtures/github/GH565/IssueTest.php" tests="3" assertions="0" errors="1" warnings="0" failures="0" skipped="2" time="0.002469">
+        <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider" tests="1" assertions="0" errors="0" warnings="0" failures="0" skipped="1" time="0.001315">
+          <testcase name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider" assertions="0" time="0.001315">
+            <skipped/>
+          </testcase>
+        </testsuite>
+        <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider" tests="1" assertions="0" errors="0" warnings="0" failures="0" skipped="1" time="0.000605">
+          <testcase name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider" assertions="0" time="0.000605">
+            <skipped/>
+          </testcase>
+        </testsuite>
+        <testsuite name="ParaTest\Tests\fixtures\github\GH565\IssueTest::testErrorByDataProvider" tests="1" assertions="0" errors="1" warnings="0" failures="0" skipped="0" time="0.000549">
+          <testcase name="Error" assertions="0" time="0.000549">
+            <error type="PHPUnit\Framework\Error">Error
 The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testErrorByDataProvider is invalid.
 LogicException: baz
-/paratest/test/fixtures/github/GH565/IssueTest.php:48</error>
-      </testcase>
+./test/fixtures/github/GH565/IssueTest.php:48</error>
+          </testcase>
+        </testsuite>
+      </testsuite>
     </testsuite>
   </testsuite>
 </testsuites>

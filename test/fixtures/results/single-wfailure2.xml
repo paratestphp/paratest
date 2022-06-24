@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" tests="3" assertions="3" failures="1" errors="0" time="0.005895">
-    <testcase name="testInvalidLogic" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/FailingSymfonyOutputCollisionTest.php" line="18" assertions="1" time="0.001632">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">FailingSymfonyOutputCollisionTest::testInvalidLogic
-        Failed asserting that two strings are identical.
-        --- Expected
-        +++ Actual
-        @@ @@
-        -'&lt;bg=%s&gt; &lt;/&gt;'
-        +''
+  <testsuite name="ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest" file="./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php" tests="1" assertions="1" errors="0" warnings="0" failures="1" skipped="0" time="0.001619">
+    <testcase name="testInvalidLogic" class="ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest" classname="ParaTest.Tests.fixtures.failing_tests.FailingSymfonyOutputCollisionTest" file="./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php" line="14" assertions="1" time="0.001619">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest::testInvalidLogic
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'&lt;bg=%s&gt; &lt;/&gt;'
++''
 
-        /home/brian/Projects/parallel-phpunit/test/fixtures/tests/FailingSymfonyOutputCollisionTest.php:18
-      </failure>
+./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php:16</failure>
     </testcase>
   </testsuite>
 </testsuites>

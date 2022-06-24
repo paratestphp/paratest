@@ -43,7 +43,7 @@ class UnitTestWithMethodAnnotationsTest extends TestCase
      */
     public function testWarning(): void
     {
-        $this->addWarning(uniqid());
+        $this->addWarning('MyWarning');
     }
 
     /**

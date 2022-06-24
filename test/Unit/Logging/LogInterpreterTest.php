@@ -146,41 +146,6 @@ final class LogInterpreterTest extends ResultTester
         static::assertCount(22, $cases);
     }
 
-    public function testGetCasesExtendEmptyCasesFromSuites(): void
-    {
-        $interpreter        = new LogInterpreter();
-        $dataProviderReader = new Reader($this->dataProviderSuite->getTempFile());
-        $interpreter->addReader($dataProviderReader);
-        $cases = $interpreter->getCases();
-        static::assertCount(10, $cases);
-        foreach ($cases as $name => $case) {
-            if ($case->name === 'testNumericDataProvider5 with data set #3') {
-                static::assertSame($case->class, 'DataProviderTest1');
-            } elseif ($case->name === 'testNamedDataProvider5 with data set #3') {
-                static::assertSame($case->class, 'DataProviderTest2');
-            } else {
-                static::assertSame($case->class, 'DataProviderTest');
-            }
-
-            if ($case->name === 'testNumericDataProvider5 with data set #4') {
-                static::assertSame(
-                    $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest1.php'
-                );
-            } elseif ($case->name === 'testNamedDataProvider5 with data set #4') {
-                static::assertSame(
-                    $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest2.php'
-                );
-            } else {
-                static::assertSame(
-                    $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest.php'
-                );
-            }
-        }
-    }
-
     /**
      * @return TestSuite[]
      */

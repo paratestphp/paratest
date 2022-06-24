@@ -1,36 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-    <testsuite name="test/fixtures/tests/" tests="7" skipped="0" assertions="6" failures="2" errors="1" time="0.007625">
-        <testsuite name="UnitTestWithClassAnnotationTest" tests="3" assertions="3" failures="1" errors="0" time="0.006109" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php">
-            <testcase name="testTruth" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="10" assertions="1" time="0.001760"/>
-            <testcase name="testFalsehood" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="18" assertions="1" time="0.001195">
-                <failure type="PHPUnit\Framework\ExpectationFailedException">UnitTestWithClassAnnotationTest::testFalsehood
-                    Failed asserting that true is false.
+  <testsuite name="./test/fixtures/failing_tests" tests="12" assertions="7" errors="2" warnings="1" failures="2" skipped="2" time="0.003174">
+    <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" tests="4" assertions="4" errors="0" warnings="0" failures="1" skipped="0" time="0.001797">
+      <testcase name="testTruth" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" line="21" assertions="1" time="0.001197"/>
+      <testcase name="testFalsehood" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" line="30" assertions="1" time="0.000426">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest::testFalsehood
+Failed asserting that true is false.
 
-                    /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php:20
-                </failure>
-            </testcase>
-            <testcase name="testArrayLength" class="UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="26" assertions="1" time="0.003154"/>
-        </testsuite>
-        <testsuite name="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" tests="1" assertions="0" failures="0" errors="1" time="0.000397">
-            <testcase name="testTruth" class="UnitTestWithErrorTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php" line="" assertions="0" time="0.000397">
-                <error type="Exception">UnitTestWithErrorTest::testTruth
-                    Exception: Error!!!
-
-                    /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithErrorTest.php:12
-                </error>
-            </testcase>
-        </testsuite>
-        <testsuite name="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" tests="3" assertions="3" failures="1" errors="0" time="0.001119">
-            <testcase name="testTruth" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="7" assertions="1" time="0.000341"/>
-            <testcase name="testFalsehood" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="" assertions="1" time="0.000402">
-                <failure type="PHPUnit\Framework\ExpectationFailedException">UnitTestWithMethodAnnotationsTest::testFalsehood
-                    Failed asserting that true is false.
-
-                    /home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18
-                </failure>
-            </testcase>
-            <testcase name="testArrayLength" class="UnitTestWithMethodAnnotationsTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php" line="25" assertions="1" time="0.000376"/>
-        </testsuite>
+./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32</failure>
+      </testcase>
+      <testcase name="testArrayLength" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" line="38" assertions="1" time="0.000132"/>
+      <testcase name="itsATest" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" line="47" assertions="1" time="0.000041"/>
     </testsuite>
+    <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" tests="8" assertions="3" errors="2" warnings="1" failures="1" skipped="2" time="0.001377">
+      <testcase name="testTruth" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="19" assertions="0" time="0.000310">
+        <error type="RuntimeException">ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testTruth
+RuntimeException: Error!!!
+
+./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21</error>
+      </testcase>
+      <testcase name="isItFalse" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="27" assertions="1" time="0.000043"/>
+      <testcase name="testFalsehood" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="27" assertions="1" time="0.000219">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testFalsehood
+Failed asserting that true is false.
+
+./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29</failure>
+      </testcase>
+      <testcase name="testArrayLength" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="35" assertions="1" time="0.000043"/>
+      <testcase name="testWarning" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="44" assertions="0" time="0.000194">
+        <warning type="PHPUnit\Framework\Warning">ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testWarning
+MyWarning</warning>
+      </testcase>
+      <testcase name="testSkipped" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="52" assertions="0" time="0.000267">
+        <skipped/>
+      </testcase>
+      <testcase name="testIncomplete" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="60" assertions="0" time="0.000262">
+        <skipped/>
+      </testcase>
+      <testcase name="testRisky" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="68" assertions="0" time="0.000039">
+        <error type="PHPUnit\Framework\RiskyTestError">ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testRisky
+This test did not perform any assertions
+
+./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68</error>
+      </testcase>
+    </testsuite>
+  </testsuite>
 </testsuites>

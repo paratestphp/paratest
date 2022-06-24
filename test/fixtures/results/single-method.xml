@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Fixtures\Tests\UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" namespace="Fixtures\Tests" fullPackage="Fixtures.Tests" tests="1" assertions="1" failures="0" errors="0" time="0.004275">
-    <testcase name="testArrayLength" class="Fixtures\Tests\UnitTestWithClassAnnotationTest" file="/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithClassAnnotationTest.php" line="30" assertions="1" time="0.004275"/>
+  <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" tests="1" assertions="1" errors="0" warnings="0" failures="0" skipped="0" time="0.001268">
+    <testcase name="testArrayLength" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" line="38" assertions="1" time="0.001268"/>
   </testsuite>
 </testsuites>
