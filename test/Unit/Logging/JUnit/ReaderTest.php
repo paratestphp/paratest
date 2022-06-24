@@ -41,7 +41,7 @@ final class ReaderTest extends TestBase
         $this->mixed        = new Reader($this->mixedPath);
         $this->single       = new Reader(FIXTURES . DS . 'results' . DS . 'single-wfailure.xml');
         $this->empty        = new Reader(FIXTURES . DS . 'results' . DS . 'empty-test-suite.xml');
-        $this->multi_errors = new Reader(FIXTURES . DS . 'results' . DS . 'multiple-errors-with-system-out.xml');
+        $this->multi_errors = new Reader(FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml');
     }
 
     public function testInvalidPathThrowsException(): void
@@ -72,12 +72,12 @@ final class ReaderTest extends TestBase
     {
         $suites = $this->mixed->getSuites();
         static::assertCount(1, $suites);
-        static::assertSame('test/fixtures/tests/', $suites[0]->name);
+        static::assertSame('./test/fixtures/failing_tests', $suites[0]->name);
         static::assertSame(19, $suites[0]->tests);
         static::assertSame(10, $suites[0]->assertions);
         static::assertSame(3, $suites[0]->failures);
         static::assertSame(3, $suites[0]->errors);
-        static::assertSame(0.001489, $suites[0]->time);
+        static::assertSame(1.234567, $suites[0]->time);
 
         return $suites[0];
     }
@@ -89,16 +89,16 @@ final class ReaderTest extends TestBase
     {
         static::assertCount(3, $suite->suites);
         $first = $suite->suites[0];
-        static::assertSame('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $first->name);
+        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest', $first->name);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
+            './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
         static::assertSame(4, $first->tests);
         static::assertSame(4, $first->assertions);
         static::assertSame(1, $first->failures);
         static::assertSame(0, $first->errors);
-        static::assertSame(0.000357, $first->time);
+        static::assertSame(4.938268, $first->time);
 
         return $first;
     }
@@ -111,14 +111,14 @@ final class ReaderTest extends TestBase
         static::assertCount(4, $suite->cases);
         $first = $suite->cases[0];
         static::assertSame('testTruth', $first->name);
-        static::assertSame('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $first->class);
+        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest', $first->class);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
+            './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
         static::assertSame(21, $first->line);
         static::assertSame(1, $first->assertions);
-        static::assertSame(0.000042, $first->time);
+        static::assertSame(1.234567, $first->time);
     }
 
     public function testMixedSuiteCasesLoadFailures(): void
@@ -129,8 +129,10 @@ final class ReaderTest extends TestBase
         $failure = $case->failures[0];
         static::assertSame(ExpectationFailedException::class, $failure['type']);
         static::assertSame(
-            "Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
+            ."Failed asserting that true is false.\n"
+            ."\n"
+            . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             $failure['text']
         );
     }
@@ -141,10 +143,12 @@ final class ReaderTest extends TestBase
         $case   = $suites[0]->suites[1]->cases[0];
         static::assertCount(1, $case->errors);
         $error = $case->errors[0];
-        static::assertSame('Exception', $error['type']);
+        static::assertSame('RuntimeException', $error['type']);
         static::assertSame(
-            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
+            ."RuntimeException: Error!!!\n"
+            ."\n"
+            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
             $error['text']
         );
     }
@@ -153,16 +157,16 @@ final class ReaderTest extends TestBase
     {
         $suites = $this->single->getSuites();
         static::assertCount(1, $suites);
-        static::assertSame('UnitTestWithMethodAnnotationsTest', $suites[0]->name);
+        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest', $suites[0]->name);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php',
+            './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php',
             $suites[0]->file
         );
         static::assertSame(3, $suites[0]->tests);
         static::assertSame(3, $suites[0]->assertions);
         static::assertSame(1, $suites[0]->failures);
         static::assertSame(0, $suites[0]->errors);
-        static::assertSame(0.005895, $suites[0]->time);
+        static::assertSame(1.234567, $suites[0]->time);
 
         return $suites[0];
     }
@@ -187,14 +191,14 @@ final class ReaderTest extends TestBase
         static::assertCount(3, $suite->cases);
         $first = $suite->cases[0];
         static::assertSame('testTruth', $first->name);
-        static::assertSame('UnitTestWithMethodAnnotationsTest', $first->class);
+        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest', $first->class);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php',
+            './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php',
             $first->file
         );
-        static::assertSame(7, $first->line);
+        static::assertSame(19, $first->line);
         static::assertSame(1, $first->assertions);
-        static::assertSame(0.001632, $first->time);
+        static::assertSame(1.234567, $first->time);
     }
 
     public function testSingleSuiteCasesLoadFailures(): void
@@ -205,8 +209,10 @@ final class ReaderTest extends TestBase
         $failure = $case->failures[0];
         static::assertSame(ExpectationFailedException::class, $failure['type']);
         static::assertSame(
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
             $failure['text']
         );
     }
@@ -234,7 +240,7 @@ final class ReaderTest extends TestBase
         static::assertSame(3, $this->mixed->getTotalFailures());
         static::assertSame(2, $this->mixed->getTotalWarnings());
         static::assertSame(4, $this->mixed->getTotalSkipped());
-        static::assertSame(0.001489, $this->mixed->getTotalTime());
+        static::assertSame(1.234567, $this->mixed->getTotalTime());
     }
 
     public function testSingleGetTotals(): void
@@ -245,7 +251,7 @@ final class ReaderTest extends TestBase
         static::assertSame(1, $this->single->getTotalFailures());
         static::assertSame(0, $this->single->getTotalWarnings());
         static::assertSame(4, $this->mixed->getTotalSkipped());
-        static::assertSame(0.005895, $this->single->getTotalTime());
+        static::assertSame(1.234567, $this->single->getTotalTime());
     }
 
     public function testMixedGetFailureMessages(): void
@@ -253,14 +259,17 @@ final class ReaderTest extends TestBase
         $failures = $this->mixed->getFailures();
         static::assertCount(3, $failures);
         static::assertSame(
-            "Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             $failures[0]
         );
         static::assertSame(
-            "UnitTestWithErrorTest::testFalsehood\nFailed asserting that true is false." .
-                "\n\n/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest." .
-                'php:20',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
             $failures[1]
         );
     }
@@ -270,8 +279,10 @@ final class ReaderTest extends TestBase
         $errors = $this->mixed->getErrors();
         static::assertCount(1, $errors);
         static::assertSame(
-            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
+            ."RuntimeException: Error!!!\n"
+            ."\n"
+            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
             $errors[0]
         );
     }
@@ -281,8 +292,8 @@ final class ReaderTest extends TestBase
         $warnings = $this->mixed->getWarnings();
         static::assertCount(2, $warnings);
         static::assertSame(
-            "UnitTestWithErrorTest::testWarning\n" .
-                'Function 1 deprecated',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testWarning\n" .
+                'MyWarning',
             $warnings[0]
         );
     }
@@ -292,8 +303,10 @@ final class ReaderTest extends TestBase
         $failures = $this->single->getFailures();
         static::assertCount(1, $failures);
         static::assertSame(
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithMethodAnnotationsTest.php:18',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
             $failures[0]
         );
     }
@@ -303,21 +316,14 @@ final class ReaderTest extends TestBase
      */
     public function testGetMultiErrorsMessages(): void
     {
-        $errors = $this->multi_errors->getRisky();
-        static::assertCount(2, $errors);
+        $risky = $this->multi_errors->getRisky();
+        static::assertCount(1, $risky);
         static::assertSame(
             "Risky Test\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
             "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
             'Custom error log on result test with multiple errors!',
-            $errors[0]
-        );
-        static::assertSame(
-            "Risky Test\n" .
-            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
-            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
-            'Custom error log on result test with multiple errors!',
-            $errors[1]
+            $risky[0]
         );
     }
 

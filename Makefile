@@ -142,3 +142,4 @@ regenerate-fixture-results: vendor
 		test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php \
 		> /dev/null || true
 	sed -i 's#$(PWD)#.#g' $(FIXTURE_RESULT_DIR)/*
+	sed -i 's#time="........"#time="1.234567"#g' $(FIXTURE_RESULT_DIR)/*

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest" file="./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php" tests="1" assertions="0" errors="0" warnings="1" failures="0" skipped="0" time="0.001303">
-    <testcase name="testWarning" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithMethodAnnotationsTest" file="./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php" line="44" assertions="0" time="0.001303">
+  <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest" file="./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php" tests="1" assertions="0" errors="0" warnings="1" failures="0" skipped="0" time="1.234567">
+    <testcase name="testWarning" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithMethodAnnotationsTest" file="./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php" line="44" assertions="0" time="1.234567">
       <warning type="PHPUnit\Framework\Warning">ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest::testWarning
 MyWarning</warning>
     </testcase>
