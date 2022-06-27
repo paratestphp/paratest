@@ -319,10 +319,10 @@ final class ReaderTest extends TestBase
         $risky = $this->multi_errors->getRisky();
         static::assertCount(1, $risky);
         static::assertSame(
-            "Risky Test\n" .
-            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:200\n" .
-            "/project/vendor/phpunit/phpunit/src/TextUI/Command.php:159\n" .
-            'Custom error log on result test with multiple errors!',
+            'ParaTest\Tests\fixtures\system_out\SystemOutTest::testRisky' . "\n"
+            . 'This test did not perform any assertions' . "\n"
+            . "\n"
+            . './test/fixtures/system_out/SystemOutTest.php:21myRisky',
             $risky[0]
         );
     }
@@ -333,8 +333,9 @@ final class ReaderTest extends TestBase
         $skipped = $reader->getSkipped();
         static::assertCount(1, $skipped);
         static::assertSame(
-            "UnitTestWithMethodAnnotationsTest::testIncomplete\n\n" .
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:51',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:52',
             $skipped[0]
         );
     }
@@ -368,35 +369,5 @@ final class ReaderTest extends TestBase
         $reader = new Reader($tmp);
         $reader->removeLog();
         static::assertFileDoesNotExist($tmp);
-    }
-
-    /**
-     * Extraction of log from xml file to use in test of validation "SystemOut" result.
-     *
-     * @return stdClass $log
-     */
-    private static function extractLog(): stdClass
-    {
-        $log          = new stdClass();
-        $result       = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
-        $node         = new Reader($result);
-        $log->failure = $node->getSuites()[0]->suites[0]->cases[1]->failures[0]['text'];
-        $log->error   = $node->getSuites()[0]->suites[1]->cases[0]->errors[0]['text'];
-
-        return $log;
-    }
-
-    public function testResultWithSystemOut(): void
-    {
-        $customLog   = "\nCustom error log on result test with ";
-        $result      = FIXTURES . DS . 'results' . DS . 'mixed-results-with-system-out.xml';
-        $failLog     = self::extractLog()->failure . $customLog . 'failure!';
-        $errorLog    = self::extractLog()->error . $customLog . 'error!';
-        $node        = new Reader($result);
-        $resultFail  = $node->getSuites()[0]->suites[2]->cases[1]->failures[0]['text'];
-        $resultError = $node->getSuites()[0]->suites[1]->cases[1]->errors[0]['text'];
-
-        static::assertSame($failLog, $resultFail);
-        static::assertSame($errorLog, $resultError);
     }
 }

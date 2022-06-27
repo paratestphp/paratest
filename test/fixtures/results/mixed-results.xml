@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
+<testsuites>q
   <testsuite name="./test/fixtures/failing_tests" tests="19" assertions="10" errors="3" warnings="2" failures="3" skipped="4" time="1.234567">
     <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" tests="4" assertions="4" errors="0" warnings="0" failures="1" skipped="0" time="1.234567">
       <testcase name="testTruth" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" line="21" assertions="1" time="1.234567"/>

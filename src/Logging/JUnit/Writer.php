@@ -145,6 +145,7 @@ final class Writer
     {
         $caseNode = $this->document->createElement('testcase');
         $vars     = get_object_vars($case);
+
         foreach ($vars as $name => $value) {
             $matchCount = preg_match(static::$caseAttrs, $name);
             assert($matchCount !== false);
@@ -193,7 +194,7 @@ final class Writer
             if ($type === 'skipped') {
                 $defectNode = $this->document->createElement($type);
             } else {
-                $defectNode = $this->document->createElement($type, htmlspecialchars($defect['text'], ENT_XML1) . "\n");
+                $defectNode = $this->document->createElement($type, htmlspecialchars($defect['text'], ENT_XML1));
                 $defectNode->setAttribute('type', $defect['type']);
             }
 

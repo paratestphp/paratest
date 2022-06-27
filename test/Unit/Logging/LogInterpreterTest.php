@@ -59,7 +59,7 @@ final class LogInterpreterTest extends ResultTester
         static::assertSame(3, $this->interpreter->getTotalFailures());
         static::assertSame(2, $this->interpreter->getTotalWarnings());
         static::assertSame(4, $this->interpreter->getTotalSkipped());
-        static::assertSame(0.006784, $this->interpreter->getTotalTime());
+        static::assertSame(2.469134, $this->interpreter->getTotalTime());
     }
 
     public function testIsSuccessfulReturnsFalseIfFailuresPresentAndNoErrors(): void
@@ -91,8 +91,10 @@ final class LogInterpreterTest extends ResultTester
     public function testGetErrorsReturnsArrayOfErrorMessages(): void
     {
         $errors = [
-            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/" .
-            'test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
+            ."RuntimeException: Error!!!\n"
+            ."\n"
+            .'./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
         ];
         static::assertSame($errors, $this->interpreter->getErrors());
     }
@@ -100,8 +102,8 @@ final class LogInterpreterTest extends ResultTester
     public function testGetWarningsReturnsArrayOfErrorMessages(): void
     {
         $errors = [
-            "UnitTestWithErrorTest::testWarning\nFunction 1 deprecated",
-            "UnitTestWithMethodAnnotationsTest::testWarning\nFunction 2 deprecated",
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testWarning\nMyWarning",
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testWarning\nMyWarning",
         ];
         static::assertSame($errors, $this->interpreter->getWarnings());
     }
@@ -109,12 +111,18 @@ final class LogInterpreterTest extends ResultTester
     public function testGetFailuresReturnsArrayOfFailureMessages(): void
     {
         $failures = [
-            "Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/" .
-                'home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
-            "UnitTestWithErrorTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20',
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
+            ."Failed asserting that true is false.\n"
+            ."\n"
+            .'./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
+            ."Failed asserting that true is false.\n"
+            ."\n"
+            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
+            ."Failed asserting that true is false.\n"
+            ."\n"
+            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
         ];
 
         static::assertSame($failures, $this->interpreter->getFailures());
@@ -123,8 +131,14 @@ final class LogInterpreterTest extends ResultTester
     public function testGetRiskyReturnsArrayOfErrorMessages(): void
     {
         $errors = [
-            'Risky Test',
-            'Risky Test',
+            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testRisky'."\n"
+            .'This test did not perform any assertions'."\n"
+            ."\n"
+            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
+            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest::testRisky'."\n"
+            .'This test did not perform any assertions'."\n"
+            ."\n"
+            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
         ];
         static::assertSame($errors, $this->interpreter->getRisky());
     }
@@ -134,8 +148,9 @@ final class LogInterpreterTest extends ResultTester
         $interpreter = new LogInterpreter();
         $interpreter->addReader(new Reader($this->skipped->getTempFile()));
         $skipped = [
-            "UnitTestWithMethodAnnotationsTest::testIncomplete\n\n" .
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:51',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
+            ."\n"
+            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:52',
         ];
         static::assertSame($skipped, $interpreter->getSkipped());
     }
@@ -165,9 +180,9 @@ final class LogInterpreterTest extends ResultTester
     public function testFlattenedSuiteHasCorrectTotals(array $suites): void
     {
         $first = $suites[0];
-        static::assertSame('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $first->name);
+        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest', $first->name);
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
+            './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
         static::assertSame(4, $first->tests);
@@ -176,6 +191,6 @@ final class LogInterpreterTest extends ResultTester
         static::assertSame(0, $first->warnings);
         static::assertSame(0, $first->skipped);
         static::assertSame(0, $first->errors);
-        static::assertSame(0.000357, $first->time);
+        static::assertSame(4.938268, $first->time);
     }
 }
