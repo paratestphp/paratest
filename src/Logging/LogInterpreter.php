@@ -66,7 +66,7 @@ final class LogInterpreter implements MetaProviderInterface
     {
         $cases = [];
         foreach ($this->readers as $reader) {
-            foreach ($reader->getSuites() as $suite) {
+            foreach ($reader->getSuite() as $suite) {
                 $cases = array_merge($cases, $suite->cases);
                 foreach ($suite->suites as $nested) {
                     $this->extendEmptyCasesFromSuites($nested->cases, $suite);

@@ -141,5 +141,9 @@ regenerate-fixture-results: vendor
 		--no-configuration \
 		test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php \
 		> /dev/null || true
+	vendor/bin/phpunit \
+		--log-junit $(FIXTURE_RESULT_DIR)/parallel-suites.xml \
+		--configuration test/fixtures/phpunit-parallel-suite.xml \
+		> /dev/null || true
 	sed -i 's#$(PWD)#.#g' $(FIXTURE_RESULT_DIR)/*
 	sed -i 's#time="........"#time="1.234567"#g' $(FIXTURE_RESULT_DIR)/*

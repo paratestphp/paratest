@@ -70,7 +70,7 @@ final class ReaderTest extends TestBase
 
     public function testMixedSuiteShouldConstructRootSuite(): TestSuite
     {
-        $suites = $this->mixed->getSuites();
+        $suites = $this->mixed->getSuite();
         static::assertCount(1, $suites);
         static::assertSame('./test/fixtures/failing_tests', $suites[0]->name);
         static::assertSame(19, $suites[0]->tests);
@@ -123,7 +123,7 @@ final class ReaderTest extends TestBase
 
     public function testMixedSuiteCasesLoadFailures(): void
     {
-        $suites = $this->mixed->getSuites();
+        $suites = $this->mixed->getSuite();
         $case   = $suites[0]->suites[0]->cases[1];
         static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
@@ -139,7 +139,7 @@ final class ReaderTest extends TestBase
 
     public function testMixedSuiteCasesLoadErrors(): void
     {
-        $suites = $this->mixed->getSuites();
+        $suites = $this->mixed->getSuite();
         $case   = $suites[0]->suites[1]->cases[0];
         static::assertCount(1, $case->errors);
         $error = $case->errors[0];
@@ -155,7 +155,7 @@ final class ReaderTest extends TestBase
 
     public function testSingleSuiteShouldConstructRootSuite(): TestSuite
     {
-        $suites = $this->single->getSuites();
+        $suites = $this->single->getSuite();
         static::assertCount(1, $suites);
         static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest', $suites[0]->name);
         static::assertSame(
@@ -203,7 +203,7 @@ final class ReaderTest extends TestBase
 
     public function testSingleSuiteCasesLoadFailures(): void
     {
-        $suites = $this->single->getSuites();
+        $suites = $this->single->getSuite();
         $case   = $suites[0]->cases[1];
         static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
@@ -219,7 +219,7 @@ final class ReaderTest extends TestBase
 
     public function testEmptySuiteConstructsTestCase(): void
     {
-        $suites = $this->empty->getSuites();
+        $suites = $this->empty->getSuite();
         static::assertCount(1, $suites);
 
         $suite = $suites[0];

@@ -32,6 +32,9 @@ final class TestSuite
     public $warnings;
 
     /** @var int */
+    public $risky;
+
+    /** @var int */
     public $skipped;
 
     /** @var float */
@@ -61,9 +64,12 @@ final class TestSuite
         int $failures,
         int $errors,
         int $warnings,
+        int $risky,
         int $skipped,
         float $time,
-        string $file
+        string $file,
+        array $suites,
+        array $cases,
     ) {
         $this->name       = $name;
         $this->tests      = $tests;
@@ -74,6 +80,9 @@ final class TestSuite
         $this->warnings   = $warnings;
         $this->time       = $time;
         $this->file       = $file;
+        $this->suites     = $suites;
+        $this->cases      = $cases;
+        $this->risky      = $risky;
     }
 
     public static function empty(): self
@@ -86,8 +95,11 @@ final class TestSuite
             0,
             0,
             0,
+            0,
             0.0,
             '',
+            [],
+            [],
         );
     }
 }
