@@ -58,28 +58,17 @@ final class ReaderTest extends TestBase
         $reader = new Reader(FIXTURES . DS . 'results' . DS . 'empty.xml');
     }
 
-    public function testIsSingleSuiteReturnsTrueForSingleSuite(): void
-    {
-        static::assertTrue($this->single->isSingleSuite());
-    }
-
-    public function testIsSingleSuiteReturnsFalseForMultipleSuites(): void
-    {
-        static::assertFalse($this->mixed->isSingleSuite());
-    }
-
     public function testMixedSuiteShouldConstructRootSuite(): TestSuite
     {
-        $suites = $this->mixed->getSuite();
-        static::assertCount(1, $suites);
-        static::assertSame('./test/fixtures/failing_tests', $suites[0]->name);
-        static::assertSame(19, $suites[0]->tests);
-        static::assertSame(10, $suites[0]->assertions);
-        static::assertSame(3, $suites[0]->failures);
-        static::assertSame(3, $suites[0]->errors);
-        static::assertSame(1.234567, $suites[0]->time);
+        $suite = $this->mixed->getSuite();
+        static::assertSame('./test/fixtures/failing_tests', $suite->name);
+        static::assertSame(19, $suite->tests);
+        static::assertSame(10, $suite->assertions);
+        static::assertSame(3, $suite->failures);
+        static::assertSame(3, $suite->errors);
+        static::assertSame(1.234567, $suite->time);
 
-        return $suites[0];
+        return $suite;
     }
 
     /**
@@ -98,7 +87,7 @@ final class ReaderTest extends TestBase
         static::assertSame(4, $first->assertions);
         static::assertSame(1, $first->failures);
         static::assertSame(0, $first->errors);
-        static::assertSame(4.938268, $first->time);
+        static::assertSame(1.234567, $first->time);
 
         return $first;
     }
@@ -123,8 +112,8 @@ final class ReaderTest extends TestBase
 
     public function testMixedSuiteCasesLoadFailures(): void
     {
-        $suites = $this->mixed->getSuite();
-        $case   = $suites[0]->suites[0]->cases[1];
+        $suite = $this->mixed->getSuite();
+        $case   = $suite->suites[0]->cases[1];
         static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
         static::assertSame(ExpectationFailedException::class, $failure['type']);
@@ -139,8 +128,8 @@ final class ReaderTest extends TestBase
 
     public function testMixedSuiteCasesLoadErrors(): void
     {
-        $suites = $this->mixed->getSuite();
-        $case   = $suites[0]->suites[1]->cases[0];
+        $suite = $this->mixed->getSuite();
+        $case   = $suite->suites[1]->cases[0];
         static::assertCount(1, $case->errors);
         $error = $case->errors[0];
         static::assertSame('RuntimeException', $error['type']);
@@ -155,20 +144,19 @@ final class ReaderTest extends TestBase
 
     public function testSingleSuiteShouldConstructRootSuite(): TestSuite
     {
-        $suites = $this->single->getSuite();
-        static::assertCount(1, $suites);
-        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest', $suites[0]->name);
+        $suite = $this->single->getSuite();
+        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest', $suite->name);
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php',
-            $suites[0]->file
+            $suite->file
         );
-        static::assertSame(3, $suites[0]->tests);
-        static::assertSame(3, $suites[0]->assertions);
-        static::assertSame(1, $suites[0]->failures);
-        static::assertSame(0, $suites[0]->errors);
-        static::assertSame(1.234567, $suites[0]->time);
+        static::assertSame(3, $suite->tests);
+        static::assertSame(3, $suite->assertions);
+        static::assertSame(1, $suite->failures);
+        static::assertSame(0, $suite->errors);
+        static::assertSame(1.234567, $suite->time);
 
-        return $suites[0];
+        return $suite;
     }
 
     /**
@@ -203,8 +191,8 @@ final class ReaderTest extends TestBase
 
     public function testSingleSuiteCasesLoadFailures(): void
     {
-        $suites = $this->single->getSuite();
-        $case   = $suites[0]->cases[1];
+        $suite = $this->single->getSuite();
+        $case   = $suite->cases[1];
         static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
         static::assertSame(ExpectationFailedException::class, $failure['type']);
@@ -219,10 +207,7 @@ final class ReaderTest extends TestBase
 
     public function testEmptySuiteConstructsTestCase(): void
     {
-        $suites = $this->empty->getSuite();
-        static::assertCount(1, $suites);
-
-        $suite = $suites[0];
+        $suite = $this->empty->getSuite();
         static::assertSame('', $suite->name);
         static::assertSame('', $suite->file);
         static::assertSame(0, $suite->tests);
@@ -358,7 +343,7 @@ final class ReaderTest extends TestBase
     public function testMixedGetFeedback(): void
     {
         $feedback = $this->mixed->getFeedback();
-        static::assertSame('.F..E.F.WSSR.F.WSSR', implode('', $feedback));
+        static::assertSame('EEEWWFFFRRSSSS.....', implode('', $feedback));
     }
 
     public function testRemoveLog(): void

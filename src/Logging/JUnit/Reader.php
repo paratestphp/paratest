@@ -67,6 +67,9 @@ final class Reader implements MetaProviderInterface
         $risky = array_sum(array_map(static function (TestCase $testCase): int {
             return count($testCase->risky);
         }, $cases));
+        $risky += array_sum(array_map(static function (TestSuite $testSuite): int {
+            return $testSuite->risky;
+        }, $suites));
 
         return new TestSuite(
             (string) $node['name'],
@@ -102,7 +105,7 @@ final class Reader implements MetaProviderInterface
             array_fill(0, $this->suite->risky, 'R'),
             array_fill(0, $this->suite->skipped, 'S'),
             array_fill(0,
-                $this->suite->assertions
+                $this->suite->tests
                 - $this->suite->errors
                 - $this->suite->warnings
                 - $this->suite->failures

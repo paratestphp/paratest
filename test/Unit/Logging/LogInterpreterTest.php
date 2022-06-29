@@ -157,29 +157,18 @@ final class LogInterpreterTest extends ResultTester
 
     public function testGetCasesReturnsAllCases(): void
     {
-        $cases = $this->interpreter->getCases();
-        static::assertCount(22, $cases);
+        $testSuite = $this->interpreter->mergeReaders();
+        static::assertSame(22, $testSuite->tests);
     }
 
-    /**
-     * @return TestSuite[]
-     */
-    public function testFlattenCasesReturnsCorrectNumberOfSuites(): array
+    public function testFlattenedSuiteHasCorrectTotals(): void
     {
-        $suites = $this->interpreter->flattenCases();
-        static::assertCount(4, $suites);
-
-        return $suites;
-    }
-
-    /**
-     * @param TestSuite[] $suites
-     *
-     * @depends testFlattenCasesReturnsCorrectNumberOfSuites
-     */
-    public function testFlattenedSuiteHasCorrectTotals(array $suites): void
-    {
-        $first = $suites[0];
+        $suite = $this->interpreter->mergeReaders();
+        static::assertCount(2, $suite->suites);
+        $mainFirst = $suite->suites[0];
+        static::assertSame('./test/fixtures/failing_tests', $mainFirst->name);
+        static::assertCount(3, $mainFirst->suites);
+        $first = $mainFirst->suites[0];
         static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest', $first->name);
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
@@ -191,6 +180,6 @@ final class LogInterpreterTest extends ResultTester
         static::assertSame(0, $first->warnings);
         static::assertSame(0, $first->skipped);
         static::assertSame(0, $first->errors);
-        static::assertSame(4.938268, $first->time);
+        static::assertSame(1.234567, $first->time);
     }
 }

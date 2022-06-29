@@ -355,7 +355,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->addTest($this->mixedSuite);
         $this->printer->printFeedback($this->mixedSuite);
         $contents = $this->output->fetch();
-        static::assertSame(".F..E.F.WSSR.F.WSSR 19 / 19 (100%)\n", $contents);
+        static::assertSame("EEEWWFFFRRSSSS..... 19 / 19 (100%)\n", $contents);
     }
 
     public function testPrintFeedbackForMoreThan100Suites(): void

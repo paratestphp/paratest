@@ -80,20 +80,6 @@ final class WriterTest extends TestBase
         static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
     }
 
-    public function testThreeNestedTestSuites(): void
-    {
-        $mixed  = FIXTURES . DS . 'results' . DS . 'parallel-suites.xml';
-        $reader = new Reader($mixed);
-        $this->interpreter->addReader($reader);
-        $output = $this->tmpDir . DS . 'phpunit-parallel-suite.xml';
-        $writer = new Writer($this->interpreter, '');
-        $writer->write($output);
-        $xml = (string) file_get_contents($output);
-        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
-
-        static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
-    }
-
     public function testWriteToFile(): void
     {
         $output = $this->tmpDir . DS . 'passing.xml';

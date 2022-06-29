@@ -69,7 +69,7 @@ final class TestSuite
         float $time,
         string $file,
         array $suites,
-        array $cases,
+        array $cases
     ) {
         $this->name       = $name;
         $this->tests      = $tests;

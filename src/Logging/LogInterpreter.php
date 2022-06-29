@@ -57,77 +57,45 @@ final class LogInterpreter implements MetaProviderInterface
     }
 
     /**
-     * Get all test case objects found within
-     * the collection of Reader objects.
-     *
+     * Flattens all cases into their respective suites.
+     */
+    public function mergeReaders(): TestSuite
+    {
+        $suites = [];
+        foreach ($this->readers as $reader) {
+            $suites[] = $reader->getSuite();
+        }
+        if (1 === count($suites)) {
+            return current($suites);
+        }
+
+        $mainSuite = TestSuite::empty();
+        foreach ($suites as $suite) {
+            $mainSuite->tests += $suite->tests;
+            $mainSuite->assertions += $suite->assertions;
+            $mainSuite->failures += $suite->failures;
+            $mainSuite->errors += $suite->errors;
+            $mainSuite->warnings += $suite->warnings;
+            $mainSuite->risky += $suite->risky;
+            $mainSuite->skipped += $suite->skipped;
+            $mainSuite->time += $suite->time;
+        }
+        $mainSuite->suites = array_values($suites);
+            
+        return $mainSuite;
+    }
+
+    /**
      * @return TestCase[]
      */
-    public function getCases(): array
+    private function getCases(TestSuite $testSuite): array
     {
-        $cases = [];
-        foreach ($this->readers as $reader) {
-            foreach ($reader->getSuite() as $suite) {
-                $cases = array_merge($cases, $suite->cases);
-                foreach ($suite->suites as $nested) {
-                    $this->extendEmptyCasesFromSuites($nested->cases, $suite);
-                    $cases = array_merge($cases, $nested->cases);
-                }
-            }
+        $cases = $testSuite->cases;
+        foreach ($testSuite->suites as $suite) {
+            $cases = array_merge($cases, $this->getCases($suite));
         }
 
         return $cases;
-    }
-
-    /**
-     * Fix problem with empty testcase from DataProvider.
-     *
-     * @param TestCase[] $cases
-     */
-    private function extendEmptyCasesFromSuites(array $cases, TestSuite $suite): void
-    {
-        $class = $suite->name;
-        $file  = $suite->file;
-
-        foreach ($cases as $case) {
-            if ($case->class === '') {
-                $case->class = $class;
-            }
-
-            if ($case->file !== '') {
-                continue;
-            }
-
-            $case->file = $file;
-        }
-    }
-
-    /**
-     * Flattens all cases into their respective suites.
-     *
-     * @return TestSuite[] A collection of suites and their cases
-     * @psalm-return list<TestSuite>
-     */
-    public function flattenCases(): array
-    {
-        $dict = [];
-        foreach ($this->getCases() as $case) {
-            if (! isset($dict[$case->file])) {
-                $dict[$case->file] = TestSuite::empty();
-            }
-
-            $dict[$case->file]->name    = $case->class;
-            $dict[$case->file]->file    = $case->file;
-            $dict[$case->file]->cases[] = $case;
-            ++$dict[$case->file]->tests;
-            $dict[$case->file]->assertions += $case->assertions;
-            $dict[$case->file]->failures   += count($case->failures);
-            $dict[$case->file]->errors     += count($case->errors) + count($case->risky);
-            $dict[$case->file]->warnings   += count($case->warnings);
-            $dict[$case->file]->skipped    += count($case->skipped);
-            $dict[$case->file]->time       += $case->time;
-        }
-
-        return array_values($dict);
     }
 
     public function getTotalTests(): int
