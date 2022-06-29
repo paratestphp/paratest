@@ -6,8 +6,6 @@ namespace ParaTest\Tests\fixtures\failing_tests;
 
 use PHPUnit\Framework\TestCase;
 
-use function uniqid;
-
 /**
  * @internal
  */

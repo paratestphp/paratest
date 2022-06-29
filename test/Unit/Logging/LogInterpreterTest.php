@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
-use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Tests\Unit\ResultTester;
 
@@ -92,9 +91,9 @@ final class LogInterpreterTest extends ResultTester
     {
         $errors = [
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
-            ."RuntimeException: Error!!!\n"
-            ."\n"
-            .'./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
+            . "RuntimeException: Error!!!\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
         ];
         static::assertSame($errors, $this->interpreter->getErrors());
     }
@@ -112,17 +111,17 @@ final class LogInterpreterTest extends ResultTester
     {
         $failures = [
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
-            ."Failed asserting that true is false.\n"
-            ."\n"
-            .'./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
-            ."Failed asserting that true is false.\n"
-            ."\n"
-            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
-            ."Failed asserting that true is false.\n"
-            ."\n"
-            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
         ];
 
         static::assertSame($failures, $this->interpreter->getFailures());
@@ -131,14 +130,14 @@ final class LogInterpreterTest extends ResultTester
     public function testGetRiskyReturnsArrayOfErrorMessages(): void
     {
         $errors = [
-            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testRisky'."\n"
-            .'This test did not perform any assertions'."\n"
-            ."\n"
-            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
-            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest::testRisky'."\n"
-            .'This test did not perform any assertions'."\n"
-            ."\n"
-            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
+            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testRisky' . "\n"
+            . 'This test did not perform any assertions' . "\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
+            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest::testRisky' . "\n"
+            . 'This test did not perform any assertions' . "\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
         ];
         static::assertSame($errors, $this->interpreter->getRisky());
     }
@@ -149,8 +148,8 @@ final class LogInterpreterTest extends ResultTester
         $interpreter->addReader(new Reader($this->skipped->getTempFile()));
         $skipped = [
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
-            ."\n"
-            .'./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:52',
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:52',
         ];
         static::assertSame($skipped, $interpreter->getSkipped());
     }

@@ -8,10 +8,12 @@ use InvalidArgumentException;
 use ParaTest\Logging\MetaProviderInterface;
 use SimpleXMLElement;
 
+use function array_fill;
+use function array_map;
 use function array_merge;
+use function array_sum;
 use function assert;
 use function count;
-use function current;
 use function file_exists;
 use function file_get_contents;
 use function filesize;
@@ -40,11 +42,11 @@ final class Reader implements MetaProviderInterface
             );
         }
 
-        $this->logFile = $logFile;
+        $this->logFile   = $logFile;
         $logFileContents = file_get_contents($this->logFile);
         assert($logFileContents !== false);
 
-        $node = new SimpleXMLElement($logFileContents);
+        $node        = new SimpleXMLElement($logFileContents);
         $this->suite = $this->parseTestSuite($node, true);
     }
 
@@ -58,14 +60,16 @@ final class Reader implements MetaProviderInterface
 
         $suites = [];
         foreach ($node->testsuite as $singleTestSuiteXml) {
-            $testSuite = $this->parseTestSuite($singleTestSuiteXml, false);
+            $testSuite                = $this->parseTestSuite($singleTestSuiteXml, false);
             $suites[$testSuite->name] = $testSuite;
         }
+
         $cases = [];
         foreach ($node->testcase as $singleTestCase) {
             $cases[] = TestCase::caseFromNode($singleTestCase);
         }
-        $risky = array_sum(array_map(static function (TestCase $testCase): int {
+
+        $risky  = array_sum(array_map(static function (TestCase $testCase): int {
             return count($testCase->risky);
         }, $cases));
         $risky += array_sum(array_map(static function (TestSuite $testSuite): int {
@@ -105,14 +109,16 @@ final class Reader implements MetaProviderInterface
             array_fill(0, $this->suite->failures, 'F'),
             array_fill(0, $this->suite->risky, 'R'),
             array_fill(0, $this->suite->skipped, 'S'),
-            array_fill(0,
+            array_fill(
+                0,
                 $this->suite->tests
                 - $this->suite->errors
                 - $this->suite->warnings
                 - $this->suite->failures
                 - $this->suite->risky
-                - $this->suite->skipped
-            , '.'),
+                - $this->suite->skipped,
+                '.'
+            ),
         );
     }
 
@@ -162,7 +168,7 @@ final class Reader implements MetaProviderInterface
     public function getErrors(): array
     {
         return $this->getMessagesOfType($this->suite, static function (TestCase $case): array {
-           return $case->errors; 
+            return $case->errors;
         });
     }
 
@@ -206,12 +212,16 @@ final class Reader implements MetaProviderInterface
         });
     }
 
+    /**
+     * @return string[]
+     */
     private function getMessagesOfType(TestSuite $testSuite, callable $callback): array
     {
         $messages = [];
         foreach ($testSuite->suites as $suite) {
             $messages = array_merge($messages, $this->getMessagesOfType($suite, $callback));
         }
+
         foreach ($testSuite->cases as $case) {
             $messages = array_merge($messages, array_map(static function (array $msg): string {
                 return $msg['text'];

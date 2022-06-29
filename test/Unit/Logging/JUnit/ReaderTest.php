@@ -9,7 +9,6 @@ use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Tests\TestBase;
 use PHPUnit\Framework\ExpectationFailedException;
-use stdClass;
 
 use function file_get_contents;
 use function file_put_contents;
@@ -113,14 +112,14 @@ final class ReaderTest extends TestBase
     public function testMixedSuiteCasesLoadFailures(): void
     {
         $suite = $this->mixed->getSuite();
-        $case   = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest']->cases[1];
+        $case  = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest']->cases[1];
         static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
         static::assertSame(ExpectationFailedException::class, $failure['type']);
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
-            ."Failed asserting that true is false.\n"
-            ."\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
             . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             $failure['text']
         );
@@ -129,14 +128,14 @@ final class ReaderTest extends TestBase
     public function testMixedSuiteCasesLoadErrors(): void
     {
         $suite = $this->mixed->getSuite();
-        $case   = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest']->cases[0];
+        $case  = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest']->cases[0];
         static::assertCount(1, $case->errors);
         $error = $case->errors[0];
         static::assertSame('RuntimeException', $error['type']);
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
-            ."RuntimeException: Error!!!\n"
-            ."\n"
+            . "RuntimeException: Error!!!\n"
+            . "\n"
             . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
             $error['text']
         );
@@ -192,7 +191,7 @@ final class ReaderTest extends TestBase
     public function testSingleSuiteCasesLoadFailures(): void
     {
         $suite = $this->single->getSuite();
-        $case   = $suite->cases[1];
+        $case  = $suite->cases[1];
         static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
         static::assertSame(ExpectationFailedException::class, $failure['type']);
@@ -265,8 +264,8 @@ final class ReaderTest extends TestBase
         static::assertCount(1, $errors);
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
-            ."RuntimeException: Error!!!\n"
-            ."\n"
+            . "RuntimeException: Error!!!\n"
+            . "\n"
             . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
             $errors[0]
         );

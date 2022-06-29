@@ -10,8 +10,7 @@ use ParaTest\Logging\JUnit\TestSuite;
 
 use function array_merge;
 use function array_reduce;
-use function array_values;
-use function count;
+use function assert;
 
 /**
  * @internal
@@ -64,34 +63,34 @@ final class LogInterpreter implements MetaProviderInterface
         $mainSuite = null;
         foreach ($this->readers as $reader) {
             $otherSuite = $reader->getSuite();
-            if (null === $mainSuite) {
+            if ($mainSuite === null) {
                 $mainSuite = $otherSuite;
                 continue;
             }
-            
+
             if ($mainSuite->name !== $otherSuite->name) {
-                if ('' !== $mainSuite->name) {
-                    $mainSuite2 = clone $mainSuite;
-                    $mainSuite2->name = '';
-                    $mainSuite2->file = '';
+                if ($mainSuite->name !== '') {
+                    $mainSuite2         = clone $mainSuite;
+                    $mainSuite2->name   = '';
+                    $mainSuite2->file   = '';
                     $mainSuite2->suites = [$mainSuite->name => $mainSuite];
-                    $mainSuite2->cases = [];
-                    $mainSuite = $mainSuite2;
+                    $mainSuite2->cases  = [];
+                    $mainSuite          = $mainSuite2;
                 }
 
-                if ('' !== $otherSuite) {
-                    $otherSuite2 = clone $otherSuite;
-                    $otherSuite2->name = '';
-                    $otherSuite2->file = '';
+                if ($otherSuite !== '') {
+                    $otherSuite2         = clone $otherSuite;
+                    $otherSuite2->name   = '';
+                    $otherSuite2->file   = '';
                     $otherSuite2->suites = [$otherSuite->name => $otherSuite];
-                    $otherSuite2->cases = [];
-                    $otherSuite = $otherSuite2;
+                    $otherSuite2->cases  = [];
+                    $otherSuite          = $otherSuite2;
                 }
             }
-            
+
             $this->mergeSuites($mainSuite, $otherSuite);
         }
-        
+
         return $mainSuite;
     }
 
@@ -111,19 +110,19 @@ final class LogInterpreter implements MetaProviderInterface
             );
         }
 
-        $suite1->tests += $suite2->tests;
+        $suite1->tests      += $suite2->tests;
         $suite1->assertions += $suite2->assertions;
-        $suite1->failures += $suite2->failures;
-        $suite1->errors += $suite2->errors;
-        $suite1->warnings += $suite2->warnings;
-        $suite1->risky += $suite2->risky;
-        $suite1->skipped += $suite2->skipped;
-        $suite1->time += $suite2->time;
-        $suite1->cases = array_merge(
+        $suite1->failures   += $suite2->failures;
+        $suite1->errors     += $suite2->errors;
+        $suite1->warnings   += $suite2->warnings;
+        $suite1->risky      += $suite2->risky;
+        $suite1->skipped    += $suite2->skipped;
+        $suite1->time       += $suite2->time;
+        $suite1->cases       = array_merge(
             $suite1->cases,
             $suite2->cases
         );
-        
+
         return $suite1;
     }
 

@@ -12,14 +12,16 @@ use ParaTest\Tests\fixtures\parallel_suite\ParallelBase;
 final class OneTest extends ParallelBase
 {
     /**
-     * @param int $var
      * @dataProvider provideDatas
      */
-    public function testWithProvider($var)
+    public function testWithProvider(int $var): void
     {
         self::assertGreaterThan(0, $var);
     }
 
+    /**
+     * @return array<string|int, non-empty-list<int>>
+     */
     public function provideDatas(): array
     {
         return [

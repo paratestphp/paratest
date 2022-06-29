@@ -11,6 +11,8 @@ use ParaTest\Tests\TestBase;
 
 use function file_exists;
 use function file_get_contents;
+use function preg_replace;
+use function str_replace;
 use function unlink;
 
 /**
@@ -49,7 +51,7 @@ final class WriterTest extends TestBase
         $xml = $this->writer->getXml();
         $xml = str_replace('3.703701', '1.234567', $xml);
 
-        static::assertXmlStringEqualsXmlString((string)file_get_contents($this->passing), $xml);
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
     }
 
     public function testMixedFileLog(): void
@@ -154,9 +156,9 @@ final class WriterTest extends TestBase
         $writer->write($output);
         $xml = (string) file_get_contents($output);
         $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
-        
+
         $expectedResult = FIXTURES . DS . 'results' . DS . 'parallel' . DS . 'combined.xml';
-        
+
         static::assertXmlStringEqualsXmlString((string) file_get_contents($expectedResult), $xml);
     }
 }

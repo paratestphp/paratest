@@ -9,16 +9,11 @@ use DOMElement;
 use ParaTest\Logging\LogInterpreter;
 
 use function assert;
-use function count;
 use function dirname;
 use function file_put_contents;
-use function get_object_vars;
 use function htmlspecialchars;
 use function is_dir;
-use function is_float;
-use function is_scalar;
 use function mkdir;
-use function preg_match;
 use function sprintf;
 use function str_replace;
 
@@ -66,9 +61,10 @@ final class Writer
     public function getXml(): string
     {
         $mainSuite = $this->interpreter->mergeReaders();
-        if ('' === $mainSuite->name) {
+        if ($mainSuite->name === '') {
             $mainSuite->name = $this->name;
         }
+
         $xmlTestsuites = $this->document->createElement('testsuites');
         $xmlTestsuites->appendChild($this->createSuiteNode($mainSuite));
         $this->document->appendChild($xmlTestsuites);
@@ -100,9 +96,10 @@ final class Writer
     {
         $suiteNode = $this->document->createElement('testsuite');
         $suiteNode->setAttribute('name', $parentSuite->name);
-        if ('' !== $parentSuite->file) {
+        if ($parentSuite->file !== '') {
             $suiteNode->setAttribute('file', $parentSuite->file);
         }
+
         $suiteNode->setAttribute('tests', (string) $parentSuite->tests);
         $suiteNode->setAttribute('assertions', (string) $parentSuite->assertions);
         $suiteNode->setAttribute('errors', (string) $parentSuite->errors);
@@ -114,6 +111,7 @@ final class Writer
         foreach ($parentSuite->suites as $suite) {
             $suiteNode->appendChild($this->createSuiteNode($suite));
         }
+
         foreach ($parentSuite->cases as $case) {
             $suiteNode->appendChild($this->createCaseNode($case));
         }

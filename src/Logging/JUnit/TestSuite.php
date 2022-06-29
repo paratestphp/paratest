@@ -59,7 +59,7 @@ final class TestSuite
 
     /**
      * @param array<string, TestSuite> $suites
-     * @param TestCase[] $cases
+     * @param TestCase[]               $cases
      */
     public function __construct(
         string $name,
