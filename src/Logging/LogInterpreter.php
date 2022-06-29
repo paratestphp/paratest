@@ -61,28 +61,70 @@ final class LogInterpreter implements MetaProviderInterface
      */
     public function mergeReaders(): TestSuite
     {
-        $suites = [];
+        $mainSuite = null;
         foreach ($this->readers as $reader) {
-            $suites[] = $reader->getSuite();
+            $otherSuite = $reader->getSuite();
+            if (null === $mainSuite) {
+                $mainSuite = $otherSuite;
+                continue;
+            }
+            
+            if ($mainSuite->name !== $otherSuite->name) {
+                if ('' !== $mainSuite->name) {
+                    $mainSuite2 = clone $mainSuite;
+                    $mainSuite2->name = '';
+                    $mainSuite2->file = '';
+                    $mainSuite2->suites = [$mainSuite->name => $mainSuite];
+                    $mainSuite2->cases = [];
+                    $mainSuite = $mainSuite2;
+                }
+
+                if ('' !== $otherSuite) {
+                    $otherSuite2 = clone $otherSuite;
+                    $otherSuite2->name = '';
+                    $otherSuite2->file = '';
+                    $otherSuite2->suites = [$otherSuite->name => $otherSuite];
+                    $otherSuite2->cases = [];
+                    $otherSuite = $otherSuite2;
+                }
+            }
+            
+            $this->mergeSuites($mainSuite, $otherSuite);
         }
-        if (1 === count($suites)) {
-            return current($suites);
+        
+        return $mainSuite;
+    }
+
+    private function mergeSuites(TestSuite $suite1, TestSuite $suite2): TestSuite
+    {
+        assert($suite1->name === $suite2->name);
+
+        foreach ($suite2->suites as $suite2suiteName => $suite2suite) {
+            if (! isset($suite1->suites[$suite2suiteName])) {
+                $suite1->suites[$suite2suiteName] = $suite2suite;
+                continue;
+            }
+
+            $suite1->suites[$suite2suiteName] = $this->mergeSuites(
+                $suite1->suites[$suite2suiteName],
+                $suite2suite
+            );
         }
 
-        $mainSuite = TestSuite::empty();
-        foreach ($suites as $suite) {
-            $mainSuite->tests += $suite->tests;
-            $mainSuite->assertions += $suite->assertions;
-            $mainSuite->failures += $suite->failures;
-            $mainSuite->errors += $suite->errors;
-            $mainSuite->warnings += $suite->warnings;
-            $mainSuite->risky += $suite->risky;
-            $mainSuite->skipped += $suite->skipped;
-            $mainSuite->time += $suite->time;
-        }
-        $mainSuite->suites = array_values($suites);
-            
-        return $mainSuite;
+        $suite1->tests += $suite2->tests;
+        $suite1->assertions += $suite2->assertions;
+        $suite1->failures += $suite2->failures;
+        $suite1->errors += $suite2->errors;
+        $suite1->warnings += $suite2->warnings;
+        $suite1->risky += $suite2->risky;
+        $suite1->skipped += $suite2->skipped;
+        $suite1->time += $suite2->time;
+        $suite1->cases = array_merge(
+            $suite1->cases,
+            $suite2->cases
+        );
+        
+        return $suite1;
     }
 
     /**

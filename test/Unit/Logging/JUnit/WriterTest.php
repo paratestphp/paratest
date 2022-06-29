@@ -134,4 +134,29 @@ final class WriterTest extends TestBase
             'Expected no empty line attributes (line=""), but found one.'
         );
     }
+
+    public function testMergeOfCompleteExampleWithEveryXmlCaseCombination(): void
+    {
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '01.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '02.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '03.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '04.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '05.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '06.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '07.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '08.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '09.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '10.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '11.xml'));
+
+        $output = $this->tmpDir . DS . 'actual-combined.xml';
+        $writer = new Writer($this->interpreter, '');
+        $writer->write($output);
+        $xml = (string) file_get_contents($output);
+        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
+        
+        $expectedResult = FIXTURES . DS . 'results' . DS . 'parallel' . DS . 'combined.xml';
+        
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($expectedResult), $xml);
+    }
 }

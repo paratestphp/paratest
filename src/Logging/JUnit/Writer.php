@@ -69,22 +69,8 @@ final class Writer
         if ('' === $mainSuite->name) {
             $mainSuite->name = $this->name;
         }
-        $xmlMainSuite = $this->createSuiteNode($mainSuite);
-        foreach ($mainSuite->suites as $suite) {
-            $xmlSuiteNode = $this->createSuiteNode($suite);
-            foreach ($suite->cases as $case) {
-                $xmlCaseNode = $this->createCaseNode($case);
-                $xmlSuiteNode->appendChild($xmlCaseNode);
-            }
-            $xmlMainSuite->appendChild($xmlSuiteNode);
-        }
-        foreach ($mainSuite->cases as $case) {
-            $xmlCaseNode = $this->createCaseNode($case);
-            $xmlMainSuite->appendChild($xmlCaseNode);
-        }
-
         $xmlTestsuites = $this->document->createElement('testsuites');
-        $xmlTestsuites->appendChild($xmlMainSuite);
+        $xmlTestsuites->appendChild($this->createSuiteNode($mainSuite));
         $this->document->appendChild($xmlTestsuites);
 
         $xml = $this->document->saveXML();
@@ -110,20 +96,27 @@ final class Writer
      * Append a testsuite node to the given
      * root element.
      */
-    private function createSuiteNode(TestSuite $suite): DOMElement
+    private function createSuiteNode(TestSuite $parentSuite): DOMElement
     {
         $suiteNode = $this->document->createElement('testsuite');
-        $suiteNode->setAttribute('name', $suite->name);
-        if ('' !== $suite->file) {
-            $suiteNode->setAttribute('file', $suite->file);
+        $suiteNode->setAttribute('name', $parentSuite->name);
+        if ('' !== $parentSuite->file) {
+            $suiteNode->setAttribute('file', $parentSuite->file);
         }
-        $suiteNode->setAttribute('tests', (string) $suite->tests);
-        $suiteNode->setAttribute('assertions', (string) $suite->assertions);
-        $suiteNode->setAttribute('errors', (string) $suite->errors);
-        $suiteNode->setAttribute('warnings', (string) $suite->warnings);
-        $suiteNode->setAttribute('failures', (string) $suite->failures);
-        $suiteNode->setAttribute('skipped', (string) $suite->skipped);
-        $suiteNode->setAttribute('time', (string) $suite->time);
+        $suiteNode->setAttribute('tests', (string) $parentSuite->tests);
+        $suiteNode->setAttribute('assertions', (string) $parentSuite->assertions);
+        $suiteNode->setAttribute('errors', (string) $parentSuite->errors);
+        $suiteNode->setAttribute('warnings', (string) $parentSuite->warnings);
+        $suiteNode->setAttribute('failures', (string) $parentSuite->failures);
+        $suiteNode->setAttribute('skipped', (string) $parentSuite->skipped);
+        $suiteNode->setAttribute('time', (string) $parentSuite->time);
+
+        foreach ($parentSuite->suites as $suite) {
+            $suiteNode->appendChild($this->createSuiteNode($suite));
+        }
+        foreach ($parentSuite->cases as $case) {
+            $suiteNode->appendChild($this->createCaseNode($case));
+        }
 
         return $suiteNode;
     }

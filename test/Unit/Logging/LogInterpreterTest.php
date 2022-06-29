@@ -165,11 +165,9 @@ final class LogInterpreterTest extends ResultTester
     {
         $suite = $this->interpreter->mergeReaders();
         static::assertCount(2, $suite->suites);
-        $mainFirst = $suite->suites[0];
-        static::assertSame('./test/fixtures/failing_tests', $mainFirst->name);
+        $mainFirst = $suite->suites['./test/fixtures/failing_tests'];
         static::assertCount(3, $mainFirst->suites);
-        $first = $mainFirst->suites[0];
-        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest', $first->name);
+        $first = $mainFirst->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest'];
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file

@@ -58,7 +58,8 @@ final class Reader implements MetaProviderInterface
 
         $suites = [];
         foreach ($node->testsuite as $singleTestSuiteXml) {
-            $suites[] = $this->parseTestSuite($singleTestSuiteXml, false);
+            $testSuite = $this->parseTestSuite($singleTestSuiteXml, false);
+            $suites[$testSuite->name] = $testSuite;
         }
         $cases = [];
         foreach ($node->testcase as $singleTestCase) {

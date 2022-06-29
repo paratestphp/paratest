@@ -46,7 +46,7 @@ final class TestSuite
     /**
      * Nested suites.
      *
-     * @var TestSuite[]
+     * @var array<string, TestSuite>
      */
     public $suites = [];
 
@@ -57,6 +57,10 @@ final class TestSuite
      */
     public $cases = [];
 
+    /**
+     * @param array<string, TestSuite> $suites
+     * @param TestCase[] $cases
+     */
     public function __construct(
         string $name,
         int $tests,

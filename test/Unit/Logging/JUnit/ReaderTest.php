@@ -77,8 +77,8 @@ final class ReaderTest extends TestBase
     public function testMixedSuiteConstructsChildSuites(TestSuite $suite): TestSuite
     {
         static::assertCount(3, $suite->suites);
-        $first = $suite->suites[0];
-        static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest', $first->name);
+        static::assertArrayHasKey('ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest', $suite->suites);
+        $first = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest'];
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
@@ -113,7 +113,7 @@ final class ReaderTest extends TestBase
     public function testMixedSuiteCasesLoadFailures(): void
     {
         $suite = $this->mixed->getSuite();
-        $case   = $suite->suites[0]->cases[1];
+        $case   = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest']->cases[1];
         static::assertCount(1, $case->failures);
         $failure = $case->failures[0];
         static::assertSame(ExpectationFailedException::class, $failure['type']);
@@ -129,7 +129,7 @@ final class ReaderTest extends TestBase
     public function testMixedSuiteCasesLoadErrors(): void
     {
         $suite = $this->mixed->getSuite();
-        $case   = $suite->suites[1]->cases[0];
+        $case   = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest']->cases[0];
         static::assertCount(1, $case->errors);
         $error = $case->errors[0];
         static::assertSame('RuntimeException', $error['type']);
