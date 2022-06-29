@@ -9,6 +9,7 @@ use ParaTest\Logging\MetaProviderInterface;
 use SimpleXMLElement;
 
 use function array_fill;
+use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_sum;
@@ -17,6 +18,7 @@ use function count;
 use function file_exists;
 use function file_get_contents;
 use function filesize;
+use function is_string;
 use function unlink;
 
 /**
@@ -224,6 +226,9 @@ final class Reader implements MetaProviderInterface
 
         foreach ($testSuite->cases as $case) {
             $messages = array_merge($messages, array_map(static function (array $msg): string {
+                assert(array_key_exists('text', $msg));
+                assert(is_string($msg['text']));
+
                 return $msg['text'];
             }, $callback($case)));
         }

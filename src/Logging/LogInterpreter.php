@@ -78,7 +78,7 @@ final class LogInterpreter implements MetaProviderInterface
                     $mainSuite          = $mainSuite2;
                 }
 
-                if ($otherSuite !== '') {
+                if ($otherSuite->name !== '') {
                     $otherSuite2         = clone $otherSuite;
                     $otherSuite2->name   = '';
                     $otherSuite2->file   = '';
@@ -90,6 +90,8 @@ final class LogInterpreter implements MetaProviderInterface
 
             $this->mergeSuites($mainSuite, $otherSuite);
         }
+
+        assert($mainSuite !== null);
 
         return $mainSuite;
     }

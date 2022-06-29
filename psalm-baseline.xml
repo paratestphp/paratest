@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="v4.15.0@a1b5e489e6fcebe40cb804793d964e99fc347820">
+<files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
   <file src="src/Logging/JUnit/Reader.php">
-    <MixedAssignment occurrences="1">
-      <code>$node</code>
+    <MixedArgument occurrences="4">
+      <code>$callback($case)</code>
+      <code>$singleTestCase</code>
+      <code>$singleTestSuiteXml</code>
+      <code>$singleTestSuiteXml</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="3">
+      <code>$singleTestCase</code>
+      <code>$singleTestSuiteXml</code>
+      <code>$singleTestSuiteXml</code>
     </MixedAssignment>
   </file>
   <file src="src/Logging/JUnit/TestCase.php">
@@ -39,18 +47,10 @@
       <code>TestListenerDefaultImplementation</code>
     </DeprecatedTrait>
   </file>
-  <file src="src/Runners/PHPUnit/Worker/RunnerWorker.php">
-    <ReservedWord occurrences="1">
-      <code>$phpFinder-&gt;find(false)</code>
-    </ReservedWord>
-  </file>
   <file src="src/Runners/PHPUnit/Worker/WrapperWorker.php">
     <MixedArgument occurrences="1">
       <code>$parameters</code>
     </MixedArgument>
-    <ReservedWord occurrences="1">
-      <code>$phpFinder-&gt;find(false)</code>
-    </ReservedWord>
   </file>
   <file src="src/Runners/PHPUnit/WorkerCrashedException.php">
     <MixedAssignment occurrences="1">
