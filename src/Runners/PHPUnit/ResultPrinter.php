@@ -386,11 +386,13 @@ final class ResultPrinter
     {
         $feedbackItems = $reader->getFeedback();
 
-        $actualTestCount = count($feedbackItems);
+        $actualTestCount = strlen($feedbackItems);
 
         $this->processTestOverhead($actualTestCount, $expectedTestCount);
 
-        foreach ($feedbackItems as $item) {
+        for ($index = 0; $index < $actualTestCount; ++$index) {
+            $item = $feedbackItems[$index];
+
             $this->printFeedbackItem($item);
             if ($item !== 'S') {
                 continue;

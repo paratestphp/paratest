@@ -6,8 +6,6 @@ namespace ParaTest\Tests\fixtures\failing_tests;
 
 use PHPUnit\Framework\TestCase;
 
-use function uniqid;
-
 /**
  * @internal
  */
@@ -43,7 +41,7 @@ class UnitTestWithMethodAnnotationsTest extends TestCase
      */
     public function testWarning(): void
     {
-        $this->addWarning(uniqid());
+        $this->addWarning('MyWarning');
     }
 
     /**

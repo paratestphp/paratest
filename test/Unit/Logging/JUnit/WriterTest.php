@@ -11,6 +11,8 @@ use ParaTest\Tests\TestBase;
 
 use function file_exists;
 use function file_get_contents;
+use function preg_replace;
+use function str_replace;
 use function unlink;
 
 /**
@@ -47,6 +49,8 @@ final class WriterTest extends TestBase
     {
         $this->addPassingReader();
         $xml = $this->writer->getXml();
+        $xml = str_replace('3.703701', '1.234567', $xml);
+
         static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
     }
 
@@ -55,8 +59,12 @@ final class WriterTest extends TestBase
         $mixed  = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
         $reader = new Reader($mixed);
         $this->interpreter->addReader($reader);
-        $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
-        $xml    = $writer->getXml();
+        $output = $this->tmpDir . DS . 'mixed-results.xml';
+        $writer = new Writer($this->interpreter, './test/fixtures/failing_tests');
+        $writer->write($output);
+        $xml = (string) file_get_contents($output);
+        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
+
         static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
     }
 
@@ -65,8 +73,12 @@ final class WriterTest extends TestBase
         $mixed  = FIXTURES . DS . 'results' . DS . 'data-provider-with-special-chars.xml';
         $reader = new Reader($mixed);
         $this->interpreter->addReader($reader);
+        $output = $this->tmpDir . DS . 'data-provider-with-special-chars.xml';
         $writer = new Writer($this->interpreter, 'test/fixtures/tests/');
-        $xml    = $writer->getXml();
+        $writer->write($output);
+        $xml = (string) file_get_contents($output);
+        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
+
         static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
     }
 
@@ -75,7 +87,9 @@ final class WriterTest extends TestBase
         $output = $this->tmpDir . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
-        static::assertXmlFileEqualsXmlFile($this->passing, $output);
+        $xml = (string) file_get_contents($output);
+        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
         if (! file_exists($output)) {
             return;
         }
@@ -88,7 +102,9 @@ final class WriterTest extends TestBase
         $output = $this->tmpDir . DS . 'logs' . DS . 'new' . DS . 'dir' . DS . 'passing.xml';
         $this->addPassingReader();
         $this->writer->write($output);
-        static::assertXmlFileEqualsXmlFile($this->passing, $output);
+        $xml = (string) file_get_contents($output);
+        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
         if (! file_exists($output)) {
             return;
         }
@@ -119,5 +135,33 @@ final class WriterTest extends TestBase
             $xml,
             'Expected no empty line attributes (line=""), but found one.'
         );
+    }
+
+    /**
+     * @covers \ParaTest\Logging\JUnit\Reader::parseTestSuite
+     * @covers \ParaTest\Logging\LogInterpreter::mergeSuites
+     */
+    public function testMergeOfCompleteExampleWithEveryXmlCaseCombination(): void
+    {
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '01.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '02.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '03.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '04.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '05.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '06.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '07.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '08.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '09.xml'));
+        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '10.xml'));
+
+        $output = $this->tmpDir . DS . 'actual-combined.xml';
+        $writer = new Writer($this->interpreter, '');
+        $writer->write($output);
+        $xml = (string) file_get_contents($output);
+        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
+
+        $expectedResult = FIXTURES . DS . 'results' . DS . 'parallel' . DS . 'combined.xml';
+
+        static::assertXmlStringEqualsXmlString((string) file_get_contents($expectedResult), $xml);
     }
 }

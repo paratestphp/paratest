@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
-use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Tests\Unit\ResultTester;
 
@@ -59,7 +58,7 @@ final class LogInterpreterTest extends ResultTester
         static::assertSame(3, $this->interpreter->getTotalFailures());
         static::assertSame(2, $this->interpreter->getTotalWarnings());
         static::assertSame(4, $this->interpreter->getTotalSkipped());
-        static::assertSame(0.006784, $this->interpreter->getTotalTime());
+        static::assertSame(2.469134, $this->interpreter->getTotalTime());
     }
 
     public function testIsSuccessfulReturnsFalseIfFailuresPresentAndNoErrors(): void
@@ -91,8 +90,10 @@ final class LogInterpreterTest extends ResultTester
     public function testGetErrorsReturnsArrayOfErrorMessages(): void
     {
         $errors = [
-            "UnitTestWithErrorTest::testTruth\nException: Error!!!\n\n/home/brian/Projects/parallel-phpunit/" .
-            'test/fixtures/failing_tests/UnitTestWithErrorTest.php:17',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
+            . "RuntimeException: Error!!!\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
         ];
         static::assertSame($errors, $this->interpreter->getErrors());
     }
@@ -100,8 +101,8 @@ final class LogInterpreterTest extends ResultTester
     public function testGetWarningsReturnsArrayOfErrorMessages(): void
     {
         $errors = [
-            "UnitTestWithErrorTest::testWarning\nFunction 1 deprecated",
-            "UnitTestWithMethodAnnotationsTest::testWarning\nFunction 2 deprecated",
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testWarning\nMyWarning",
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testWarning\nMyWarning",
         ];
         static::assertSame($errors, $this->interpreter->getWarnings());
     }
@@ -109,12 +110,18 @@ final class LogInterpreterTest extends ResultTester
     public function testGetFailuresReturnsArrayOfFailureMessages(): void
     {
         $failures = [
-            "Fixtures\\Tests\\UnitTestWithClassAnnotationTest::testFalsehood\nFailed asserting that true is false.\n\n/" .
-                'home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
-            "UnitTestWithErrorTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20',
-            "UnitTestWithMethodAnnotationsTest::testFalsehood\nFailed asserting that true is false.\n\n" .
-                '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:20',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
         ];
 
         static::assertSame($failures, $this->interpreter->getFailures());
@@ -123,8 +130,14 @@ final class LogInterpreterTest extends ResultTester
     public function testGetRiskyReturnsArrayOfErrorMessages(): void
     {
         $errors = [
-            'Risky Test',
-            'Risky Test',
+            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testRisky' . "\n"
+            . 'This test did not perform any assertions' . "\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66',
+            'ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest::testRisky' . "\n"
+            . 'This test did not perform any assertions' . "\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66',
         ];
         static::assertSame($errors, $this->interpreter->getRisky());
     }
@@ -134,75 +147,57 @@ final class LogInterpreterTest extends ResultTester
         $interpreter = new LogInterpreter();
         $interpreter->addReader(new Reader($this->skipped->getTempFile()));
         $skipped = [
-            "UnitTestWithMethodAnnotationsTest::testIncomplete\n\n" .
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:51',
+            "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
+            . "\n"
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50',
         ];
         static::assertSame($skipped, $interpreter->getSkipped());
     }
 
-    public function testGetCasesReturnsAllCases(): void
+    public function testMergeReaders(): void
     {
-        $cases = $this->interpreter->getCases();
-        static::assertCount(22, $cases);
+        $one = new LogInterpreter();
+        $one->addReader(new Reader($this->mixedSuite->getTempFile()));
+        $one->addReader(new Reader($this->passingSuite->getTempFile()));
+
+        $two = new LogInterpreter();
+        $two->addReader(new Reader($this->passingSuite->getTempFile()));
+        $two->addReader(new Reader($this->mixedSuite->getTempFile()));
+
+        $oneResult = $one->mergeReaders();
+        $twoResult = $two->mergeReaders();
+
+        static::assertSame(22, $oneResult->tests);
+        static::assertSame(13, $oneResult->assertions);
+        static::assertSame(3, $oneResult->failures);
+        static::assertSame(3, $oneResult->errors);
+        static::assertSame(2, $oneResult->warnings);
+        static::assertSame(2, $oneResult->risky);
+        static::assertSame(4, $oneResult->skipped);
+        static::assertSame(2.469134, $oneResult->time);
+        static::assertCount(2, $oneResult->suites);
+
+        static::assertSame($oneResult->tests, $twoResult->tests);
+        static::assertSame($oneResult->assertions, $twoResult->assertions);
+        static::assertSame($oneResult->failures, $twoResult->failures);
+        static::assertSame($oneResult->errors, $twoResult->errors);
+        static::assertSame($oneResult->warnings, $twoResult->warnings);
+        static::assertSame($oneResult->risky, $twoResult->risky);
+        static::assertSame($oneResult->skipped, $twoResult->skipped);
+        static::assertSame($oneResult->time, $twoResult->time);
+
+        static::assertEquals($oneResult->suites, $twoResult->suites);
     }
 
-    public function testGetCasesExtendEmptyCasesFromSuites(): void
+    public function testFlattenedSuiteHasCorrectTotals(): void
     {
-        $interpreter        = new LogInterpreter();
-        $dataProviderReader = new Reader($this->dataProviderSuite->getTempFile());
-        $interpreter->addReader($dataProviderReader);
-        $cases = $interpreter->getCases();
-        static::assertCount(10, $cases);
-        foreach ($cases as $name => $case) {
-            if ($case->name === 'testNumericDataProvider5 with data set #3') {
-                static::assertSame($case->class, 'DataProviderTest1');
-            } elseif ($case->name === 'testNamedDataProvider5 with data set #3') {
-                static::assertSame($case->class, 'DataProviderTest2');
-            } else {
-                static::assertSame($case->class, 'DataProviderTest');
-            }
-
-            if ($case->name === 'testNumericDataProvider5 with data set #4') {
-                static::assertSame(
-                    $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest1.php'
-                );
-            } elseif ($case->name === 'testNamedDataProvider5 with data set #4') {
-                static::assertSame(
-                    $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest2.php'
-                );
-            } else {
-                static::assertSame(
-                    $case->file,
-                    '/var/www/project/vendor/brianium/paratest/test/fixtures/dataprovider_tests/DataProviderTest.php'
-                );
-            }
-        }
-    }
-
-    /**
-     * @return TestSuite[]
-     */
-    public function testFlattenCasesReturnsCorrectNumberOfSuites(): array
-    {
-        $suites = $this->interpreter->flattenCases();
-        static::assertCount(4, $suites);
-
-        return $suites;
-    }
-
-    /**
-     * @param TestSuite[] $suites
-     *
-     * @depends testFlattenCasesReturnsCorrectNumberOfSuites
-     */
-    public function testFlattenedSuiteHasCorrectTotals(array $suites): void
-    {
-        $first = $suites[0];
-        static::assertSame('Fixtures\\Tests\\UnitTestWithClassAnnotationTest', $first->name);
+        $suite = $this->interpreter->mergeReaders();
+        static::assertCount(2, $suite->suites);
+        $mainFirst = $suite->suites['./test/fixtures/failing_tests'];
+        static::assertCount(3, $mainFirst->suites);
+        $first = $mainFirst->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest'];
         static::assertSame(
-            '/home/brian/Projects/parallel-phpunit/test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
+            './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
             $first->file
         );
         static::assertSame(4, $first->tests);
@@ -211,6 +206,6 @@ final class LogInterpreterTest extends ResultTester
         static::assertSame(0, $first->warnings);
         static::assertSame(0, $first->skipped);
         static::assertSame(0, $first->errors);
-        static::assertSame(0.000357, $first->time);
+        static::assertSame(1.234567, $first->time);
     }
 }

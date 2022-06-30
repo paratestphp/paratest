@@ -39,13 +39,9 @@ EOF;
     /** @var Suite */
     protected $otherFailureSuite;
     /** @var Suite */
-    protected $otherErrorSuite;
-    /** @var Suite */
     protected $mixedSuite;
     /** @var Suite */
     protected $passingSuite;
-    /** @var Suite */
-    protected $dataProviderSuite;
     /** @var Suite */
     protected $errorSuite;
     /** @var Suite */
@@ -57,13 +53,11 @@ EOF;
     {
         $this->errorSuite        = $this->getSuiteWithResult('single-werror.xml', 1);
         $this->warningSuite      = $this->getSuiteWithResult('single-warning.xml', 1);
-        $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);
         $this->failureSuite      = $this->getSuiteWithResult('single-wfailure.xml', 3);
         $this->otherFailureSuite = $this->getSuiteWithResult('single-wfailure2.xml', 3);
         $this->mixedSuite        = $this->getSuiteWithResult('mixed-results.xml', 7);
         $this->skipped           = $this->getSuiteWithResult('single-skipped.xml', 1);
         $this->passingSuite      = $this->getSuiteWithResult('single-passing.xml', 3);
-        $this->dataProviderSuite = $this->getSuiteWithResult('data-provider-result.xml', 50);
 
         $this->setUpInterpreter();
     }

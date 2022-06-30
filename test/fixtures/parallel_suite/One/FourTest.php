@@ -11,4 +11,8 @@ use ParaTest\Tests\fixtures\parallel_suite\ParallelBase;
  */
 final class FourTest extends ParallelBase
 {
+    public function testSub(): void
+    {
+        self::assertTrue(true);
+    }
 }
