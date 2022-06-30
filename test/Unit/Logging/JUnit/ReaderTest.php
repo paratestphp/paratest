@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Tests\TestBase;
+use ParaTest\Tests\TmpDirCreator;
 use PHPUnit\Framework\ExpectationFailedException;
 
 use function file_get_contents;
@@ -348,7 +349,7 @@ final class ReaderTest extends TestBase
     public function testRemoveLog(): void
     {
         $contents = file_get_contents($this->mixedPath);
-        $tmp      = FIXTURES . DS . 'results' . DS . 'dummy.xml';
+        $tmp      = (new TmpDirCreator())->create() . DS . 'dummy.xml';
         file_put_contents($tmp, $contents);
         $reader = new Reader($tmp);
         $reader->removeLog();
