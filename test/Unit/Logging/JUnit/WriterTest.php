@@ -138,6 +138,7 @@ final class WriterTest extends TestBase
     }
 
     /**
+     * @covers \ParaTest\Logging\JUnit\Reader::parseTestSuite
      * @covers \ParaTest\Logging\LogInterpreter::mergeSuites
      */
     public function testMergeOfCompleteExampleWithEveryXmlCaseCombination(): void
