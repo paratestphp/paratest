@@ -37,7 +37,7 @@ final class CoverageMergerTest extends TestBase
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine  = 68;
+        $firstFileFirstLine  = 67;
         $secondFileFirstLine = 37;
 
         $filter = new Filter();

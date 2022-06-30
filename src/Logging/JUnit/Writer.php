@@ -162,48 +162,4 @@ final class Writer
             $caseNode->appendChild($defectNode);
         }
     }
-
-    /**
-     * Get the attributes used on the root testsuite
-     * node.
-     *
-     * @param TestSuite[] $suites
-     *
-     * @return (float|int|string)[]
-     * @psalm-return array{name: string, tests: int, assertions: int, errors: int, warnings: int, failures: int, skipped: int, time: 0|float}
-     */
-    private function getSuiteRootAttributes(array $suites): array
-    {
-        $result = [
-            'name' => $this->name,
-            'tests' => 0,
-            'assertions' => 0,
-            'errors' => 0,
-            'warnings' => 0,
-            'failures' => 0,
-            'skipped' => 0,
-            'time' => 0,
-        ];
-        foreach ($suites as $suite) {
-            $result['tests']      += $suite->tests;
-            $result['assertions'] += $suite->assertions;
-            $result['errors']     += $suite->errors;
-            $result['warnings']   += $suite->warnings;
-            $result['failures']   += $suite->failures;
-            $result['skipped']    += $suite->skipped;
-            $result['time']       += $suite->time;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Prevent writing empty "line" XML attributes which could break parsers.
-     *
-     * @param mixed $value
-     */
-    private function isEmptyLineAttribute(string $name, $value): bool
-    {
-        return $name === 'line' && empty($value);
-    }
 }

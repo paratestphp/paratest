@@ -13,7 +13,6 @@ use PHPUnit\Framework\ExpectationFailedException;
 
 use function file_get_contents;
 use function file_put_contents;
-use function implode;
 
 /**
  * @internal
@@ -184,7 +183,7 @@ final class ReaderTest extends TestBase
             './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php',
             $first->file
         );
-        static::assertSame(19, $first->line);
+        static::assertSame(17, $first->line);
         static::assertSame(1, $first->assertions);
         static::assertSame(1.234567, $first->time);
     }
@@ -200,7 +199,7 @@ final class ReaderTest extends TestBase
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
             . "Failed asserting that true is false.\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
             $failure['text']
         );
     }
@@ -254,7 +253,7 @@ final class ReaderTest extends TestBase
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
             . "Failed asserting that true is false.\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
             $failures[1]
         );
     }
@@ -291,7 +290,7 @@ final class ReaderTest extends TestBase
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
             . "Failed asserting that true is false.\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
             $failures[0]
         );
     }
@@ -307,7 +306,7 @@ final class ReaderTest extends TestBase
             'ParaTest\Tests\fixtures\system_out\SystemOutTest::testRisky' . "\n"
             . 'This test did not perform any assertions' . "\n"
             . "\n"
-            . './test/fixtures/system_out/SystemOutTest.php:21myRisky',
+            . './test/fixtures/system_out/SystemOutTest.php:23myRisky',
             $risky[0]
         );
     }
@@ -320,7 +319,7 @@ final class ReaderTest extends TestBase
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:52',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50',
             $skipped[0]
         );
     }
@@ -342,8 +341,7 @@ final class ReaderTest extends TestBase
 
     public function testMixedGetFeedback(): void
     {
-        $feedback = $this->mixed->getFeedback();
-        static::assertSame('EEEWWFFFRRSSSS.....', implode('', $feedback));
+        static::assertSame('EEEWWFFFRRSSSS.....', $this->mixed->getFeedback());
     }
 
     public function testRemoveLog(): void

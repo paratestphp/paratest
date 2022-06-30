@@ -117,11 +117,11 @@ final class LogInterpreterTest extends ResultTester
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
             . "Failed asserting that true is false.\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
             . "Failed asserting that true is false.\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
         ];
 
         static::assertSame($failures, $this->interpreter->getFailures());
@@ -133,11 +133,11 @@ final class LogInterpreterTest extends ResultTester
             'ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testRisky' . "\n"
             . 'This test did not perform any assertions' . "\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66',
             'ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest::testRisky' . "\n"
             . 'This test did not perform any assertions' . "\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66',
         ];
         static::assertSame($errors, $this->interpreter->getRisky());
     }
@@ -149,15 +149,44 @@ final class LogInterpreterTest extends ResultTester
         $skipped = [
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:52',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50',
         ];
         static::assertSame($skipped, $interpreter->getSkipped());
     }
 
-    public function testGetCasesReturnsAllCases(): void
+    public function testMergeReaders(): void
     {
-        $testSuite = $this->interpreter->mergeReaders();
-        static::assertSame(22, $testSuite->tests);
+        $one = new LogInterpreter();
+        $one->addReader(new Reader($this->mixedSuite->getTempFile()));
+        $one->addReader(new Reader($this->passingSuite->getTempFile()));
+
+        $two = new LogInterpreter();
+        $two->addReader(new Reader($this->passingSuite->getTempFile()));
+        $two->addReader(new Reader($this->mixedSuite->getTempFile()));
+
+        $oneResult = $one->mergeReaders();
+        $twoResult = $two->mergeReaders();
+
+        static::assertSame(22, $oneResult->tests);
+        static::assertSame(13, $oneResult->assertions);
+        static::assertSame(3, $oneResult->failures);
+        static::assertSame(3, $oneResult->errors);
+        static::assertSame(2, $oneResult->warnings);
+        static::assertSame(2, $oneResult->risky);
+        static::assertSame(4, $oneResult->skipped);
+        static::assertSame(2.469134, $oneResult->time);
+        static::assertCount(2, $oneResult->suites);
+
+        static::assertSame($oneResult->tests, $twoResult->tests);
+        static::assertSame($oneResult->assertions, $twoResult->assertions);
+        static::assertSame($oneResult->failures, $twoResult->failures);
+        static::assertSame($oneResult->errors, $twoResult->errors);
+        static::assertSame($oneResult->warnings, $twoResult->warnings);
+        static::assertSame($oneResult->risky, $twoResult->risky);
+        static::assertSame($oneResult->skipped, $twoResult->skipped);
+        static::assertSame($oneResult->time, $twoResult->time);
+
+        static::assertEquals($oneResult->suites, $twoResult->suites);
     }
 
     public function testFlattenedSuiteHasCorrectTotals(): void

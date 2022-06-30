@@ -54,7 +54,7 @@ code-coverage: coverage/junit.xml
 	echo "Base branch: $(BASE_BRANCH)"
 	php -d zend.assertions=1 \
 		-d pcov.enabled=1 \
-		vendor/bin/infection \
+		vendor/bin/infection run \
 		--threads=$(shell nproc) \
 		--git-diff-lines \
 		--git-diff-base=$(BASE_BRANCH) \
@@ -144,14 +144,13 @@ regenerate-fixture-results: vendor
 	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/01.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\FourTest::testSub' > /dev/null || true
 	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/02.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\FourTest::testToken' > /dev/null || true
 	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/03.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\OneTest::testWithProvider with data set "one"' > /dev/null || true
-	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/04.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\OneTest::testWithProvider#0' > /dev/null || true
+	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/04.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\OneTest::testWithProvider with data set #' > /dev/null || true
 	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/05.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\OneTest::testToken' > /dev/null || true
-	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/06.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\ThreeTest::testToken' > /dev/null || true
-	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/07.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\TwoTest::testToken' > /dev/null || true
-	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/08.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\FourTest::testToken' > /dev/null || true
-	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/09.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\OneTest::testToken' > /dev/null || true
-	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/10.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\ThreeTest::testToken' > /dev/null || true
-	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/11.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\TwoTest::testToken' > /dev/null || true
+	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/06.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\One\\(TwoTest|ThreeTest)::testToken' > /dev/null || true
+	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/07.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\FourTest::testToken' > /dev/null || true
+	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/08.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\OneTest::testToken' > /dev/null || true
+	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/09.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\ThreeTest::testToken' > /dev/null || true
+	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/10.xml --filter 'ParaTest\\Tests\\fixtures\\parallel_suite\\Two\\TwoTest::testToken' > /dev/null || true
 	vendor/bin/phpunit --configuration test/fixtures/phpunit-parallel-suite.xml --log-junit $(FIXTURE_RESULT_DIR)/parallel/combined.xml > /dev/null || true
 	find "$(FIXTURE_RESULT_DIR)" -type f -name "*.xml" -print0 | xargs -0 sed -i 's#$(PWD)#.#g'
 	find "$(FIXTURE_RESULT_DIR)" -type f -name "*.xml" -print0 | xargs -0 sed -i 's#time="........"#time="1.234567"#g'

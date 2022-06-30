@@ -137,6 +137,9 @@ final class WriterTest extends TestBase
         );
     }
 
+    /**
+     * @covers \ParaTest\Logging\LogInterpreter::mergeSuites
+     */
     public function testMergeOfCompleteExampleWithEveryXmlCaseCombination(): void
     {
         $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '01.xml'));
@@ -149,7 +152,6 @@ final class WriterTest extends TestBase
         $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '08.xml'));
         $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '09.xml'));
         $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '10.xml'));
-        $this->interpreter->addReader(new Reader(FIXTURES . DS . 'results' . DS . 'parallel' . DS . '11.xml'));
 
         $output = $this->tmpDir . DS . 'actual-combined.xml';
         $writer = new Writer($this->interpreter, '');

@@ -235,19 +235,24 @@ final class ResultPrinterTest extends ResultTester
     public function testGetErrorsMultipleErrors(): void
     {
         $this->printer->addTest($this->errorSuite);
-        $this->printer->addTest($this->otherErrorSuite);
+        $this->printer->addTest($this->errorSuite);
 
         $this->prepareReaders();
 
         $errors = $this->printer->getErrors();
 
-        $eq  = "There were 2 errors:\n\n";
+        $eq  = "There were 2 errors:\n";
+        $eq .= "\n";
         $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n";
-        $eq .= "RuntimeException: Error!!!\n\n";
+        $eq .= "RuntimeException: Error!!!\n";
+        $eq .= "\n";
         $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21\n";
-        $eq .= "\n2) UnitTestWithOtherErrorTest::testSomeCase\n";
-        $eq .= "Exception: Another Error!!!\n\n";
-        $eq .= "/home/brian/Projects/parallel-phpunit/test/fixtures/tests/UnitTestWithOtherErrorTest.php:12\n\n";
+        $eq .= "\n";
+        $eq .= "2) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n";
+        $eq .= "RuntimeException: Error!!!\n";
+        $eq .= "\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21\n";
+        $eq .= "\n";
 
         static::assertSame($eq, $errors);
     }
@@ -266,10 +271,10 @@ final class ResultPrinterTest extends ResultTester
         $eq .= "./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32\n\n";
         $eq .= "2) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29\n\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n\n";
         $eq .= "3) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n";
         $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:29\n\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n\n";
 
         static::assertSame($eq, $failures);
     }
@@ -285,10 +290,10 @@ final class ResultPrinterTest extends ResultTester
         $eq  = "There were 2 riskys:\n\n";
         $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\UnitTestWithErrorTest::testRisky\n";
         $eq .= "This test did not perform any assertions\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68\n\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66\n\n";
         $eq .= "2) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testRisky\n";
         $eq .= "This test did not perform any assertions\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:68\n\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66\n\n";
 
         static::assertSame($eq, $failures);
     }
@@ -303,7 +308,7 @@ final class ResultPrinterTest extends ResultTester
 
         $eq  = "There was 1 skipped:\n\n";
         $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:52\n\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50\n\n";
 
         static::assertSame($eq, $failures);
     }

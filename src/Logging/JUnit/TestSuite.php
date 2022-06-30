@@ -88,22 +88,4 @@ final class TestSuite
         $this->cases      = $cases;
         $this->risky      = $risky;
     }
-
-    public static function empty(): self
-    {
-        return new self(
-            '',
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0.0,
-            '',
-            [],
-            [],
-        );
-    }
 }

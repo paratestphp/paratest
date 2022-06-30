@@ -39,8 +39,6 @@ EOF;
     /** @var Suite */
     protected $otherFailureSuite;
     /** @var Suite */
-    protected $otherErrorSuite;
-    /** @var Suite */
     protected $mixedSuite;
     /** @var Suite */
     protected $passingSuite;
@@ -55,7 +53,6 @@ EOF;
     {
         $this->errorSuite        = $this->getSuiteWithResult('single-werror.xml', 1);
         $this->warningSuite      = $this->getSuiteWithResult('single-warning.xml', 1);
-        $this->otherErrorSuite   = $this->getSuiteWithResult('single-werror2.xml', 1);
         $this->failureSuite      = $this->getSuiteWithResult('single-wfailure.xml', 3);
         $this->otherFailureSuite = $this->getSuiteWithResult('single-wfailure2.xml', 3);
         $this->mixedSuite        = $this->getSuiteWithResult('mixed-results.xml', 7);

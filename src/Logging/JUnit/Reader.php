@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use ParaTest\Logging\MetaProviderInterface;
 use SimpleXMLElement;
 
-use function array_fill;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
@@ -19,6 +18,7 @@ use function file_exists;
 use function file_get_contents;
 use function filesize;
 use function is_string;
+use function str_repeat;
 use function unlink;
 
 /**
@@ -99,29 +99,22 @@ final class Reader implements MetaProviderInterface
         return $this->suite;
     }
 
-    /**
-     * @return string[]
-     * @psalm-return list<string>
-     */
-    public function getFeedback(): array
+    public function getFeedback(): string
     {
-        return array_merge(
-            array_fill(0, $this->suite->errors, 'E'),
-            array_fill(0, $this->suite->warnings, 'W'),
-            array_fill(0, $this->suite->failures, 'F'),
-            array_fill(0, $this->suite->risky, 'R'),
-            array_fill(0, $this->suite->skipped, 'S'),
-            array_fill(
-                0,
+        return str_repeat('E', $this->suite->errors)
+            . str_repeat('W', $this->suite->warnings)
+            . str_repeat('F', $this->suite->failures)
+            . str_repeat('R', $this->suite->risky)
+            . str_repeat('S', $this->suite->skipped)
+            . str_repeat(
+                '.',
                 $this->suite->tests
                 - $this->suite->errors
                 - $this->suite->warnings
                 - $this->suite->failures
                 - $this->suite->risky
                 - $this->suite->skipped,
-                '.'
-            ),
-        );
+            );
     }
 
     public function removeLog(): void

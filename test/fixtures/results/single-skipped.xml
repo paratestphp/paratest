@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
   <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest" file="./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php" tests="1" assertions="0" errors="0" warnings="0" failures="0" skipped="1" time="1.234567">
-    <testcase name="testSkipped" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithMethodAnnotationsTest" file="./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php" line="52" assertions="0" time="1.234567">
+    <testcase name="testSkipped" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithMethodAnnotationsTest" file="./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php" line="50" assertions="0" time="1.234567">
       <skipped/>
     </testcase>
   </testsuite>

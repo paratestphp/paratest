@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
   <testsuite name="ParaTest\Tests\fixtures\system_out\SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" tests="4" assertions="2" errors="2" warnings="0" failures="1" skipped="0" time="1.234567">
-    <testcase name="testError" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="9" assertions="0" time="1.234567">
+    <testcase name="testError" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="11" assertions="0" time="1.234567">
       <error type="Error">ParaTest\Tests\fixtures\system_out\SystemOutTest::testError
 Error: Call to undefined function ParaTest\Tests\fixtures\system_out\foo()
 
-./test/fixtures/system_out/SystemOutTest.php:12</error>
+./test/fixtures/system_out/SystemOutTest.php:14</error>
       <system-out>myError</system-out>
     </testcase>
-    <testcase name="testFailure" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="15" assertions="1" time="1.234567">
+    <testcase name="testFailure" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="17" assertions="1" time="1.234567">
       <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\system_out\SystemOutTest::testFailure
 Failed asserting that true is false.
 
-./test/fixtures/system_out/SystemOutTest.php:18</failure>
+./test/fixtures/system_out/SystemOutTest.php:20</failure>
       <system-out>myFailure</system-out>
     </testcase>
-    <testcase name="testRisky" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="21" assertions="0" time="1.234567">
+    <testcase name="testRisky" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="23" assertions="0" time="1.234567">
       <error type="PHPUnit\Framework\RiskyTestError">ParaTest\Tests\fixtures\system_out\SystemOutTest::testRisky
 This test did not perform any assertions
 
-./test/fixtures/system_out/SystemOutTest.php:21</error>
+./test/fixtures/system_out/SystemOutTest.php:23</error>
       <system-out>myRisky</system-out>
     </testcase>
-    <testcase name="testSuccess" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="26" assertions="1" time="1.234567">
+    <testcase name="testSuccess" class="ParaTest\Tests\fixtures\system_out\SystemOutTest" classname="ParaTest.Tests.fixtures.system_out.SystemOutTest" file="./test/fixtures/system_out/SystemOutTest.php" line="28" assertions="1" time="1.234567">
       <system-out>mySuccess</system-out>
     </testcase>
   </testsuite>

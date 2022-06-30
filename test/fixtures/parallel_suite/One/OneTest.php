@@ -27,6 +27,7 @@ final class OneTest extends ParallelBase
         return [
             'one' => [1],
             [2],
+            [3],
         ];
     }
 }

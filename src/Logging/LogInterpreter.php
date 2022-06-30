@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
-use ParaTest\Logging\JUnit\TestCase;
 use ParaTest\Logging\JUnit\TestSuite;
 
 use function array_merge;
@@ -126,19 +125,6 @@ final class LogInterpreter implements MetaProviderInterface
         );
 
         return $suite1;
-    }
-
-    /**
-     * @return TestCase[]
-     */
-    private function getCases(TestSuite $testSuite): array
-    {
-        $cases = $testSuite->cases;
-        foreach ($testSuite->suites as $suite) {
-            $cases = array_merge($cases, $this->getCases($suite));
-        }
-
-        return $cases;
     }
 
     public function getTotalTests(): int
