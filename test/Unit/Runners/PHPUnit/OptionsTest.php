@@ -259,7 +259,8 @@ final class OptionsTest extends TestBase
         static::assertFalse($options->stopOnFailure());
         static::assertEmpty($options->testsuite());
         static::assertSame($this->tmpDir, $options->tmpDir());
-        static::assertSame(Options::VERBOSITY_NORMAL, $options->verbosity());
+        static::assertFalse($options->verbose());
+        static::assertFalse($options->debug());
         static::assertNull($options->whitelist());
         static::assertSame(Options::ORDER_DEFAULT, $options->orderBy());
         static::assertSame(0, $options->randomOrderSeed());
@@ -268,6 +269,7 @@ final class OptionsTest extends TestBase
         static::assertFalse($options->needsTeamcity());
         static::assertFalse($options->hasCoverage());
         static::assertSame(0, $options->repeat());
+        static::assertFalse($options->testdox());
     }
 
     public function testProvidedOptions(): void
@@ -303,11 +305,13 @@ final class OptionsTest extends TestBase
             '--stop-on-failure' => true,
             '--testsuite' => 'TESTSUITE',
             '--tmp-dir' => ($tmpDir = uniqid($this->tmpDir . DS . 't')),
-            '--verbose' => 2,
+            '--verbose' => true,
+            '--debug' => true,
             '--whitelist' => 'WHITELIST',
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => (string) $expected_random_seed,
             '--repeat' => '2',
+            '--testdox' => true,
         ];
 
         $options = $this->createOptionsFromArgv($argv, __DIR__);
@@ -343,11 +347,13 @@ final class OptionsTest extends TestBase
         static::assertTrue($options->stopOnFailure());
         static::assertSame(['TESTSUITE'], $options->testsuite());
         static::assertSame($tmpDir, $options->tmpDir());
-        static::assertSame(Options::VERBOSITY_VERY_VERBOSE, $options->verbosity());
+        static::assertTrue($options->verbose());
+        static::assertTrue($options->debug());
         static::assertSame('WHITELIST', $options->whitelist());
         static::assertSame(Options::ORDER_RANDOM, $options->orderBy());
         static::assertSame($expected_random_seed, $options->randomOrderSeed());
         static::assertSame(2, $options->repeat());
+        static::assertTrue($options->testdox());
 
         static::assertSame([
             'bootstrap' => 'BOOTSTRAP',
@@ -367,9 +373,8 @@ final class OptionsTest extends TestBase
 
     public function testSingleVerboseFlag(): void
     {
-        $options = $this->createOptionsFromArgv(['--verbose' => 1], __DIR__);
-
-        static::assertSame(Options::VERBOSITY_VERBOSE, $options->verbosity());
+        static::assertFalse($this->createOptionsFromArgv(['--verbose' => false], __DIR__)->verbose());
+        static::assertTrue($this->createOptionsFromArgv(['--verbose' => true], __DIR__)->verbose());
     }
 
     public function testGatherOptionsFromConfiguration(): void

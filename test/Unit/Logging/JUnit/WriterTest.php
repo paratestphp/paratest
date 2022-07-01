@@ -18,6 +18,11 @@ use function unlink;
 /**
  * @internal
  *
+ * @covers \ParaTest\Logging\JUnit\ErrorTestCase
+ * @covers \ParaTest\Logging\JUnit\FailureTestCase
+ * @covers \ParaTest\Logging\JUnit\RiskyTestCase
+ * @covers \ParaTest\Logging\JUnit\SkippedTestCase
+ * @covers \ParaTest\Logging\JUnit\WarningTestCase
  * @covers \ParaTest\Logging\JUnit\Writer
  */
 final class WriterTest extends TestBase

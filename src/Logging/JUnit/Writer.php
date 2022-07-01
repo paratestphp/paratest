@@ -135,31 +135,20 @@ final class Writer
         $caseNode->setAttribute('assertions', (string) $case->assertions);
         $caseNode->setAttribute('time', sprintf('%F', $case->time));
 
-        $this->appendDefects($caseNode, $case->failures, 'failure');
-        $this->appendDefects($caseNode, $case->errors, 'error');
-        $this->appendDefects($caseNode, $case->warnings, 'warning');
-        $this->appendDefects($caseNode, $case->risky, 'error');
-        $this->appendDefects($caseNode, $case->skipped, 'skipped');
-
-        return $caseNode;
-    }
-
-    /**
-     * Append error or failure nodes to the given testcase node.
-     *
-     * @param array<int, array{type: string, text: string}> $defects
-     */
-    private function appendDefects(DOMElement $caseNode, array $defects, string $type): void
-    {
-        foreach ($defects as $defect) {
-            if ($type === 'skipped') {
-                $defectNode = $this->document->createElement($type);
+        if ($case instanceof TestCaseWithMessage) {
+            if ($case instanceof SkippedTestCase) {
+                $defectNode = $this->document->createElement($case->getXmlTagName());
             } else {
-                $defectNode = $this->document->createElement($type, htmlspecialchars($defect['text'], ENT_XML1));
-                $defectNode->setAttribute('type', $defect['type']);
+                $defectNode = $this->document->createElement($case->getXmlTagName(), htmlspecialchars($case->text, ENT_XML1));
+                $type       = $case->type;
+                if ($type !== null) {
+                    $defectNode->setAttribute('type', $type);
+                }
             }
 
             $caseNode->appendChild($defectNode);
         }
+
+        return $caseNode;
     }
 }

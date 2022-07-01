@@ -93,7 +93,7 @@ final class WrapperWorker
         $parameters[] = '--write-to';
         $parameters[] = $this->writeToPathname;
 
-        if ($options->verbosity() >= Options::VERBOSITY_VERY_VERBOSE) {
+        if ($options->debug()) {
             $this->output->write(sprintf(
                 "Starting WrapperWorker via: %s\n",
                 implode(' ', array_map('\escapeshellarg', $parameters))
@@ -136,7 +136,7 @@ final class WrapperWorker
         assert($this->currentlyExecuting === null);
         $commandArguments = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
         $command          = implode(' ', array_map('\\escapeshellarg', $commandArguments));
-        if ($options->verbosity() >= Options::VERBOSITY_VERY_VERBOSE) {
+        if ($options->debug()) {
             $this->output->write("\nExecuting test via: {$command}\n");
         }
 

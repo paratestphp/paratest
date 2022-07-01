@@ -22,7 +22,12 @@ RuntimeException: Error!!!
       <testcase name="isItFalse" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="27" assertions="1" time="1.234567"/>
       <testcase name="testFalsehood" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithErrorTest" file="./test/fixtures/failing_tests/UnitTestWithErrorTest.php" line="25" assertions="1" time="1.234567">
         <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testFalsehood
-Failed asserting that true is false.
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'foo'
++'bar'
 
 ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27</failure>
       </testcase>

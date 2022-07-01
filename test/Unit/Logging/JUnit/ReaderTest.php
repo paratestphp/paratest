@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Logging\JUnit;
 
 use InvalidArgumentException;
+use ParaTest\Logging\JUnit\ErrorTestCase;
+use ParaTest\Logging\JUnit\FailureTestCase;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Tests\TestBase;
@@ -19,6 +21,7 @@ use function file_put_contents;
  *
  * @covers \ParaTest\Logging\JUnit\Reader
  * @covers \ParaTest\Logging\JUnit\TestCase
+ * @covers \ParaTest\Logging\JUnit\TestCaseWithMessage
  * @covers \ParaTest\Logging\JUnit\TestSuite
  */
 final class ReaderTest extends TestBase
@@ -111,33 +114,31 @@ final class ReaderTest extends TestBase
 
     public function testMixedSuiteCasesLoadFailures(): void
     {
-        $suite = $this->mixed->getSuite();
-        $case  = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest']->cases[1];
-        static::assertCount(1, $case->failures);
-        $failure = $case->failures[0];
-        static::assertSame(ExpectationFailedException::class, $failure['type']);
+        $suite   = $this->mixed->getSuite();
+        $failure = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest']->cases[1];
+        static::assertInstanceOf(FailureTestCase::class, $failure);
+        static::assertSame(ExpectationFailedException::class, $failure->type);
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
             . "Failed asserting that true is false.\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
-            $failure['text']
+            $failure->text
         );
     }
 
     public function testMixedSuiteCasesLoadErrors(): void
     {
         $suite = $this->mixed->getSuite();
-        $case  = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest']->cases[0];
-        static::assertCount(1, $case->errors);
-        $error = $case->errors[0];
-        static::assertSame('RuntimeException', $error['type']);
+        $error = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest']->cases[0];
+        static::assertInstanceOf(ErrorTestCase::class, $error);
+        static::assertSame('RuntimeException', $error->type);
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
             . "RuntimeException: Error!!!\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
-            $error['text']
+            $error->text
         );
     }
 
@@ -190,17 +191,21 @@ final class ReaderTest extends TestBase
 
     public function testSingleSuiteCasesLoadFailures(): void
     {
-        $suite = $this->single->getSuite();
-        $case  = $suite->cases[1];
-        static::assertCount(1, $case->failures);
-        $failure = $case->failures[0];
-        static::assertSame(ExpectationFailedException::class, $failure['type']);
+        $suite   = $this->single->getSuite();
+        $failure = $suite->cases[1];
+        static::assertInstanceOf(FailureTestCase::class, $failure);
+        static::assertSame(ExpectationFailedException::class, $failure->type);
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
-            . "Failed asserting that true is false.\n"
+            . "Failed asserting that two strings are identical.\n"
+            . "--- Expected\n"
+            . "+++ Actual\n"
+            . "@@ @@\n"
+            . "-'foo'\n"
+            . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
-            $failure['text']
+            $failure->text
         );
     }
 
@@ -251,7 +256,12 @@ final class ReaderTest extends TestBase
         );
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
-            . "Failed asserting that true is false.\n"
+            . "Failed asserting that two strings are identical.\n"
+            . "--- Expected\n"
+            . "+++ Actual\n"
+            . "@@ @@\n"
+            . "-'foo'\n"
+            . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
             $failures[1]
@@ -288,7 +298,12 @@ final class ReaderTest extends TestBase
         static::assertCount(1, $failures);
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
-            . "Failed asserting that true is false.\n"
+            . "Failed asserting that two strings are identical.\n"
+            . "--- Expected\n"
+            . "+++ Actual\n"
+            . "@@ @@\n"
+            . "-'foo'\n"
+            . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
             $failures[0]
@@ -306,7 +321,7 @@ final class ReaderTest extends TestBase
             'ParaTest\Tests\fixtures\system_out\SystemOutTest::testRisky' . "\n"
             . 'This test did not perform any assertions' . "\n"
             . "\n"
-            . './test/fixtures/system_out/SystemOutTest.php:23myRisky',
+            . './test/fixtures/system_out/SystemOutTest.php:23',
             $risky[0]
         );
     }

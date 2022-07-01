@@ -124,7 +124,7 @@ abstract class RunnerTestCase extends TestBase
             '--configuration' => $this->fixture('phpunit-parallel-suite.xml'),
             '--parallel-suite' => true,
             '--processes' => '2',
-            '--verbose' => 1,
+            '--verbose' => true,
             '--whitelist' => $this->fixture('parallel_suite'),
         ]);
 
@@ -480,7 +480,7 @@ abstract class RunnerTestCase extends TestBase
             '--configuration' => $this->fixture('phpunit-passing.xml'),
             '--order-by' => Options::ORDER_RANDOM,
             '--random-order-seed' => '123',
-            '--verbose' => 2,
+            '--debug' => true,
         ];
 
         $runnerResultFirst  = $this->runRunner();
@@ -519,7 +519,7 @@ abstract class RunnerTestCase extends TestBase
     {
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-passing.xml'),
-            '--verbose' => 2,
+            '--debug' => true,
         ];
 
         $runnerResult = $this->runRunner();

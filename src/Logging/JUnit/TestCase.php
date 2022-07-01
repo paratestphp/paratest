@@ -9,10 +9,11 @@ use SimpleXMLElement;
 
 use function assert;
 use function class_exists;
+use function count;
+use function current;
 use function is_subclass_of;
 use function iterator_to_array;
 use function sprintf;
-use function trim;
 
 /**
  * A simple data structure for tracking
@@ -20,8 +21,10 @@ use function trim;
  * JUnit xml document
  *
  * @internal
+ *
+ * @readonly
  */
-final class TestCase
+abstract class TestCase
 {
     /** @var string */
     public $name;
@@ -40,21 +43,6 @@ final class TestCase
 
     /** @var float */
     public $time;
-
-    /** @var array<int, array{type: string, text: string}> */
-    public $errors = [];
-
-    /** @var array<int, array{type: string, text: string}> */
-    public $failures = [];
-
-    /** @var array<int, array{type: string, text: string}> */
-    public $warnings = [];
-
-    /** @var array<int, array{type: string, text: string}> */
-    public $skipped = [];
-
-    /** @var array<int, array{type: string, text: string}> */
-    public $risky = [];
 
     public function __construct(
         string $name,
@@ -78,9 +66,126 @@ final class TestCase
      *
      * @return TestCase
      */
-    public static function caseFromNode(SimpleXMLElement $node): self
+    final public static function caseFromNode(SimpleXMLElement $node): self
     {
-        $case = new self(
+        $systemOutput  = null;
+        $systemOutputs = $node->xpath('system-out');
+        if ($systemOutputs !== []) {
+            assert(count($systemOutputs) === 1);
+            $systemOutput = (string) current($systemOutputs);
+        }
+
+        $getFirstNode = static function (array $nodes): SimpleXMLElement {
+            assert(count($nodes) === 1);
+            $node = current($nodes);
+            assert($node instanceof SimpleXMLElement);
+
+            return $node;
+        };
+        $getType      = static function (SimpleXMLElement $node): string {
+            $attributes = iterator_to_array($node->attributes());
+            assert($attributes !== []);
+
+            return (string) $attributes['type'];
+        };
+
+        if (($errors = $node->xpath('error')) !== []) {
+            $error = $getFirstNode($errors);
+            $type  = $getType($error);
+            $text  = (string) $error;
+
+            if (
+                class_exists($type)
+                && ($type === RiskyTestError::class || is_subclass_of($type, RiskyTestError::class))
+            ) {
+                return new RiskyTestCase(
+                    (string) $node['name'],
+                    (string) $node['class'],
+                    (string) $node['file'],
+                    (int) $node['line'],
+                    (int) $node['assertions'],
+                    (float) $node['time'],
+                    $type,
+                    $text,
+                    $systemOutput
+                );
+            }
+
+            return new ErrorTestCase(
+                (string) $node['name'],
+                (string) $node['class'],
+                (string) $node['file'],
+                (int) $node['line'],
+                (int) $node['assertions'],
+                (float) $node['time'],
+                $type,
+                $text,
+                $systemOutput
+            );
+        }
+
+        if (($warnings = $node->xpath('warning')) !== []) {
+            $warning = $getFirstNode($warnings);
+            $type    = $getType($warning);
+            $text    = (string) $warning;
+
+            return new WarningTestCase(
+                (string) $node['name'],
+                (string) $node['class'],
+                (string) $node['file'],
+                (int) $node['line'],
+                (int) $node['assertions'],
+                (float) $node['time'],
+                $type,
+                $text,
+                $systemOutput
+            );
+        }
+
+        if (($failures = $node->xpath('failure')) !== []) {
+            $failure = $getFirstNode($failures);
+            $type    = $getType($failure);
+            $text    = (string) $failure;
+
+            return new FailureTestCase(
+                (string) $node['name'],
+                (string) $node['class'],
+                (string) $node['file'],
+                (int) $node['line'],
+                (int) $node['assertions'],
+                (float) $node['time'],
+                $type,
+                $text,
+                $systemOutput
+            );
+        }
+
+        if ($node->xpath('skipped') !== []) {
+            $text = (string) $node['name'];
+            if ((string) $node['class'] !== '') {
+                $text = sprintf(
+                    "%s::%s\n\n%s:%s",
+                    (string) $node['class'],
+                    (string) $node['name'],
+                    (string) $node['file'],
+                    (string) $node['line']
+                );
+            }
+
+            return new SkippedTestCase(
+                (string) $node['name'],
+                (string) $node['class'],
+                (string) $node['file'],
+                (int) $node['line'],
+                (int) $node['assertions'],
+                (float) $node['time'],
+                null,
+                $text,
+                $systemOutput
+            );
+        }
+
+        return new SuccessTestCase(
             (string) $node['name'],
             (string) $node['class'],
             (string) $node['file'],
@@ -88,66 +193,5 @@ final class TestCase
             (int) $node['assertions'],
             (float) $node['time']
         );
-
-        $system_output = $node->{'system-out'};
-        assert($system_output instanceof SimpleXMLElement);
-
-        $errors = $node->xpath('error');
-        $risky  = [];
-        foreach ($errors as $index => $error) {
-            $attributes = $error->attributes();
-            $attributes = iterator_to_array($attributes);
-            $type       = (string) $attributes['type'];
-            if (
-                ! class_exists($type)
-                || ! ($type === RiskyTestError::class || is_subclass_of($type, RiskyTestError::class))
-            ) {
-                continue;
-            }
-
-            unset($errors[$index]);
-            $risky[] = $error;
-        }
-
-        $defect_groups = [
-            'failures' => $node->xpath('failure'),
-            'errors' => $errors,
-            'warnings' => $node->xpath('warning'),
-            'skipped' => $node->xpath('skipped'),
-            'risky' => $risky,
-        ];
-
-        foreach ($defect_groups as $group => $defects) {
-            if ($group === 'skipped' && $defects !== []) {
-                $text = (string) $node['name'];
-                if ((string) $node['class'] !== '') {
-                    $text = sprintf(
-                        "%s::%s\n\n%s:%s",
-                        (string) $node['class'],
-                        (string) $node['name'],
-                        (string) $node['file'],
-                        (string) $node['line']
-                    );
-                }
-
-                $case->skipped[] = [
-                    'type' => '',
-                    'text' => $text,
-                ];
-                continue;
-            }
-
-            foreach ($defects as $defect) {
-                $message  = (string) $defect;
-                $message .= (string) $system_output;
-
-                $case->{$group}[] = [
-                    'type' => (string) $defect['type'],
-                    'text' => trim($message),
-                ];
-            }
-        }
-
-        return $case;
     }
 }
