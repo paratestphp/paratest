@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
   <file src="src/Logging/JUnit/Reader.php">
+    <ArgumentTypeCoercion occurrences="1"/>
     <MixedArgument occurrences="3">
       <code>$singleTestCase</code>
       <code>$singleTestSuiteXml</code>
@@ -11,6 +12,14 @@
       <code>$singleTestSuiteXml</code>
       <code>$singleTestSuiteXml</code>
     </MixedAssignment>
+  </file>
+  <file src="src/Logging/JUnit/TestCase.php">
+    <ImplicitToStringCast occurrences="4">
+      <code>$node['class']</code>
+      <code>$node['file']</code>
+      <code>$node['line']</code>
+      <code>$node['name']</code>
+    </ImplicitToStringCast>
   </file>
   <file src="src/Parser/Parser.php">
     <DeprecatedClass occurrences="1">

@@ -213,10 +213,7 @@ final class Reader implements MetaProviderInterface
      */
     private function getMessagesOfType(TestSuite $testSuite, callable $callback): array
     {
-        $messages = array_filter($testSuite->cases, static function (TestCase $testCase): bool {
-            return $testCase instanceof TestCaseWithMessage;
-        });
-        $messages = array_filter($messages, $callback);
+        $messages = array_filter($testSuite->cases, $callback);
         $messages = array_map(static function (TestCaseWithMessage $testCase): string {
             return $testCase->text;
         }, $messages);

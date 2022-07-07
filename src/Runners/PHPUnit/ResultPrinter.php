@@ -296,8 +296,8 @@ final class ResultPrinter
 
         $this->results->addReader($reader);
 
-        if ($teamcityContent !== null && $this->printsTeamcity) {
-            $this->output->write($teamcityContent);
+        if ($teamcityContent !== null) {
+            $this->output->write(OutputFormatter::escape($teamcityContent));
         } elseif ($this->options->testdox()) {
             $this->processTestdoxReader($reader->getSuite());
         } else {
@@ -725,7 +725,7 @@ final class ResultPrinter
             $lines    = explode("\n", $case->text);
             $lines[0] = '';
             if ($case instanceof SkippedTestCase) {
-                unset($lines[1]);
+                unset($lines[0]);
             }
 
             $lines[] = '';

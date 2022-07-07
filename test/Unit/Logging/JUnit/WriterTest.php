@@ -23,6 +23,7 @@ use function unlink;
  * @covers \ParaTest\Logging\JUnit\RiskyTestCase
  * @covers \ParaTest\Logging\JUnit\SkippedTestCase
  * @covers \ParaTest\Logging\JUnit\WarningTestCase
+ * @covers \ParaTest\Logging\JUnit\TestCaseWithMessage
  * @covers \ParaTest\Logging\JUnit\Writer
  */
 final class WriterTest extends TestBase

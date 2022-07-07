@@ -165,10 +165,10 @@ abstract class TestCase
             if ((string) $node['class'] !== '') {
                 $text = sprintf(
                     "%s::%s\n\n%s:%s",
-                    (string) $node['class'],
-                    (string) $node['name'],
-                    (string) $node['file'],
-                    (string) $node['line']
+                    $node['class'],
+                    $node['name'],
+                    $node['file'],
+                    $node['line']
                 );
             }
 
