@@ -115,11 +115,21 @@ final class LogInterpreterTest extends ResultTester
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
-            . "Failed asserting that true is false.\n"
+            . "Failed asserting that two strings are identical.\n"
+            . "--- Expected\n"
+            . "+++ Actual\n"
+            . "@@ @@\n"
+            . "-'foo'\n"
+            . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
-            . "Failed asserting that true is false.\n"
+            . "Failed asserting that two strings are identical.\n"
+            . "--- Expected\n"
+            . "+++ Actual\n"
+            . "@@ @@\n"
+            . "-'foo'\n"
+            . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
         ];

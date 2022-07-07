@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
   <file src="src/Logging/JUnit/Reader.php">
-    <MixedArgument occurrences="4">
-      <code>$callback($case)</code>
+    <ArgumentTypeCoercion occurrences="1"/>
+    <MixedArgument occurrences="3">
       <code>$singleTestCase</code>
       <code>$singleTestSuiteXml</code>
       <code>$singleTestSuiteXml</code>
@@ -14,9 +14,12 @@
     </MixedAssignment>
   </file>
   <file src="src/Logging/JUnit/TestCase.php">
-    <MixedArrayAssignment occurrences="1">
-      <code>$case-&gt;{$group}[]</code>
-    </MixedArrayAssignment>
+    <ImplicitToStringCast occurrences="4">
+      <code>$node['class']</code>
+      <code>$node['file']</code>
+      <code>$node['line']</code>
+      <code>$node['name']</code>
+    </ImplicitToStringCast>
   </file>
   <file src="src/Parser/Parser.php">
     <DeprecatedClass occurrences="1">
@@ -27,6 +30,17 @@
       <code>self::$alreadyLoadedSources</code>
       <code>self::$alreadyLoadedSources[$srcPath]</code>
     </PropertyTypeCoercion>
+  </file>
+  <file src="src/Runners/PHPUnit/ResultPrinter.php">
+    <InvalidArrayOffset occurrences="1">
+      <code>self::TESTDOX_SYMBOLS[get_class($case)]</code>
+    </InvalidArrayOffset>
+    <MixedArgument occurrences="1">
+      <code>self::TESTDOX_SYMBOLS[get_class($case)]</code>
+    </MixedArgument>
+    <MixedMethodCall occurrences="1">
+      <code>new $class($case-&gt;name)</code>
+    </MixedMethodCall>
   </file>
   <file src="src/Runners/PHPUnit/Runner.php">
     <MixedArgumentTypeCoercion occurrences="1">

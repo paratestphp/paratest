@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Logging\LogInterpreter;
+use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Suite;
@@ -51,24 +52,6 @@ final class ResultPrinterTest extends ResultTester
         $this->printer     = new ResultPrinter($this->interpreter, $this->output, $this->options);
 
         $this->passingSuiteWithWrongTestCountEstimation = $this->getSuiteWithResult('single-passing.xml', 1);
-    }
-
-    public function testConstructor(): void
-    {
-        static::assertSame([], $this->getObjectValue($this->printer, 'suites'));
-        static::assertInstanceOf(
-            LogInterpreter::class,
-            $this->getObjectValue($this->printer, 'results')
-        );
-    }
-
-    public function testAddTestShouldAddTest(): void
-    {
-        $suite = new Suite('/path/to/ResultSuite.php', [], false, false, $this->tmpDir);
-
-        $this->printer->addTest($suite);
-
-        static::assertSame([$suite], $this->getObjectValue($this->printer, 'suites'));
     }
 
     public function testStartPrintsOptionInfo(): void
@@ -200,10 +183,10 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetHeader(): void
     {
-        $this->printer->addTest($this->errorSuite);
-        $this->printer->addTest($this->failureSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->errorSuite,
+            $this->failureSuite
+        );
 
         $header = $this->printer->getHeader();
 
@@ -217,10 +200,10 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetErrorsSingleError(): void
     {
-        $this->printer->addTest($this->errorSuite);
-        $this->printer->addTest($this->failureSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->errorSuite,
+            $this->failureSuite
+        );
 
         $errors = $this->printer->getErrors();
 
@@ -234,10 +217,10 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetErrorsMultipleErrors(): void
     {
-        $this->printer->addTest($this->errorSuite);
-        $this->printer->addTest($this->errorSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->errorSuite,
+            $this->errorSuite
+        );
 
         $errors = $this->printer->getErrors();
 
@@ -259,31 +242,49 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetFailures(): void
     {
-        $this->printer->addTest($this->mixedSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->mixedSuite
+        );
 
         $failures = $this->printer->getFailures();
 
-        $eq  = "There were 3 failures:\n\n";
-        $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n";
-        $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32\n\n";
-        $eq .= "2) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n";
-        $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n\n";
-        $eq .= "3) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n";
-        $eq .= "Failed asserting that true is false.\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n\n";
+        $expected =
+            "There were 3 failures:\n"
+            . "\n"
+            . "1) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest::testFalsehood\n"
+            . "Failed asserting that true is false.\n"
+            . "\n"
+            . "./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32\n"
+            . "\n"
+            . "2) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
+            . "Failed asserting that two strings are identical.\n"
+            . "--- Expected\n"
+            . "+++ Actual\n"
+            . "@@ @@\n"
+            . "-'foo'\n"
+            . "+'bar'\n"
+            . "\n"
+            . "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n"
+            . "\n"
+            . "3) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
+            . "Failed asserting that two strings are identical.\n"
+            . "--- Expected\n"
+            . "+++ Actual\n"
+            . "@@ @@\n"
+            . "-'foo'\n"
+            . "+'bar'\n"
+            . "\n"
+            . "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n"
+            . "\n";
 
-        static::assertSame($eq, $failures);
+        static::assertSame($expected, $failures);
     }
 
     public function testGetRisky(): void
     {
-        $this->printer->addTest($this->mixedSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->mixedSuite
+        );
 
         $failures = $this->printer->getRisky();
 
@@ -300,9 +301,9 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetSkipped(): void
     {
-        $this->printer->addTest($this->skipped);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->skipped
+        );
 
         $failures = $this->printer->getSkipped();
 
@@ -315,10 +316,10 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetFooterWithFailures(): void
     {
-        $this->printer->addTest($this->errorSuite);
-        $this->printer->addTest($this->mixedSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->errorSuite,
+            $this->mixedSuite
+        );
 
         $footer = $this->printer->getFooter();
 
@@ -330,9 +331,9 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetFooterWithWarnings(): void
     {
-        $this->printer->addTest($this->warningSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->warningSuite
+        );
 
         $footer = $this->printer->getFooter();
 
@@ -344,9 +345,9 @@ final class ResultPrinterTest extends ResultTester
 
     public function testGetFooterWithSuccess(): void
     {
-        $this->printer->addTest($this->passingSuite);
-
-        $this->prepareReaders();
+        $this->prepareReaders(
+            $this->passingSuite
+        );
 
         $footer = $this->printer->getFooter();
 
@@ -500,7 +501,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testSkippedOutpusMessagesWithVerbose(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => true, '--verbose' => 1]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => true, '--verbose' => true]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->skipped);
 
@@ -515,7 +516,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testColorsForPassing(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => true]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => true, '--verbose' => false]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->passingSuite);
 
@@ -605,6 +606,194 @@ final class ResultPrinterTest extends ResultTester
         self::assertSame(9, preg_match_all('/^##teamcity/m', $output));
     }
 
+    public function testTestdoxOutputNonVerbose(): void
+    {
+        $options = $this->createOptionsFromArgv(['--testdox' => true, '--verbose' => false]);
+        $printer = new ResultPrinter($this->interpreter, $this->output, $options);
+        $printer->printFeedback($this->mixedSuite);
+        $contents = $this->output->fetch();
+
+        $expected = <<<'EOF'
+Unit Test With Class Annotation (ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotation)
+ ✔ Truth
+ ✘ Falsehood
+   │
+   │ Failed asserting that true is false.
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32
+   │
+
+ ✔ Array length
+ ✔ Its a test
+
+Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
+ ✘ Truth
+   │
+   │ RuntimeException: Error!!!
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21
+   │
+
+ ✔ Is it false
+ ✘ Falsehood
+   │
+   │ Failed asserting that two strings are identical.
+   │ --- Expected
+   │ +++ Actual
+   │ @@ @@
+   │ -'foo'
+   │ +'bar'
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │
+
+ ✔ Array length
+ ⚠ Warning
+   │
+   │ MyWarning
+   │
+
+ ↩ Skipped
+ ↩ Incomplete
+ ☢ Risky
+
+Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotations)
+ ✔ Truth
+ ✘ Falsehood
+   │
+   │ Failed asserting that two strings are identical.
+   │ --- Expected
+   │ +++ Actual
+   │ @@ @@
+   │ -'foo'
+   │ +'bar'
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │
+
+ ✔ Array length
+ ⚠ Warning
+   │
+   │ MyWarning
+   │
+
+ ↩ Skipped
+ ↩ Incomplete
+ ☢ Risky
+
+
+EOF;
+
+        static::assertSame($expected, $contents);
+    }
+
+    public function testTestdoxOutputVerbose(): void
+    {
+        $options = $this->createOptionsFromArgv(['--testdox' => true, '--verbose' => true]);
+        $printer = new ResultPrinter($this->interpreter, $this->output, $options);
+        $printer->printFeedback($this->mixedSuite);
+        $contents = $this->output->fetch();
+
+        $expected = <<<'EOF'
+Unit Test With Class Annotation (ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotation)
+ ✔ Truth [1234.57 ms]
+ ✘ Falsehood [1234.57 ms]
+   │
+   │ Failed asserting that true is false.
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32
+   │
+
+ ✔ Array length [1234.57 ms]
+ ✔ Its a test [1234.57 ms]
+
+Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
+ ✘ Truth [1234.57 ms]
+   │
+   │ RuntimeException: Error!!!
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21
+   │
+
+ ✔ Is it false [1234.57 ms]
+ ✘ Falsehood [1234.57 ms]
+   │
+   │ Failed asserting that two strings are identical.
+   │ --- Expected
+   │ +++ Actual
+   │ @@ @@
+   │ -'foo'
+   │ +'bar'
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │
+
+ ✔ Array length [1234.57 ms]
+ ⚠ Warning [1234.57 ms]
+   │
+   │ MyWarning
+   │
+
+ ↩ Skipped [1234.57 ms]
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:50
+   │
+
+ ↩ Incomplete [1234.57 ms]
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:58
+   │
+
+ ☢ Risky [1234.57 ms]
+   │
+   │ This test did not perform any assertions
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66
+   │
+
+Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotations)
+ ✔ Truth [1234.57 ms]
+ ✘ Falsehood [1234.57 ms]
+   │
+   │ Failed asserting that two strings are identical.
+   │ --- Expected
+   │ +++ Actual
+   │ @@ @@
+   │ -'foo'
+   │ +'bar'
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │
+
+ ✔ Array length [1234.57 ms]
+ ⚠ Warning [1234.57 ms]
+   │
+   │ MyWarning
+   │
+
+ ↩ Skipped [1234.57 ms]
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50
+   │
+
+ ↩ Incomplete [1234.57 ms]
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:58
+   │
+
+ ☢ Risky [1234.57 ms]
+   │
+   │ This test did not perform any assertions
+   │
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66
+   │
+
+
+EOF;
+
+        static::assertSame($expected, $contents);
+    }
+
     private function getStartOutput(): string
     {
         $this->printer->start();
@@ -612,10 +801,15 @@ final class ResultPrinterTest extends ResultTester
         return $this->output->fetch();
     }
 
-    private function prepareReaders(): void
+    private function prepareReaders(ExecutableTest ...$executableTests): void
     {
-        $suites = $this->getObjectValue($this->printer, 'suites');
-        foreach ($suites as $suite) {
+        self::assertNotSame([], $executableTests);
+
+        foreach ($executableTests as $suite) {
+            $this->printer->addTest($suite);
+        }
+
+        foreach ($executableTests as $suite) {
             $this->printer->printFeedback($suite);
         }
 

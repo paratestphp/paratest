@@ -70,10 +70,6 @@ final class Options
         self::ORDER_REVERSE,
     ];
 
-    public const VERBOSITY_NORMAL       = 1;
-    public const VERBOSITY_VERBOSE      = 2;
-    public const VERBOSITY_VERY_VERBOSE = 4;
-
     /**
      * @see \PHPUnit\Util\Configuration
      * @see https://github.com/sebastianbergmann/phpunit/commit/80754cf323fe96003a2567f5e57404fddecff3bf
@@ -175,8 +171,10 @@ final class Options
      */
     private $passthruPhp;
 
-    /** @var int */
-    private $verbosity;
+    /** @var bool */
+    private $verbose;
+    /** @var bool */
+    private $debug;
 
     /**
      * Limit the number of tests recorded in coverage reports
@@ -223,6 +221,8 @@ final class Options
     private $randomOrderSeed;
     /** @var int */
     private $repeat;
+    /** @var bool */
+    private $testdox;
 
     /**
      * @param array<string, string|null> $filtered
@@ -266,11 +266,13 @@ final class Options
         bool $stopOnFailure,
         array $testsuite,
         string $tmpDir,
-        int $verbosity,
+        bool $verbose,
+        bool $debug,
         ?string $whitelist,
         string $orderBy,
         int $randomOrderSeed,
-        int $repeat
+        int $repeat,
+        bool $testdox
     ) {
         $this->bootstrap         = $bootstrap;
         $this->colors            = $colors;
@@ -305,11 +307,13 @@ final class Options
         $this->stopOnFailure     = $stopOnFailure;
         $this->testsuite         = $testsuite;
         $this->tmpDir            = $tmpDir;
-        $this->verbosity         = $verbosity;
+        $this->verbose           = $verbose;
+        $this->debug             = $debug;
         $this->whitelist         = $whitelist;
         $this->orderBy           = $orderBy;
         $this->randomOrderSeed   = $randomOrderSeed;
         $this->repeat            = $repeat;
+        $this->testdox           = $testdox;
     }
 
     public static function fromConsoleInput(InputInterface $input, string $cwd): self
@@ -327,6 +331,7 @@ final class Options
         assert($options['coverage-php'] === null || is_string($options['coverage-php']));
         assert($options['coverage-text'] === false || $options['coverage-text'] === null || is_string($options['coverage-text']));
         assert($options['coverage-xml'] === null || is_string($options['coverage-xml']));
+        assert(is_bool($options['debug']));
         assert($options['filter'] === null || is_string($options['filter']));
         assert(is_bool($options['functional']));
         assert($options['log-junit'] === null || is_string($options['log-junit']));
@@ -345,6 +350,8 @@ final class Options
         assert(is_string($options['tmp-dir']));
         assert($options['whitelist'] === null || is_string($options['whitelist']));
         assert($options['repeat'] === null || is_string($options['repeat']));
+        assert(is_bool($options['verbose']));
+        assert(is_bool($options['testdox']));
 
         if ($options['path'] === null) {
             $path = $input->getArgument('path');
@@ -511,23 +518,6 @@ final class Options
         // is strictly coupled with PHPUnit pinned version
         $phpunit = self::getPhpunitBinary();
 
-        $verbosity = self::VERBOSITY_NORMAL;
-        if (
-            $input->hasParameterOption('-vv', true)
-            || $input->hasParameterOption('--verbose=2', true)
-            || $input->getParameterOption('--verbose', false, true) === 2
-        ) {
-            $verbosity = self::VERBOSITY_VERY_VERBOSE;
-        } elseif (
-            $input->hasParameterOption('-v', true)
-            || $input->hasParameterOption('--verbose=1', true)
-            || $input->hasParameterOption('--verbose', true)
-            || $input->getParameterOption('--verbose', false, true) === 1
-            || ($configuration !== null && $configuration->phpunit()->verbose())
-        ) {
-            $verbosity = self::VERBOSITY_VERBOSE;
-        }
-
         return new self(
             $options['bootstrap'],
             $colors,
@@ -562,11 +552,13 @@ final class Options
             $options['stop-on-failure'],
             $testsuite,
             $options['tmp-dir'],
-            $verbosity,
+            $options['verbose'],
+            $options['debug'],
             $options['whitelist'],
             $options['order-by'] ?? self::ORDER_DEFAULT,
             (int) $options['random-order-seed'],
-            (int) $options['repeat']
+            (int) $options['repeat'],
+            $options['testdox']
         );
     }
 
@@ -663,6 +655,12 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Generate code coverage report in PHPUnit XML format.'
+            ),
+            new InputOption(
+                'debug',
+                null,
+                InputOption::VALUE_NONE,
+                'Display debugging information'
             ),
             new InputOption(
                 'exclude-group',
@@ -796,6 +794,12 @@ final class Options
                 'Output test results in Teamcity format.'
             ),
             new InputOption(
+                'testdox',
+                null,
+                InputOption::VALUE_NONE,
+                'Report test execution progress in TestDox format.'
+            ),
+            new InputOption(
                 'testsuite',
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -810,9 +814,9 @@ final class Options
             ),
             new InputOption(
                 'verbose',
-                'v|vv',
+                'v',
                 InputOption::VALUE_NONE,
-                'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output'
+                'Output more verbose information'
             ),
             new InputOption(
                 'whitelist',
@@ -1038,9 +1042,14 @@ final class Options
         return $this->passthruPhp;
     }
 
-    public function verbosity(): int
+    public function verbose(): bool
     {
-        return $this->verbosity;
+        return $this->verbose;
+    }
+
+    public function debug(): bool
+    {
+        return $this->debug;
     }
 
     public function coverageTestLimit(): int
@@ -1155,5 +1164,10 @@ final class Options
         }
 
         return $env;
+    }
+
+    public function testdox(): bool
+    {
+        return $this->testdox;
     }
 }

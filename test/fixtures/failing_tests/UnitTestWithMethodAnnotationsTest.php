@@ -24,7 +24,7 @@ class UnitTestWithMethodAnnotationsTest extends TestCase
      */
     public function testFalsehood(): void
     {
-        $this->assertFalse(true);
+        $this->assertSame('foo', 'bar');
     }
 
     /**

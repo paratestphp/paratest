@@ -8,16 +8,15 @@ use InvalidArgumentException;
 use ParaTest\Logging\MetaProviderInterface;
 use SimpleXMLElement;
 
-use function array_key_exists;
+use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_sum;
+use function array_values;
 use function assert;
-use function count;
 use function file_exists;
 use function file_get_contents;
 use function filesize;
-use function is_string;
 use function str_repeat;
 use function unlink;
 
@@ -72,7 +71,7 @@ final class Reader implements MetaProviderInterface
         }
 
         $risky  = array_sum(array_map(static function (TestCase $testCase): int {
-            return count($testCase->risky);
+            return (int) ($testCase instanceof RiskyTestCase);
         }, $cases));
         $risky += array_sum(array_map(static function (TestSuite $testSuite): int {
             return $testSuite->risky;
@@ -162,8 +161,8 @@ final class Reader implements MetaProviderInterface
      */
     public function getErrors(): array
     {
-        return $this->getMessagesOfType($this->suite, static function (TestCase $case): array {
-            return $case->errors;
+        return $this->getMessagesOfType($this->suite, static function (TestCase $case): bool {
+            return $case instanceof ErrorTestCase;
         });
     }
 
@@ -172,8 +171,8 @@ final class Reader implements MetaProviderInterface
      */
     public function getWarnings(): array
     {
-        return $this->getMessagesOfType($this->suite, static function (TestCase $case): array {
-            return $case->warnings;
+        return $this->getMessagesOfType($this->suite, static function (TestCase $case): bool {
+            return $case instanceof WarningTestCase;
         });
     }
 
@@ -182,8 +181,8 @@ final class Reader implements MetaProviderInterface
      */
     public function getFailures(): array
     {
-        return $this->getMessagesOfType($this->suite, static function (TestCase $case): array {
-            return $case->failures;
+        return $this->getMessagesOfType($this->suite, static function (TestCase $case): bool {
+            return $case instanceof FailureTestCase;
         });
     }
 
@@ -192,8 +191,8 @@ final class Reader implements MetaProviderInterface
      */
     public function getRisky(): array
     {
-        return $this->getMessagesOfType($this->suite, static function (TestCase $case): array {
-            return $case->risky;
+        return $this->getMessagesOfType($this->suite, static function (TestCase $case): bool {
+            return $case instanceof RiskyTestCase;
         });
     }
 
@@ -202,30 +201,27 @@ final class Reader implements MetaProviderInterface
      */
     public function getSkipped(): array
     {
-        return $this->getMessagesOfType($this->suite, static function (TestCase $case): array {
-            return $case->skipped;
+        return $this->getMessagesOfType($this->suite, static function (TestCase $case): bool {
+            return $case instanceof SkippedTestCase;
         });
     }
 
     /**
+     * @param callable(TestCase):bool $callback
+     *
      * @return string[]
      */
     private function getMessagesOfType(TestSuite $testSuite, callable $callback): array
     {
-        $messages = [];
+        $messages = array_filter($testSuite->cases, $callback);
+        $messages = array_map(static function (TestCaseWithMessage $testCase): string {
+            return $testCase->text;
+        }, $messages);
+
         foreach ($testSuite->suites as $suite) {
             $messages = array_merge($messages, $this->getMessagesOfType($suite, $callback));
         }
 
-        foreach ($testSuite->cases as $case) {
-            $messages = array_merge($messages, array_map(static function (array $msg): string {
-                assert(array_key_exists('text', $msg));
-                assert(is_string($msg['text']));
-
-                return $msg['text'];
-            }, $callback($case)));
-        }
-
-        return $messages;
+        return array_values($messages);
     }
 }

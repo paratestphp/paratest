@@ -36,7 +36,6 @@ final class WrapperRunner extends BaseRunner
     {
         $this->startWorkers();
         $this->assignAllPendingTests();
-        $this->sendStopMessages();
         $this->waitForAllToFinish();
     }
 
@@ -103,18 +102,17 @@ final class WrapperRunner extends BaseRunner
         $this->exitcode = max($this->exitcode, $exitCode);
     }
 
-    private function sendStopMessages(): void
-    {
-        foreach ($this->workers as $worker) {
-            $worker->stop();
-        }
-    }
-
     private function waitForAllToFinish(): void
     {
+        $stopped = [];
         while (count($this->workers) > 0) {
             foreach ($this->workers as $index => $worker) {
                 if ($worker->isRunning()) {
+                    if (! isset($stopped[$index]) && $worker->isFree()) {
+                        $worker->stop();
+                        $stopped[$index] = true;
+                    }
+
                     continue;
                 }
 

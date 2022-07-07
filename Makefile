@@ -23,7 +23,7 @@ csfix: vendor
 
 .PHONY: static-analysis
 static-analysis: vendor
-	vendor/bin/psalm $(PSALM_ARGS)
+	php -d zend.assertions=1 vendor/bin/psalm $(PSALM_ARGS)
 
 coverage/junit.xml: vendor $(SRCS) Makefile
 	php -d zend.assertions=1 vendor/bin/phpunit \
@@ -33,6 +33,12 @@ coverage/junit.xml: vendor $(SRCS) Makefile
 	php -d zend.assertions=1 bin/paratest \
 		--no-coverage \
 		--processes=1 \
+		--runner=Runner \
+		$(PARATEST_ARGS)
+	php -d zend.assertions=1 bin/paratest \
+		--no-coverage \
+		--processes=1 \
+		--runner=WrapperRunner \
 		$(PARATEST_ARGS)
 	php -d zend.assertions=1 \
 		-d pcov.enabled=1 \

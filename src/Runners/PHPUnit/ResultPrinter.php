@@ -5,9 +5,19 @@ declare(strict_types=1);
 namespace ParaTest\Runners\PHPUnit;
 
 use InvalidArgumentException;
+use ParaTest\Logging\JUnit\ErrorTestCase;
+use ParaTest\Logging\JUnit\FailureTestCase;
 use ParaTest\Logging\JUnit\Reader;
+use ParaTest\Logging\JUnit\RiskyTestCase;
+use ParaTest\Logging\JUnit\SkippedTestCase;
+use ParaTest\Logging\JUnit\SuccessTestCase;
+use ParaTest\Logging\JUnit\TestCaseWithMessage;
+use ParaTest\Logging\JUnit\TestSuite;
+use ParaTest\Logging\JUnit\WarningTestCase;
 use ParaTest\Logging\LogInterpreter;
+use PHPUnit\Framework\TestCase;
 use PHPUnit\Util\Color;
+use PHPUnit\Util\TestDox\NamePrettifier;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
@@ -17,13 +27,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function array_filter;
 use function array_map;
 use function assert;
+use function class_exists;
 use function count;
+use function explode;
 use function fclose;
 use function file_get_contents;
 use function filesize;
 use function floor;
 use function fopen;
 use function fwrite;
+use function get_class;
 use function implode;
 use function is_array;
 use function max;
@@ -46,12 +59,14 @@ use const PHP_VERSION;
  */
 final class ResultPrinter
 {
-    /**
-     * A collection of ExecutableTest objects.
-     *
-     * @var ExecutableTest[]
-     */
-    private $suites = [];
+    private const TESTDOX_SYMBOLS = [
+        SuccessTestCase::class => '✔',
+        ErrorTestCase::class  => '✘',
+        FailureTestCase::class => '✘',
+        SkippedTestCase::class => '↩',
+        RiskyTestCase::class  => '☢',
+        WarningTestCase::class => '⚠',
+    ];
 
     /** @var LogInterpreter */
     private $results;
@@ -148,7 +163,6 @@ final class ResultPrinter
      */
     public function addTest(ExecutableTest $suite): void
     {
-        $this->suites[]    = $suite;
         $this->totalCases += $suite->getTestCount();
     }
 
@@ -163,7 +177,7 @@ final class ResultPrinter
                          + (DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
                          - strlen($this->getProgress());
 
-        if ($this->options->verbosity() >= Options::VERBOSITY_VERBOSE) {
+        if ($this->options->verbose()) {
             // @see \PHPUnit\TextUI\TestRunner::writeMessage()
             $output = $this->output;
             $write  = static function (string $type, string $message) use ($output): void {
@@ -226,7 +240,7 @@ final class ResultPrinter
             $this->getFailures(),
             $this->getRisky(),
         ];
-        if ($this->options->verbosity() >= Options::VERBOSITY_VERBOSE) {
+        if ($this->options->verbose()) {
             $toFilter[] = $this->getSkipped();
         }
 
@@ -264,6 +278,7 @@ final class ResultPrinter
             );
         }
 
+        $teamcityContent = null;
         if ($this->needsTeamcity) {
             $teamcityLogFile = $test->getTeamcityTempFile();
 
@@ -271,21 +286,21 @@ final class ResultPrinter
                 throw new EmptyLogFileException("Teamcity format file {$teamcityLogFile} is empty");
             }
 
-            $result = file_get_contents($teamcityLogFile);
-            assert($result !== false);
+            $teamcityContent = file_get_contents($teamcityLogFile);
+            assert($teamcityContent !== false);
 
             if ($this->teamcityLogFileHandle !== null) {
-                fwrite($this->teamcityLogFileHandle, $result);
-            }
-
-            if ($this->printsTeamcity) {
-                $this->output->write($result);
+                fwrite($this->teamcityLogFileHandle, $teamcityContent);
             }
         }
 
         $this->results->addReader($reader);
 
-        if (! $this->printsTeamcity) {
+        if ($teamcityContent !== null) {
+            $this->output->write(OutputFormatter::escape($teamcityContent));
+        } elseif ($this->options->testdox()) {
+            $this->processTestdoxReader($reader->getSuite());
+        } else {
             $this->processReaderFeedback($reader, $test->getTestCount());
         }
 
@@ -660,5 +675,68 @@ final class ResultPrinter
         }
 
         return implode(PHP_EOL, $styledLines);
+    }
+
+    private function processTestdoxReader(TestSuite $testSuite): void
+    {
+        foreach ($testSuite->suites as $suite) {
+            $this->processTestdoxReader($suite);
+        }
+
+        if ($testSuite->cases === []) {
+            return;
+        }
+
+        $prettifier = new NamePrettifier(false);
+
+        $class = $testSuite->name;
+        assert(class_exists($class));
+
+        $this->output->writeln($prettifier->prettifyTestClass($class));
+
+        $separator = PHP_EOL;
+        foreach ($testSuite->cases as $case) {
+            $separator = PHP_EOL;
+            $testCase  = new $class($case->name);
+            assert($testCase instanceof TestCase);
+
+            $time = '';
+            if ($this->options->verbose()) {
+                $time = sprintf(' [%.2f ms]', $case->time * 1000);
+            }
+
+            $testName = $prettifier->prettifyTestCase($testCase);
+            $this->output->writeln(sprintf(
+                ' %s %s%s',
+                self::TESTDOX_SYMBOLS[get_class($case)],
+                $testName,
+                $time
+            ));
+
+            $failingCase = $case instanceof FailureTestCase || $case instanceof ErrorTestCase || $case instanceof WarningTestCase;
+            if (! $this->options->verbose() && ! $failingCase) {
+                continue;
+            }
+
+            if (! $case instanceof TestCaseWithMessage) {
+                continue;
+            }
+
+            $lines    = explode("\n", $case->text);
+            $lines[0] = '';
+            if ($case instanceof SkippedTestCase) {
+                unset($lines[0]);
+            }
+
+            $lines[] = '';
+            foreach ($lines as $index => $line) {
+                $lines[$index] = '   │' . ($line !== '' ? ' ' . $line : '');
+            }
+
+            $this->output->writeln(implode(PHP_EOL, $lines) . PHP_EOL);
+            $separator = '';
+        }
+
+        $this->output->write($separator);
     }
 }
