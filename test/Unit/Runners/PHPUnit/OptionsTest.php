@@ -7,6 +7,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Tests\TestBase;
+use PHPUnit\TextUI\DefaultResultPrinter;
 use Symfony\Component\Console\Input\InputDefinition;
 
 use function defined;
@@ -277,7 +278,7 @@ final class OptionsTest extends TestBase
         $expected_random_seed = mt_rand(100, 199);
         $argv                 = [
             '--bootstrap' => 'BOOTSTRAP',
-            '--colors' => true,
+            '--colors' => DefaultResultPrinter::COLOR_ALWAYS,
             '--configuration' => 'phpunit-ConfigurationTest.xml',
             '--coverage-clover' => 'COVERAGE-CLOVER',
             '--coverage-cobertura' => 'COVERAGE-COBERTURA',
@@ -470,5 +471,60 @@ final class OptionsTest extends TestBase
         $options = $this->createOptionsFromArgv(['--log-teamcity' => 'LOG-TEAMCITY'], __DIR__);
 
         self::assertTrue($options->needsTeamcity());
+    }
+
+    /**
+     * @param array<string, (string|null)> $options
+     *
+     * @dataProvider provideColorsCases
+     */
+    public function testColors(bool $expected, ?string $phpunitConfig, array $options, bool $hasColorSupport): void
+    {
+        if ($phpunitConfig !== null) {
+            $options['--configuration'] = $phpunitConfig;
+        }
+
+        self::assertSame($expected, $this->createOptionsFromArgv($options, __DIR__, $hasColorSupport)->colors());
+    }
+
+    /**
+     * @return array<int, array<int, (false|array<string, (null|string)>|null)>>
+     */
+    public function provideColorsCases(): array
+    {
+        return [
+            [false, null, [], false],
+            [false, null, [], true],
+            [false, null, ['--colors' => null], false],
+            [true,  null, ['--colors' => null], true],
+            [false, null, ['--colors' => DefaultResultPrinter::COLOR_NEVER], false],
+            [false, null, ['--colors' => DefaultResultPrinter::COLOR_NEVER], true],
+            [true,  null, ['--colors' => DefaultResultPrinter::COLOR_ALWAYS], false],
+            [true,  null, ['--colors' => DefaultResultPrinter::COLOR_ALWAYS], true],
+            [false, null, ['--colors' => DefaultResultPrinter::COLOR_AUTO], false],
+            [true,  null, ['--colors' => DefaultResultPrinter::COLOR_AUTO], true],
+
+            [false, FIXTURES . DS . 'phpunit-colors-false.xml', [], false],
+            [false, FIXTURES . DS . 'phpunit-colors-false.xml', [], true],
+            [false, FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => null], false],
+            [true,  FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => null], true],
+            [false, FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => DefaultResultPrinter::COLOR_NEVER], false],
+            [false, FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => DefaultResultPrinter::COLOR_NEVER], true],
+            [true,  FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => DefaultResultPrinter::COLOR_ALWAYS], false],
+            [true,  FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => DefaultResultPrinter::COLOR_ALWAYS], true],
+            [false, FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => DefaultResultPrinter::COLOR_AUTO], false],
+            [true,  FIXTURES . DS . 'phpunit-colors-false.xml', ['--colors' => DefaultResultPrinter::COLOR_AUTO], true],
+
+            [false, FIXTURES . DS . 'phpunit-colors-true.xml', [], false],
+            [true,  FIXTURES . DS . 'phpunit-colors-true.xml', [], true],
+            [false, FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => null], false],
+            [true,  FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => null], true],
+            [false, FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => DefaultResultPrinter::COLOR_NEVER], false],
+            [false, FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => DefaultResultPrinter::COLOR_NEVER], true],
+            [true,  FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => DefaultResultPrinter::COLOR_ALWAYS], false],
+            [true,  FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => DefaultResultPrinter::COLOR_ALWAYS], true],
+            [false, FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => DefaultResultPrinter::COLOR_AUTO], false],
+            [true,  FIXTURES . DS . 'phpunit-colors-true.xml', ['--colors' => DefaultResultPrinter::COLOR_AUTO], true],
+        ];
     }
 }
