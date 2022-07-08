@@ -44,7 +44,7 @@ abstract class TestBase extends TestCase
     /**
      * @param array<string, string|bool|int|null> $argv
      */
-    final protected function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
+    final protected function createOptionsFromArgv(array $argv, ?string $cwd = null, bool $hasColorSupport = true): Options
     {
         $inputDefinition = new InputDefinition();
         Options::setInputDefinition($inputDefinition);
@@ -59,7 +59,7 @@ abstract class TestBase extends TestCase
 
         $input = new ArrayInput($argv, $inputDefinition);
 
-        return Options::fromConsoleInput($input, $cwd ?? __DIR__);
+        return Options::fromConsoleInput($input, $cwd ?? __DIR__, $hasColorSupport);
     }
 
     final protected function runRunner(?string $cwd = null): RunnerResult

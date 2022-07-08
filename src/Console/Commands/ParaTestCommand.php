@@ -11,6 +11,7 @@ use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 use PHPUnit\Runner\Version;
+use SebastianBergmann\Environment\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -75,7 +76,7 @@ final class ParaTestCommand extends Command
     /**
      * Executes the specified tester.
      */
-    public function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $application = $this->getApplication();
         assert($application !== null);
@@ -87,7 +88,11 @@ final class ParaTestCommand extends Command
         ));
         $output->write("\n");
 
-        $options = Options::fromConsoleInput($input, $this->cwd);
+        $options = Options::fromConsoleInput(
+            $input,
+            $this->cwd,
+            (new Console())->hasColorSupport()
+        );
         if ($options->configuration() === null && $options->path() === null) {
             return $this->displayHelp($output);
         }

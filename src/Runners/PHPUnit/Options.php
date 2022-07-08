@@ -316,13 +316,13 @@ final class Options
         $this->testdox           = $testdox;
     }
 
-    public static function fromConsoleInput(InputInterface $input, string $cwd): self
+    public static function fromConsoleInput(InputInterface $input, string $cwd, bool $hasColorSupport): self
     {
         /** @var array<string, (bool|int|string|null)> $options */
         $options = $input->getOptions();
 
         assert($options['bootstrap'] === null || is_string($options['bootstrap']));
-        assert(is_bool($options['colors']));
+        assert($options['colors'] === false || $options['colors'] === null || is_string($options['colors']));
         assert($options['configuration'] === null || is_string($options['configuration']));
         assert($options['coverage-clover'] === null || is_string($options['coverage-clover']));
         assert($options['coverage-cobertura'] === null || is_string($options['coverage-cobertura']));
@@ -459,14 +459,14 @@ final class Options
             $filtered['stop-on-failure'] = null;
         }
 
-        $colors = $options['colors'];
-
         $configuration     = null;
         $configurationFile = self::guessConfigurationFile($options['configuration'], $cwd);
         if ($configurationFile !== null) {
             $configuration = (new Loader())->load($configurationFile);
 
-            $colors = $colors || $configuration->phpunit()->colors() !== DefaultResultPrinter::COLOR_NEVER;
+            if ($options['colors'] === false) {
+                $options['colors'] = $configuration->phpunit()->colors();
+            }
 
             $codeCoverage = $configuration->codeCoverage();
 
@@ -510,6 +510,16 @@ final class Options
 
         if ($configuration !== null) {
             $filtered['configuration'] = $configuration->filename();
+        }
+
+        if ($options['colors'] === null) {
+            $options['colors'] = DefaultResultPrinter::COLOR_AUTO;
+        }
+
+        if ($options['colors'] === DefaultResultPrinter::COLOR_AUTO && $hasColorSupport) {
+            $colors = true;
+        } else {
+            $colors = $options['colors'] === DefaultResultPrinter::COLOR_ALWAYS;
         }
 
         ksort($filtered);
@@ -597,8 +607,9 @@ final class Options
             new InputOption(
                 'colors',
                 null,
-                InputOption::VALUE_NONE,
-                'Displays a colored bar as a test result.'
+                InputOption::VALUE_OPTIONAL,
+                'Use colors in output ("never", "auto" or "always").',
+                false
             ),
             new InputOption(
                 'configuration',
@@ -726,7 +737,7 @@ final class Options
             new InputOption(
                 'order-by',
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Run tests in order: default|random|reverse'
             ),
             new InputOption(
