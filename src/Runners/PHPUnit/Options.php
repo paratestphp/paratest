@@ -776,13 +776,13 @@ final class Options
             new InputOption(
                 'random-order-seed',
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Use a specific random seed <N> for random order'
             ),
             new InputOption(
                 'repeat',
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Runs the test(s) repeatedly.'
             ),
             new InputOption(
