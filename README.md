@@ -182,7 +182,8 @@ public function setUp(): void
 
 ## Troubleshooting
 
-If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via `--verbose=1`.
+If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via
+`--verbose --debug`.
 
 When a sub-process fails, the originating command is given in the output and can then be copy-pasted in the terminal
 to be run and debugged. All internal commands run with `--printer [...]\NullPhpunitPrinter` which silence the original
