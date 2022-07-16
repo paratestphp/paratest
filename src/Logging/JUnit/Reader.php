@@ -107,12 +107,12 @@ final class Reader implements MetaProviderInterface
             . str_repeat('S', $this->suite->skipped)
             . str_repeat(
                 '.',
-                $this->suite->tests
-                - $this->suite->errors
-                - $this->suite->warnings
-                - $this->suite->failures
-                - $this->suite->risky
-                - $this->suite->skipped,
+                ($successTimes = $this->suite->tests
+                    - $this->suite->errors
+                    - $this->suite->warnings
+                    - $this->suite->failures
+                    - $this->suite->risky
+                    - $this->suite->skipped) >= 0 ? $successTimes : 0,
             );
     }
 
