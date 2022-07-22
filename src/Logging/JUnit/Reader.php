@@ -82,7 +82,7 @@ final class Reader implements MetaProviderInterface
             (int) $node['tests'],
             (int) $node['assertions'],
             (int) $node['failures'],
-            (int) $node['errors'],
+            (int) $node['errors'] - $risky,
             (int) $node['warnings'],
             $risky,
             (int) $node['skipped'],

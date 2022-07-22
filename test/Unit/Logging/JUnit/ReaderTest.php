@@ -67,7 +67,7 @@ final class ReaderTest extends TestBase
         static::assertSame(19, $suite->tests);
         static::assertSame(10, $suite->assertions);
         static::assertSame(3, $suite->failures);
-        static::assertSame(3, $suite->errors);
+        static::assertSame(1, $suite->errors);
         static::assertSame(1.234567, $suite->time);
 
         return $suite;
@@ -225,7 +225,7 @@ final class ReaderTest extends TestBase
     {
         static::assertSame(19, $this->mixed->getTotalTests());
         static::assertSame(10, $this->mixed->getTotalAssertions());
-        static::assertSame(3, $this->mixed->getTotalErrors());
+        static::assertSame(1, $this->mixed->getTotalErrors());
         static::assertSame(3, $this->mixed->getTotalFailures());
         static::assertSame(2, $this->mixed->getTotalWarnings());
         static::assertSame(4, $this->mixed->getTotalSkipped());
@@ -356,7 +356,7 @@ final class ReaderTest extends TestBase
 
     public function testMixedGetFeedback(): void
     {
-        static::assertSame('EEEWWFFFRRSSSS.....', $this->mixed->getFeedback());
+        static::assertSame('EWWFFFRRSSSS.......', $this->mixed->getFeedback());
     }
 
     public function testRemoveLog(): void
