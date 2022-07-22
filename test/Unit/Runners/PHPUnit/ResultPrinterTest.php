@@ -325,7 +325,7 @@ final class ResultPrinterTest extends ResultTester
         $footer = $this->printer->getFooter();
 
         $eq  = "FAILURES!\n";
-        $eq .= "Tests: 20, Assertions: 10, Errors: 4, Failures: 3, Warnings: 2, Skipped: 4.\n";
+        $eq .= "Tests: 20, Assertions: 10, Errors: 2, Failures: 3, Warnings: 2, Skipped: 4.\n";
 
         static::assertSame($eq, $footer);
     }
@@ -362,7 +362,7 @@ final class ResultPrinterTest extends ResultTester
         $this->printer->addTest($this->mixedSuite);
         $this->printer->printFeedback($this->mixedSuite);
         $contents = $this->output->fetch();
-        static::assertSame("EEEWWFFFRRSSSS..... 19 / 19 (100%)\n", $contents);
+        static::assertSame("EWWFFFRRSSSS....... 19 / 19 (100%)\n", $contents);
     }
 
     public function testPrintFeedbackForMoreThan100Suites(): void

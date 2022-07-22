@@ -102,7 +102,7 @@ final class Writer
 
         $suiteNode->setAttribute('tests', (string) $parentSuite->tests);
         $suiteNode->setAttribute('assertions', (string) $parentSuite->assertions);
-        $suiteNode->setAttribute('errors', (string) $parentSuite->errors);
+        $suiteNode->setAttribute('errors', (string) ($parentSuite->errors + $parentSuite->risky));
         $suiteNode->setAttribute('warnings', (string) $parentSuite->warnings);
         $suiteNode->setAttribute('failures', (string) $parentSuite->failures);
         $suiteNode->setAttribute('skipped', (string) $parentSuite->skipped);
