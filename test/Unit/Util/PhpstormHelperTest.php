@@ -94,5 +94,76 @@ final class PhpstormHelperTest extends TestCase
             $paratestBinary,
             $phpunitBinary,
         ];
+
+        $argv   = [];
+        $argv[] = $paratestBinary;
+        $argv[] = $phpunitBinary;
+        $argv[] = '--runner';
+        $argv[] = 'WrapperRunner';
+        $argv[] = '-dxdebug.mode=coverage';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expected   = [];
+        $expected[] = $paratestBinary;
+        $expected[] = '--runner';
+        $expected[] = 'WrapperRunner';
+        $expected[] = '--configuration';
+        $expected[] = '/home/user/repos/test/phpunit.xml';
+        $expected[] = '--teamcity';
+
+        yield 'with -dxdebug.mode=coverage run ParaTest' => [
+            $argv,
+            $expected,
+            $paratestBinary,
+            $paratestBinary,
+        ];
+
+        $argv   = [];
+        $argv[] = $paratestBinary;
+        $argv[] = $phpunitBinary;
+        $argv[] = '-dxdebug.mode=coverage';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expected   = [];
+        $expected[] = $paratestBinary;
+        $expected[] = '--configuration';
+        $expected[] = '/home/user/repos/test/phpunit.xml';
+        $expected[] = '--teamcity';
+
+        yield 'with -dxdebug.mode=coverage and no wrapper run ParaTest' => [
+            $argv,
+            $expected,
+            $paratestBinary,
+            $paratestBinary,
+        ];
+
+        $argv   = [];
+        $argv[] = $paratestBinary;
+        $argv[] = $phpunitBinary;
+        $argv[] = '--runner';
+        $argv[] = 'WrapperRunner';
+        $argv[] = '-dpcov.enabled=1';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expected   = [];
+        $expected[] = $paratestBinary;
+        $expected[] = '--runner';
+        $expected[] = 'WrapperRunner';
+        $expected[] = '--configuration';
+        $expected[] = '/home/user/repos/test/phpunit.xml';
+        $expected[] = '--teamcity';
+
+        yield 'with -dpcov.enabled=1 run ParaTest' => [
+            $argv,
+            $expected,
+            $paratestBinary,
+            $paratestBinary,
+        ];
     }
 }
