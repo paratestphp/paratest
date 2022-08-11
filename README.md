@@ -221,6 +221,11 @@ ParaTest provides a dedicated binary to work with PHPStorm; follow these steps t
 You should now have a `ParaTest` run within your configurations list.
 It should natively work with the `Rerun failed tests` and `Toggle auto-test` buttons of the `Run` overlay.
 
+### Run with Coverage
+
+Coverage with one of the [available coverage engines](#code-coverage) must already be [configured in PHPStorm](https://www.jetbrains.com/help/phpstorm/code-coverage.html) 
+and working when running tests sequentially in order for the helper binary to correctly handle code coverage
+
 # For Contributors: testing ParaTest itself
 
 Before creating a Pull Request be sure to run all the necessary checks with `make` command.
