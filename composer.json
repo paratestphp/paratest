@@ -45,8 +45,8 @@
         "phpunit/phpunit": "^9.5.21",
         "sebastian/environment": "^5.1.4",
         "symfony/console": "^5.4.9 || ^6.1.2",
-        "symfony/process": "^5.4.8 || ^6.1.0",
-        "symfony/polyfill-php80": "^v1.26.0"
+        "symfony/polyfill-php80": "^v1.26.0",
+        "symfony/process": "^5.4.8 || ^6.1.0"
     },
     "require-dev": {
         "ext-pcov": "*",
@@ -81,6 +81,7 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "infection/extension-installer": true,
             "malukenho/mcbumpface": true
-        }
+        },
+        "sort-packages": true
     }
 }
