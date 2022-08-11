@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace ParaTest\Util;
 
+use RuntimeException;
+
 use function array_search;
 use function array_unshift;
 use function in_array;
+use function str_ends_with;
 
 /**
  * @internal
@@ -14,24 +17,25 @@ use function in_array;
 final class PhpstormHelper
 {
     /**
-     * @param array<int, string> $argv
+     * @param  array<int, string> $argv
      */
     public static function handleArgvFromPhpstorm(array &$argv, string $paratestBinary): string
     {
+        $phpunitKey = self::getArgvKeyFor($argv, 'vendor/phpunit/phpunit/phpunit');
+
         if (! in_array('--filter', $argv, true)) {
-            $coverage = array_search('-dpcov.enabled=1', $argv, true) ?: array_search('-dxdebug.mode=coverage', $argv, true);
-            if ($coverage !== false) {
-                // Unset the coverage option
-                unset($argv[$coverage]);
+            $coverageArgKey = self::getCoverageArgvKey($argv);
+            if ($coverageArgKey !== false) {
+                unset($argv[$coverageArgKey]);
             }
 
-            unset($argv[1]);
+            unset($argv[$phpunitKey]);
 
             return $paratestBinary;
         }
 
-        unset($argv[0]);
-        $phpunitBinary = $argv[1];
+        unset($argv[self::getArgvKeyFor($argv, 'vendor/brianium/paratest/bin/paratest')]);
+        $phpunitBinary = $argv[$phpunitKey];
         foreach ($argv as $index => $value) {
             if ($value === '--configuration' || $value === '--bootstrap') {
                 break;
@@ -43,5 +47,41 @@ final class PhpstormHelper
         array_unshift($argv, $phpunitBinary);
 
         return $phpunitBinary;
+    }
+
+    /**
+     * @param  array<int, string> $argv
+     */
+    private static function getArgvKeyFor(array $argv, string $searchFor): int
+    {
+        foreach ($argv as $key => $arg) {
+            if (str_ends_with($arg, $searchFor)) {
+                return $key;
+            }
+        }
+
+        throw new RuntimeException("Missing path to '$searchFor'");
+    }
+
+    /**
+     * @param  array<int, string> $argv
+     *
+     * @return string|int|false
+     */
+    private static function getCoverageArgvKey(array $argv): string|int|false
+    {
+        $coverageOptions = [
+            '-dpcov.enabled=1',
+            '-dxdebug.mode=coverage',
+        ];
+
+        foreach ($coverageOptions as $coverageOption) {
+            $key = array_search($coverageOption, $argv, true);
+            if ($key !== false) {
+                return $key;
+            }
+        }
+
+        return false;
     }
 }
