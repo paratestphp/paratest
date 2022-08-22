@@ -39,7 +39,7 @@ final class CoverageReporterTest extends TestBase
         $codeCoverage = new CodeCoverage((new Selector())->forLineCoverage($filter), $filter);
         $codeCoverage->append(RawCodeCoverageData::fromXdebugWithoutPathCoverage([
             __FILE__ => [__LINE__ => 1],
-        ]), uniqid());
+        ]), uniqid('test_'));
 
         $configuration = (new Loader())->load($this->fixture($fixtureFile));
 

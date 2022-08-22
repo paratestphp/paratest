@@ -9,6 +9,7 @@ use ParaTest\Util\PhpstormHelper;
 use PHPUnit\Framework\TestCase;
 
 use function array_values;
+use function sprintf;
 use function uniqid;
 
 /**
@@ -33,14 +34,14 @@ final class PhpstormHelperTest extends TestCase
         $actualBinary = PhpstormHelper::handleArgvFromPhpstorm($argv, $paratestBinary);
         $argv         = array_values($argv);
 
-        static::assertSame($expectedArgv, $argv);
+        self::assertSame($expectedArgv, $argv);
         self::assertSame($expectedBinary, $actualBinary);
     }
 
     public function providePhpstormCases(): Generator
     {
-        $paratestBinary = uniqid('paratest_');
-        $phpunitBinary  = uniqid('phpunit_');
+        $paratestBinary = sprintf('%s/vendor/brianium/paratest/bin/paratest', uniqid());
+        $phpunitBinary  = sprintf('%s/vendor/phpunit/phpunit/phpunit', uniqid());
 
         $argv   = [];
         $argv[] = $paratestBinary;
@@ -93,6 +94,89 @@ final class PhpstormHelperTest extends TestCase
             $expected,
             $paratestBinary,
             $phpunitBinary,
+        ];
+
+        $argv   = [];
+        $argv[] = $paratestBinary;
+        $argv[] = '-dxdebug.mode=coverage';
+        $argv[] = $phpunitBinary;
+        $argv[] = '--runner';
+        $argv[] = 'WrapperRunner';
+        $argv[] = '--coverage-clover';
+        $argv[] = '/home/user/repos/test/coverage.xml';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expected   = [];
+        $expected[] = $paratestBinary;
+        $expected[] = '--runner';
+        $expected[] = 'WrapperRunner';
+        $expected[] = '--coverage-clover';
+        $expected[] = '/home/user/repos/test/coverage.xml';
+        $expected[] = '--configuration';
+        $expected[] = '/home/user/repos/test/phpunit.xml';
+        $expected[] = '--teamcity';
+
+        yield 'with -dxdebug.mode=coverage run ParaTest' => [
+            $argv,
+            $expected,
+            $paratestBinary,
+            $paratestBinary,
+        ];
+
+        $argv   = [];
+        $argv[] = $paratestBinary;
+        $argv[] = '-dxdebug.mode=coverage';
+        $argv[] = $phpunitBinary;
+        $argv[] = '--coverage-clover';
+        $argv[] = '/home/user/repos/test/coverage.xml';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expected   = [];
+        $expected[] = $paratestBinary;
+        $expected[] = '--coverage-clover';
+        $expected[] = '/home/user/repos/test/coverage.xml';
+        $expected[] = '--configuration';
+        $expected[] = '/home/user/repos/test/phpunit.xml';
+        $expected[] = '--teamcity';
+
+        yield 'with -dxdebug.mode=coverage and no wrapper run ParaTest' => [
+            $argv,
+            $expected,
+            $paratestBinary,
+            $paratestBinary,
+        ];
+
+        $argv   = [];
+        $argv[] = $paratestBinary;
+        $argv[] = '-dpcov.enabled=1';
+        $argv[] = $phpunitBinary;
+        $argv[] = '--runner';
+        $argv[] = 'WrapperRunner';
+        $argv[] = '--coverage-clover';
+        $argv[] = '/home/user/repos/test/coverage.xml';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expected   = [];
+        $expected[] = $paratestBinary;
+        $expected[] = '--runner';
+        $expected[] = 'WrapperRunner';
+        $expected[] = '--coverage-clover';
+        $expected[] = '/home/user/repos/test/coverage.xml';
+        $expected[] = '--configuration';
+        $expected[] = '/home/user/repos/test/phpunit.xml';
+        $expected[] = '--teamcity';
+
+        yield 'with -dpcov.enabled=1 run ParaTest' => [
+            $argv,
+            $expected,
+            $paratestBinary,
+            $paratestBinary,
         ];
     }
 }
