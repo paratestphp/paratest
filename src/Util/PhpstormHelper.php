@@ -66,9 +66,9 @@ final class PhpstormHelper
     /**
      * @param  array<int, string> $argv
      *
-     * @return string|int|false
+     * @return int|false
      */
-    private static function getCoverageArgvKey(array $argv): string|int|false
+    private static function getCoverageArgvKey(array $argv)
     {
         $coverageOptions = [
             '-dpcov.enabled=1',
