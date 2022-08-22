@@ -21,7 +21,7 @@ final class PhpstormHelper
      */
     public static function handleArgvFromPhpstorm(array &$argv, string $paratestBinary): string
     {
-        $phpunitKey = self::getArgvKeyFor($argv, 'vendor/phpunit/phpunit/phpunit');
+        $phpunitKey = self::getArgvKeyFor($argv, 'phpunit');
 
         if (! in_array('--filter', $argv, true)) {
             $coverageArgKey = self::getCoverageArgvKey($argv);
