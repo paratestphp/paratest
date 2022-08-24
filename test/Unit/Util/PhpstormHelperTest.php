@@ -7,6 +7,8 @@ namespace ParaTest\Tests\Unit\Util;
 use Generator;
 use ParaTest\Util\PhpstormHelper;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Throwable;
 
 use function array_values;
 use function sprintf;
@@ -19,6 +21,21 @@ use function uniqid;
  */
 final class PhpstormHelperTest extends TestCase
 {
+    public function testThrowExceptionWithInvalidArgv(): void
+    {
+        $argv              = [];
+        $expectedException = null;
+
+        try {
+            PhpstormHelper::handleArgvFromPhpstorm($argv, 'some-paratest-binary');
+        } catch (Throwable $exception) {
+            $expectedException = $exception;
+        }
+
+        self::assertInstanceOf(RuntimeException::class, $expectedException);
+        self::assertSame("Missing path to 'phpunit'", $expectedException->getMessage());
+    }
+
     /**
      * @param array<int, string> $argv
      * @param array<int, string> $expectedArgv
@@ -173,6 +190,33 @@ final class PhpstormHelperTest extends TestCase
         $expected[] = '--teamcity';
 
         yield 'with -dpcov.enabled=1 run ParaTest' => [
+            $argv,
+            $expected,
+            $paratestBinary,
+            $paratestBinary,
+        ];
+
+        $argv   = [];
+        $argv[] = $paratestBinary;
+        $argv[] = sprintf('%s/bin/phpunit', uniqid());
+
+        $argv[] = '--runner';
+        $argv[] = 'WrapperRunner';
+        $argv[] = '--no-coverage';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expected   = [];
+        $expected[] = $paratestBinary;
+        $expected[] = '--runner';
+        $expected[] = 'WrapperRunner';
+        $expected[] = '--no-coverage';
+        $expected[] = '--configuration';
+        $expected[] = '/home/user/repos/test/phpunit.xml';
+        $expected[] = '--teamcity';
+
+        yield 'with phpunit binary under bin/phpunit' => [
             $argv,
             $expected,
             $paratestBinary,
