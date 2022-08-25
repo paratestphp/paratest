@@ -8,7 +8,6 @@ use Generator;
 use ParaTest\Util\PhpstormHelper;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Throwable;
 
 use function array_values;
 use function sprintf;
@@ -23,17 +22,12 @@ final class PhpstormHelperTest extends TestCase
 {
     public function testThrowExceptionWithInvalidArgv(): void
     {
-        $argv              = [];
-        $expectedException = null;
+        $argv = [];
 
-        try {
-            PhpstormHelper::handleArgvFromPhpstorm($argv, 'some-paratest-binary');
-        } catch (Throwable $exception) {
-            $expectedException = $exception;
-        }
+        self::expectException(RuntimeException::class);
+        self::expectExceptionMessage("Missing path to '/phpunit'");
 
-        self::assertInstanceOf(RuntimeException::class, $expectedException);
-        self::assertSame("Missing path to 'phpunit'", $expectedException->getMessage());
+        PhpstormHelper::handleArgvFromPhpstorm($argv, 'some-paratest-binary');
     }
 
     /**
