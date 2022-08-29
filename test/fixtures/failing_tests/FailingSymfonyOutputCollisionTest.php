@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\failing_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class FailingSymfonyOutputCollisionTest extends TestCase
 {
     public function testInvalidLogic(): void

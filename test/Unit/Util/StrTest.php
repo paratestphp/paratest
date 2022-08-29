@@ -29,9 +29,7 @@ final class StrTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    /**
-     * @return array<string, array<string, string|string[]>>
-     */
+    /** @return array<string, array<string, string|string[]>> */
     public function explodeWithCleanupDataProvider(): array
     {
         return [

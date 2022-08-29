@@ -6,30 +6,22 @@ namespace ParaTest\Tests\fixtures\skipped_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class SkippedOrIncompleteTest extends TestCase
 {
-    /**
-     * @group skipped-group
-     */
+    /** @group skipped-group */
     public function testSkipped(): void
     {
         $this->markTestSkipped();
     }
 
-    /**
-     * @group incomplete-group
-     */
+    /** @group incomplete-group */
     public function testIncomplete(): void
     {
         $this->markTestIncomplete();
     }
 
-    /**
-     * @return int[][]
-     */
+    /** @return int[][] */
     public function dataProviderNumeric100(): array
     {
         $result = [];

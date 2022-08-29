@@ -11,9 +11,7 @@ use function array_merge;
 use function array_reduce;
 use function assert;
 
-/**
- * @internal
- */
+/** @internal */
 final class LogInterpreter implements MetaProviderInterface
 {
     /**
@@ -107,7 +105,7 @@ final class LogInterpreter implements MetaProviderInterface
 
             $suite1->suites[$suite2suiteName] = $this->mergeSuites(
                 $suite1->suites[$suite2suiteName],
-                $suite2suite
+                $suite2suite,
             );
         }
 
@@ -121,7 +119,7 @@ final class LogInterpreter implements MetaProviderInterface
         $suite1->time       += $suite2->time;
         $suite1->cases       = array_merge(
             $suite1->cases,
-            $suite2->cases
+            $suite2->cases,
         );
 
         return $suite1;

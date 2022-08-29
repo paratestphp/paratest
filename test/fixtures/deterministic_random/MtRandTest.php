@@ -8,9 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 use function mt_rand;
 
-/**
- * @internal
- */
+/** @internal */
 final class MtRandTest extends TestCase
 {
     /**

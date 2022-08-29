@@ -139,7 +139,7 @@ abstract class RunnerTestCase extends TestBase
 
         $this->expectException(WorkerCrashedException::class);
         $this->expectExceptionMessageMatches(
-            sprintf('/TEST_TOKEN=%s.+TestWithFailingListenerTest.+lorem/s', preg_quote(escapeshellarg('1')))
+            sprintf('/TEST_TOKEN=%s.+TestWithFailingListenerTest.+lorem/s', preg_quote(escapeshellarg('1'))),
         );
 
         $this->runRunner();
@@ -310,7 +310,7 @@ abstract class RunnerTestCase extends TestBase
         static::assertEquals(
             $n,
             $numberOfS,
-            "The test should have skipped {$n} tests, instead it skipped {$numberOfS}, {$matches[1]}"
+            "The test should have skipped {$n} tests, instead it skipped {$numberOfS}, {$matches[1]}",
         );
     }
 
@@ -425,9 +425,7 @@ abstract class RunnerTestCase extends TestBase
         self::assertSame(66, preg_match_all('/^##teamcity/m', $result->getOutput()));
     }
 
-    /**
-     * @requires OSFAMILY Linux
-     */
+    /** @requires OSFAMILY Linux */
     final public function testTeamcityLogHandlesFifoFiles(): void
     {
         $outputPath = $this->tmpDir . DS . 'test-output.teamcity';
@@ -535,19 +533,17 @@ abstract class RunnerTestCase extends TestBase
         static::assertSame($defaultOrder, $reverseOrderReversed);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function prepareOutputForTestOrderCheck(string $output): array
     {
         $matchesCount = preg_match_all(
             sprintf(
                 '/%s%s(?<filename>\S+\.php)/',
                 preg_quote(FIXTURES, '/'),
-                preg_quote(DS, '/')
+                preg_quote(DS, '/'),
             ),
             $output,
-            $matches
+            $matches,
         );
 
         self::assertGreaterThan(0, $matchesCount);

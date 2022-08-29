@@ -9,14 +9,10 @@ use PHPUnit\Framework\TestCase;
 use function getenv;
 use function is_numeric;
 
-/**
- * @internal
- */
+/** @internal */
 final class EnvironmentTest extends TestCase
 {
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testParatestVariableIsDefined(): void
     {
         $this->assertEquals(1, getenv('PARATEST'));

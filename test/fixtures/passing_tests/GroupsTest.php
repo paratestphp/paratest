@@ -17,25 +17,19 @@ use function strlen;
 
 final class GroupsTest extends TestCase
 {
-    /**
-     * @group group1
-     */
+    /** @group group1 */
     public function testTruth(): void
     {
         $this->assertTrue(true);
     }
 
-    /**
-     * @group group1
-     */
+    /** @group group1 */
     public function testFalsehood(): void
     {
         $this->assertFalse(false);
     }
 
-    /**
-     * @group group2
-     */
+    /** @group group2 */
     public function testArrayLength(): void
     {
         $values = [1, 3, 4, 7];

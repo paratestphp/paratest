@@ -8,22 +8,16 @@ use PHPUnit\Framework\TestCase;
 
 use function defined;
 
-/**
- * @internal
- */
+/** @internal */
 final class IssueTest extends TestCase
 {
-    /**
-     * @dataProvider provideCases
-     */
+    /** @dataProvider provideCases */
     public function testCases(string $constant): void
     {
         static::assertStringContainsString('ISSUE_420_BIS_', $constant);
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function provideCases(): array
     {
         $cases = [

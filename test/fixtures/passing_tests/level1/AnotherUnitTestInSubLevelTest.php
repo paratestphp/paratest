@@ -6,30 +6,22 @@ namespace ParaTest\Tests\fixtures\passthru_tests\level1;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class AnotherUnitTestInSubLevelTest extends TestCase
 {
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testTruth(): void
     {
         $this->assertTrue(true);
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testFalsehood(): void
     {
         $this->assertFalse(false);
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testArrayLength(): void
     {
         $elems = [1, 2, 3, 4, 5];

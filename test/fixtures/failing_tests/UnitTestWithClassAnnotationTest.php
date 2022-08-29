@@ -32,18 +32,14 @@ final class UnitTestWithClassAnnotationTest extends TestCase
         $this->assertFalse(true);
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testArrayLength(): void
     {
         $elems = [1, 2, 3, 4, 5];
         $this->assertCount(5, $elems);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function itsATest(): void
     {
         $this->assertTrue(true);

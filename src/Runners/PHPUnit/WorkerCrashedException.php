@@ -11,9 +11,7 @@ use Throwable;
 use function escapeshellarg;
 use function sprintf;
 
-/**
- * @internal
- */
+/** @internal */
 final class WorkerCrashedException extends RuntimeException
 {
     public static function fromProcess(Process $process, string $command, ?Throwable $previousException = null): self
@@ -29,14 +27,14 @@ final class WorkerCrashedException extends RuntimeException
             $command,
             (string) $process->getExitCode(),
             (string) $process->getExitCodeText(),
-            (string) $process->getWorkingDirectory()
+            (string) $process->getWorkingDirectory(),
         );
 
         if (! $process->isOutputDisabled()) {
             $error .= sprintf(
                 "\n\nOutput:\n================\n%s\n\nError Output:\n================\n%s",
                 $process->getOutput(),
-                $process->getErrorOutput()
+                $process->getErrorOutput(),
             );
         }
 

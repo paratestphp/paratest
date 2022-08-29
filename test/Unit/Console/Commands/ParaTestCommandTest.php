@@ -42,7 +42,7 @@ final class ParaTestCommandTest extends TestBase
         static::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
         static::assertSame(
             'ParaTest <info>' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion() . '</info>',
-            $application->getLongVersion()
+            $application->getLongVersion(),
         );
     }
 
@@ -72,9 +72,7 @@ final class ParaTestCommandTest extends TestBase
         ]);
     }
 
-    /**
-     * @dataProvider provideConfigurationDirectories
-     */
+    /** @dataProvider provideConfigurationDirectories */
     public function testGetPhpunitConfigFromDefaults(string $directory): void
     {
         $application = ParaTestCommand::applicationFactory($directory);
@@ -90,9 +88,7 @@ final class ParaTestCommandTest extends TestBase
         static::assertMatchesRegularExpression("/ParaTest .+ upon PHPUnit .+\n\n/", $display);
     }
 
-    /**
-     * @return array<string, string[]>
-     */
+    /** @return array<string, string[]> */
     public function provideConfigurationDirectories(): array
     {
         return [

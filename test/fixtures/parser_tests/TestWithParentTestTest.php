@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\fixtures\parser_tests;
 
-/**
- * @internal
- */
+/** @internal */
 final class TestWithParentTestTest extends TestWithChildTestsTest
 {
-    /**
-     * @test
-     */
+    /** @test */
     public function isItFalse(): void
     {
         $this->assertFalse(false);

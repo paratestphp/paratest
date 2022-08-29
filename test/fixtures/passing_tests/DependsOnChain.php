@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\passing_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class DependsOnChain extends TestCase
 {
     public function testOneA(): string
@@ -18,9 +16,7 @@ final class DependsOnChain extends TestCase
         return 'oneA';
     }
 
-    /**
-     * @depends testOneA
-     */
+    /** @depends testOneA */
     public function testOneBDependsOnA(string $result): string
     {
         $this->assertEquals('oneA', $result);
@@ -28,9 +24,7 @@ final class DependsOnChain extends TestCase
         return 'oneB';
     }
 
-    /**
-     * @depends testOneBDependsOnA
-     */
+    /** @depends testOneBDependsOnA */
     public function testOneCDependsOnB(string $result): void
     {
         $this->assertEquals('oneB', $result);
@@ -43,9 +37,7 @@ final class DependsOnChain extends TestCase
         return 'twoA';
     }
 
-    /**
-     * @depends testTwoA
-     */
+    /** @depends testTwoA */
     public function testTwoBDependsOnA(string $result): string
     {
         $this->assertEquals('twoA', $result);

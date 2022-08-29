@@ -8,9 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 use function uniqid;
 
-/**
- * @internal
- */
+/** @internal */
 final class HasWarningsTest extends TestCase
 {
     public function testPassingTest(): void

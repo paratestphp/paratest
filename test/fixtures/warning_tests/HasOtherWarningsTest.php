@@ -7,9 +7,7 @@ namespace ParaTest\Tests\fixtures\warning_tests;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-/**
- * @internal
- */
+/** @internal */
 final class HasOtherWarningsTest extends TestCase
 {
     /**

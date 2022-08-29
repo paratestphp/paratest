@@ -12,17 +12,13 @@ use function preg_split;
 
 final class UnitTestWithDataProviderSpecialCharsTest extends TestCase
 {
-    /**
-     * @dataProvider provideSpecialChars
-     */
+    /** @dataProvider provideSpecialChars */
     public function testIsItFalse(string $specialChar): void
     {
         self::assertFalse($specialChar, (string) ord($specialChar));
     }
 
-    /**
-     * @return non-empty-list<non-empty-list<string>>
-     */
+    /** @return non-empty-list<non-empty-list<string>> */
     public function provideSpecialChars(): array
     {
         return array_map(static function ($specialChar) {

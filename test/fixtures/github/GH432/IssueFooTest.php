@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\github\GH432;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class IssueFooTest extends TestCase
 {
     public function testTrue(): void

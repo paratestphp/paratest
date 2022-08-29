@@ -373,7 +373,7 @@ final class Options
         if (is_string($options['testsuite'])) {
             $testsuite = Str::explodeWithCleanup(
                 self::TEST_SUITE_FILTER_SEPARATOR,
-                $options['testsuite']
+                $options['testsuite'],
             );
         }
 
@@ -401,7 +401,7 @@ final class Options
             if (! is_numeric($options['random-order-seed'])) {
                 throw new InvalidArgumentException(sprintf(
                     'Option --random-order-seed should have a number value, "%s" given',
-                    $options['random-order-seed']
+                    $options['random-order-seed'],
                 ));
             }
 
@@ -448,7 +448,7 @@ final class Options
             if ($options['repeat'] !== (string) (int) $options['repeat']) {
                 throw new InvalidArgumentException(sprintf(
                     'Option --repeat should have an integer value, "%s" given',
-                    $options['repeat']
+                    $options['repeat'],
                 ));
             }
 
@@ -568,7 +568,7 @@ final class Options
             $options['order-by'] ?? self::ORDER_DEFAULT,
             (int) $options['random-order-seed'],
             (int) $options['repeat'],
-            $options['testdox']
+            $options['testdox'],
         );
     }
 
@@ -594,7 +594,7 @@ final class Options
             new InputArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'The path to a directory or file containing tests.'
+                'The path to a directory or file containing tests.',
             ),
 
             // Options
@@ -602,245 +602,243 @@ final class Options
                 'bootstrap',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'The bootstrap file to be used by PHPUnit.'
+                'The bootstrap file to be used by PHPUnit.',
             ),
             new InputOption(
                 'colors',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Use colors in output ("never", "auto" or "always").',
-                false
+                false,
             ),
             new InputOption(
                 'configuration',
                 'c',
                 InputOption::VALUE_REQUIRED,
-                'The PHPUnit configuration file to use.'
+                'The PHPUnit configuration file to use.',
             ),
             new InputOption(
                 'coverage-clover',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in Clover XML format.'
+                'Generate code coverage report in Clover XML format.',
             ),
             new InputOption(
                 'coverage-cobertura',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in Cobertura XML format.'
+                'Generate code coverage report in Cobertura XML format.',
             ),
             new InputOption(
                 'coverage-crap4j',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in Crap4J XML format.'
+                'Generate code coverage report in Crap4J XML format.',
             ),
             new InputOption(
                 'coverage-html',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in HTML format.'
+                'Generate code coverage report in HTML format.',
             ),
             new InputOption(
                 'coverage-php',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Serialize PHP_CodeCoverage object to file.'
+                'Serialize PHP_CodeCoverage object to file.',
             ),
             new InputOption(
                 'coverage-test-limit',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Limit the number of tests to record for each line of code. Helps to reduce memory and size of ' .
-                'coverage reports.'
+                'coverage reports.',
             ),
             new InputOption(
                 'coverage-text',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Generate code coverage report in text format.',
-                false
+                false,
             ),
             new InputOption(
                 'coverage-xml',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Generate code coverage report in PHPUnit XML format.'
+                'Generate code coverage report in PHPUnit XML format.',
             ),
             new InputOption(
                 'debug',
                 null,
                 InputOption::VALUE_NONE,
-                'Display debugging information'
+                'Display debugging information',
             ),
             new InputOption(
                 'exclude-group',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Don\'t run tests from the specified group(s).'
+                'Don\'t run tests from the specified group(s).',
             ),
             new InputOption(
                 'filter',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Filter (only for functional mode).'
+                'Filter (only for functional mode).',
             ),
             new InputOption(
                 'functional',
                 'f',
                 InputOption::VALUE_NONE,
-                'Run test methods instead of classes in separate processes.'
+                'Run test methods instead of classes in separate processes.',
             ),
             new InputOption(
                 'group',
                 'g',
                 InputOption::VALUE_REQUIRED,
-                'Only runs tests from the specified group(s).'
+                'Only runs tests from the specified group(s).',
             ),
             new InputOption(
                 'help',
                 'h',
                 InputOption::VALUE_NONE,
-                'Display this help message.'
+                'Display this help message.',
             ),
             new InputOption(
                 'log-junit',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Log test execution in JUnit XML format to file.'
+                'Log test execution in JUnit XML format to file.',
             ),
             new InputOption(
                 'log-teamcity',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Log test execution in Teamcity format to file.'
+                'Log test execution in Teamcity format to file.',
             ),
             new InputOption(
                 'max-batch-size',
                 'm',
                 InputOption::VALUE_REQUIRED,
                 'Max batch size (only for functional mode).',
-                '0'
+                '0',
             ),
             new InputOption(
                 'no-coverage',
                 null,
                 InputOption::VALUE_NONE,
-                'Ignore code coverage configuration.'
+                'Ignore code coverage configuration.',
             ),
             new InputOption(
                 'no-test-tokens',
                 null,
                 InputOption::VALUE_NONE,
-                'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>'
+                'Disable TEST_TOKEN environment variables. <comment>(default: variable is set)</comment>',
             ),
             new InputOption(
                 'order-by',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Run tests in order: default|random|reverse'
+                'Run tests in order: default|random|reverse',
             ),
             new InputOption(
                 'parallel-suite',
                 null,
                 InputOption::VALUE_NONE,
-                'Run the suites of the config in parallel.'
+                'Run the suites of the config in parallel.',
             ),
             new InputOption(
                 'passthru',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Pass the given arguments verbatim to the underlying test framework. Example: ' .
-                '--passthru="\'--prepend\' \'xdebug-filter.php\'"'
+                '--passthru="\'--prepend\' \'xdebug-filter.php\'"',
             ),
             new InputOption(
                 'passthru-php',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Pass the given arguments verbatim to the underlying php process. Example: --passthru-php="\'-d\' ' .
-                '\'zend_extension=xdebug.so\'"'
+                '\'zend_extension=xdebug.so\'"',
             ),
             new InputOption(
                 'path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'An alias for the path argument.'
+                'An alias for the path argument.',
             ),
             new InputOption(
                 'processes',
                 'p',
                 InputOption::VALUE_REQUIRED,
                 'The number of test processes to run.',
-                'auto'
+                'auto',
             ),
             new InputOption(
                 'random-order-seed',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Use a specific random seed <N> for random order'
+                'Use a specific random seed <N> for random order',
             ),
             new InputOption(
                 'repeat',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Runs the test(s) repeatedly.'
+                'Runs the test(s) repeatedly.',
             ),
             new InputOption(
                 'runner',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Runner or WrapperRunner.',
-                'Runner'
+                'Runner',
             ),
             new InputOption(
                 'stop-on-failure',
                 null,
                 InputOption::VALUE_NONE,
-                'Don\'t start any more processes after a failure.'
+                'Don\'t start any more processes after a failure.',
             ),
             new InputOption(
                 'teamcity',
                 null,
                 InputOption::VALUE_NONE,
-                'Output test results in Teamcity format.'
+                'Output test results in Teamcity format.',
             ),
             new InputOption(
                 'testdox',
                 null,
                 InputOption::VALUE_NONE,
-                'Report test execution progress in TestDox format.'
+                'Report test execution progress in TestDox format.',
             ),
             new InputOption(
                 'testsuite',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Filter which testsuite to run'
+                'Filter which testsuite to run',
             ),
             new InputOption(
                 'tmp-dir',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Temporary directory for internal ParaTest files',
-                sys_get_temp_dir()
+                sys_get_temp_dir(),
             ),
             new InputOption(
                 'verbose',
                 'v',
                 InputOption::VALUE_NONE,
-                'Output more verbose information'
+                'Output more verbose information',
             ),
             new InputOption(
                 'whitelist',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Directory to add to the coverage whitelist.'
+                'Directory to add to the coverage whitelist.',
             ),
         ]);
     }
 
-    /**
-     * @return string $phpunit the path to phpunit
-     */
+    /** @return string $phpunit the path to phpunit */
     private static function getPhpunitBinary(): string
     {
         $tryPaths = [
@@ -927,9 +925,7 @@ final class Options
         return $cores;
     }
 
-    /**
-     * @return string[]|null
-     */
+    /** @return string[]|null */
     private static function parsePassthru(?string $param): ?array
     {
         if ($param === null) {
@@ -941,8 +937,8 @@ final class Options
                 '%s -r %s -- %s',
                 escapeshellarg(PHP_BINARY),
                 escapeshellarg('echo serialize($argv);'),
-                $param
-            )
+                $param,
+            ),
         );
         $stringToArgumentProcess->mustRun();
 
@@ -1163,9 +1159,7 @@ final class Options
         return $this->repeat;
     }
 
-    /**
-     * @return array{PARATEST: int, TEST_TOKEN?: int, UNIQUE_TEST_TOKEN?: string}
-     */
+    /** @return array{PARATEST: int, TEST_TOKEN?: int, UNIQUE_TEST_TOKEN?: string} */
     public function fillEnvWithTokens(int $inc): array
     {
         $env = ['PARATEST' => 1];

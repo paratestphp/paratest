@@ -6,14 +6,10 @@ namespace ParaTest\Tests\fixtures\skipped_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class SkippedAndIncompleteDataProviderTest extends TestCase
 {
-    /**
-     * @return int[][]
-     */
+    /** @return int[][] */
     public function dataProviderNumeric100(): array
     {
         $result = [];
@@ -24,9 +20,7 @@ final class SkippedAndIncompleteDataProviderTest extends TestCase
         return $result;
     }
 
-    /**
-     * @dataProvider dataProviderNumeric100
-     */
+    /** @dataProvider dataProviderNumeric100 */
     public function testDataProviderWithSkipped(int $expected, int $actual): void
     {
         if ($expected % 3 === 0) {

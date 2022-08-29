@@ -9,9 +9,7 @@ use PHPUnit\Framework\TestListener;
 use PHPUnit\Framework\TestListenerDefaultImplementation;
 use RuntimeException;
 
-/**
- * @internal
- */
+/** @internal */
 final class MyListener implements TestListener
 {
     use TestListenerDefaultImplementation;

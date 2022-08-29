@@ -6,63 +6,47 @@ namespace ParaTest\Tests\fixtures\failing_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 class UnitTestWithMethodAnnotationsTest extends TestCase
 {
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testTruth(): void
     {
         $this->assertTrue(true);
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testFalsehood(): void
     {
         $this->assertSame('foo', 'bar');
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testArrayLength(): void
     {
         $elems = [1, 2, 3, 4, 5];
         $this->assertCount(5, $elems);
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testWarning(): void
     {
         $this->addWarning('MyWarning');
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testSkipped(): void
     {
         $this->markTestSkipped();
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testIncomplete(): void
     {
         $this->markTestIncomplete();
     }
 
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testRisky(): void
     {
         $this->markAsRisky();

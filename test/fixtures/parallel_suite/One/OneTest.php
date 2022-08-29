@@ -6,22 +6,16 @@ namespace ParaTest\Tests\fixtures\parallel_suite\One;
 
 use ParaTest\Tests\fixtures\parallel_suite\ParallelBase;
 
-/**
- * @internal
- */
+/** @internal */
 final class OneTest extends ParallelBase
 {
-    /**
-     * @dataProvider provideDatas
-     */
+    /** @dataProvider provideDatas */
     public function testWithProvider(int $var): void
     {
         self::assertGreaterThan(0, $var);
     }
 
-    /**
-     * @return array<string|int, non-empty-list<int>>
-     */
+    /** @return array<string|int, non-empty-list<int>> */
     public function provideDatas(): array
     {
         return [

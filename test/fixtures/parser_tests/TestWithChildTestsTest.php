@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\parser_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 class TestWithChildTestsTest extends TestCase
 {
     public function testTruth(): void

@@ -18,9 +18,7 @@ use function strlen;
 
 use const DIRECTORY_SEPARATOR;
 
-/**
- * @internal
- */
+/** @internal */
 final class RunnerWorker
 {
     /** @var ExecutableTest */
@@ -47,8 +45,8 @@ final class RunnerWorker
             $this->executableTest->commandArguments(
                 $options->phpunit(),
                 $options->filtered(),
-                $options->passthru()
-            )
+                $options->passthru(),
+            ),
         );
 
         $this->process = new Process($args, $options->cwd(), $options->fillEnvWithTokens($token));
@@ -119,7 +117,7 @@ final class RunnerWorker
         return WorkerCrashedException::fromProcess(
             $this->process,
             $this->process->getCommandLine(),
-            $previousException
+            $previousException,
         );
     }
 }

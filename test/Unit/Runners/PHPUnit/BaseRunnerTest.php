@@ -36,9 +36,7 @@ final class BaseRunnerTest extends TestBase
         ];
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function globTempDir(string $pattern): array
     {
         $glob = glob($this->tmpDir . DS . $pattern);
@@ -114,17 +112,17 @@ final class BaseRunnerTest extends TestBase
         static::assertSame(
             $countAfter,
             $countBefore,
-            "Test Runner failed to clean up the 'PT_*' file in " . $this->tmpDir
+            "Test Runner failed to clean up the 'PT_*' file in " . $this->tmpDir,
         );
         static::assertSame(
             $countCoverageAfter,
             $countCoverageBefore,
-            "Test Runner failed to clean up the 'CV_*' file in " . $this->tmpDir
+            "Test Runner failed to clean up the 'CV_*' file in " . $this->tmpDir,
         );
         static::assertSame(
             $countTeamcityAfter,
             $countTeamcityBefore,
-            "Test Runner failed to clean up the 'TF_*' file in " . $this->tmpDir
+            "Test Runner failed to clean up the 'TF_*' file in " . $this->tmpDir,
         );
     }
 

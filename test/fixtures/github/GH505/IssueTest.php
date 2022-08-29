@@ -8,9 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 use function getenv;
 
-/**
- * @internal
- */
+/** @internal */
 final class IssueTest extends TestCase
 {
     public function testHaveNoEnv(): void

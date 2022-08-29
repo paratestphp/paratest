@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
-/**
- * @internal
- */
+/** @internal */
 final class WarningTestCase extends TestCaseWithMessage
 {
     public function getXmlTagName(): string

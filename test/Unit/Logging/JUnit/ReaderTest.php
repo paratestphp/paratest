@@ -73,9 +73,7 @@ final class ReaderTest extends TestBase
         return $suite;
     }
 
-    /**
-     * @depends testMixedSuiteShouldConstructRootSuite
-     */
+    /** @depends testMixedSuiteShouldConstructRootSuite */
     public function testMixedSuiteConstructsChildSuites(TestSuite $suite): TestSuite
     {
         static::assertCount(3, $suite->suites);
@@ -83,7 +81,7 @@ final class ReaderTest extends TestBase
         $first = $suite->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest'];
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
-            $first->file
+            $first->file,
         );
         static::assertSame(4, $first->tests);
         static::assertSame(4, $first->assertions);
@@ -94,9 +92,7 @@ final class ReaderTest extends TestBase
         return $first;
     }
 
-    /**
-     * @depends testMixedSuiteConstructsChildSuites
-     */
+    /** @depends testMixedSuiteConstructsChildSuites */
     public function testMixedSuiteConstructsTestCases(TestSuite $suite): void
     {
         static::assertCount(4, $suite->cases);
@@ -105,7 +101,7 @@ final class ReaderTest extends TestBase
         static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest', $first->class);
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
-            $first->file
+            $first->file,
         );
         static::assertSame(21, $first->line);
         static::assertSame(1, $first->assertions);
@@ -123,7 +119,7 @@ final class ReaderTest extends TestBase
             . "Failed asserting that true is false.\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
-            $failure->text
+            $failure->text,
         );
     }
 
@@ -138,7 +134,7 @@ final class ReaderTest extends TestBase
             . "RuntimeException: Error!!!\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
-            $error->text
+            $error->text,
         );
     }
 
@@ -148,7 +144,7 @@ final class ReaderTest extends TestBase
         static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest', $suite->name);
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php',
-            $suite->file
+            $suite->file,
         );
         static::assertSame(3, $suite->tests);
         static::assertSame(3, $suite->assertions);
@@ -182,7 +178,7 @@ final class ReaderTest extends TestBase
         static::assertSame('ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest', $first->class);
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php',
-            $first->file
+            $first->file,
         );
         static::assertSame(17, $first->line);
         static::assertSame(1, $first->assertions);
@@ -205,7 +201,7 @@ final class ReaderTest extends TestBase
             . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
-            $failure->text
+            $failure->text,
         );
     }
 
@@ -252,7 +248,7 @@ final class ReaderTest extends TestBase
             . "Failed asserting that true is false.\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32',
-            $failures[0]
+            $failures[0],
         );
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testFalsehood\n"
@@ -264,7 +260,7 @@ final class ReaderTest extends TestBase
             . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
-            $failures[1]
+            $failures[1],
         );
     }
 
@@ -277,7 +273,7 @@ final class ReaderTest extends TestBase
             . "RuntimeException: Error!!!\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
-            $errors[0]
+            $errors[0],
         );
     }
 
@@ -288,7 +284,7 @@ final class ReaderTest extends TestBase
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testWarning\n" .
                 'MyWarning',
-            $warnings[0]
+            $warnings[0],
         );
     }
 
@@ -306,7 +302,7 @@ final class ReaderTest extends TestBase
             . "+'bar'\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
-            $failures[0]
+            $failures[0],
         );
     }
 
@@ -322,7 +318,7 @@ final class ReaderTest extends TestBase
             . 'This test did not perform any assertions' . "\n"
             . "\n"
             . './test/fixtures/system_out/SystemOutTest.php:23',
-            $risky[0]
+            $risky[0],
         );
     }
 
@@ -335,7 +331,7 @@ final class ReaderTest extends TestBase
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
             . "\n"
             . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50',
-            $skipped[0]
+            $skipped[0],
         );
     }
 
@@ -346,11 +342,11 @@ final class ReaderTest extends TestBase
         static::assertCount(2, $skipped);
         static::assertSame(
             'ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider',
-            $skipped[0]
+            $skipped[0],
         );
         static::assertSame(
             'ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider',
-            $skipped[1]
+            $skipped[1],
         );
     }
 

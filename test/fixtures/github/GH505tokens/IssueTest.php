@@ -9,9 +9,7 @@ use PHPUnit\Framework\TestCase;
 use function getenv;
 use function strlen;
 
-/**
- * @internal
- */
+/** @internal */
 final class IssueTest extends TestCase
 {
     public function testHaveNoEnv(): void

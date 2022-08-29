@@ -18,9 +18,7 @@ use function mt_srand;
 use function shuffle;
 use function sprintf;
 
-/**
- * @internal
- */
+/** @internal */
 abstract class BaseRunner implements RunnerInterface
 {
     protected const CYCLE_SLEEP = 10000;

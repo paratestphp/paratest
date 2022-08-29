@@ -15,9 +15,7 @@ use function max;
 use function range;
 use function usleep;
 
-/**
- * @internal
- */
+/** @internal */
 final class Runner extends BaseRunner
 {
     /**
