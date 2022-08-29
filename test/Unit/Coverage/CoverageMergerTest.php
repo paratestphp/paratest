@@ -27,9 +27,7 @@ final class CoverageMergerTest extends TestBase
         static::skipIfCodeCoverageNotEnabled();
     }
 
-    /**
-     * @dataProvider provideTestLimit
-     */
+    /** @dataProvider provideTestLimit */
     public function testMerge(int $testLimit): void
     {
         $firstFile  = PARATEST_ROOT . DS . 'src' . DS . 'Logging' . DS . 'LogInterpreter.php';
@@ -37,8 +35,8 @@ final class CoverageMergerTest extends TestBase
 
         // Every time the two above files are changed, the line numbers
         // may change, and so these two numbers may need adjustments
-        $firstFileFirstLine  = 67;
-        $secondFileFirstLine = 36;
+        $firstFileFirstLine  = 65;
+        $secondFileFirstLine = 34;
 
         $filter = new Filter();
         $filter->includeFiles([$firstFile, $secondFile]);
@@ -50,7 +48,7 @@ final class CoverageMergerTest extends TestBase
         $coverage1 = new CodeCoverage((new Selector())->forLineCoverage($filter), $filter);
         $coverage1->append(
             $data,
-            'Test1'
+            'Test1',
         );
 
         $data      = RawCodeCoverageData::fromXdebugWithoutPathCoverage([
@@ -62,7 +60,7 @@ final class CoverageMergerTest extends TestBase
         $coverage2 = new CodeCoverage((new Selector())->forLineCoverage($filter), $filter);
         $coverage2->append(
             $data,
-            'Test2'
+            'Test2',
         );
 
         $target1   = $this->tmpDir . DS . 'coverage1.php';
@@ -95,9 +93,7 @@ final class CoverageMergerTest extends TestBase
         static::assertEquals('Test1', $data[$secondFile][$secondFileFirstLine][0]);
     }
 
-    /**
-     * @return array<string, int[]>
-     */
+    /** @return array<string, int[]> */
     public function provideTestLimit(): array
     {
         return [

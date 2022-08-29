@@ -20,9 +20,7 @@ use function filesize;
 use function str_repeat;
 use function unlink;
 
-/**
- * @internal
- */
+/** @internal */
 final class Reader implements MetaProviderInterface
 {
     /** @var TestSuite */
@@ -39,7 +37,7 @@ final class Reader implements MetaProviderInterface
 
         if (filesize($logFile) === 0) {
             throw new InvalidArgumentException(
-                "Log file {$logFile} is empty. This means a PHPUnit process has crashed."
+                "Log file {$logFile} is empty. This means a PHPUnit process has crashed.",
             );
         }
 

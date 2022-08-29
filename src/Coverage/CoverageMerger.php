@@ -15,9 +15,7 @@ use function filesize;
 use function is_file;
 use function unlink;
 
-/**
- * @internal
- */
+/** @internal */
 final class CoverageMerger
 {
     /** @var CodeCoverage|null */

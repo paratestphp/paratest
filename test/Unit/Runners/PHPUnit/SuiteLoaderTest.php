@@ -176,9 +176,7 @@ final class SuiteLoaderTest extends TestBase
         static::assertEquals($path, array_shift($paths));
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getLoadedPaths(string $path, ?SuiteLoader $loader = null): array
     {
         $loader = $loader ?? new SuiteLoader($this->createOptionsFromArgv(['--path' => $path]), $this->output);
@@ -195,9 +193,7 @@ final class SuiteLoaderTest extends TestBase
         static::assertEquals($path, array_shift($paths));
     }
 
-    /**
-     * @return ExecutableTest[]
-     */
+    /** @return ExecutableTest[] */
     public function testLoadDirGetsPathOfAllTestsWithKeys(): array
     {
         $fixturePath = $this->fixture('passing_tests');
@@ -230,9 +226,7 @@ final class SuiteLoaderTest extends TestBase
         static::assertEquals('testAddition', $functions[4]->getName());
     }
 
-    /**
-     * @param ExecutableTest[] $paraSuites
-     */
+    /** @param ExecutableTest[] $paraSuites */
     private function suiteByPath(string $path, array $paraSuites): Suite
     {
         foreach ($paraSuites as $completePath => $suite) {
@@ -399,9 +393,7 @@ final class SuiteLoaderTest extends TestBase
         static::assertCount(2, $loader->getTestMethods());
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function findTests(string $dir): array
     {
         $it    = new RecursiveDirectoryIterator($dir, RecursiveIteratorIterator::SELF_FIRST);

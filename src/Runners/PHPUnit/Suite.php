@@ -23,9 +23,7 @@ final class Suite extends ExecutableTest
      */
     private $functions;
 
-    /**
-     * @param TestMethod[] $functions
-     */
+    /** @param TestMethod[] $functions */
     public function __construct(string $path, array $functions, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {
         parent::__construct($path, $needsCoverage, $needsTeamcity, $tmpDir);
@@ -54,9 +52,7 @@ final class Suite extends ExecutableTest
         }, $this->functions));
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     protected function prepareOptions(array $options): array
     {
         return $options;

@@ -41,9 +41,7 @@ abstract class TestBase extends TestCase
     {
     }
 
-    /**
-     * @param array<string, string|bool|int|null> $argv
-     */
+    /** @param array<string, string|bool|int|null> $argv */
     final protected function createOptionsFromArgv(array $argv, ?string $cwd = null, bool $hasColorSupport = true): Options
     {
         $inputDefinition = new InputDefinition();
@@ -100,7 +98,7 @@ abstract class TestBase extends TestCase
             sprintf(
                 '/OK \(%s tests?, %s assertions?\)/',
                 $testPattern ?? '\d+',
-                $assertionPattern ?? '\d+'
+                $assertionPattern ?? '\d+',
             ),
             $proc->getOutput(),
         );
@@ -117,9 +115,7 @@ abstract class TestBase extends TestCase
         return $fixture;
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     final protected function getObjectValue(object $object, string $property)
     {
         $refl = new ReflectionObject($object);
@@ -129,9 +125,7 @@ abstract class TestBase extends TestCase
         return $prop->getValue($object);
     }
 
-    /**
-     * @throws SkippedTestError When code coverage library is not found.
-     */
+    /** @throws SkippedTestError When code coverage library is not found. */
     final protected static function skipIfCodeCoverageNotEnabled(): void
     {
         static $runtime;

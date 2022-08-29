@@ -6,9 +6,7 @@ namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 
-/**
- * @internal
- */
+/** @internal */
 final class ExecutableTestChild extends ExecutableTest
 {
     /**
@@ -19,9 +17,7 @@ final class ExecutableTestChild extends ExecutableTest
         return 1;
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     protected function prepareOptions(array $options): array
     {
         return $options;

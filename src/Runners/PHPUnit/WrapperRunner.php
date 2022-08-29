@@ -14,9 +14,7 @@ use function count;
 use function max;
 use function usleep;
 
-/**
- * @internal
- */
+/** @internal */
 final class WrapperRunner extends BaseRunner
 {
     /** @var WrapperWorker[] */
@@ -27,7 +25,7 @@ final class WrapperRunner extends BaseRunner
         if ($this->options->functional()) {
             throw new InvalidArgumentException(
                 'The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due ' .
-                'to the current PHPUnit commands causing classloading issues.'
+                'to the current PHPUnit commands causing classloading issues.',
             );
         }
     }

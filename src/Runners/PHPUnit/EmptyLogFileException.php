@@ -6,9 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use RuntimeException;
 
-/**
- * @internal
- */
+/** @internal */
 final class EmptyLogFileException extends RuntimeException
 {
 }

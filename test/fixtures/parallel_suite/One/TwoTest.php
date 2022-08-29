@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\parallel_suite\One;
 
 use ParaTest\Tests\fixtures\parallel_suite\ParallelBase;
 
-/**
- * @internal
- */
+/** @internal */
 final class TwoTest extends ParallelBase
 {
 }

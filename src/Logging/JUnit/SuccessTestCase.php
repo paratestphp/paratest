@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
-/**
- * @internal
- */
+/** @internal */
 final class SuccessTestCase extends TestCase
 {
 }

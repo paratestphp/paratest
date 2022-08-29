@@ -24,9 +24,7 @@ use function is_string;
 use function is_subclass_of;
 use function sprintf;
 
-/**
- * @internal
- */
+/** @internal */
 final class ParaTestCommand extends Command
 {
     public const COMMAND_NAME = 'paratest';
@@ -84,14 +82,14 @@ final class ParaTestCommand extends Command
         $output->write(sprintf(
             "%s upon %s\n",
             $application->getLongVersion(),
-            Version::getVersionString()
+            Version::getVersionString(),
         ));
         $output->write("\n");
 
         $options = Options::fromConsoleInput(
             $input,
             $this->cwd,
-            (new Console())->hasColorSupport()
+            (new Console())->hasColorSupport(),
         );
         if ($options->configuration() === null && $options->path() === null) {
             return $this->displayHelp($output);
@@ -118,9 +116,7 @@ final class ParaTestCommand extends Command
         return $help->run($input, $output);
     }
 
-    /**
-     * @return class-string<RunnerInterface>
-     */
+    /** @return class-string<RunnerInterface> */
     private function getRunnerClass(InputInterface $input): string
     {
         $runnerClass = $input->getOption('runner');
@@ -131,7 +127,7 @@ final class ParaTestCommand extends Command
             throw new InvalidArgumentException(sprintf(
                 'Selected runner class "%s" does not exist or does not implement %s',
                 $runnerClass,
-                RunnerInterface::class
+                RunnerInterface::class,
             ));
         }
 

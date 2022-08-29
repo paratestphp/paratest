@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\passing_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class FunctionalModeEachTestCalledOnce extends TestCase
 {
     public function testOne(): void

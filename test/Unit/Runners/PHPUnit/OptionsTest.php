@@ -221,7 +221,7 @@ final class OptionsTest extends TestBase
         static::assertNotNull($configuration);
         static::assertEquals(
             $this->tmpDir . DS . $configFileName,
-            $configuration->filename()
+            $configuration->filename(),
         );
     }
 
@@ -487,9 +487,7 @@ final class OptionsTest extends TestBase
         self::assertSame($expected, $this->createOptionsFromArgv($options, __DIR__, $hasColorSupport)->colors());
     }
 
-    /**
-     * @return array<int, array<int, (false|array<string, (null|string)>|null)>>
-     */
+    /** @return array<int, array<int, (false|array<string, (null|string)>|null)>> */
     public function provideColorsCases(): array
     {
         return [

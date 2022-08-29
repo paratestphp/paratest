@@ -9,22 +9,16 @@ use PHPUnit\Framework\TestCase;
 use function defined;
 use function ini_get;
 
-/**
- * @internal
- */
+/** @internal */
 final class IssueTest extends TestCase
 {
-    /**
-     * @dataProvider provideCases
-     */
+    /** @dataProvider provideCases */
     public function testCases(bool $true): void
     {
         static::assertTrue($true);
     }
 
-    /**
-     * @return true[][]
-     */
+    /** @return true[][] */
     public function provideCases(): array
     {
         $cases = [

@@ -11,14 +11,10 @@ use function array_unshift;
 use function in_array;
 use function str_ends_with;
 
-/**
- * @internal
- */
+/** @internal */
 final class PhpstormHelper
 {
-    /**
-     * @param  array<int, string> $argv
-     */
+    /** @param  array<int, string> $argv */
     public static function handleArgvFromPhpstorm(array &$argv, string $paratestBinary): string
     {
         $phpunitKey = self::getArgvKeyFor($argv, '/phpunit');
@@ -49,9 +45,7 @@ final class PhpstormHelper
         return $phpunitBinary;
     }
 
-    /**
-     * @param  array<int, string> $argv
-     */
+    /** @param  array<int, string> $argv */
     private static function getArgvKeyFor(array $argv, string $searchFor): int
     {
         foreach ($argv as $key => $arg) {

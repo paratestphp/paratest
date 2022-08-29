@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\excluded_tests\excluded;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class ExcludedFailingTest extends TestCase
 {
     public function testFail(): void

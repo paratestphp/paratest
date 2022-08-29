@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging;
 
-/**
- * @internal
- */
+/** @internal */
 interface MetaProviderInterface
 {
     public function getTotalTests(): int;

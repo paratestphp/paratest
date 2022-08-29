@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\skipped_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class SkippedTest extends TestCase
 {
     public function testSkipped(): void

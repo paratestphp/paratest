@@ -186,7 +186,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $this->prepareReaders(
             $this->errorSuite,
-            $this->failureSuite
+            $this->failureSuite,
         );
 
         $header = $this->printer->getHeader();
@@ -195,7 +195,7 @@ final class ResultPrinterTest extends ResultTester
             "/\nTime: ([.:]?[0-9]{1,3})+ ?" .
             '(minute|minutes|second|seconds|ms|)?,' .
             " Memory:[\\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
-            $header
+            $header,
         );
     }
 
@@ -203,7 +203,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $this->prepareReaders(
             $this->errorSuite,
-            $this->failureSuite
+            $this->failureSuite,
         );
 
         $errors = $this->printer->getErrors();
@@ -220,7 +220,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $this->prepareReaders(
             $this->errorSuite,
-            $this->errorSuite
+            $this->errorSuite,
         );
 
         $errors = $this->printer->getErrors();
@@ -244,7 +244,7 @@ final class ResultPrinterTest extends ResultTester
     public function testGetFailures(): void
     {
         $this->prepareReaders(
-            $this->mixedSuite
+            $this->mixedSuite,
         );
 
         $failures = $this->printer->getFailures();
@@ -284,7 +284,7 @@ final class ResultPrinterTest extends ResultTester
     public function testGetRisky(): void
     {
         $this->prepareReaders(
-            $this->mixedSuite
+            $this->mixedSuite,
         );
 
         $failures = $this->printer->getRisky();
@@ -303,7 +303,7 @@ final class ResultPrinterTest extends ResultTester
     public function testGetSkipped(): void
     {
         $this->prepareReaders(
-            $this->skipped
+            $this->skipped,
         );
 
         $failures = $this->printer->getSkipped();
@@ -319,7 +319,7 @@ final class ResultPrinterTest extends ResultTester
     {
         $this->prepareReaders(
             $this->errorSuite,
-            $this->mixedSuite
+            $this->mixedSuite,
         );
 
         $footer = $this->printer->getFooter();
@@ -333,7 +333,7 @@ final class ResultPrinterTest extends ResultTester
     public function testGetFooterWithWarnings(): void
     {
         $this->prepareReaders(
-            $this->warningSuite
+            $this->warningSuite,
         );
 
         $footer = $this->printer->getFooter();
@@ -347,7 +347,7 @@ final class ResultPrinterTest extends ResultTester
     public function testGetFooterWithSuccess(): void
     {
         $this->prepareReaders(
-            $this->passingSuite
+            $this->passingSuite,
         );
 
         $footer = $this->printer->getFooter();

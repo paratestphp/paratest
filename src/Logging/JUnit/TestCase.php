@@ -107,7 +107,7 @@ abstract class TestCase
                     (float) $node['time'],
                     $type,
                     $text,
-                    $systemOutput
+                    $systemOutput,
                 );
             }
 
@@ -120,7 +120,7 @@ abstract class TestCase
                 (float) $node['time'],
                 $type,
                 $text,
-                $systemOutput
+                $systemOutput,
             );
         }
 
@@ -138,7 +138,7 @@ abstract class TestCase
                 (float) $node['time'],
                 $type,
                 $text,
-                $systemOutput
+                $systemOutput,
             );
         }
 
@@ -156,7 +156,7 @@ abstract class TestCase
                 (float) $node['time'],
                 $type,
                 $text,
-                $systemOutput
+                $systemOutput,
             );
         }
 
@@ -168,7 +168,7 @@ abstract class TestCase
                     $node['class'],
                     $node['name'],
                     $node['file'],
-                    $node['line']
+                    $node['line'],
                 );
             }
 
@@ -181,7 +181,7 @@ abstract class TestCase
                 (float) $node['time'],
                 null,
                 $text,
-                $systemOutput
+                $systemOutput,
             );
         }
 
@@ -191,7 +191,7 @@ abstract class TestCase
             (string) $node['file'],
             (int) $node['line'],
             (int) $node['assertions'],
-            (float) $node['time']
+            (float) $node['time'],
         );
     }
 }

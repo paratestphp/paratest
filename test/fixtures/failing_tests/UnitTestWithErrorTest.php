@@ -13,17 +13,13 @@ use RuntimeException;
  */
 final class UnitTestWithErrorTest extends UnitTestWithMethodAnnotationsTest
 {
-    /**
-     * @group fixtures
-     */
+    /** @group fixtures */
     public function testTruth(): void
     {
         throw new RuntimeException('Error!!!');
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function isItFalse(): void
     {
         $this->assertFalse(false);

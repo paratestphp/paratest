@@ -208,7 +208,7 @@ final class LogInterpreterTest extends ResultTester
         $first = $mainFirst->suites['ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithClassAnnotationTest'];
         static::assertSame(
             './test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php',
-            $first->file
+            $first->file,
         );
         static::assertSame(4, $first->tests);
         static::assertSame(4, $first->assertions);

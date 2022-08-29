@@ -8,9 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 use function str_repeat;
 
-/**
- * @internal
- */
+/** @internal */
 final class IssueTest extends TestCase
 {
     public function testFillBuffers(): void

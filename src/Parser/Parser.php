@@ -19,9 +19,7 @@ use function get_declared_classes;
 use function is_file;
 use function realpath;
 
-/**
- * @internal
- */
+/** @internal */
 final class Parser
 {
     /** @var ReflectionClass<TestCase> */
@@ -50,7 +48,7 @@ final class Parser
                 self::$externalClassesFound += array_diff(
                     get_declared_classes(),
                     $declaredClasses,
-                    [self::$alreadyLoadedSources[$srcPath]->getName()]
+                    [self::$alreadyLoadedSources[$srcPath]->getName()],
                 );
             } catch (Exception $exception) {
                 self::$externalClassesFound += array_diff(get_declared_classes(), $declaredClasses);
@@ -93,7 +91,7 @@ final class Parser
         return new ParsedClass(
             $this->refl->getName(),
             $this->getMethods(),
-            $parentsCount
+            $parentsCount,
         );
     }
 

@@ -33,9 +33,7 @@ use function unlink;
 
 use const DIRECTORY_SEPARATOR;
 
-/**
- * @internal
- */
+/** @internal */
 final class WrapperWorker
 {
     /**
@@ -64,7 +62,7 @@ final class WrapperWorker
     public function __construct(OutputInterface $output, Options $options, int $token)
     {
         $wrapper = realpath(
-            dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php'
+            dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php',
         );
         assert($wrapper !== false);
 
@@ -75,7 +73,7 @@ final class WrapperWorker
             $options->tmpDir(),
             DIRECTORY_SEPARATOR,
             $token,
-            uniqid()
+            uniqid(),
         );
         touch($this->writeToPathname);
 
@@ -96,7 +94,7 @@ final class WrapperWorker
         if ($options->debug()) {
             $this->output->write(sprintf(
                 "Starting WrapperWorker via: %s\n",
-                implode(' ', array_map('\escapeshellarg', $parameters))
+                implode(' ', array_map('\escapeshellarg', $parameters)),
             ));
         }
 
@@ -106,7 +104,7 @@ final class WrapperWorker
             $options->cwd(),
             $options->fillEnvWithTokens($token),
             $this->input,
-            null
+            null,
         );
     }
 
@@ -128,9 +126,7 @@ final class WrapperWorker
         return WorkerCrashedException::fromProcess($this->process, $command, $previousException);
     }
 
-    /**
-     * @param array<string, string|null> $phpunitOptions
-     */
+    /** @param array<string, string|null> $phpunitOptions */
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
         assert($this->currentlyExecuting === null);

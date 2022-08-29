@@ -274,7 +274,7 @@ final class ResultPrinter
             throw new EmptyLogFileException(
                 $invalidArgumentException->getMessage(),
                 0,
-                $invalidArgumentException
+                $invalidArgumentException,
             );
         }
 
@@ -549,7 +549,7 @@ final class ResultPrinter
             $count === 1 ? 'was' : 'were',
             $count,
             $type,
-            $count === 1 ? '' : 's'
+            $count === 1 ? '' : 's',
         );
 
         for ($i = 1; $i <= count($defects); ++$i) {
@@ -570,7 +570,7 @@ final class ResultPrinter
             ' %' . $this->numTestsWidth . 'd / %' . $this->numTestsWidth . 'd (%3s%%)',
             $this->casesProcessed,
             $this->totalCases,
-            floor(($this->totalCases > 0 ? $this->casesProcessed / $this->totalCases : 0) * 100)
+            floor(($this->totalCases > 0 ? $this->casesProcessed / $this->totalCases : 0) * 100),
         );
     }
 
@@ -586,8 +586,8 @@ final class ResultPrinter
             'fg-white, bg-red',
             sprintf(
                 $formatString,
-                $this->getFooterCounts()
-            )
+                $this->getFooterCounts(),
+            ),
         );
     }
 
@@ -608,8 +608,8 @@ final class ResultPrinter
                     $tests,
                     $tests === 1 ? '' : 's',
                     $asserts,
-                    $asserts === 1 ? '' : 's'
-                )
+                    $asserts === 1 ? '' : 's',
+                ),
             );
         }
 
@@ -618,8 +618,8 @@ final class ResultPrinter
             sprintf(
                 "OK, but incomplete, skipped, or risky tests!\n"
                 . '%s',
-                $this->getFooterCounts()
-            )
+                $this->getFooterCounts(),
+            ),
         );
     }
 
@@ -631,8 +631,8 @@ final class ResultPrinter
             'fg-black, bg-yellow',
             sprintf(
                 $formatString,
-                $this->getFooterCounts()
-            )
+                $this->getFooterCounts(),
+            ),
         );
     }
 
@@ -656,9 +656,7 @@ final class ResultPrinter
         return rtrim($output, ', ') . '.';
     }
 
-    /**
-     * @see \PHPUnit\TextUI\DefaultResultPrinter::colorizeTextBox
-     */
+    /** @see \PHPUnit\TextUI\DefaultResultPrinter::colorizeTextBox */
     private function colorizeTextBox(string $color, string $buffer): string
     {
         if (! $this->options->colors()) {
@@ -710,7 +708,7 @@ final class ResultPrinter
                 ' %s %s%s',
                 self::TESTDOX_SYMBOLS[get_class($case)],
                 $testName,
-                $time
+                $time,
             ));
 
             $failingCase = $case instanceof FailureTestCase || $case instanceof ErrorTestCase || $case instanceof WarningTestCase;

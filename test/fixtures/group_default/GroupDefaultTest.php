@@ -13,17 +13,13 @@ final class GroupDefaultTest extends TestCase
         $this->assertTrue(true);
     }
 
-    /**
-     * @covers ParaTest\Tests\fixtures\passing_tests\GroupDefaultTest
-     */
+    /** @covers ParaTest\Tests\fixtures\passing_tests\GroupDefaultTest */
     public function testTruthWithCovers(): void
     {
         $this->assertTrue(true);
     }
 
-    /**
-     * @group group1
-     */
+    /** @group group1 */
     public function testFalsehood(): void
     {
         $this->assertFalse(false);

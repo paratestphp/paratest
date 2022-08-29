@@ -46,7 +46,7 @@ final class WriterTest extends TestBase
     {
         static::assertInstanceOf(
             LogInterpreter::class,
-            $this->getObjectValue($this->writer, 'interpreter')
+            $this->getObjectValue($this->writer, 'interpreter'),
         );
         static::assertEquals('test/fixtures/tests/', $this->writer->getName());
     }
@@ -139,7 +139,7 @@ final class WriterTest extends TestBase
         static::assertStringNotContainsString(
             'line=""',
             $xml,
-            'Expected no empty line attributes (line=""), but found one.'
+            'Expected no empty line attributes (line=""), but found one.',
         );
     }
 

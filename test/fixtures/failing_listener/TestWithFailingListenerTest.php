@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\failing_listener;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- */
+/** @internal */
 final class TestWithFailingListenerTest extends TestCase
 {
     public function testMe(): void

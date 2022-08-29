@@ -104,9 +104,7 @@ final class CoverageReporterTest extends TestBase
         static::assertFileExists($target);
     }
 
-    /**
-     * @dataProvider generateTextProvider
-     */
+    /** @dataProvider generateTextProvider */
     public function testGenerateText(string $fixtureFile, string $expectedContainedString): void
     {
         $this->createCoverageReporter($fixtureFile);
@@ -115,9 +113,7 @@ final class CoverageReporterTest extends TestBase
         static::assertStringContainsString($expectedContainedString, $output);
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function generateTextProvider(): array
     {
         return [
@@ -132,9 +128,7 @@ final class CoverageReporterTest extends TestBase
         ];
     }
 
-    /**
-     * @dataProvider generateTextWithColorsProvider
-     */
+    /** @dataProvider generateTextWithColorsProvider */
     public function testGenerateTextWithColors(string $fixtureFile, string $expectedPattern): void
     {
         $this->createCoverageReporter($fixtureFile);
@@ -143,9 +137,7 @@ final class CoverageReporterTest extends TestBase
         static::assertMatchesRegularExpression($expectedPattern, $output);
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function generateTextWithColorsProvider(): array
     {
         return [
@@ -160,9 +152,7 @@ final class CoverageReporterTest extends TestBase
         ];
     }
 
-    /**
-     * @dataProvider generateTextCoveredFilesProvider
-     */
+    /** @dataProvider generateTextCoveredFilesProvider */
     public function testGenerateTextCoveredFiles(string $expectedPattern, bool $colors): void
     {
         $this->createCoverageReporter('phpunit-fully-configured.xml');
@@ -171,9 +161,7 @@ final class CoverageReporterTest extends TestBase
         static::assertMatchesRegularExpression($expectedPattern, $output);
     }
 
-    /**
-     * @return  array<string, array<string, bool|string>>
-     */
+    /** @return  array<string, array<string, bool|string>> */
     public function generateTextCoveredFilesProvider(): array
     {
         return [

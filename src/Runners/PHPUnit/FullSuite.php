@@ -6,9 +6,7 @@ namespace ParaTest\Runners\PHPUnit;
 
 use function array_merge;
 
-/**
- * @internal
- */
+/** @internal */
 final class FullSuite extends ExecutableTest
 {
     /** @var string */
@@ -21,20 +19,16 @@ final class FullSuite extends ExecutableTest
         $this->suiteName = $suiteName;
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     protected function prepareOptions(array $options): array
     {
         return array_merge(
             $options,
-            ['testsuite' => $this->suiteName]
+            ['testsuite' => $this->suiteName],
         );
     }
 
-    /**
-     * @psalm-return 1
-     */
+    /** @psalm-return 1 */
     public function getTestCount(): int
     {
         return 1; //There is no simple way of knowing this
