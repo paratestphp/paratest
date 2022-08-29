@@ -51,7 +51,7 @@
     "require-dev": {
         "ext-pcov": "*",
         "ext-posix": "*",
-        "doctrine/coding-standard": "^9.0.0",
+        "doctrine/coding-standard": "^9.0.0 || ^10.0.0",
         "infection/infection": "^0.26.13",
         "malukenho/mcbumpface": "^1.1.5",
         "squizlabs/php_codesniffer": "^3.7.1",
