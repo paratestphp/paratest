@@ -25,7 +25,7 @@ final class PhpstormHelperTest extends TestCase
         $argv = [];
 
         self::expectException(RuntimeException::class);
-        self::expectExceptionMessage("Missing path to '/phpunit'");
+        self::expectExceptionMessage('Missing path');
 
         PhpstormHelper::handleArgvFromPhpstorm($argv, 'some-paratest-binary');
     }
@@ -36,7 +36,7 @@ final class PhpstormHelperTest extends TestCase
      *
      * @dataProvider providePhpstormCases
      */
-    public function testWithoutFilterRunParaTest(
+    public function testPhpStormHelper(
         array $argv,
         array $expectedArgv,
         string $paratestBinary,
@@ -51,170 +51,218 @@ final class PhpstormHelperTest extends TestCase
 
     public function providePhpstormCases(): Generator
     {
-        $paratestBinary = sprintf('%s/vendor/brianium/paratest/bin/paratest', uniqid());
-        $phpunitBinary  = sprintf('%s/vendor/phpunit/phpunit/phpunit', uniqid());
+        $phpStormHelperBinary = sprintf('%s/bin/paratest_for_phpstorm', uniqid());
+        $paratestBinary       = sprintf('%s/vendor/brianium/paratest/bin/paratest', uniqid());
+        $phpunitBinary        = sprintf('%s/vendor/phpunit/phpunit/phpunit', uniqid());
 
+        /**
+         * The format of the command PHPStorm runs when minimally configured (no
+         * runner, no coverage, no filter) as in the README is as follows:
+         * $PATH_TO_PHP_BINARY
+         * argv:
+         *  $phpStormHelperBinary
+         *  $phpunitBinary
+         *  --configuration
+         *  $PATH_TO_PHPUNIT_XML
+         *  --teamcity
+         */
         $argv   = [];
-        $argv[] = $paratestBinary;
+        $argv[] = $phpStormHelperBinary;
         $argv[] = $phpunitBinary;
-        $argv[] = '--runner';
-        $argv[] = 'WrapperRunner';
-        $argv[] = '--no-coverage';
         $argv[] = '--configuration';
         $argv[] = '/home/user/repos/test/phpunit.xml';
         $argv[] = '--teamcity';
 
-        $expected   = [];
-        $expected[] = $paratestBinary;
-        $expected[] = '--runner';
-        $expected[] = 'WrapperRunner';
-        $expected[] = '--no-coverage';
-        $expected[] = '--configuration';
-        $expected[] = '/home/user/repos/test/phpunit.xml';
-        $expected[] = '--teamcity';
+        $expectedArgv   = [];
+        $expectedArgv[] = '--configuration';
+        $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
+        $expectedArgv[] = '--teamcity';
 
-        yield 'without --filter run ParaTest' => [
+        $expectedBinary = $paratestBinary;
+
+        yield 'baseline configuration' => [
             $argv,
-            $expected,
+            $expectedArgv,
             $paratestBinary,
-            $paratestBinary,
+            $expectedBinary,
         ];
 
+        /**
+         * Adding test-runner options such as --runner WrapperRunner places the
+         * argument immediately after $phpunitBinary
+         */
         $argv   = [];
-        $argv[] = $paratestBinary;
+        $argv[] = $phpStormHelperBinary;
         $argv[] = $phpunitBinary;
         $argv[] = '--runner';
         $argv[] = 'WrapperRunner';
-        $argv[] = '--no-coverage';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--teamcity';
+
+        $expectedArgv   = [];
+        $expectedArgv[] = '--runner';
+        $expectedArgv[] = 'WrapperRunner';
+        $expectedArgv[] = '--configuration';
+        $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
+        $expectedArgv[] = '--teamcity';
+
+        $expectedBinary = $paratestBinary;
+
+        yield 'with --wrapper' => [
+            $argv,
+            $expectedArgv,
+            $paratestBinary,
+            $expectedBinary,
+        ];
+
+        /**
+         * Adding --filter, such as when re-running failed tests, places the
+         * filter arguments immediately after $phpunitBinary. In addition,
+         * the helper should return $phpunitBinary instead of
+         * $paratestBinary when running a subset of tests
+         */
+        $argv   = [];
+        $argv[] = $phpStormHelperBinary;
+        $argv[] = $phpunitBinary;
         $argv[] = '--configuration';
         $argv[] = '/home/user/repos/test/phpunit.xml';
         $argv[] = '--filter';
         $argv[] = '"/MyTests\\MyTest::testFalse( .*)?$$/"';
         $argv[] = '--teamcity';
 
-        $expected   = [];
-        $expected[] = $phpunitBinary;
-        $expected[] = '--configuration';
-        $expected[] = '/home/user/repos/test/phpunit.xml';
-        $expected[] = '--filter';
-        $expected[] = '"/MyTests\\MyTest::testFalse( .*)?$$/"';
-        $expected[] = '--teamcity';
+        $expectedArgv   = [];
+        $expectedArgv[] = '--configuration';
+        $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
+        $expectedArgv[] = '--filter';
+        $expectedArgv[] = '"/MyTests\\MyTest::testFalse( .*)?$$/"';
+        $expectedArgv[] = '--teamcity';
 
-        yield 'with --filter run PHPUnit' => [
+        $expectedBinary = $phpunitBinary;
+
+        yield 'with --filter' => [
             $argv,
-            $expected,
+            $expectedArgv,
             $paratestBinary,
-            $phpunitBinary,
+            $expectedBinary,
         ];
 
+        /**
+         * When using --filter, all additional arguments before --configuration
+         * or --bootstrap should be unset
+         */
         $argv   = [];
-        $argv[] = $paratestBinary;
+        $argv[] = $phpStormHelperBinary;
+        $argv[] = $phpunitBinary;
+        $argv[] = '--colors';
+        $argv[] = 'auto';
+        $argv[] = '--configuration';
+        $argv[] = '/home/user/repos/test/phpunit.xml';
+        $argv[] = '--filter';
+        $argv[] = '"/MyTests\\MyTest::testFalse( .*)?$$/"';
+        $argv[] = '--teamcity';
+
+        $expectedArgv   = [];
+        $expectedArgv[] = '--configuration';
+        $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
+        $expectedArgv[] = '--filter';
+        $expectedArgv[] = '"/MyTests\\MyTest::testFalse( .*)?$$/"';
+        $expectedArgv[] = '--teamcity';
+
+        $expectedBinary = $phpunitBinary;
+
+        yield 'with additional arguments passed to --filter' => [
+            $argv,
+            $expectedArgv,
+            $paratestBinary,
+            $expectedBinary,
+        ];
+
+        /**
+         * Running with coverage inserts the corresponding -d flag immediately
+         * after $phpStormHelperBinary and before $phpunitBinary
+         */
+        $argv   = [];
+        $argv[] = $phpStormHelperBinary;
         $argv[] = '-dxdebug.mode=coverage';
         $argv[] = $phpunitBinary;
-        $argv[] = '--runner';
-        $argv[] = 'WrapperRunner';
         $argv[] = '--coverage-clover';
         $argv[] = '/home/user/repos/test/coverage.xml';
         $argv[] = '--configuration';
         $argv[] = '/home/user/repos/test/phpunit.xml';
         $argv[] = '--teamcity';
 
-        $expected   = [];
-        $expected[] = $paratestBinary;
-        $expected[] = '--runner';
-        $expected[] = 'WrapperRunner';
-        $expected[] = '--coverage-clover';
-        $expected[] = '/home/user/repos/test/coverage.xml';
-        $expected[] = '--configuration';
-        $expected[] = '/home/user/repos/test/phpunit.xml';
-        $expected[] = '--teamcity';
+        $expectedArgv   = [];
+        $expectedArgv[] = '--coverage-clover';
+        $expectedArgv[] = '/home/user/repos/test/coverage.xml';
+        $expectedArgv[] = '--configuration';
+        $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
+        $expectedArgv[] = '--teamcity';
 
-        yield 'with -dxdebug.mode=coverage run ParaTest' => [
+        $expectedBinary = $paratestBinary;
+
+        yield 'with -dxdebug.mode=coverage' => [
             $argv,
-            $expected,
+            $expectedArgv,
             $paratestBinary,
-            $paratestBinary,
+            $expectedBinary,
         ];
 
+        /**
+         * Additionally, with PCov, the --passthru-php option must be used to
+         * enable the sub-processes to report coverage - see README.md#pcov
+         */
         $argv   = [];
-        $argv[] = $paratestBinary;
-        $argv[] = '-dxdebug.mode=coverage';
-        $argv[] = $phpunitBinary;
-        $argv[] = '--coverage-clover';
-        $argv[] = '/home/user/repos/test/coverage.xml';
-        $argv[] = '--configuration';
-        $argv[] = '/home/user/repos/test/phpunit.xml';
-        $argv[] = '--teamcity';
-
-        $expected   = [];
-        $expected[] = $paratestBinary;
-        $expected[] = '--coverage-clover';
-        $expected[] = '/home/user/repos/test/coverage.xml';
-        $expected[] = '--configuration';
-        $expected[] = '/home/user/repos/test/phpunit.xml';
-        $expected[] = '--teamcity';
-
-        yield 'with -dxdebug.mode=coverage and no wrapper run ParaTest' => [
-            $argv,
-            $expected,
-            $paratestBinary,
-            $paratestBinary,
-        ];
-
-        $argv   = [];
-        $argv[] = $paratestBinary;
+        $argv[] = $phpStormHelperBinary;
         $argv[] = '-dpcov.enabled=1';
         $argv[] = $phpunitBinary;
-        $argv[] = '--runner';
-        $argv[] = 'WrapperRunner';
+        $argv[] = '--passthru-php=\'-d\' \'pcov.enabled=1\'';
         $argv[] = '--coverage-clover';
         $argv[] = '/home/user/repos/test/coverage.xml';
         $argv[] = '--configuration';
         $argv[] = '/home/user/repos/test/phpunit.xml';
         $argv[] = '--teamcity';
 
-        $expected   = [];
-        $expected[] = $paratestBinary;
-        $expected[] = '--runner';
-        $expected[] = 'WrapperRunner';
-        $expected[] = '--coverage-clover';
-        $expected[] = '/home/user/repos/test/coverage.xml';
-        $expected[] = '--configuration';
-        $expected[] = '/home/user/repos/test/phpunit.xml';
-        $expected[] = '--teamcity';
+        $expectedArgv   = [];
+        $expectedArgv[] = '--passthru-php=\'-d\' \'pcov.enabled=1\'';
+        $expectedArgv[] = '--coverage-clover';
+        $expectedArgv[] = '/home/user/repos/test/coverage.xml';
+        $expectedArgv[] = '--configuration';
+        $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
+        $expectedArgv[] = '--teamcity';
 
-        yield 'with -dpcov.enabled=1 run ParaTest' => [
+        $expectedBinary = $paratestBinary;
+
+        yield 'with -dpcov.enabled=1' => [
             $argv,
-            $expected,
+            $expectedArgv,
             $paratestBinary,
-            $paratestBinary,
+            $expectedBinary,
         ];
 
+        /**
+         * Sometimes, the phpunit binary is not in the expected location, so it
+         * needs to be able to locate it elsewhere
+         */
         $argv   = [];
-        $argv[] = $paratestBinary;
+        $argv[] = $phpStormHelperBinary;
         $argv[] = sprintf('%s/bin/phpunit', uniqid());
-
-        $argv[] = '--runner';
-        $argv[] = 'WrapperRunner';
-        $argv[] = '--no-coverage';
         $argv[] = '--configuration';
         $argv[] = '/home/user/repos/test/phpunit.xml';
         $argv[] = '--teamcity';
 
-        $expected   = [];
-        $expected[] = $paratestBinary;
-        $expected[] = '--runner';
-        $expected[] = 'WrapperRunner';
-        $expected[] = '--no-coverage';
-        $expected[] = '--configuration';
-        $expected[] = '/home/user/repos/test/phpunit.xml';
-        $expected[] = '--teamcity';
+        $expectedArgv   = [];
+        $expectedArgv[] = '--configuration';
+        $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
+        $expectedArgv[] = '--teamcity';
+
+        $expectedBinary = $paratestBinary;
 
         yield 'with phpunit binary under bin/phpunit' => [
             $argv,
-            $expected,
+            $expectedArgv,
             $paratestBinary,
-            $paratestBinary,
+            $expectedBinary,
         ];
     }
 }
