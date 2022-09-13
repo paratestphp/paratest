@@ -9,7 +9,8 @@ use RuntimeException;
 use function array_search;
 use function array_unshift;
 use function in_array;
-use function str_ends_with;
+use function strlen;
+use function substr_compare;
 
 /** @internal */
 final class PhpstormHelper
@@ -49,12 +50,30 @@ final class PhpstormHelper
     private static function getArgvKeyFor(array $argv, string $searchFor): int
     {
         foreach ($argv as $key => $arg) {
-            if (str_ends_with($arg, $searchFor)) {
+            if (self::strEndsWith($arg, $searchFor)) {
                 return $key;
             }
         }
 
         throw new RuntimeException("Missing path to '$searchFor'");
+    }
+
+    /**
+     * Polyfill from PHP 8.0, drop when 7.4 support ends
+     */
+    public static function strEndsWith(string $haystack, string $needle): bool
+    {
+        if ($needle === '' || $needle === $haystack) {
+            return true;
+        }
+
+        if ($haystack === '') {
+            return false;
+        }
+
+        $needleLength = strlen($needle);
+
+        return $needleLength <= strlen($haystack) && substr_compare($haystack, $needle, -$needleLength) === 0;
     }
 
     /**
