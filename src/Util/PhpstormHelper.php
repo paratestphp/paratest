@@ -7,9 +7,15 @@ namespace ParaTest\Util;
 use RuntimeException;
 
 use function array_search;
+use function array_unshift;
+use function dirname;
 use function in_array;
+use function realpath;
 use function strlen;
+use function substr;
 use function substr_compare;
+
+use const DIRECTORY_SEPARATOR;
 
 /** @internal */
 final class PhpstormHelper
@@ -17,9 +23,6 @@ final class PhpstormHelper
     /** @param  array<int, string> $argv */
     public static function handleArgvFromPhpstorm(array &$argv, string $paratestBinary): string
     {
-        // Remove the helper file so it is not re-included
-        unset($argv[self::getArgvKeyFor($argv, '/paratest_for_phpstorm')]);
-
         $phpunitKey = self::getArgvKeyFor($argv, '/phpunit');
 
         if (! in_array('--filter', $argv, true)) {
@@ -33,8 +36,8 @@ final class PhpstormHelper
             return $paratestBinary;
         }
 
+        unset($argv[self::getArgvKeyFor($argv, '/paratest_for_phpstorm')]);
         $phpunitBinary = $argv[$phpunitKey];
-        unset($argv[self::getArgvKeyFor($argv, '/phpunit')]);
         foreach ($argv as $index => $value) {
             if ($value === '--configuration' || $value === '--bootstrap') {
                 break;
@@ -42,6 +45,8 @@ final class PhpstormHelper
 
             unset($argv[$index]);
         }
+
+        array_unshift($argv, $phpunitBinary);
 
         return $phpunitBinary;
     }

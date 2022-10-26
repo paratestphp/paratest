@@ -74,6 +74,7 @@ final class PhpstormHelperTest extends TestCase
         $argv[] = '--teamcity';
 
         $expectedArgv   = [];
+        $expectedArgv[] = $phpStormHelperBinary;
         $expectedArgv[] = '--configuration';
         $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
         $expectedArgv[] = '--teamcity';
@@ -101,6 +102,7 @@ final class PhpstormHelperTest extends TestCase
         $argv[] = '--teamcity';
 
         $expectedArgv   = [];
+        $expectedArgv[] = $phpStormHelperBinary;
         $expectedArgv[] = '--runner';
         $expectedArgv[] = 'WrapperRunner';
         $expectedArgv[] = '--configuration';
@@ -132,6 +134,7 @@ final class PhpstormHelperTest extends TestCase
         $argv[] = '--teamcity';
 
         $expectedArgv   = [];
+        $expectedArgv[] = $phpunitBinary;
         $expectedArgv[] = '--configuration';
         $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
         $expectedArgv[] = '--filter';
@@ -163,6 +166,7 @@ final class PhpstormHelperTest extends TestCase
         $argv[] = '--teamcity';
 
         $expectedArgv   = [];
+        $expectedArgv[] = $phpunitBinary;
         $expectedArgv[] = '--configuration';
         $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
         $expectedArgv[] = '--filter';
@@ -193,6 +197,7 @@ final class PhpstormHelperTest extends TestCase
         $argv[] = '--teamcity';
 
         $expectedArgv   = [];
+        $expectedArgv[] = $phpStormHelperBinary;
         $expectedArgv[] = '--coverage-clover';
         $expectedArgv[] = '/home/user/repos/test/coverage.xml';
         $expectedArgv[] = '--configuration';
@@ -224,6 +229,7 @@ final class PhpstormHelperTest extends TestCase
         $argv[] = '--teamcity';
 
         $expectedArgv   = [];
+        $expectedArgv[] = $phpStormHelperBinary;
         $expectedArgv[] = '--passthru-php=\'-d\' \'pcov.enabled=1\'';
         $expectedArgv[] = '--coverage-clover';
         $expectedArgv[] = '/home/user/repos/test/coverage.xml';
@@ -252,6 +258,7 @@ final class PhpstormHelperTest extends TestCase
         $argv[] = '--teamcity';
 
         $expectedArgv   = [];
+        $expectedArgv[] = $phpStormHelperBinary;
         $expectedArgv[] = '--configuration';
         $expectedArgv[] = '/home/user/repos/test/phpunit.xml';
         $expectedArgv[] = '--teamcity';
