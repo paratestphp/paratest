@@ -8,14 +8,9 @@ use RuntimeException;
 
 use function array_search;
 use function array_unshift;
-use function dirname;
 use function in_array;
-use function realpath;
 use function strlen;
-use function substr;
 use function substr_compare;
-
-use const DIRECTORY_SEPARATOR;
 
 /** @internal */
 final class PhpstormHelper
