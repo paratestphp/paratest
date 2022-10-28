@@ -31,7 +31,7 @@ final class PhpstormHelper
             return $paratestBinary;
         }
 
-        unset($argv[self::getArgvKeyFor($argv, 'vendor/brianium/paratest/bin/paratest')]);
+        unset($argv[self::getArgvKeyFor($argv, '/paratest_for_phpstorm')]);
         $phpunitBinary = $argv[$phpunitKey];
         foreach ($argv as $index => $value) {
             if ($value === '--configuration' || $value === '--bootstrap') {
