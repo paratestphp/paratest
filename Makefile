@@ -14,6 +14,7 @@ all: csfix static-analysis code-coverage
 
 vendor: composer.json
 	composer update
+	composer bump
 	touch vendor
 
 .PHONY: csfix
