@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
+use Fidry\CpuCoreCounter\CpuCoreCounter;
+use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
 use InvalidArgumentException;
 use ParaTest\Util\Str;
 use PHPUnit\TextUI\DefaultResultPrinter;
@@ -22,9 +24,7 @@ use function count;
 use function dirname;
 use function escapeshellarg;
 use function explode;
-use function fgets;
 use function file_exists;
-use function file_get_contents;
 use function implode;
 use function in_array;
 use function intdiv;
@@ -34,10 +34,7 @@ use function is_file;
 use function is_numeric;
 use function is_string;
 use function ksort;
-use function pclose;
-use function popen;
 use function preg_match;
-use function preg_match_all;
 use function realpath;
 use function sprintf;
 use function strlen;
@@ -899,30 +896,11 @@ final class Options
      */
     public static function getNumberOfCPUCores(): int
     {
-        $cores = 2;
-        if (is_file('/proc/cpuinfo')) {
-            // Linux (and potentially Windows with linux sub systems)
-            $cpuinfo = file_get_contents('/proc/cpuinfo');
-            assert($cpuinfo !== false);
-            preg_match_all('/^processor/m', $cpuinfo, $matches);
-            $cores = count($matches[0]);
-        // @codeCoverageIgnoreStart
-        } elseif (DIRECTORY_SEPARATOR === '\\') {
-            // Windows
-            if (($process = @popen('wmic cpu get NumberOfLogicalProcessors', 'rb')) !== false) {
-                fgets($process);
-                $cores = (int) fgets($process);
-                pclose($process);
-            }
-        } elseif (($process = @popen('sysctl -n hw.ncpu', 'rb')) !== false) {
-            // *nix (Linux, BSD and Mac)
-            $cores = (int) fgets($process);
-            pclose($process);
+        try {
+            return (new CpuCoreCounter())->getCount();
+        } catch (NumberOfCpuCoreNotFound $exception) {
+            return 2;
         }
-
-        // @codeCoverageIgnoreEnd
-
-        return $cores;
     }
 
     /** @return string[]|null */
