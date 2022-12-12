@@ -42,9 +42,9 @@
         "phpunit/php-code-coverage": "^9.2.19",
         "phpunit/php-file-iterator": "^3.0.6",
         "phpunit/php-timer": "^5.0.3",
-        "phpunit/phpunit": "^9.5.26",
+        "phpunit/phpunit": "^9.5.27",
         "sebastian/environment": "^5.1.4",
-        "symfony/console": "^5.4.12 || ^6.2",
+        "symfony/console": "^5.4.16 || ^6.2.1",
         "symfony/process": "^5.4.11 || ^6.2"
     },
     "require-dev": {
@@ -53,7 +53,7 @@
         "doctrine/coding-standard": "^10.0.0",
         "infection/infection": "^0.26.16",
         "squizlabs/php_codesniffer": "^3.7.1",
-        "symfony/filesystem": "^5.4.12 || ^6.2",
+        "symfony/filesystem": "^5.4.13 || ^6.2",
         "vimeo/psalm": "^5.1"
     },
     "autoload": {
