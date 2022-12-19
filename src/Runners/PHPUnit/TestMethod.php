@@ -38,6 +38,7 @@ final class TestMethod extends ExecutableTest
     public function __construct(string $testPath, array $filters, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
     {
         parent::__construct($testPath, $needsCoverage, $needsTeamcity, $tmpDir);
+
         // for compatibility with other code (tests), which can pass string (one filter)
         // instead of array of filters
         $this->filters = $filters;
