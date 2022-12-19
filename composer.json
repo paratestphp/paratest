@@ -38,7 +38,7 @@
         "ext-pcre": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
-        "fidry/cpu-core-counter": "^0.4.0",
+        "fidry/cpu-core-counter": "^0.4.0 || ^0.5.0",
         "jean85/pretty-package-versions": "^2.0.5",
         "phpunit/php-code-coverage": "^9.2.19",
         "phpunit/php-file-iterator": "^3.0.6",
