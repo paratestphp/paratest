@@ -17,8 +17,11 @@ use function usleep;
 /** @internal */
 final class WrapperRunner extends BaseRunner
 {
-    /** @var WrapperWorker[] */
+    /** @var array<int,WrapperWorker> */
     private $workers = [];
+
+    /** @var array<int,int> */
+    private $batches = [];
 
     protected function beforeLoadChecks(): void
     {
@@ -40,8 +43,7 @@ final class WrapperRunner extends BaseRunner
     private function startWorkers(): void
     {
         for ($token = 1; $token <= $this->options->processes(); ++$token) {
-            $this->workers[$token] = new WrapperWorker($this->output, $this->options, $token);
-            $this->workers[$token]->start();
+            $this->startWorker($token);
         }
     }
 
@@ -49,9 +51,10 @@ final class WrapperRunner extends BaseRunner
     {
         $phpunit        = $this->options->phpunit();
         $phpunitOptions = $this->options->filtered();
+        $batchSize      = $this->options->maxBatchSize();
 
         while (count($this->pending) > 0 && count($this->workers) > 0) {
-            foreach ($this->workers as $worker) {
+            foreach ($this->workers as $token => $worker) {
                 if (! $worker->isRunning()) {
                     throw $worker->getWorkerCrashedException();
                 }
@@ -61,10 +64,16 @@ final class WrapperRunner extends BaseRunner
                 }
 
                 $this->flushWorker($worker);
+                if ($batchSize && $this->batches[$token] > $batchSize) {
+                    $this->destroyWorker($token);
+                    $this->startWorker($token);
+                }
+
                 if ($this->exitcode > 0 && $this->options->stopOnFailure()) {
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {
                     $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
+                    $this->batches[$token]++;
                 }
             }
 
@@ -124,5 +133,19 @@ final class WrapperRunner extends BaseRunner
 
             usleep(self::CYCLE_SLEEP);
         }
+    }
+
+    private function startWorker(int $token): void
+    {
+        $this->workers[$token] = new WrapperWorker($this->output, $this->options, $token);
+        $this->workers[$token]->start();
+        $this->batches[$token] = 0;
+    }
+
+    private function destroyWorker(int $token): void
+    {
+        $this->workers[$token]->stop();
+        $this->workers[$token]->__destruct();
+        unset($this->workers[$token]);
     }
 }

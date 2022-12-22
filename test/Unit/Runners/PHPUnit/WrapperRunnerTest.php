@@ -42,4 +42,13 @@ final class WrapperRunnerTest extends RunnerTestCase
 
         $this->runRunner();
     }
+
+    public function testWrapperRunnerHandlesBatchSize(): void
+    {
+        $this->bareOptions['--path']           = $this->fixture('passing_tests' . DS . 'level1' . DS . 'level2');
+        $this->bareOptions['--configuration']  = $this->fixture('phpunit-parallel-suite-with-globals.xml');
+        $this->bareOptions['--max-batch-size'] = 2;
+
+        $this->runRunner();
+    }
 }
