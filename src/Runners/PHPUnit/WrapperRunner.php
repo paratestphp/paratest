@@ -17,10 +17,10 @@ use function usleep;
 /** @internal */
 final class WrapperRunner extends BaseRunner
 {
-    /** @var array<int,WrapperWorker> */
+    /** @var array<positive-int,WrapperWorker> */
     private $workers = [];
 
-    /** @var array<int,int> */
+    /** @var array<positive-int,int> */
     private $batches = [];
 
     protected function beforeLoadChecks(): void
@@ -64,7 +64,7 @@ final class WrapperRunner extends BaseRunner
                 }
 
                 $this->flushWorker($worker);
-                if ($batchSize && $this->batches[$token] > $batchSize) {
+                if (null !== $batchSize && $this->batches[$token] === $batchSize) {
                     $this->destroyWorker($token);
                     $this->startWorker($token);
                 }
@@ -145,7 +145,6 @@ final class WrapperRunner extends BaseRunner
     private function destroyWorker(int $token): void
     {
         $this->workers[$token]->stop();
-        $this->workers[$token]->__destruct();
         unset($this->workers[$token]);
     }
 }

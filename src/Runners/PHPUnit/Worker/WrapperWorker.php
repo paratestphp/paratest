@@ -166,7 +166,6 @@ final class WrapperWorker
 
     public function stop(): void
     {
-        $this->process->stop();
         $this->input->write(self::COMMAND_EXIT);
     }
 
