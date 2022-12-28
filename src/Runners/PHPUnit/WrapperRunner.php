@@ -64,9 +64,10 @@ final class WrapperRunner extends BaseRunner
                 }
 
                 $this->flushWorker($worker);
-                if ($batchSize !== null && $this->batches[$token] === $batchSize) {
+
+                if ($batchSize !== null && $batchSize !== 0 && $this->batches[$token] === $batchSize) {
                     $this->destroyWorker($token);
-                    $this->startWorker($token);
+                    $worker = $this->startWorker($token);
                 }
 
                 if ($this->exitcode > 0 && $this->options->stopOnFailure()) {
@@ -135,11 +136,13 @@ final class WrapperRunner extends BaseRunner
         }
     }
 
-    private function startWorker(int $token): void
+    private function startWorker(int $token): WrapperWorker
     {
         $this->workers[$token] = new WrapperWorker($this->output, $this->options, $token);
         $this->workers[$token]->start();
         $this->batches[$token] = 0;
+
+        return $this->workers[$token];
     }
 
     private function destroyWorker(int $token): void
