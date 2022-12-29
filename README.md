@@ -50,7 +50,7 @@ To get the most out of ParaTest, you have to adjust the parameters carefully.
     bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and
     bootstrapping is reduced to the minimum.
 
-    Using the `--max-batch-size` option with the WrapperRunner will reset each worker after `--max-batch-size` testcases, which might help solve memory leaks problems
+    Using the `--max-batch-size` option with the WrapperRunner will reset each worker after `--max-batch-size` testcases, which might help solve memory leaks problems.
 
 2. **Adjust the number of processes with `-p`**
 
@@ -70,7 +70,7 @@ To get the most out of ParaTest, you have to adjust the parameters carefully.
 4. **Tune batch max size `--max-batch-size`**
 
     Batch size will affect the max amount of atomic tests which will be used for a single test method.
-    Please note that itonly wortks with either the `functional mode` OR `--runner WrapperRunner` (mutually exclusive). The following describes the `functional mode` system. 
+    Please note that it only works with either the `functional mode` OR `--runner WrapperRunner` (mutually exclusive). The following describes the `functional mode` system.
     One atomic test will be either one test method from test class if no data provider available for
     method or will be only one item from dataset for method.
     Increase this value to reduce per-process overhead and in most cases it will also reduce parallel efficiency.
