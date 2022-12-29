@@ -4,7 +4,7 @@
             "src"
         ]
     },
-    "timeout": 10,
+    "timeout": 30,
     "logs": {
         "stryker": {
             "report": "/^\\d+\\.x$/"
