@@ -147,7 +147,12 @@ final class WrapperRunner extends BaseRunner
 
     private function destroyWorker(int $token): void
     {
+        // Mutation Testing tells us that the following `unset()` already destroys
+        // the `WrapperWorker`, which destroys the Symfony's `Process`, which
+        // automatically calls `Process::stop` within `Process::__destruct()`.
+        // But we prefer to have an explicit stops.
         $this->workers[$token]->stop();
+
         unset($this->workers[$token]);
     }
 }

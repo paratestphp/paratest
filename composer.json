@@ -45,7 +45,7 @@
         "phpunit/php-timer": "^5.0.3",
         "phpunit/phpunit": "^9.5.27",
         "sebastian/environment": "^5.1.4",
-        "symfony/console": "^5.4.16 || ^6.2.2",
+        "symfony/console": "^5.4.16 || ^6.2.3",
         "symfony/process": "^5.4.11 || ^6.2"
     },
     "require-dev": {
