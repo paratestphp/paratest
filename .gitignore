@@ -1,6 +1,7 @@
 /.idea
 /coverage
 /test/fixtures/generated_tests
+/test/fixtures/wrapper_batchsize_suite/tmp
 /vendor
 composer.lock
 .phpunit.result.cache
