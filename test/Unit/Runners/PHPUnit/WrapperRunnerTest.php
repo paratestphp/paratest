@@ -78,7 +78,7 @@ final class WrapperRunnerTest extends RunnerTestCase
     }
 
     /** @return iterable<array{int,?int,int}> */
-    public function provideForWrapperRunnerHandlesBatchSize(): iterable
+    public static function provideForWrapperRunnerHandlesBatchSize(): iterable
     {
         yield 'One process with batchsize = null should have 1 pids and 1 token' =>  [1, null, 1];
         yield 'One process with batchsize = 0 should have 1 pids and 1 token' =>  [1, 0, 1];

@@ -8,7 +8,7 @@ use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
 use InvalidArgumentException;
 use ParaTest\Util\Str;
-use PHPUnit\TextUI\DefaultResultPrinter;
+use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\XmlConfiguration\LoadedFromFileConfiguration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
@@ -471,13 +471,13 @@ final class Options
         }
 
         if ($options['colors'] === null) {
-            $options['colors'] = DefaultResultPrinter::COLOR_AUTO;
+            $options['colors'] = Configuration::COLOR_AUTO;
         }
 
-        if ($options['colors'] === DefaultResultPrinter::COLOR_AUTO && $hasColorSupport) {
+        if ($options['colors'] === Configuration::COLOR_AUTO && $hasColorSupport) {
             $colors = true;
         } else {
-            $colors = $options['colors'] === DefaultResultPrinter::COLOR_ALWAYS;
+            $colors = $options['colors'] === Configuration::COLOR_ALWAYS;
         }
 
         ksort($filtered);

@@ -11,7 +11,7 @@ use ParaTest\Runners\PHPUnit\ResultPrinter;
 use ParaTest\Runners\PHPUnit\Suite;
 use ParaTest\Runners\PHPUnit\TestMethod;
 use ParaTest\Tests\Unit\ResultTester;
-use PHPUnit\TextUI\DefaultResultPrinter;
+use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -440,7 +440,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testColorsForFailing(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => DefaultResultPrinter::COLOR_ALWAYS]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->mixedSuite);
 
@@ -453,7 +453,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testColorsForWarning(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => DefaultResultPrinter::COLOR_ALWAYS]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->warningSuite);
 
@@ -466,7 +466,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testColorsForSkipped(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => DefaultResultPrinter::COLOR_ALWAYS]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->skipped);
 
@@ -481,7 +481,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testColorsParsing(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => DefaultResultPrinter::COLOR_ALWAYS, '--verbose' => true]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS, '--verbose' => true]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->otherFailureSuite);
 
@@ -497,7 +497,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testSkippedOutpusMessagesWithVerbose(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => DefaultResultPrinter::COLOR_ALWAYS, '--verbose' => true]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS, '--verbose' => true]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->skipped);
 
@@ -512,7 +512,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testColorsForPassing(): void
     {
-        $this->options = $this->createOptionsFromArgv(['--colors' => DefaultResultPrinter::COLOR_ALWAYS, '--verbose' => false]);
+        $this->options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS, '--verbose' => false]);
         $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
         $this->printer->addTest($this->passingSuite);
 

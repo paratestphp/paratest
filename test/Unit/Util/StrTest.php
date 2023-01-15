@@ -30,7 +30,7 @@ final class StrTest extends TestCase
     }
 
     /** @return array<string, array<string, string|string[]>> */
-    public function explodeWithCleanupDataProvider(): array
+    public static function explodeWithCleanupDataProvider(): array
     {
         return [
             'default' => [

@@ -94,7 +94,7 @@ final class CoverageMergerTest extends TestBase
     }
 
     /** @return array<string, int[]> */
-    public function provideTestLimit(): array
+    public static function provideTestLimit(): array
     {
         return [
             'unlimited' => [0],

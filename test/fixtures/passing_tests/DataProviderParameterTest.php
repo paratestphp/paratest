@@ -16,7 +16,7 @@ final class DataProviderParameterTest extends TestCase
     }
 
     /** @return array<int, array<string, bool>> */
-    public function dataProviderWithParameter(): array
+    public static function dataProviderWithParameter(): array
     {
         return [
             ['expected' => true],

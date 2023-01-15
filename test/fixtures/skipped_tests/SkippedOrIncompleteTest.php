@@ -22,7 +22,7 @@ final class SkippedOrIncompleteTest extends TestCase
     }
 
     /** @return int[][] */
-    public function dataProviderNumeric100(): array
+    public static function dataProviderNumeric100(): array
     {
         $result = [];
         for ($i = 0; $i < 100; $i++) {

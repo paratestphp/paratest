@@ -16,7 +16,7 @@ final class OneTest extends ParallelBase
     }
 
     /** @return array<string|int, non-empty-list<int>> */
-    public function provideDatas(): array
+    public static function provideDatas(): array
     {
         return [
             'one' => [1],

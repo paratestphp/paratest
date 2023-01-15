@@ -88,7 +88,7 @@ final class ParaTestCommandTest extends TestBase
     }
 
     /** @return array<string, string[]> */
-    public function provideConfigurationDirectories(): array
+    public static function provideConfigurationDirectories(): array
     {
         return [
             'config-from-phpunit.xml' => [FIXTURES . DS . 'config-from-phpunit.xml'],

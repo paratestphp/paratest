@@ -38,12 +38,8 @@ use function fopen;
 use function fwrite;
 use function get_class;
 use function implode;
-use function is_array;
-use function max;
-use function preg_split;
 use function rtrim;
 use function sprintf;
-use function str_pad;
 use function str_repeat;
 use function strlen;
 
@@ -619,24 +615,13 @@ final class ResultPrinter
         return rtrim($output, ', ') . '.';
     }
 
-    /** @see \PHPUnit\TextUI\DefaultResultPrinter::colorizeTextBox */
     private function colorizeTextBox(string $color, string $buffer): string
     {
         if (! $this->options->colors()) {
             return $buffer;
         }
 
-        $lines = preg_split('/\r\n|\r|\n/', $buffer);
-        assert(is_array($lines));
-        $padding = max(array_map('\\strlen', $lines));
-        assert($padding !== false);
-
-        $styledLines = [];
-        foreach ($lines as $line) {
-            $styledLines[] = Color::colorize($color, str_pad($line, $padding));
-        }
-
-        return implode(PHP_EOL, $styledLines);
+        return Color::colorizeTextBox($color, $buffer);
     }
 
     private function processTestdoxReader(TestSuite $testSuite): void

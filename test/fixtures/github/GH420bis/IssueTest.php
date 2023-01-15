@@ -18,7 +18,7 @@ final class IssueTest extends TestCase
     }
 
     /** @return string[][] */
-    public function provideCases(): array
+    public static function provideCases(): array
     {
         $cases = [
             'const_FROM_BOOTSTRAP' => defined('ISSUE_420_BIS_FROM_BOOTSTRAP') ? ISSUE_420_BIS_FROM_BOOTSTRAP : null,

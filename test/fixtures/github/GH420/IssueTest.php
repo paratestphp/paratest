@@ -19,7 +19,7 @@ final class IssueTest extends TestCase
     }
 
     /** @return true[][] */
-    public function provideCases(): array
+    public static function provideCases(): array
     {
         $cases = [
             'ini' => ini_get('sendmail_from'),

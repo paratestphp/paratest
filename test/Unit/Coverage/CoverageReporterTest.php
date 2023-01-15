@@ -113,7 +113,7 @@ final class CoverageReporterTest extends TestBase
     }
 
     /** @return string[][] */
-    public function generateTextProvider(): array
+    public static function generateTextProvider(): array
     {
         return [
             'showOnlySummary = false' => [
@@ -137,7 +137,7 @@ final class CoverageReporterTest extends TestBase
     }
 
     /** @return string[][] */
-    public function generateTextWithColorsProvider(): array
+    public static function generateTextWithColorsProvider(): array
     {
         return [
             'showOnlySummary = false' => [
@@ -161,7 +161,7 @@ final class CoverageReporterTest extends TestBase
     }
 
     /** @return  array<string, array<string, bool|string>> */
-    public function generateTextCoveredFilesProvider(): array
+    public static function generateTextCoveredFilesProvider(): array
     {
         return [
             'colors = false' => [

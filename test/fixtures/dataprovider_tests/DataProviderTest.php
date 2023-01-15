@@ -16,7 +16,7 @@ final class DataProviderTest extends TestCase
     }
 
     /** @return int[][] */
-    public function dataProviderNumeric50(): array
+    public static function dataProviderNumeric50(): array
     {
         $result = [];
         for ($i = 0; $i < 50; $i++) {
@@ -33,7 +33,7 @@ final class DataProviderTest extends TestCase
     }
 
     /** @return int[][] */
-    public function dataProviderNamed50(): array
+    public static function dataProviderNamed50(): array
     {
         $result = [];
         for ($i = 0; $i < 50; $i++) {
@@ -51,7 +51,7 @@ final class DataProviderTest extends TestCase
     }
 
     /** @return int[][] */
-    public function dataProviderNumeric1000(): array
+    public static function dataProviderNumeric1000(): array
     {
         $result = [];
         for ($i = 0; $i < 1000; $i++) {
@@ -68,8 +68,8 @@ final class DataProviderTest extends TestCase
     }
 
     /** @return int[][] */
-    public function dataProviderIterable(): iterable
+    public static function dataProviderIterable(): iterable
     {
-        yield from $this->dataProviderNumeric50();
+        yield from self::dataProviderNumeric50();
     }
 }
