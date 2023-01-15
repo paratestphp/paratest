@@ -9,9 +9,9 @@ use ParaTest\Tests\TestBase;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use PHPUnit\Util\Xml;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
-use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
 
 use function uniqid;
 

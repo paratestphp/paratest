@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use ParaTest\Runners\PHPUnit\BaseRunner;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use ParaTest\Tests\TestBase;
-use PHPUnit\TextUI\Application;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 

@@ -8,9 +8,9 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Tests\TestBase;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
-use SebastianBergmann\CodeCoverage\Data\RawCodeCoverageData;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 
 use function touch;

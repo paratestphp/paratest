@@ -8,12 +8,10 @@ use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
 use InvalidArgumentException;
 use ParaTest\Util\Str;
-use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\DefaultResultPrinter;
 use PHPUnit\TextUI\XmlConfiguration\LoadedFromFileConfiguration;
 use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
-use SebastianBergmann\Environment\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -599,7 +597,7 @@ final class Options
                 'coverage-filter',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Directory to add to the coverage filter.'
+                'Directory to add to the coverage filter.',
             ),
             new InputOption(
                 'coverage-html',

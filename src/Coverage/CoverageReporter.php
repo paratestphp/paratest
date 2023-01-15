@@ -12,7 +12,6 @@ use SebastianBergmann\CodeCoverage\Report\Crap4j;
 use SebastianBergmann\CodeCoverage\Report\Html;
 use SebastianBergmann\CodeCoverage\Report\Html\Colors;
 use SebastianBergmann\CodeCoverage\Report\Html\CustomCssFile;
-use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use SebastianBergmann\CodeCoverage\Report\Text;
 use SebastianBergmann\CodeCoverage\Report\Thresholds;
@@ -69,8 +68,8 @@ final class CoverageReporter
     {
         $defaultColors     = Colors::default();
         $defaultThresholds = Thresholds::default();
-        $customCssFile = CustomCssFile::default();
-        $hasHtml = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml();
+        $customCssFile     = CustomCssFile::default();
+        $hasHtml           = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml();
 
         $html = new Html\Facade(
             ' and ParaTest',
@@ -87,7 +86,7 @@ final class CoverageReporter
             ),
             $hasHtml && $this->codeCoverageConfiguration->html()->hasCustomCssFile()
                 ? CustomCssFile::from($this->codeCoverageConfiguration->html()->customCssFile())
-                : $customCssFile
+                : $customCssFile,
         );
 
         $html->process($this->coverage, $target);
@@ -112,9 +111,9 @@ final class CoverageReporter
     public function text(bool $colors): string
     {
         $defaultThresholds = Thresholds::default();
-        $hasText = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasText();
-        $hasHtml = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml();
-        $text    = new Text(
+        $hasText           = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasText();
+        $hasHtml           = $this->codeCoverageConfiguration !== null && $this->codeCoverageConfiguration->hasHtml();
+        $text              = new Text(
             Thresholds::from(
                 $hasHtml ? $this->codeCoverageConfiguration->html()->lowUpperBound() : $defaultThresholds->lowUpperBound(),
                 $hasHtml ? $this->codeCoverageConfiguration->html()->highLowerBound() : $defaultThresholds->highLowerBound(),
