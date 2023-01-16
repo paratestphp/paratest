@@ -206,7 +206,7 @@ final class ResultPrinterTest extends ResultTester
         $eq  = "There was 1 error:\n\n";
         $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n";
         $eq .= "RuntimeException: Error!!!\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21\n\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:19\n\n";
 
         static::assertSame($eq, $errors);
     }
@@ -225,12 +225,12 @@ final class ResultPrinterTest extends ResultTester
         $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n";
         $eq .= "RuntimeException: Error!!!\n";
         $eq .= "\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:19\n";
         $eq .= "\n";
         $eq .= "2) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n";
         $eq .= "RuntimeException: Error!!!\n";
         $eq .= "\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithErrorTest.php:19\n";
         $eq .= "\n";
 
         static::assertSame($eq, $errors);
@@ -260,7 +260,7 @@ final class ResultPrinterTest extends ResultTester
             . "-'foo'\n"
             . "+'bar'\n"
             . "\n"
-            . "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n"
+            . "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21\n"
             . "\n"
             . "3) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
             . "Failed asserting that two strings are identical.\n"
@@ -270,7 +270,7 @@ final class ResultPrinterTest extends ResultTester
             . "-'foo'\n"
             . "+'bar'\n"
             . "\n"
-            . "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27\n"
+            . "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21\n"
             . "\n";
 
         static::assertSame($expected, $failures);
@@ -287,10 +287,8 @@ final class ResultPrinterTest extends ResultTester
         $eq  = "There were 2 riskys:\n\n";
         $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\UnitTestWithErrorTest::testRisky\n";
         $eq .= "This test did not perform any assertions\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66\n\n";
         $eq .= "2) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testRisky\n";
         $eq .= "This test did not perform any assertions\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66\n\n";
 
         static::assertSame($eq, $failures);
     }
@@ -305,7 +303,7 @@ final class ResultPrinterTest extends ResultTester
 
         $eq  = "There was 1 skipped:\n\n";
         $eq .= "1) ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n\n";
-        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50\n\n";
+        $eq .= "./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:39\n\n";
 
         static::assertSame($eq, $failures);
     }
@@ -627,7 +625,7 @@ Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
    │
    │ RuntimeException: Error!!!
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21
+   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:19
    │
 
  ✔ Is it false
@@ -640,7 +638,7 @@ Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
    │ -'foo'
    │ +'bar'
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
    │
 
  ✔ Array length
@@ -664,7 +662,7 @@ Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTes
    │ -'foo'
    │ +'bar'
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
    │
 
  ✔ Array length
@@ -708,7 +706,7 @@ Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
    │
    │ RuntimeException: Error!!!
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:21
+   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:19
    │
 
  ✔ Is it false [1234.57 ms]
@@ -721,7 +719,7 @@ Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
    │ -'foo'
    │ +'bar'
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
    │
 
  ✔ Array length [1234.57 ms]
@@ -732,19 +730,17 @@ Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
 
  ↩ Skipped [1234.57 ms]
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:50
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:39
    │
 
  ↩ Incomplete [1234.57 ms]
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:58
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:45
    │
 
  ☢ Risky [1234.57 ms]
    │
    │ This test did not perform any assertions
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66
    │
 
 Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotations)
@@ -758,7 +754,7 @@ Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTes
    │ -'foo'
    │ +'bar'
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
    │
 
  ✔ Array length [1234.57 ms]
@@ -769,19 +765,17 @@ Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTes
 
  ↩ Skipped [1234.57 ms]
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:39
    │
 
  ↩ Incomplete [1234.57 ms]
    │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:58
+   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:45
    │
 
  ☢ Risky [1234.57 ms]
    │
    │ This test did not perform any assertions
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66
    │
 
 

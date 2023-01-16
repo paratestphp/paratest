@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Logging\JUnit;
 
-use PHPUnit\Framework\RiskyTestError;
 use SimpleXMLElement;
 
 use function assert;
-use function class_exists;
 use function count;
 use function current;
-use function is_subclass_of;
 use function iterator_to_array;
 use function sprintf;
 
@@ -70,10 +67,7 @@ abstract class TestCase
             $type  = $getType($error);
             $text  = (string) $error;
 
-            if (
-                class_exists($type)
-                && ($type === RiskyTestError::class || is_subclass_of($type, RiskyTestError::class))
-            ) {
+            if ($type === 'PHPUnit\\Framework\\RiskyTest') {
                 return new RiskyTestCase(
                     (string) $node['name'],
                     (string) $node['class'],

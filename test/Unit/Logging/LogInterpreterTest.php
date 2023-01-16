@@ -92,7 +92,7 @@ final class LogInterpreterTest extends ResultTester
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
             . "RuntimeException: Error!!!\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
+            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:19',
         ];
         static::assertSame($errors, $this->interpreter->getErrors());
     }
@@ -121,7 +121,7 @@ final class LogInterpreterTest extends ResultTester
             . "-'foo'\n"
             . "+'bar'\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21',
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testFalsehood\n"
             . "Failed asserting that two strings are identical.\n"
             . "--- Expected\n"
@@ -130,7 +130,7 @@ final class LogInterpreterTest extends ResultTester
             . "-'foo'\n"
             . "+'bar'\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21',
         ];
 
         static::assertSame($failures, $this->interpreter->getFailures());
@@ -140,13 +140,9 @@ final class LogInterpreterTest extends ResultTester
     {
         $errors = [
             'ParaTest\Tests\fixtures\failing_tests\UnitTestWithErrorTest::testRisky' . "\n"
-            . 'This test did not perform any assertions' . "\n"
-            . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66',
+            . 'This test did not perform any assertions',
             'ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotationsTest::testRisky' . "\n"
-            . 'This test did not perform any assertions' . "\n"
-            . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:66',
+            . 'This test did not perform any assertions',
         ];
         static::assertSame($errors, $this->interpreter->getRisky());
     }
@@ -158,7 +154,7 @@ final class LogInterpreterTest extends ResultTester
         $skipped = [
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:39',
         ];
         static::assertSame($skipped, $interpreter->getSkipped());
     }

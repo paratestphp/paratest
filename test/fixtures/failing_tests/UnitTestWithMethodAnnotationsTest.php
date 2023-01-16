@@ -6,6 +6,10 @@ namespace ParaTest\Tests\fixtures\failing_tests;
 
 use PHPUnit\Framework\TestCase;
 
+use function trigger_error;
+
+use const E_USER_WARNING;
+
 /** @internal */
 class UnitTestWithMethodAnnotationsTest extends TestCase
 {
@@ -31,7 +35,8 @@ class UnitTestWithMethodAnnotationsTest extends TestCase
     /** @group fixtures */
     public function testWarning(): void
     {
-        $this->addWarning('MyWarning');
+        trigger_error('MyWarning', E_USER_WARNING);
+        self::assertCount(1, [1]);
     }
 
     /** @group fixtures */
@@ -49,6 +54,5 @@ class UnitTestWithMethodAnnotationsTest extends TestCase
     /** @group fixtures */
     public function testRisky(): void
     {
-        $this->markAsRisky();
     }
 }

@@ -45,14 +45,14 @@ final class ReaderTest extends TestBase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $reader = new Reader('/path/to/nowhere');
+        new Reader('/path/to/nowhere');
     }
 
     public function testFileCannotBeEmpty(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $reader = new Reader(FIXTURES . DS . 'results' . DS . 'empty.xml');
+        new Reader(FIXTURES . DS . 'results' . DS . 'empty.xml');
     }
 
     public function testMixedSuiteShouldConstructRootSuite(): TestSuite
@@ -63,7 +63,12 @@ final class ReaderTest extends TestBase
         static::assertSame(10, $suite->assertions);
         static::assertSame(3, $suite->failures);
         static::assertSame(1, $suite->errors);
+        static::assertSame(2, $suite->warnings);
+        static::assertSame(2, $suite->risky);
+        static::assertSame(4, $suite->skipped);
         static::assertSame(1.234567, $suite->time);
+        static::assertCount(3, $suite->suites);
+        static::assertCount(0, $suite->cases);
 
         return $suite;
     }
@@ -128,7 +133,7 @@ final class ReaderTest extends TestBase
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
             . "RuntimeException: Error!!!\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
+            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:19',
             $error->text,
         );
     }
@@ -175,7 +180,7 @@ final class ReaderTest extends TestBase
             './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php',
             $first->file,
         );
-        static::assertSame(17, $first->line);
+        static::assertSame(13, $first->line);
         static::assertSame(1, $first->assertions);
         static::assertSame(1.234567, $first->time);
     }
@@ -195,7 +200,7 @@ final class ReaderTest extends TestBase
             . "-'foo'\n"
             . "+'bar'\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21',
             $failure->text,
         );
     }
@@ -254,7 +259,7 @@ final class ReaderTest extends TestBase
             . "-'foo'\n"
             . "+'bar'\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21',
             $failures[1],
         );
     }
@@ -267,7 +272,7 @@ final class ReaderTest extends TestBase
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithErrorTest::testTruth\n"
             . "RuntimeException: Error!!!\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:21',
+            . './test/fixtures/failing_tests/UnitTestWithErrorTest.php:19',
             $errors[0],
         );
     }
@@ -296,7 +301,7 @@ final class ReaderTest extends TestBase
             . "-'foo'\n"
             . "+'bar'\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:27',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21',
             $failures[0],
         );
     }
@@ -310,9 +315,7 @@ final class ReaderTest extends TestBase
         static::assertCount(1, $risky);
         static::assertSame(
             'ParaTest\Tests\fixtures\system_out\SystemOutTest::testRisky' . "\n"
-            . 'This test did not perform any assertions' . "\n"
-            . "\n"
-            . './test/fixtures/system_out/SystemOutTest.php:23',
+            . 'This test did not perform any assertions',
             $risky[0],
         );
     }
@@ -325,7 +328,7 @@ final class ReaderTest extends TestBase
         static::assertSame(
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
             . "\n"
-            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:50',
+            . './test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:39',
             $skipped[0],
         );
     }

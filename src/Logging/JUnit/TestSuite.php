@@ -39,21 +39,14 @@ final class TestSuite
         public int $errors,
         public int $warnings,
         public int $risky,
-        int $skipped,
+        public int $skipped,
         public float $time,
         public string $file,
         array $suites,
         array $cases
     ) {
-        $this->name       = $name;
-        $this->tests      = $tests;
-        $this->assertions = $assertions;
-        $this->failures   = $failures;
-        $this->skipped    = $skipped;
-        $this->errors     = $errors;
-        $this->warnings   = $warnings;
-        $this->time       = $time;
-        $this->file       = $file;
+        $this->suites = $suites;
+        $this->cases  = $cases;
     }
 
     public static function empty(): self
@@ -66,8 +59,11 @@ final class TestSuite
             0,
             0,
             0,
+            0,
             0.0,
             '',
+            [],
+            [],
         );
     }
 }

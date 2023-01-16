@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest" file="./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php" tests="1" assertions="1" errors="0" warnings="0" failures="1" skipped="0" time="1.234567">
-    <testcase name="testInvalidLogic" class="ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest" classname="ParaTest.Tests.fixtures.failing_tests.FailingSymfonyOutputCollisionTest" file="./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php" line="14" assertions="1" time="1.234567">
+  <testsuite name="ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest" file="./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="1.234567">
+    <testcase name="testInvalidLogic" file="./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php" line="12" class="ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest" classname="ParaTest.Tests.fixtures.failing_tests.FailingSymfonyOutputCollisionTest" assertions="1" time="1.234567">
       <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\failing_tests\FailingSymfonyOutputCollisionTest::testInvalidLogic
 Failed asserting that two strings are identical.
 --- Expected
@@ -10,7 +10,7 @@ Failed asserting that two strings are identical.
 -'&lt;bg=%s&gt; &lt;/&gt;'
 +''
 
-./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php:16</failure>
+./test/fixtures/failing_tests/FailingSymfonyOutputCollisionTest.php:14</failure>
     </testcase>
   </testsuite>
 </testsuites>

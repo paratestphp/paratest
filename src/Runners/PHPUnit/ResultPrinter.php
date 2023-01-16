@@ -16,8 +16,8 @@ use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\JUnit\WarningTestCase;
 use ParaTest\Logging\LogInterpreter;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Logging\TestDox\NamePrettifier;
 use PHPUnit\Util\Color;
-use PHPUnit\Util\TestDox\NamePrettifier;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
@@ -634,12 +634,12 @@ final class ResultPrinter
             return;
         }
 
-        $prettifier = new NamePrettifier(false);
+        $prettifier = new NamePrettifier();
 
         $class = $testSuite->name;
         assert(class_exists($class));
 
-        $this->output->writeln($prettifier->prettifyTestClass($class));
+        $this->output->writeln($prettifier->prettifyTestClassName($class));
 
         $separator = PHP_EOL;
         foreach ($testSuite->cases as $case) {
@@ -652,7 +652,7 @@ final class ResultPrinter
                 $time = sprintf(' [%.2f ms]', $case->time * 1000);
             }
 
-            $testName = $prettifier->prettifyTestCase($testCase);
+            $testName = $prettifier->prettifyTestCase($testCase, false);
             $this->output->writeln(sprintf(
                 ' %s %s%s',
                 self::TESTDOX_SYMBOLS[get_class($case)],
