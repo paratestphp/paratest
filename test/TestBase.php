@@ -118,8 +118,7 @@ abstract class TestBase extends TestCase
     /** @return mixed */
     final protected function getObjectValue(object $object, string $property)
     {
-        $refl = new ReflectionObject($object);
-        $prop = $refl->getProperty($property);
+        $prop = (new ReflectionObject($object))->getProperty($property);
         $prop->setAccessible(true);
 
         return $prop->getValue($object);
