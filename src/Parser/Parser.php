@@ -45,7 +45,7 @@ final class Parser
             try {
                 $refClass = (new StandardTestSuiteLoader())->load($srcPath);
                 if (! $refClass->isSubclassOf(TestCase::class)) {
-                    throw new NoClassInFileException();
+                    throw new NoClassInFileException($srcPath);
                 }
 
                 self::$alreadyLoadedSources[$srcPath] = $refClass;
@@ -55,8 +55,6 @@ final class Parser
                     $declaredClasses,
                     [self::$alreadyLoadedSources[$srcPath]->getName()],
                 );
-            } catch (NoClassInFileException $exception) {
-                throw $exception;
             } catch (Exception $exception) {
                 self::$externalClassesFound += array_diff(get_declared_classes(), $declaredClasses);
 
@@ -72,7 +70,7 @@ final class Parser
                 }
 
                 if ($reflFound === null || ! $reflFound->isSubclassOf(TestCase::class) || $reflFound->isAbstract()) {
-                    throw new NoClassInFileException('', 0, $exception);
+                    throw new NoClassInFileException($srcPath, 0, $exception);
                 }
 
                 self::$alreadyLoadedSources[$srcPath] = $reflFound;

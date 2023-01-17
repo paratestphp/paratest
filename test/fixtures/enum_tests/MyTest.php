@@ -6,9 +6,7 @@ namespace ParaTest\Tests\fixtures\enum_tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @coversNothing
- */
+/** @coversNothing */
 final class MyTest extends TestCase
 {
     public function testMe(): void

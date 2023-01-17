@@ -390,9 +390,7 @@ final class SuiteLoaderTest extends TestBase
         static::assertCount(2, $loader->getTestMethods());
     }
 
-    /**
-     * @requires PHP 8.1
-     */
+    /** @requires PHP 8.1 */
     public function testLoadTestsuiteWithEnumThatEndsWithTestAndHasAnnotations(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-enum.xml');
@@ -400,7 +398,9 @@ final class SuiteLoaderTest extends TestBase
         $loader = $this->loadSuite();
         $files  = $this->getObjectValue($loader, 'files');
 
-        static::assertCount(1, $files);
+        static::assertCount(2, $files);
+        static::assertCount(1, $loader->getSuites());
+        static::assertCount(1, $loader->getTestMethods());
     }
 
     /** @return string[] */

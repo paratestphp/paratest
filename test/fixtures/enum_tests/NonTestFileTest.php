@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\fixtures\enum_tests;
 
-/**
- * @coversNothing
- */
+/** @coversNothing */
 enum NonTestFileTest: int
 {
     case BAR_BAZ = 987;
