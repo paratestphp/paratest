@@ -73,8 +73,7 @@ final class SuiteLoaderTest extends TestBase
         $loader = $this->loadSuite();
         $files  = $this->getObjectValue($loader, 'files');
 
-        $expected = 1;
-        static::assertCount($expected, $files);
+        static::assertCount(1, $files);
     }
 
     public function testLoadTestsuiteFilesFromConfigWhileIgnoringExcludeTag(): void
@@ -83,8 +82,7 @@ final class SuiteLoaderTest extends TestBase
         $loader                               = $this->loadSuite();
         $files                                = $this->getObjectValue($loader, 'files');
 
-        $expected = 1;
-        static::assertCount($expected, $files);
+        static::assertCount(1, $files);
     }
 
     public function testLoadTestsuiteFilesFromDirFromConfigWhileRespectingExcludeTag(): void
@@ -93,8 +91,7 @@ final class SuiteLoaderTest extends TestBase
         $loader                               = $this->loadSuite();
         $files                                = $this->getObjectValue($loader, 'files');
 
-        $expected = 2;
-        static::assertCount($expected, $files);
+        static::assertCount(2, $files);
     }
 
     public function testLoadTestsuiteFilesFromConfig(): void
@@ -391,6 +388,19 @@ final class SuiteLoaderTest extends TestBase
         $this->bareOptions['--group'] = 'default';
         $loader                       = $this->loadSuite();
         static::assertCount(2, $loader->getTestMethods());
+    }
+
+    /** @requires PHP 8.1 */
+    public function testLoadTestsuiteWithEnumThatEndsWithTestAndHasAnnotations(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-enum.xml');
+
+        $loader = $this->loadSuite();
+        $files  = $this->getObjectValue($loader, 'files');
+
+        static::assertCount(2, $files);
+        static::assertCount(1, $loader->getSuites());
+        static::assertCount(1, $loader->getTestMethods());
     }
 
     /** @return string[] */
