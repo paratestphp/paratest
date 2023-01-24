@@ -84,29 +84,11 @@ final class SuiteLoader
      * Returns all parsed suite objects as ExecutableTest
      * instances.
      *
-     * @return ExecutableTest[]
-     * @psalm-return list<ExecutableTest>
+     * @return list<ExecutableTest>
      */
     public function getSuites(): array
     {
         return array_values($this->loadedSuites);
-    }
-
-    /**
-     * Returns a collection of TestMethod objects
-     * for all loaded ExecutableTest instances.
-     *
-     * @return TestMethod[]
-     */
-    public function getTestMethods(): array
-    {
-        $methods = [];
-        foreach ($this->loadedSuites as $suite) {
-            assert($suite instanceof Suite);
-            $methods = array_merge($methods, $suite->getFunctions());
-        }
-
-        return $methods;
     }
 
     /**
@@ -184,7 +166,7 @@ final class SuiteLoader
                 try {
                     $class = (new Parser($path))->getClass();
                     $suite = $this->createSuite($path, $class);
-                    if (count($suite->getFunctions()) > 0) {
+                    if (count($suite->getTestCount()) > 0) {
                         $loadedSuites[$class->getParentsCount()][$path] = $suite;
                     }
                 } catch (NoClassInFileException) {
@@ -205,24 +187,17 @@ final class SuiteLoader
     }
 
     /**
-     * @return TestMethod[]
-     * @psalm-return list<TestMethod>
+     * @return int
      */
-    private function executableTests(string $path, ParsedClass $class): array
+    private function executableTests(ParsedClass $class): int
     {
         $executableTests = [];
         $methodBatches   = $this->getMethodBatches($class);
         foreach ($methodBatches as $methodBatch) {
-            $executableTests[] = new TestMethod(
-                $path,
-                $methodBatch,
-                $this->options->hasCoverage(),
-                $this->options->needsTeamcity(),
-                $this->options->tmpDir(),
-            );
+            $executableTests[] = count($methodBatch);
         }
 
-        return $executableTests;
+        return array_sum($executableTests);
     }
 
     /**
@@ -236,8 +211,6 @@ final class SuiteLoader
     private function getMethodBatches(ParsedClass $class): array
     {
         $classMethods = $class->getMethods();
-        $maxBatchSize = $this->options->functional() ? $this->options->maxBatchSize() : 0;
-        assert($maxBatchSize !== null);
 
         $batches = [];
         foreach ($classMethods as $method) {
@@ -251,7 +224,9 @@ final class SuiteLoader
             if (count($dependencies) !== 0) {
                 $this->addDependentTestsToBatchSet($batches, $dependencies, $tests);
             } else {
-                $this->addTestsToBatchSet($batches, $tests, $maxBatchSize);
+                foreach ($tests as $test) {
+                    $batches[] = [$test];
+                }
             }
         }
 
@@ -271,29 +246,11 @@ final class SuiteLoader
 
         foreach ($batches as $key => $batch) {
             foreach ($batch as $methodName) {
-                if (in_array($methodName, $dependencies, true)) {
-                    $batches[$key] = array_merge($batches[$key], $tests);
+                if (!in_array($methodName, $dependencies, true)) {
                     continue;
                 }
-            }
-        }
-    }
 
-    /**
-     * @param string[][] $batches
-     * @param string[]   $tests
-     */
-    private function addTestsToBatchSet(array &$batches, array $tests, int $maxBatchSize): void
-    {
-        foreach ($tests as $test) {
-            $lastIndex = count($batches) - 1;
-            if (
-                $lastIndex !== -1
-                && count($batches[$lastIndex]) < $maxBatchSize
-            ) {
-                $batches[$lastIndex][] = $test;
-            } else {
-                $batches[] = [$test];
+                $batches[$key] = array_merge($batches[$key], $tests);
             }
         }
     }
@@ -329,9 +286,6 @@ final class SuiteLoader
                     $method->getName(),
                     is_int($key) ? '#' . $key : '"' . $key . '"',
                 );
-                if (! $this->testMatchFilterOptions($class->getName(), $test)) {
-                    continue;
-                }
 
                 $result[] = $test;
             }
@@ -376,26 +330,12 @@ final class SuiteLoader
 
     private function createSuite(string $path, ParsedClass $class): Suite
     {
-        return new Suite(
-            $path,
-            $this->executableTests(
-                $path,
-                $class,
-            ),
-            $this->options->hasCoverage(),
-            $this->options->needsTeamcity(),
-            $this->options->tmpDir(),
-        );
+        return new Suite($this->executableTests($class), $path);
     }
 
     private function createFullSuite(string $suiteName): FullSuite
     {
-        return new FullSuite(
-            $suiteName,
-            $this->options->hasCoverage(),
-            $this->options->needsTeamcity(),
-            $this->options->tmpDir(),
-        );
+        return new FullSuite($suiteName);
     }
 
     /** @see \PHPUnit\TextUI\XmlConfiguration\TestSuiteMapper::map */

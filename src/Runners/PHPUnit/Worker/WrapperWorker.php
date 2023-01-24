@@ -53,6 +53,10 @@ final class WrapperWorker
     private string $writeToPathname;
     private InputStream $input;
 
+    private string $tempJUnit;
+    private ?string $coverageFileName = null;
+    private ?string $tempTeamcity = null;
+
     public function __construct(OutputInterface $output, Options $options, int $token)
     {
         $wrapper = realpath(
@@ -62,14 +66,22 @@ final class WrapperWorker
 
         $this->output = $output;
 
-        $this->writeToPathname = sprintf(
-            '%s%sworker_%s_stdout_%s',
+        $commonTmpFilePath = sprintf(
+            '%s%sworker_%s_stdout_%s_',
             $options->tmpDir(),
             DIRECTORY_SEPARATOR,
             $token,
             uniqid(),
         );
+        $this->writeToPathname = $commonTmpFilePath.'status';
         touch($this->writeToPathname);
+        $this->tempJUnit = $commonTmpFilePath.'junit';
+        if ($options->hasCoverage()) {
+            $this->coverageFileName = $commonTmpFilePath.'coverage';
+        }
+        if ($options->needsTeamcity()) {
+            $this->tempTeamcity = $commonTmpFilePath.'teamcity';
+        }
 
         $phpFinder = new PhpExecutableFinder();
         $phpBin    = $phpFinder->find(false);
@@ -133,7 +145,6 @@ final class WrapperWorker
         $this->input->write(serialize($commandArguments) . "\n");
 
         $this->currentlyExecuting = $test;
-        $test->setLastCommand($command);
         $this->commands[] = $command;
         ++$this->inExecution;
     }

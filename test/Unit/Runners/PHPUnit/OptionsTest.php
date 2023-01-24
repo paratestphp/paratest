@@ -69,7 +69,6 @@ final class OptionsTest extends TestBase
     {
         static::assertEquals($this->unfiltered['--processes'], $this->options->processes());
         static::assertEquals($this->unfiltered['--path'], $this->options->path());
-        static::assertEquals($this->unfiltered['--functional'], $this->options->functional());
         static::assertEquals([$this->unfiltered['--group']], $this->options->group());
     }
 
@@ -243,7 +242,6 @@ final class OptionsTest extends TestBase
         static::assertEmpty($options->excludeGroup());
         static::assertNull($options->filter());
         static::assertEmpty($options->filtered());
-        static::assertFalse($options->functional());
         static::assertEmpty($options->group());
         static::assertNull($options->logJunit());
         static::assertNull($options->logTeamcity());
@@ -330,7 +328,6 @@ final class OptionsTest extends TestBase
         static::assertSame(__DIR__, $options->cwd());
         static::assertSame(['EXCLUDE-GROUP'], $options->excludeGroup());
         static::assertSame('FILTER', $options->filter());
-        static::assertTrue($options->functional());
         static::assertSame(['GROUP'], $options->group());
         static::assertSame('LOG-JUNIT', $options->logJunit());
         static::assertTrue($options->teamcity());

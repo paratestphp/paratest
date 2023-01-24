@@ -12,33 +12,8 @@ use function unlink;
 
 abstract class ExecutableTest
 {
-    /**
-     * A path to the temp JUnit file created
-     * for this test.
-     */
-    private ?string $tempJUnit = null;
-
-    /**
-     * Path where the coveragereport is stored.
-     */
-    private ?string $coverageFileName = null;
-
-    /**
-     * A path to the temp Teamcity format file created
-     * for this test.
-     */
-    private ?string $tempTeamcity = null;
-
-    /**
-     * Last executed process command.
-     */
-    private string $lastCommand = '';
-
     public function __construct(
         private string $path,
-        private bool $needsCoverage,
-        private bool $needsTeamcity,
-        private string $tmpDir
     ) {
     }
 
@@ -95,22 +70,6 @@ abstract class ExecutableTest
         $this->unlinkTempFile($this->tempJUnit);
         $this->unlinkTempFile($this->tempTeamcity);
         $this->unlinkTempFile($this->coverageFileName);
-    }
-
-  /**
-     * Return the last process command.
-     */
-    final public function getLastCommand(): string
-    {
-        return $this->lastCommand;
-    }
-
-    /**
-     * Set the last process command.
-     */
-    final public function setLastCommand(string $command): void
-    {
-        $this->lastCommand = $command;
     }
 
     /**

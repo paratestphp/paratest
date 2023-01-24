@@ -84,11 +84,8 @@ abstract class BaseRunner implements RunnerInterface
      */
     private function load(SuiteLoader $loader): void
     {
-        $this->beforeLoadChecks();
         $loader->load();
-        $this->pending = $this->options->functional()
-            ? $loader->getTestMethods()
-            : $loader->getSuites();
+        $this->pending = $loader->getSuites();
 
         $this->sortPending();
 
@@ -110,8 +107,6 @@ abstract class BaseRunner implements RunnerInterface
 
         $this->pending = array_reverse($this->pending);
     }
-
-    abstract protected function beforeLoadChecks(): void;
 
     /**
      * Finalizes the run process. This method

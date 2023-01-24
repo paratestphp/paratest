@@ -6,8 +6,8 @@ namespace ParaTest\Tests;
 
 use InvalidArgumentException;
 use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
+use ParaTest\Runners\PHPUnit\WrapperRunner;
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
@@ -24,7 +24,7 @@ use function sprintf;
 abstract class TestBase extends TestCase
 {
     /** @var class-string<RunnerInterface> */
-    protected string $runnerClass = Runner::class;
+    protected string $runnerClass = WrapperRunner::class;
     /** @var array<string, string|bool|int|null> */
     protected array $bareOptions = [];
     /** @var string */

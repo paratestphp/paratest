@@ -90,13 +90,6 @@ final class Options
     private string $phpunit;
 
     /**
-     * Determines whether or not ParaTest runs in
-     * functional mode. If enabled, ParaTest will run
-     * every test method in a separate process.
-     */
-    private bool $functional;
-
-    /**
      * Prevents starting new tests after a test has failed.
      */
     private bool $stopOnFailure;
@@ -108,8 +101,6 @@ final class Options
      * @var array<string, string|null>
      */
     private $filtered;
-
-    private string $runner;
 
     private bool $noTestTokens;
 
@@ -123,8 +114,6 @@ final class Options
     private $testsuite;
 
     private ?int $maxBatchSize;
-
-    private ?string $filter;
 
     /** @var string[] */
     private $group;
@@ -204,9 +193,7 @@ final class Options
         ?string $coverageXml,
         string $cwd,
         array $excludeGroup,
-        ?string $filter,
         array $filtered,
-        bool $functional,
         array $group,
         ?string $logJunit,
         bool $teamcity,
@@ -220,7 +207,6 @@ final class Options
         ?string $path,
         string $phpunit,
         int $processes,
-        string $runner,
         bool $stopOnFailure,
         array $testsuite,
         string $tmpDir,
@@ -245,9 +231,7 @@ final class Options
         $this->coverageXml       = $coverageXml;
         $this->cwd               = $cwd;
         $this->excludeGroup      = $excludeGroup;
-        $this->filter            = $filter;
         $this->filtered          = $filtered;
-        $this->functional        = $functional;
         $this->group             = $group;
         $this->logJunit          = $logJunit;
         $this->teamcity          = $teamcity;
@@ -261,7 +245,6 @@ final class Options
         $this->path              = $path;
         $this->phpunit           = $phpunit;
         $this->processes         = $processes;
-        $this->runner            = $runner;
         $this->stopOnFailure     = $stopOnFailure;
         $this->testsuite         = $testsuite;
         $this->tmpDir            = $tmpDir;
@@ -291,8 +274,6 @@ final class Options
         assert($options['coverage-text'] === false || $options['coverage-text'] === null || is_string($options['coverage-text']));
         assert($options['coverage-xml'] === null || is_string($options['coverage-xml']));
         assert(is_bool($options['debug']));
-        assert($options['filter'] === null || is_string($options['filter']));
-        assert(is_bool($options['functional']));
         assert($options['log-junit'] === null || is_string($options['log-junit']));
         assert(is_bool($options['teamcity']));
         assert($options['log-teamcity'] === null || is_string($options['log-teamcity']));
@@ -304,7 +285,6 @@ final class Options
         assert($options['passthru-php'] === null || is_string($options['passthru-php']));
         assert(is_string($options['processes']));
         assert($options['random-order-seed'] === null || is_string($options['random-order-seed']));
-        assert(is_string($options['runner']));
         assert(is_bool($options['stop-on-failure']));
         assert(is_string($options['tmp-dir']));
         assert($options['repeat'] === null || is_string($options['repeat']));
@@ -346,10 +326,6 @@ final class Options
         $excludeGroup = is_string($options['exclude-group']) && $options['exclude-group'] !== ''
             ? explode(',', $options['exclude-group'])
             : [];
-
-        if (is_string($options['filter']) && strlen($options['filter']) > 0 && ! $options['functional']) {
-            throw new InvalidArgumentException('Option --filter is not implemented for non functional mode');
-        }
 
         if (is_string($options['order-by']) && ! in_array($options['order-by'], self::ORDER_TYPES, true)) {
             throw new InvalidArgumentException('Option --order-by supports only ' . implode('|', self::ORDER_TYPES));
@@ -500,9 +476,7 @@ final class Options
             $options['coverage-xml'],
             $cwd,
             $excludeGroup,
-            $options['filter'],
             $filtered,
-            $options['functional'],
             $group,
             $options['log-junit'],
             $options['teamcity'],
@@ -516,7 +490,6 @@ final class Options
             $options['path'],
             $phpunit,
             $options['processes'],
-            $options['runner'],
             $options['stop-on-failure'],
             $testsuite,
             $options['tmp-dir'],
@@ -644,18 +617,6 @@ final class Options
                 'Don\'t run tests from the specified group(s).',
             ),
             new InputOption(
-                'filter',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Filter (only for functional mode).',
-            ),
-            new InputOption(
-                'functional',
-                'f',
-                InputOption::VALUE_NONE,
-                'Run test methods instead of classes in separate processes.',
-            ),
-            new InputOption(
                 'group',
                 'g',
                 InputOption::VALUE_REQUIRED,
@@ -683,7 +644,7 @@ final class Options
                 'max-batch-size',
                 'm',
                 InputOption::VALUE_REQUIRED,
-                'Max batch size (only for functional mode).',
+                'Max batch size.',
                 '0',
             ),
             new InputOption(
@@ -748,13 +709,6 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Runs the test(s) repeatedly.',
-            ),
-            new InputOption(
-                'runner',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Runner or WrapperRunner.',
-                'Runner',
             ),
             new InputOption(
                 'stop-on-failure',
@@ -912,11 +866,6 @@ final class Options
         return $this->phpunit;
     }
 
-    public function functional(): bool
-    {
-        return $this->functional;
-    }
-
     public function stopOnFailure(): bool
     {
         return $this->stopOnFailure;
@@ -926,11 +875,6 @@ final class Options
     public function filtered(): array
     {
         return $this->filtered;
-    }
-
-    public function runner(): string
-    {
-        return $this->runner;
     }
 
     public function noTestTokens(): bool

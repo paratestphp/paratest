@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
+use PHPUnit\Event\Facade as EventFacade;
 
 (static function (): void {
     $opts = getopt('', ['write-to:']);
@@ -25,10 +26,10 @@ use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
     assert(isset($opts['write-to']) && is_string($opts['write-to']));
     $writeTo = fopen($opts['write-to'], 'wb');
     assert(is_resource($writeTo));
+    
+    $application = new \ParaTest\Runners\PHPUnit\Worker\ApplicationForWrapperWorker();
 
-    $i = 0;
     while (true) {
-        $i++;
         if (feof(STDIN)) {
             exit;
         }
@@ -39,7 +40,9 @@ use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
         }
 
         $arguments = unserialize($command);
-        (new PHPUnit\TextUI\Application())->run($arguments, false);
+        assert(is_array($arguments));
+
+        $application->runTest($arguments);
 
         fwrite($writeTo, WrapperWorker::TEST_EXECUTED_MARKER);
         fflush($writeTo);

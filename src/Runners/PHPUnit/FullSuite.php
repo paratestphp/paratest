@@ -9,13 +9,11 @@ use function array_merge;
 /** @internal */
 final class FullSuite extends ExecutableTest
 {
-    private string $suiteName;
-
-    public function __construct(string $suiteName, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
+    public function __construct(
+        private string $suiteName
+    )
     {
-        parent::__construct('', $needsCoverage, $needsTeamcity, $tmpDir);
-
-        $this->suiteName = $suiteName;
+        parent::__construct('');
     }
 
     /** @inheritDoc */

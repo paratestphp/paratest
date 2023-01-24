@@ -16,40 +16,22 @@ use function array_sum;
  */
 final class Suite extends ExecutableTest
 {
-    /**
-     * A collection of test methods.
-     *
-     * @var TestMethod[]
-     */
-    private $functions;
-
-    /** @param TestMethod[] $functions */
-    public function __construct(string $path, array $functions, bool $needsCoverage, bool $needsTeamcity, string $tmpDir)
+    public function __construct(
+        private int $testCount,
+        string      $path,
+    )
     {
-        parent::__construct($path, $needsCoverage, $needsTeamcity, $tmpDir);
-        $this->functions = $functions;
-    }
-
-    /**
-     * Return the collection of test methods.
-     *
-     * @return TestMethod[]
-     */
-    public function getFunctions(): array
-    {
-        return $this->functions;
+        parent::__construct($path);
     }
 
     /**
      * Get the expected count of tests to be executed.
      *
-     * @psalm-return int
+     * @return int
      */
     public function getTestCount(): int
     {
-        return array_sum(array_map(static function (TestMethod $method): int {
-            return $method->getTestCount();
-        }, $this->functions));
+        return $this->testCount;
     }
 
     /** @inheritDoc */

@@ -7,7 +7,6 @@ namespace ParaTest\Console\Commands;
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
 use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\Runner;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 use PHPUnit\Runner\Version;
@@ -30,7 +29,6 @@ final class ParaTestCommand extends Command
     public const COMMAND_NAME = 'paratest';
 
     private const KNOWN_RUNNERS = [
-        'Runner' => Runner::class,
         'WrapperRunner' => WrapperRunner::class,
     ];
 

@@ -162,7 +162,7 @@ final class ResultPrinter
             };
 
             // @see \PHPUnit\TextUI\TestRunner::run()
-            $write('Processes', $this->options->processes() . ($this->options->functional() ? '. Functional mode is ON.' : ''));
+            $write('Processes', (string) $this->options->processes());
 
             $configuration = $this->options->configuration();
 
@@ -408,8 +408,7 @@ final class ResultPrinter
      */
     private function isSkippedIncompleTestCanBeTracked(Options $options): bool
     {
-        return $options->functional()
-            || (count($options->group()) === 0 && count($options->excludeGroup()) === 0);
+        return count($options->group()) === 0 && count($options->excludeGroup()) === 0;
     }
 
     /**
