@@ -166,7 +166,7 @@ final class SuiteLoader
                 try {
                     $class = (new Parser($path))->getClass();
                     $suite = $this->createSuite($path, $class);
-                    if (count($suite->getTestCount()) > 0) {
+                    if ($suite->getTestCount() > 0) {
                         $loadedSuites[$class->getParentsCount()][$path] = $suite;
                     }
                 } catch (NoClassInFileException) {
@@ -279,18 +279,18 @@ final class SuiteLoader
             $providedData = null;
         }
 
-        if ($providedData !== null) {
-            foreach (array_keys($providedData) as $key) {
-                $test = sprintf(
-                    '%s with data set %s',
-                    $method->getName(),
-                    is_int($key) ? '#' . $key : '"' . $key . '"',
-                );
+        if ($providedData === null) {
+            return [$method->getName()];
+        }
 
-                $result[] = $test;
-            }
-        } elseif ($this->testMatchFilterOptions($class->getName(), $method->getName())) {
-            $result = [$method->getName()];
+        foreach (array_keys($providedData) as $key) {
+            $test = sprintf(
+                '%s with data set %s',
+                $method->getName(),
+                is_int($key) ? '#' . $key : '"' . $key . '"',
+            );
+
+            $result[] = $test;
         }
 
         return $result;
@@ -314,18 +314,6 @@ final class SuiteLoader
         );
 
         return $matchGroupIncluded || $matchGroupNotExcluded;
-    }
-
-    private function testMatchFilterOptions(string $className, string $name): bool
-    {
-        if (($filter = $this->options->filter()) === null) {
-            return true;
-        }
-
-        $re       = '/' . trim($filter, '/') . '/';
-        $fullName = $className . '::' . $name;
-
-        return preg_match($re, $fullName) === 1;
     }
 
     private function createSuite(string $path, ParsedClass $class): Suite

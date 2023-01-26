@@ -36,26 +36,19 @@ use const DIRECTORY_SEPARATOR;
 /** @internal */
 final class WrapperWorker
 {
-    /**
-     * It must be a 1 byte string to ensure
-     * filesize() is equal to the number of tests executed
-     */
-    public const TEST_EXECUTED_MARKER = '1';
-
     public const COMMAND_EXIT = "EXIT\n";
 
     private ?ExecutableTest $currentlyExecuting = null;
     private Process $process;
     private int $inExecution = 0;
     private OutputInterface $output;
-    /** @var string[] */
-    private array $commands = [];
-    private string $writeToPathname;
     private InputStream $input;
-
-    private string $tempJUnit;
-    private ?string $coverageFileName = null;
-    private ?string $tempTeamcity = null;
+    private int $exitCode = -1;
+    private string $statusFilepath;
+    private string $progressFilepath;
+    private string $junitFilepath;
+    private ?string $coverageFilepath = null;
+    private ?string $teamcityFilepath = null;
 
     public function __construct(OutputInterface $output, Options $options, int $token)
     {
@@ -73,14 +66,16 @@ final class WrapperWorker
             $token,
             uniqid(),
         );
-        $this->writeToPathname = $commonTmpFilePath.'status';
-        touch($this->writeToPathname);
-        $this->tempJUnit = $commonTmpFilePath.'junit';
+        $this->statusFilepath = $commonTmpFilePath.'status';
+        touch($this->statusFilepath);
+        $this->progressFilepath = $commonTmpFilePath.'progress';
+        touch($this->progressFilepath);
+        $this->junitFilepath = $commonTmpFilePath.'junit';
         if ($options->hasCoverage()) {
-            $this->coverageFileName = $commonTmpFilePath.'coverage';
+            $this->coverageFilepath = $commonTmpFilePath.'coverage';
         }
         if ($options->needsTeamcity()) {
-            $this->tempTeamcity = $commonTmpFilePath.'teamcity';
+            $this->teamcityFilepath = $commonTmpFilePath.'teamcity';
         }
 
         $phpFinder = new PhpExecutableFinder();
@@ -94,13 +89,37 @@ final class WrapperWorker
         }
 
         $parameters[] = $wrapper;
-        $parameters[] = '--write-to';
-        $parameters[] = $this->writeToPathname;
+        $parameters[] = '--status-file';
+        $parameters[] = $this->statusFilepath;
+        $parameters[] = '--progress-file';
+        $parameters[] = $this->progressFilepath;
+
+        $phpunitArguments = [$options->phpunit()];
+        $phpunitArguments[] = '--do-not-cache-result';
+        $phpunitArguments[] = '--no-logging';
+        $phpunitArguments[] = '--no-coverage';
+        $phpunitArguments[] = '--no-output';
+        $phpunitArguments[] = '--log-junit';
+        $phpunitArguments[] = $this->junitFilepath;
+        if (null !== $this->coverageFilepath) {
+            $phpunitArguments[] = '--coverage-php';
+            $phpunitArguments[] = $this->coverageFilepath;
+        }
+        if (null !== $this->teamcityFilepath) {
+            $phpunitArguments[] = '--log-teamcity';
+            $phpunitArguments[] = $this->teamcityFilepath;
+        }
+        if (null !== ($passthru = $options->passthru())) {
+            $phpunitArguments = array_merge($phpunitArguments, $passthru);
+        }
+        
+        $parameters[] = '--phpunit-argv';
+        $parameters[] = serialize($phpunitArguments);
 
         if ($options->debug()) {
             $this->output->write(sprintf(
                 "Starting WrapperWorker via: %s\n",
-                implode(' ', array_map('\escapeshellarg', $parameters)),
+                implode(' ', array_map('\\escapeshellarg', $parameters)),
             ));
         }
 
@@ -114,10 +133,11 @@ final class WrapperWorker
         );
     }
 
-    public function __destruct()
-    {
-        @unlink($this->writeToPathname);
-    }
+//    public function __destruct()
+//    {
+//        @unlink($this->statusFilepath);
+//        @unlink($this->progressFilepath);
+//    }
 
     public function start(): void
     {
@@ -126,42 +146,34 @@ final class WrapperWorker
 
     public function getWorkerCrashedException(?Throwable $previousException = null): WorkerCrashedException
     {
-        $command = end($this->commands);
-        assert($command !== false);
-
-        return WorkerCrashedException::fromProcess($this->process, $command, $previousException);
+        return WorkerCrashedException::fromProcess(
+            $this->process,
+            $this->currentlyExecuting?->getPath() ?? 'N.A.',
+            $previousException
+        );
     }
 
-    /** @param array<string, string|null> $phpunitOptions */
-    public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
+    public function assign(ExecutableTest $test): void
     {
         assert($this->currentlyExecuting === null);
-        $commandArguments = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
-        $command          = implode(' ', array_map('\\escapeshellarg', $commandArguments));
-        if ($options->debug()) {
-            $this->output->write("\nExecuting test via: {$command}\n");
-        }
 
-        $this->input->write(serialize($commandArguments) . "\n");
-
+        $this->input->write($test->getPath() . "\n");
         $this->currentlyExecuting = $test;
-        $this->commands[] = $command;
         ++$this->inExecution;
     }
 
-    public function printFeedback(ResultPrinter $printer): ?Reader
+    public function printFeedback(ResultPrinter $printer): void
     {
         if ($this->currentlyExecuting === null) {
-            return null;
+            return;
         }
 
-        try {
-            $reader = $printer->printFeedback($this->currentlyExecuting);
-        } catch (EmptyLogFileException $emptyLogException) {
-            throw $this->getWorkerCrashedException($emptyLogException);
-        }
+        $feedbackContent = file_get_contents($this->progressFilepath);
+        assert(is_string($feedbackContent) && '' !== $feedbackContent);
+        $feedbackContent = preg_replace('/[^.SIRWFE]/', '', $feedbackContent);
+        $testCount = $this->currentlyExecuting->getTestCount();
 
-        return $reader;
+        $printer->printFeedback(substr($feedbackContent, -$testCount));
     }
 
     public function reset(): void
@@ -174,20 +186,24 @@ final class WrapperWorker
         $this->input->write(self::COMMAND_EXIT);
     }
 
-    public function getCoverageFileName(): ?string
-    {
-        if ($this->currentlyExecuting !== null) {
-            return $this->currentlyExecuting->getCoverageFileName();
-        }
-
-        return null;
-    }
-
     public function isFree(): bool
     {
-        clearstatcache(true, $this->writeToPathname);
+        clearstatcache(true, $this->statusFilepath);
 
-        return $this->inExecution === filesize($this->writeToPathname);
+        $isFree = $this->inExecution === filesize($this->statusFilepath);
+        
+        if ($isFree && $this->inExecution > 0) {
+            $exitCodes = file_get_contents($this->statusFilepath);
+            assert(is_string($exitCodes) && '' !== $exitCodes);
+            $this->exitCode = (int) $exitCodes[-1];
+        }
+
+        return $isFree;
+    }
+    
+    public function getExitCode(): int
+    {
+        return $this->exitCode;
     }
 
     public function isRunning(): bool

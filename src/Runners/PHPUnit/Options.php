@@ -102,6 +102,8 @@ final class Options
      */
     private $filtered;
 
+    private string $runner;
+
     private bool $noTestTokens;
 
     private bool $colors;
@@ -207,6 +209,7 @@ final class Options
         ?string $path,
         string $phpunit,
         int $processes,
+        string $runner,
         bool $stopOnFailure,
         array $testsuite,
         string $tmpDir,
@@ -245,6 +248,7 @@ final class Options
         $this->path              = $path;
         $this->phpunit           = $phpunit;
         $this->processes         = $processes;
+        $this->runner            = $runner;
         $this->stopOnFailure     = $stopOnFailure;
         $this->testsuite         = $testsuite;
         $this->tmpDir            = $tmpDir;
@@ -285,6 +289,7 @@ final class Options
         assert($options['passthru-php'] === null || is_string($options['passthru-php']));
         assert(is_string($options['processes']));
         assert($options['random-order-seed'] === null || is_string($options['random-order-seed']));
+        assert(is_string($options['runner']));
         assert(is_bool($options['stop-on-failure']));
         assert(is_string($options['tmp-dir']));
         assert($options['repeat'] === null || is_string($options['repeat']));
@@ -490,6 +495,7 @@ final class Options
             $options['path'],
             $phpunit,
             $options['processes'],
+            $options['runner'],
             $options['stop-on-failure'],
             $testsuite,
             $options['tmp-dir'],
@@ -711,6 +717,13 @@ final class Options
                 'Runs the test(s) repeatedly.',
             ),
             new InputOption(
+                'runner',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'A \\ParaTest\\Runners\\PHPUnit\\RunnerInterface.',
+                'WrapperRunner',
+            ),
+            new InputOption(
                 'stop-on-failure',
                 null,
                 InputOption::VALUE_NONE,
@@ -896,11 +909,6 @@ final class Options
     public function maxBatchSize(): ?int
     {
         return $this->maxBatchSize;
-    }
-
-    public function filter(): ?string
-    {
-        return $this->filter;
     }
 
     /** @return string[] */

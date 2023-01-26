@@ -243,45 +243,9 @@ final class ResultPrinter
      * Prints the individual "quick" feedback for run
      * tests, that is the ".EF" items.
      */
-    public function printFeedback(ExecutableTest $test): Reader
+    public function printFeedback(string $feedbackItems): void
     {
-        try {
-            $reader = new Reader($test->getTempFile());
-        } catch (InvalidArgumentException $invalidArgumentException) {
-            throw new EmptyLogFileException(
-                $invalidArgumentException->getMessage(),
-                0,
-                $invalidArgumentException,
-            );
-        }
-
-        $teamcityContent = null;
-        if ($this->needsTeamcity) {
-            $teamcityLogFile = $test->getTeamcityTempFile();
-
-            if (filesize($teamcityLogFile) === 0) {
-                throw new EmptyLogFileException("Teamcity format file {$teamcityLogFile} is empty");
-            }
-
-            $teamcityContent = file_get_contents($teamcityLogFile);
-            assert($teamcityContent !== false);
-
-            if ($this->teamcityLogFileHandle !== null) {
-                fwrite($this->teamcityLogFileHandle, $teamcityContent);
-            }
-        }
-
-        $this->results->addReader($reader);
-
-        if ($teamcityContent !== null) {
-            $this->output->write(OutputFormatter::escape($teamcityContent));
-        } elseif ($this->options->testdox()) {
-            $this->processTestdoxReader($reader->getSuite());
-        } else {
-            $this->processReaderFeedback($reader, $test->getTestCount());
-        }
-
-        return $reader;
+        $this->processReaderFeedback($feedbackItems);
     }
 
     /**
@@ -374,13 +338,11 @@ final class ResultPrinter
     /**
      * Process reader feedback and print it.
      */
-    private function processReaderFeedback(Reader $reader, int $expectedTestCount): void
+    private function processReaderFeedback(string $feedbackItems): void
     {
-        $feedbackItems = $reader->getFeedback();
-
         $actualTestCount = strlen($feedbackItems);
 
-        $this->processTestOverhead($actualTestCount, $expectedTestCount);
+//        $this->processTestOverhead($actualTestCount, $expectedTestCount);
 
         for ($index = 0; $index < $actualTestCount; ++$index) {
             $item = $feedbackItems[$index];
@@ -397,7 +359,7 @@ final class ResultPrinter
             return;
         }
 
-        $this->printSkippedAndIncomplete($actualTestCount, $expectedTestCount);
+//        $this->printSkippedAndIncomplete($actualTestCount, $expectedTestCount);
     }
 
     /**

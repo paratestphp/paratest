@@ -14,7 +14,7 @@ use function sprintf;
 /** @internal */
 final class WorkerCrashedException extends RuntimeException
 {
-    public static function fromProcess(Process $process, string $command, ?Throwable $previousException = null): self
+    public static function fromProcess(Process $process, string $test, ?Throwable $previousException = null): self
     {
         $envs = '';
         foreach ($process->getEnv() as $key => $value) {
@@ -22,9 +22,9 @@ final class WorkerCrashedException extends RuntimeException
         }
 
         $error = sprintf(
-            'The command "%s%s" failed.' . "\n\nExit Code: %s(%s)\n\nWorking directory: %s",
+            'The test "%s%s" failed.' . "\n\nExit Code: %s(%s)\n\nWorking directory: %s",
             $envs,
-            $command,
+            $test,
             (string) $process->getExitCode(),
             (string) $process->getExitCodeText(),
             (string) $process->getWorkingDirectory(),

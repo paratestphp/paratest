@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+use ParaTest\Runners\PHPUnit\Worker\ApplicationForWrapperWorker;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
-use PHPUnit\Event\Facade as EventFacade;
 
 (static function (): void {
-    $opts = getopt('', ['write-to:']);
+    $getopt = getopt('', [
+        'status-file:',
+        'progress-file:',
+        'phpunit-argv:',
+    ]);
 
     $composerAutoloadFiles = [
         dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
@@ -23,28 +27,37 @@ use PHPUnit\Event\Facade as EventFacade;
         }
     }
 
-    assert(isset($opts['write-to']) && is_string($opts['write-to']));
-    $writeTo = fopen($opts['write-to'], 'wb');
-    assert(is_resource($writeTo));
-    
-    $application = new \ParaTest\Runners\PHPUnit\Worker\ApplicationForWrapperWorker();
+    assert(isset($getopt['status-file']) && is_string($getopt['status-file']));
+    $statusFile = fopen($getopt['status-file'], 'wb');
+    assert(is_resource($statusFile));
+
+    assert(isset($getopt['progress-file']) && is_string($getopt['progress-file']));
+
+    assert(isset($getopt['phpunit-argv']) && is_string($getopt['phpunit-argv']));
+    $phpunitArgv = unserialize($getopt['phpunit-argv'], ['allowed_classes' => false]);
+    assert(is_array($phpunitArgv));
+
+    $application = new ApplicationForWrapperWorker(
+        $phpunitArgv,
+        $getopt['progress-file'],
+    );
 
     while (true) {
         if (feof(STDIN)) {
+            $application->end();
             exit;
         }
 
-        $command = fgets(STDIN);
-        if ($command === false || $command === WrapperWorker::COMMAND_EXIT) {
+        $testPath = fgets(STDIN);
+        if ($testPath === false || $testPath === WrapperWorker::COMMAND_EXIT) {
+            $application->end();
             exit;
         }
 
-        $arguments = unserialize($command);
-        assert(is_array($arguments));
+        // It must be a 1 byte string to ensure filesize() is equal to the number of tests executed
+        $exitCode = $application->runTest(trim($testPath));
 
-        $application->runTest($arguments);
-
-        fwrite($writeTo, WrapperWorker::TEST_EXECUTED_MARKER);
-        fflush($writeTo);
+        fwrite($statusFile, (string) $exitCode);
+        fflush($statusFile);
     }
 })();

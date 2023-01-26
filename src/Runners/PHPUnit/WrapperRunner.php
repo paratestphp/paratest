@@ -38,9 +38,7 @@ final class WrapperRunner extends BaseRunner
 
     private function assignAllPendingTests(): void
     {
-        $phpunit        = $this->options->phpunit();
-        $phpunitOptions = $this->options->filtered();
-        $batchSize      = $this->options->maxBatchSize();
+        $batchSize = $this->options->maxBatchSize();
 
         while (count($this->pending) > 0 && count($this->workers) > 0) {
             foreach ($this->workers as $token => $worker) {
@@ -62,7 +60,7 @@ final class WrapperRunner extends BaseRunner
                 if ($this->exitcode > 0 && $this->options->stopOnFailure()) {
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {
-                    $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);
+                    $worker->assign($pending);
                     $this->batches[$token]++;
                 }
             }
@@ -73,30 +71,9 @@ final class WrapperRunner extends BaseRunner
 
     private function flushWorker(WrapperWorker $worker): void
     {
-        $reader = $worker->printFeedback($this->printer);
-
-        if ($this->hasCoverage()) {
-            $coverageMerger = $this->getCoverage();
-            assert($coverageMerger !== null);
-            if (($coverageFileName = $worker->getCoverageFileName()) !== null) {
-                $coverageMerger->addCoverageFromFile($coverageFileName);
-            }
-        }
-
+        $this->exitcode = max($this->exitcode, $worker->getExitCode());
+        $worker->printFeedback($this->printer);
         $worker->reset();
-
-        if ($reader === null) {
-            return;
-        }
-
-        $exitCode = self::SUCCESS_EXIT;
-        if ($reader->getTotalErrors() > 0) {
-            $exitCode = self::EXCEPTION_EXIT;
-        } elseif ($reader->getTotalFailures() > 0 || $reader->getTotalWarnings() > 0) {
-            $exitCode = self::FAILURE_EXIT;
-        }
-
-        $this->exitcode = max($this->exitcode, $exitCode);
     }
 
     private function waitForAllToFinish(): void
