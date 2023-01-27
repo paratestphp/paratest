@@ -15,8 +15,15 @@ use ParaTest\Logging\JUnit\TestCaseWithMessage;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\JUnit\WarningTestCase;
 use ParaTest\Logging\LogInterpreter;
+use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Logging\TestDox\NamePrettifier;
+use PHPUnit\Runner\TestSuiteSorter;
+use PHPUnit\TestRunner\TestResult\TestResult;
+use PHPUnit\TextUI\Output\Default\ResultPrinter as DefaultResultPrinter;
+use PHPUnit\TextUI\Output\DefaultPrinter;
+use PHPUnit\TextUI\Output\Printer;
+use PHPUnit\TextUI\Output\SummaryPrinter;
 use PHPUnit\Util\Color;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
@@ -55,98 +62,46 @@ use const PHP_VERSION;
  */
 final class ResultPrinter
 {
-    private const TESTDOX_SYMBOLS = [
-        SuccessTestCase::class => '✔',
-        ErrorTestCase::class  => '✘',
-        FailureTestCase::class => '✘',
-        SkippedTestCase::class => '↩',
-        RiskyTestCase::class  => '☢',
-        WarningTestCase::class => '⚠',
-    ];
-
     private LogInterpreter $results;
 
-    /**
-     * The number of tests results currently printed.
-     * Used to determine when to tally current results
-     * and start a new row.
-     */
     private int $numTestsWidth = 0;
-
-    /**
-     * Used for formatting results to a given width.
-     */
     private int $maxColumn = 0;
-
-    /**
-     * The total number of cases to be run.
-     */
     private int $totalCases = 0;
-
-    /**
-     * The current column being printed to.
-     */
     private int $column = 0;
-
-    /**
-     * The total number of cases printed so far.
-     */
     private int $casesProcessed = 0;
-
-    /**
-     * Number of columns.
-     */
     private int $numberOfColumns = 80;
 
-    /**
-     * Number of skipped or incomplete tests.
-     */
-    private int $totalSkippedOrIncomplete = 0;
-
-    /**
-     * Do we need to try to process skipped/incompleted tests.
-     */
-    private bool $processSkipped = false;
-
-    private OutputInterface $output;
-    private Options $options;
     /** @var bool */
     private $needsTeamcity;
     /** @var bool */
     private $printsTeamcity;
     /** @var resource|null */
     private $teamcityLogFileHandle;
+    /** @var array<non-empty-string, int> */
+    private array $tailPositions;
 
-    public function __construct(LogInterpreter $results, OutputInterface $output, Options $options)
+    public function __construct(
+        private readonly OutputInterface $output,
+        private readonly Options $options
+    )
     {
-        $this->results = $results;
-        $this->output  = $output;
-        $this->options = $options;
-
-        $this->printsTeamcity = $this->options->teamcity();
-        $this->needsTeamcity  = $this->options->needsTeamcity();
-
-        if (($teamcityLogFile = $this->options->logTeamcity()) === null) {
-            return;
-        }
-
-        $teamcityLogFileHandle = fopen($teamcityLogFile, 'ab+');
-        assert($teamcityLogFileHandle !== false);
-        $this->teamcityLogFileHandle = $teamcityLogFileHandle;
+//        $this->printsTeamcity = $this->options->teamcity();
+//        $this->needsTeamcity  = $this->options->needsTeamcity();
+//
+//        if (($teamcityLogFile = $this->options->logTeamcity()) === null) {
+//            return;
+//        }
+//
+//        $teamcityLogFileHandle = fopen($teamcityLogFile, 'ab+');
+//        assert($teamcityLogFileHandle !== false);
+//        $this->teamcityLogFileHandle = $teamcityLogFileHandle;
     }
 
-    /**
-     * Adds an ExecutableTest to the tracked results.
-     */
-    public function addTest(ExecutableTest $suite): void
+    public function setTestCount(int $testCount): void
     {
-        $this->totalCases += $suite->getTestCount();
+        $this->totalCases = $testCount;
     }
 
-    /**
-     * Initializes printing constraints, prints header
-     * information and starts the test timer.
-     */
     public function start(): void
     {
         $this->numTestsWidth = strlen((string) $this->totalCases);
@@ -154,49 +109,41 @@ final class ResultPrinter
                          + (DIRECTORY_SEPARATOR === '\\' ? -1 : 0) // fix windows blank lines
                          - strlen($this->getProgress());
 
-        if ($this->options->verbose()) {
-            // @see \PHPUnit\TextUI\TestRunner::writeMessage()
-            $output = $this->output;
-            $write  = static function (string $type, string $message) use ($output): void {
-                $output->write(sprintf("%-15s%s\n", $type . ':', $message));
-            };
+        // @see \PHPUnit\TextUI\TestRunner::writeMessage()
+        $output = $this->output;
+        $write  = static function (string $type, string $message) use ($output): void {
+            $output->write(sprintf("%-15s%s\n", $type . ':', $message));
+        };
 
-            // @see \PHPUnit\TextUI\TestRunner::run()
-            $write('Processes', (string) $this->options->processes());
+        // @see \PHPUnit\TextUI\Application::writeRuntimeInformation()
+        $write('Processes', (string) $this->options->processes);
 
-            $configuration = $this->options->configuration();
+        $configuration = $this->options->configuration;
 
-            if (PHP_SAPI === 'phpdbg') {
-                $write('Runtime', 'PHPDBG ' . PHP_VERSION); // @codeCoverageIgnore
+        $runtime = 'PHP ' . PHP_VERSION;
+
+        if ($this->options->configuration->hasCoverageReport()) {
+            $filter = new Filter();
+            if ($configuration !== null && $configuration->pathCoverage()) {
+                $codeCoverageDriver = (new Selector())->forLineAndPathCoverage($filter); // @codeCoverageIgnore
             } else {
-                $runtime = 'PHP ' . PHP_VERSION;
-
-                if ($this->options->hasCoverage()) {
-                    $filter = new Filter();
-                    if ($configuration !== null && $configuration->codeCoverage()->pathCoverage()) {
-                        $codeCoverageDriver = (new Selector())->forLineAndPathCoverage($filter); // @codeCoverageIgnore
-                    } else {
-                        $codeCoverageDriver = (new Selector())->forLineCoverage($filter);
-                    }
-
-                    $runtime .= ' with ' . $codeCoverageDriver->nameAndVersion();
-                }
-
-                $write('Runtime', $runtime);
+                $codeCoverageDriver = (new Selector())->forLineCoverage($filter);
             }
 
-            if ($configuration !== null) {
-                $write('Configuration', $configuration->filename());
-            }
-
-            if ($this->options->orderBy() === Options::ORDER_RANDOM) {
-                $write('Random Seed', (string) $this->options->randomOrderSeed());
-            }
-
-            $output->write("\n");
+            $runtime .= ' with ' . $codeCoverageDriver->nameAndVersion();
         }
 
-        $this->processSkipped = $this->isSkippedIncompleTestCanBeTracked($this->options);
+        $write('Runtime', $runtime);
+
+        if ($configuration->hasConfigurationFile()) {
+            $write('Configuration', $configuration->configurationFile());
+        }
+
+        if ($this->options->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
+            $write('Random Seed', (string) $this->options->configuration->randomOrderSeed());
+        }
+
+        $output->write("\n");
     }
 
     public function println(string $string = ''): void
@@ -205,211 +152,53 @@ final class ResultPrinter
         $this->output->write($string . "\n");
     }
 
-    /**
-     * Prints all results and removes any log files
-     * used for aggregating results.
-     */
-    public function printResults(): void
+    public function printResults(TestResult $testResult): void
     {
-        $toFilter = [
-            $this->getErrors(),
-            $this->getWarnings(),
-            $this->getFailures(),
-            $this->getRisky(),
-        ];
-        if ($this->options->verbose()) {
-            $toFilter[] = $this->getSkipped();
-        }
+        $printer = new class($this->output) implements Printer {
+            public function __construct(
+                private readonly OutputInterface $output,
+            ) {}
 
-        $failures        = array_filter($toFilter);
-        $escapedFailures = array_map(static function (string $failure): string {
-            return OutputFormatter::escape($failure);
-        }, $failures);
+            public function print(string $buffer): void
+            {
+                $this->output->write($buffer);
+            }
 
-        $this->output->write($this->getHeader());
-        $this->output->write(implode("---\n\n", $escapedFailures));
-        $this->output->write($this->getFooter());
+            public function flush(): void
+            {
+            }
+        };
 
-        if ($this->teamcityLogFileHandle === null) {
-            return;
-        }
+        $resultPrinter = new DefaultResultPrinter(
+            $printer,
+            $this->options->configuration->displayDetailsOnIncompleteTests(),
+            $this->options->configuration->displayDetailsOnSkippedTests(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerErrors(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerNotices(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
+            false,
+        );
+        $summaryPrinter = new SummaryPrinter($printer, true);
 
-        $resource                    = $this->teamcityLogFileHandle;
-        $this->teamcityLogFileHandle = null;
-        fclose($resource);
+        $printer->print(PHP_EOL . (new ResourceUsageFormatter)->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
+
+        $resultPrinter->print($testResult);
+        $summaryPrinter->print($testResult);
     }
 
     /**
      * Prints the individual "quick" feedback for run
      * tests, that is the ".EF" items.
      */
-    public function printFeedback(string $feedbackItems): void
+    public function printFeedback(WrapperWorker $worker): void
     {
-        $this->processReaderFeedback($feedbackItems);
-    }
+        $feedbackItems = $this->tail($worker->progressFile);
+        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\(\\d+%\\)\\s*/', '', $feedbackItems);
 
-    /**
-     * Returns the header containing resource usage.
-     */
-    public function getHeader(): string
-    {
-        $resourceUsage = (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest();
-
-        return "\n" . $resourceUsage . "\n\n";
-    }
-
-    /**
-     * Return the footer information reporting success
-     * or failure.
-     */
-    public function getFooter(): string
-    {
-        if ($this->results->isSuccessful()) {
-            if ($this->results->getTotalWarnings() === 0) {
-                $footer = $this->getSuccessFooter();
-            } else {
-                $footer = $this->getWarningFooter();
-            }
-        } else {
-            $footer = $this->getFailedFooter();
-        }
-
-        return "{$footer}\n";
-    }
-
-    /**
-     * Returns error messages.
-     */
-    public function getErrors(): string
-    {
-        $errors = $this->results->getErrors();
-
-        return $this->getDefects($errors, 'error');
-    }
-
-    /**
-     * Returns warning messages as a string.
-     */
-    public function getWarnings(): string
-    {
-        $warnings = $this->results->getWarnings();
-
-        return $this->getDefects($warnings, 'warning');
-    }
-
-    /**
-     * Returns the failure messages.
-     */
-    public function getFailures(): string
-    {
-        $failures = $this->results->getFailures();
-
-        return $this->getDefects($failures, 'failure');
-    }
-
-    /**
-     * Returns the risky messages.
-     */
-    public function getRisky(): string
-    {
-        $risky = $this->results->getRisky();
-
-        return $this->getDefects($risky, 'risky');
-    }
-
-    /**
-     * Returns the skipped messages.
-     */
-    public function getSkipped(): string
-    {
-        $risky = $this->results->getSkipped();
-
-        return $this->getDefects($risky, 'skipped');
-    }
-
-    /**
-     * Returns the total cases being printed.
-     */
-    public function getTotalCases(): int
-    {
-        return $this->totalCases;
-    }
-
-    /**
-     * Process reader feedback and print it.
-     */
-    private function processReaderFeedback(string $feedbackItems): void
-    {
         $actualTestCount = strlen($feedbackItems);
-
-//        $this->processTestOverhead($actualTestCount, $expectedTestCount);
-
         for ($index = 0; $index < $actualTestCount; ++$index) {
-            $item = $feedbackItems[$index];
-
-            $this->printFeedbackItem($item);
-            if ($item !== 'S') {
-                continue;
-            }
-
-            ++$this->totalSkippedOrIncomplete;
-        }
-
-        if (! $this->processSkipped) {
-            return;
-        }
-
-//        $this->printSkippedAndIncomplete($actualTestCount, $expectedTestCount);
-    }
-
-    /**
-     * Is skipped/incomplete amount can be properly processed.
-     *
-     * @todo Skipped/Incomplete test tracking available only in functional mode for now
-     *       or in regular mode but without group/exclude-group filters.
-     */
-    private function isSkippedIncompleTestCanBeTracked(Options $options): bool
-    {
-        return count($options->group()) === 0 && count($options->excludeGroup()) === 0;
-    }
-
-    /**
-     * Process test overhead.
-     *
-     * In some situations phpunit can return more tests then we expect and in that case
-     * this method correct total amount of tests so paratest progress will be auto corrected.
-     *
-     * @todo May be we need to throw Exception here instead of silent correction.
-     */
-    private function processTestOverhead(int $actualTestCount, int $expectedTestCount): void
-    {
-        $overhead = $actualTestCount - $expectedTestCount;
-        if ($this->processSkipped) {
-            if ($overhead > 0) {
-                $this->totalCases += $overhead;
-            } else {
-                $this->totalSkippedOrIncomplete += -$overhead;
-            }
-        } else {
-            $this->totalCases += $overhead;
-        }
-    }
-
-    /**
-     * Prints S for skipped and incomplete tests.
-     *
-     * If for some reason process return less tests than expected then we threat all remaining
-     * as skipped or incomplete and print them as skipped (S letter)
-     */
-    private function printSkippedAndIncomplete(int $actualTestCount, int $expectedTestCount): void
-    {
-        $overhead = $expectedTestCount - $actualTestCount;
-        if ($overhead <= 0) {
-            return;
-        }
-
-        for ($i = 0; $i < $overhead; ++$i) {
-            $this->printFeedbackItem('S');
+            $this->printFeedbackItem($feedbackItems[$index]);
         }
     }
 
@@ -452,36 +241,6 @@ final class ResultPrinter
     }
 
     /**
-     * Method that returns a formatted string
-     * for a collection of errors or failures.
-     *
-     * @param string[] $defects
-     */
-    private function getDefects(array $defects, string $type): string
-    {
-        $count = count($defects);
-        if ($count === 0) {
-            return '';
-        }
-
-        $output = sprintf(
-            "There %s %d %s%s:\n",
-            $count === 1 ? 'was' : 'were',
-            $count,
-            $type,
-            $count === 1 ? '' : 's',
-        );
-
-        for ($i = 1; $i <= count($defects); ++$i) {
-            $output .= sprintf("\n%d) %s\n", $i, $defects[$i - 1]);
-        }
-
-        $output .= "\n";
-
-        return $output;
-    }
-
-    /**
      * Prints progress for large test collections.
      */
     private function getProgress(): string
@@ -494,157 +253,34 @@ final class ResultPrinter
         );
     }
 
-    /**
-     * Get the footer for a test collection that had tests with
-     * failures or errors.
-     */
-    private function getFailedFooter(): string
-    {
-        $formatString = "FAILURES!\n%s";
-
-        return $this->colorizeTextBox(
-            'fg-white, bg-red',
-            sprintf(
-                $formatString,
-                $this->getFooterCounts(),
-            ),
-        );
-    }
-
-    /**
-     * Get the footer for a test collection containing all successful
-     * tests.
-     */
-    private function getSuccessFooter(): string
-    {
-        if ($this->totalSkippedOrIncomplete === 0) {
-            $tests   = $this->totalCases;
-            $asserts = $this->results->getTotalAssertions();
-
-            return $this->colorizeTextBox(
-                'fg-black, bg-green',
-                sprintf(
-                    'OK (%d test%s, %d assertion%s)',
-                    $tests,
-                    $tests === 1 ? '' : 's',
-                    $asserts,
-                    $asserts === 1 ? '' : 's',
-                ),
-            );
-        }
-
-        return $this->colorizeTextBox(
-            'fg-black, bg-yellow',
-            sprintf(
-                "OK, but incomplete, skipped, or risky tests!\n"
-                . '%s',
-                $this->getFooterCounts(),
-            ),
-        );
-    }
-
-    private function getWarningFooter(): string
-    {
-        $formatString = "WARNINGS!\n%s";
-
-        return $this->colorizeTextBox(
-            'fg-black, bg-yellow',
-            sprintf(
-                $formatString,
-                $this->getFooterCounts(),
-            ),
-        );
-    }
-
-    private function getFooterCounts(): string
-    {
-        $counts = [
-            'Tests' => $this->results->getTotalTests(),
-            'Assertions' => $this->results->getTotalAssertions(),
-        ] + array_filter([
-            'Errors' => $this->results->getTotalErrors(),
-            'Failures' => $this->results->getTotalFailures(),
-            'Warnings' => $this->results->getTotalWarnings(),
-            'Skipped' => $this->results->getTotalSkipped(),
-        ]);
-
-        $output = '';
-        foreach ($counts as $label => $count) {
-            $output .= sprintf('%s: %s, ', $label, $count);
-        }
-
-        return rtrim($output, ', ') . '.';
-    }
-
     private function colorizeTextBox(string $color, string $buffer): string
     {
-        if (! $this->options->colors()) {
+        if (! $this->options->configuration->colors()) {
             return $buffer;
         }
 
         return Color::colorizeTextBox($color, $buffer);
     }
 
-    private function processTestdoxReader(TestSuite $testSuite): void
+    private function tail(\SplFileInfo $progressFile): string
     {
-        foreach ($testSuite->suites as $suite) {
-            $this->processTestdoxReader($suite);
+        $path = $progressFile->getPathname();
+        $handle = fopen($path, 'r');
+        assert(false !== $handle);
+        $fseek = fseek($handle, $this->tailPositions[$path] ?? 0);
+        assert(0 === $fseek);
+
+        $contents = '';
+        while (!feof($handle)) {
+            $fread = fread($handle, 8192);
+            assert(false !== $fread);
+            $contents .= $fread;
         }
+        $ftell = ftell($handle);
+        assert(false !== $ftell);
+        $this->tailPositions[$path] = $ftell;
+        fclose($handle);
 
-        if ($testSuite->cases === []) {
-            return;
-        }
-
-        $prettifier = new NamePrettifier();
-
-        $class = $testSuite->name;
-        assert(class_exists($class));
-
-        $this->output->writeln($prettifier->prettifyTestClassName($class));
-
-        $separator = PHP_EOL;
-        foreach ($testSuite->cases as $case) {
-            $separator = PHP_EOL;
-            $testCase  = new $class($case->name);
-            assert($testCase instanceof TestCase);
-
-            $time = '';
-            if ($this->options->verbose()) {
-                $time = sprintf(' [%.2f ms]', $case->time * 1000);
-            }
-
-            $testName = $prettifier->prettifyTestCase($testCase, false);
-            $this->output->writeln(sprintf(
-                ' %s %s%s',
-                self::TESTDOX_SYMBOLS[get_class($case)],
-                $testName,
-                $time,
-            ));
-
-            $failingCase = $case instanceof FailureTestCase || $case instanceof ErrorTestCase || $case instanceof WarningTestCase;
-            if (! $this->options->verbose() && ! $failingCase) {
-                continue;
-            }
-
-            if (! $case instanceof TestCaseWithMessage) {
-                continue;
-            }
-
-            $lines    = explode("\n", $case->text);
-            $lines[0] = '';
-            if ($case instanceof SkippedTestCase) {
-                unset($lines[0]);
-            }
-
-            $lines[] = '';
-            foreach ($lines as $index => $line) {
-                $lines[$index] = '   │' . ($line !== '' ? ' ' . $line : '');
-            }
-
-            $this->output->writeln(implode(PHP_EOL, $lines) . PHP_EOL);
-            $separator = '';
-        }
-
-        $this->output->write($separator);
+        return $contents;
     }
 }

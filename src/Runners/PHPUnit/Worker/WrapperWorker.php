@@ -38,87 +38,101 @@ final class WrapperWorker
 {
     public const COMMAND_EXIT = "EXIT\n";
 
-    private ?ExecutableTest $currentlyExecuting = null;
+    public readonly \SplFileInfo $progressFile;
+    public readonly \SplFileInfo $testresultFile;
+    public readonly \SplFileInfo $junitFile;
+    public readonly \SplFileInfo $coverageFile;
+    public readonly \SplFileInfo $teamcityFile;
+    public readonly \SplFileInfo $testdoxFile;
+
+    private ?string $currentlyExecuting = null;
     private Process $process;
     private int $inExecution = 0;
-    private OutputInterface $output;
     private InputStream $input;
     private int $exitCode = -1;
     private string $statusFilepath;
-    private string $progressFilepath;
-    private string $junitFilepath;
-    private ?string $coverageFilepath = null;
-    private ?string $teamcityFilepath = null;
 
-    public function __construct(OutputInterface $output, Options $options, int $token)
+    /**
+     * @param non-empty-string[] $parameters
+     */
+    public function __construct(
+        private readonly OutputInterface $output,
+        private readonly Options $options,
+        array $parameters,
+        private readonly int $token
+    )
     {
-        $wrapper = realpath(
-            dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php',
-        );
-        assert($wrapper !== false);
-
-        $this->output = $output;
-
         $commonTmpFilePath = sprintf(
-            '%s%sworker_%s_stdout_%s_',
-            $options->tmpDir(),
+            '%s%sworker_%02s_stdout_%s_',
+            $options->tmpDir,
             DIRECTORY_SEPARATOR,
             $token,
             uniqid(),
         );
-        $this->statusFilepath = $commonTmpFilePath.'status';
+        $this->statusFilepath = $commonTmpFilePath . 'status';
         touch($this->statusFilepath);
-        $this->progressFilepath = $commonTmpFilePath.'progress';
-        touch($this->progressFilepath);
-        $this->junitFilepath = $commonTmpFilePath.'junit';
-        if ($options->hasCoverage()) {
-            $this->coverageFilepath = $commonTmpFilePath.'coverage';
+        $this->progressFile = new \SplFileInfo($commonTmpFilePath . 'progress');
+        touch($this->progressFile->getPathname());
+        $this->testresultFile = new \SplFileInfo($commonTmpFilePath . 'testresult');
+        if ($options->configuration->hasLogfileJunit()) {
+            $this->junitFile = new \SplFileInfo($commonTmpFilePath . 'junit');
         }
-        if ($options->needsTeamcity()) {
-            $this->teamcityFilepath = $commonTmpFilePath.'teamcity';
+        if ($options->configuration->hasCoverageReport()) {
+            $this->coverageFile = new \SplFileInfo($commonTmpFilePath.'coverage');
         }
-
-        $phpFinder = new PhpExecutableFinder();
-        $phpBin    = $phpFinder->find(false);
-        assert($phpBin !== false);
-        $parameters = [$phpBin];
-        $parameters = array_merge($parameters, $phpFinder->findArguments());
-
-        if (($passthruPhp = $options->passthruPhp()) !== null) {
-            $parameters = array_merge($parameters, $passthruPhp);
+        if ($options->needsTeamcity) {
+            $this->teamcityFile = new \SplFileInfo($commonTmpFilePath.'teamcity');
+        }
+        if ($options->configuration->outputIsTestDox()) {
+            $this->testdoxFile = new \SplFileInfo($commonTmpFilePath.'testdox');
         }
 
-        $parameters[] = $wrapper;
         $parameters[] = '--status-file';
         $parameters[] = $this->statusFilepath;
         $parameters[] = '--progress-file';
-        $parameters[] = $this->progressFilepath;
+        $parameters[] = $this->progressFile->getPathname();
+        $parameters[] = '--testresult-file';
+        $parameters[] = $this->testresultFile->getPathname();
+        if (isset($this->teamcityFile)) {
+            $parameters[] = '--teamcity-file';
+            $parameters[] = $this->teamcityFile->getPathname();
+        }
+        if (isset($this->testdoxFile)) {
+            $parameters[] = '--testdox-file';
+            $parameters[] = $this->testdoxFile->getPathname();
+            if ($options->configuration->colors()) {
+                $parameters[] = '--testdox-color';
+            }
+        }
 
-        $phpunitArguments = [$options->phpunit()];
+        $phpunitArguments = [$options->phpunit];
+        foreach ($options->phpunitOptions as $key => $value) {
+            $phpunitArguments[] = "--{$key}";
+            if ($value === null) {
+                continue;
+            }
+
+            $phpunitArguments[] = $value;
+        }
         $phpunitArguments[] = '--do-not-cache-result';
         $phpunitArguments[] = '--no-logging';
         $phpunitArguments[] = '--no-coverage';
         $phpunitArguments[] = '--no-output';
-        $phpunitArguments[] = '--log-junit';
-        $phpunitArguments[] = $this->junitFilepath;
-        if (null !== $this->coverageFilepath) {
+        if (isset($this->junitFile)) {
+            $phpunitArguments[] = '--log-junit';
+            $phpunitArguments[] = $this->junitFile->getPathname();
+        }
+        if (isset($this->coverageFile)) {
             $phpunitArguments[] = '--coverage-php';
-            $phpunitArguments[] = $this->coverageFilepath;
-        }
-        if (null !== $this->teamcityFilepath) {
-            $phpunitArguments[] = '--log-teamcity';
-            $phpunitArguments[] = $this->teamcityFilepath;
-        }
-        if (null !== ($passthru = $options->passthru())) {
-            $phpunitArguments = array_merge($phpunitArguments, $passthru);
+            $phpunitArguments[] = $this->coverageFile->getPathname();
         }
         
         $parameters[] = '--phpunit-argv';
         $parameters[] = serialize($phpunitArguments);
 
-        if ($options->debug()) {
-            $this->output->write(sprintf(
-                "Starting WrapperWorker via: %s\n",
+        if ($options->verbose) {
+            $output->write(sprintf(
+                "Starting process {$this->token}: %s\n",
                 implode(' ', array_map('\\escapeshellarg', $parameters)),
             ));
         }
@@ -126,7 +140,7 @@ final class WrapperWorker
         $this->input   = new InputStream();
         $this->process = new Process(
             $parameters,
-            $options->cwd(),
+            $options->cwd,
             $options->fillEnvWithTokens($token),
             $this->input,
             null,
@@ -148,32 +162,22 @@ final class WrapperWorker
     {
         return WorkerCrashedException::fromProcess(
             $this->process,
-            $this->currentlyExecuting?->getPath() ?? 'N.A.',
+            $this->currentlyExecuting ?? 'N.A.',
             $previousException
         );
     }
 
-    public function assign(ExecutableTest $test): void
+    public function assign(string $test): void
     {
         assert($this->currentlyExecuting === null);
-
-        $this->input->write($test->getPath() . "\n");
-        $this->currentlyExecuting = $test;
-        ++$this->inExecution;
-    }
-
-    public function printFeedback(ResultPrinter $printer): void
-    {
-        if ($this->currentlyExecuting === null) {
-            return;
+        
+        if ($this->options->verbose) {
+            $this->output->write("Process {$this->token} executing: {$test}\n");
         }
 
-        $feedbackContent = file_get_contents($this->progressFilepath);
-        assert(is_string($feedbackContent) && '' !== $feedbackContent);
-        $feedbackContent = preg_replace('/[^.SIRWFE]/', '', $feedbackContent);
-        $testCount = $this->currentlyExecuting->getTestCount();
-
-        $printer->printFeedback(substr($feedbackContent, -$testCount));
+        $this->input->write($test . "\n");
+        $this->currentlyExecuting = $test;
+        ++$this->inExecution;
     }
 
     public function reset(): void

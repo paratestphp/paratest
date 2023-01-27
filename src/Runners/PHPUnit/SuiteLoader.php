@@ -8,11 +8,18 @@ use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\Parser;
 use PHPUnit\Framework\ExecutionOrderDependency;
+use PHPUnit\Framework\Test;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestSuite;
 use PHPUnit\Metadata\Api\DataProvider;
 use PHPUnit\Metadata\Api\Dependencies;
 use PHPUnit\Metadata\Api\Groups;
+use PHPUnit\Runner\PhptTestCase;
+use PHPUnit\TextUI\Command\Result;
+use PHPUnit\TextUI\Command\WarmCodeCoverageCacheCommand;
 use PHPUnit\TextUI\Configuration\PhpHandler;
-use PHPUnit\TextUI\Configuration\TestSuite;
+use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
+use PHPUnit\TextUI\TestSuiteFilterProcessor;
 use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\FilterMapper;
 use PHPUnit\TextUI\XmlConfiguration\LoadedFromFileConfiguration;
 use ReflectionMethod;
@@ -52,387 +59,84 @@ use const PHP_VERSION;
 /** @internal */
 final class SuiteLoader
 {
-    /**
-     * The collection of loaded files.
-     *
-     * @var string[]
-     */
-    private array $files = [];
+    public readonly int $testCount;
+    /** @var array<non-empty-string, bool> */
+    public readonly array $files;
 
-    /** @var string[]|null */
-    private ?array $suitesName = null;
-
-    /**
-     * The collection of parsed test classes.
-     *
-     * @var array<string, ExecutableTest>
-     */
-    private array $loadedSuites = [];
-
-    private ?LoadedFromFileConfiguration $configuration;
-    private Options $options;
-    private OutputInterface $output;
-
-    public function __construct(Options $options, OutputInterface $output)
+    public function __construct(
+        private readonly Options $options,
+        OutputInterface $output
+    )
     {
-        $this->options       = $options;
-        $this->configuration = $options->configuration();
-        $this->output        = $output;
-    }
+        (new PhpHandler)->handle($this->options->configuration->php());
 
-    /**
-     * Returns all parsed suite objects as ExecutableTest
-     * instances.
-     *
-     * @return list<ExecutableTest>
-     */
-    public function getSuites(): array
-    {
-        return array_values($this->loadedSuites);
-    }
+        if ($this->options->configuration->hasBootstrap()) {
+            include_once $this->options->configuration->bootstrap();
+        }
+        
+        $testSuite = (new TestSuiteBuilder)->build($this->options->configuration);
+        (new TestSuiteFilterProcessor)->process($this->options->configuration, $testSuite);
 
-    /**
-     * Populates the loaded suite collection. Will load suites
-     * based off a phpunit xml configuration or a specified path.
-     *
-     * @throws RuntimeException
-     */
-    public function load(): void
-    {
-        $this->loadConfiguration();
+        $this->testCount = count($testSuite);
 
-        $testSuiteCollection = null;
-        if (($path = $this->options->path()) !== null) {
-            if (realpath($path) === false) {
-                throw new RuntimeException("Invalid path {$path} provided");
-            }
+        $files = [];
+        $this->loadFiles($testSuite, $files);
+        $this->files = array_keys($files);
 
-            $this->files = array_merge(
-                $this->files,
-                (new Facade())->getFilesAsArray($path, ['Test.php']),
-            );
-        } elseif (
-            $this->options->parallelSuite()
-            && $this->configuration !== null
-            && ! $this->configuration->testSuite()->isEmpty()
-        ) {
-            $testSuiteCollection = $this->configuration->testSuite()->asArray();
-            $this->suitesName    = array_map(static function (TestSuite $testSuite): string {
-                return $testSuite->name();
-            }, $testSuiteCollection);
-        } elseif (
-            $this->configuration !== null
-            && ! $this->configuration->testSuite()->isEmpty()
-        ) {
-            $testSuiteCollection = array_filter(
-                $this->configuration->testSuite()->asArray(),
-                function (TestSuite $testSuite): bool {
-                    return $this->options->testsuite() === [] ||
-                        in_array($testSuite->name(), $this->options->testsuite(), true);
-                },
-            );
-
-            foreach ($testSuiteCollection as $testSuite) {
-                $this->loadFilesFromTestSuite($testSuite);
-            }
+        if (! $this->options->configuration->hasCoverageReport()) {
+            return;
         }
 
-        if ($path === null && $testSuiteCollection === null) {
-            throw new RuntimeException('No path or configuration provided (tests must end with Test.php)');
-        }
-
-        $this->files = array_unique($this->files); // remove duplicates
-
-        $this->initSuites();
-        $this->warmCoverageCache();
-    }
-
-    /**
-     * Called after all files are loaded. Parses loaded files into
-     * ExecutableTest objects - either Suite or TestMethod or FullSuite.
-     */
-    private function initSuites(): void
-    {
-        if (is_array($this->suitesName)) {
-            foreach ($this->suitesName as $suiteName) {
-                $this->loadedSuites[$suiteName] = $this->createFullSuite($suiteName);
-            }
-        } else {
-            // The $class->getParentsCount() + array_merge(...$loadedSuites) stuff
-            // are needed to run test with child tests early, because PHPUnit autoloading
-            // of such classes in WrapperRunner environments fails (Runner is fine)
-            $loadedSuites = [];
-            foreach ($this->files as $path) {
-                try {
-                    $class = (new Parser($path))->getClass();
-                    $suite = $this->createSuite($path, $class);
-                    if ($suite->getTestCount() > 0) {
-                        $loadedSuites[$class->getParentsCount()][$path] = $suite;
-                    }
-                } catch (NoClassInFileException) {
-                    continue;
-                }
-            }
-
-            foreach (array_keys($loadedSuites) as $key) {
-                ksort($loadedSuites[$key]);
-            }
-
-            ksort($loadedSuites);
-
-            foreach ($loadedSuites as $loadedSuite) {
-                $this->loadedSuites = array_merge($this->loadedSuites, $loadedSuite);
-            }
+        $result = (new WarmCodeCoverageCacheCommand($this->options->configuration))->execute();
+        $output->write($result->output());
+        if (Result::SUCCESS !== $result->shellExitCode()) {
+            exit($result->shellExitCode());
         }
     }
 
-    /**
-     * @return int
-     */
-    private function executableTests(ParsedClass $class): int
+    private function loadFiles(TestSuite $testSuite, array & $files): void
     {
-        $executableTests = [];
-        $methodBatches   = $this->getMethodBatches($class);
-        foreach ($methodBatches as $methodBatch) {
-            $executableTests[] = count($methodBatch);
-        }
-
-        return array_sum($executableTests);
-    }
-
-    /**
-     * Get method batches.
-     *
-     * Identify method dependencies, and group dependents and dependees on a single methodBatch.
-     * Use max batch size to fill batches.
-     *
-     * @return string[][] of MethodBatches. Each MethodBatch has an array of method names
-     */
-    private function getMethodBatches(ParsedClass $class): array
-    {
-        $classMethods = $class->getMethods();
-
-        $batches = [];
-        foreach ($classMethods as $method) {
-            $tests = $this->getMethodTests($class, $method);
-            // if filter passed to paratest then method tests can be blank if not match to filter
-            if (count($tests) === 0) {
+        foreach ($testSuite as $test) {
+            if ($test instanceof TestSuite) {
+                $this->loadFiles($test, $files);
                 continue;
             }
-
-            $dependencies = Dependencies::dependencies($class->getName(), $method->getName());
-            if (count($dependencies) !== 0) {
-                $this->addDependentTestsToBatchSet($batches, $dependencies, $tests);
-            } else {
-                foreach ($tests as $test) {
-                    $batches[] = [$test];
-                }
+            
+            if ($test instanceof PhptTestCase) {
+                $refProperty = new \ReflectionProperty(PhptTestCase::class, 'filename');
+                $filename = $refProperty->getValue($test);
+                assert(is_string($filename) && '' !== $filename);
+                $filename = $this->stripCwd($filename);
+                $files[$filename] = true;
+                
+                continue;
             }
-        }
+            
+            if ($test instanceof TestCase) {
+                $refClass = new \ReflectionClass($test);
+                $filename = $refClass->getFileName();
+                assert(is_string($filename) && '' !== $filename);
+                $filename = $this->stripCwd($filename);
+                $files[$filename] = true;
 
-        return $batches;
-    }
-
-    /**
-     * @param string[][]                 $batches
-     * @param ExecutionOrderDependency[] $dependencies
-     * @param string[]                   $tests
-     */
-    private function addDependentTestsToBatchSet(array &$batches, array $dependencies, array $tests): void
-    {
-        $dependencies = array_map(static function (ExecutionOrderDependency $dependency): string {
-            return substr($dependency->getTarget(), (int) strrpos($dependency->getTarget(), ':') + 1);
-        }, $dependencies);
-
-        foreach ($batches as $key => $batch) {
-            foreach ($batch as $methodName) {
-                if (!in_array($methodName, $dependencies, true)) {
-                    continue;
-                }
-
-                $batches[$key] = array_merge($batches[$key], $tests);
+                continue;
             }
         }
     }
 
     /**
-     * Get method all available tests.
-     *
-     * With empty filter this method returns single test if doesn't have data provider or
-     * data provider is not used and return all test if has data provider and data provider is used.
-     *
-     * @return string[] array of test names
-     * @psalm-return list<string>
+     * @param non-empty-string $filename
+     * @return non-empty-string
      */
-    private function getMethodTests(ParsedClass $class, ReflectionMethod $method): array
+    private function stripCwd(string $filename): string
     {
-        $result = [];
-
-        $groups = (new Groups())->groups($class->getName(), $method->getName());
-        if (! $this->testMatchGroupOptions($groups)) {
-            return $result;
+        if (! str_starts_with($filename, $this->options->cwd)) {
+            return $filename;
         }
-
-        try {
-            $providedData = (new DataProvider())->providedData($class->getName(), $method->getName());
-        } catch (Throwable) {
-            $providedData = null;
-        }
-
-        if ($providedData === null) {
-            return [$method->getName()];
-        }
-
-        foreach (array_keys($providedData) as $key) {
-            $test = sprintf(
-                '%s with data set %s',
-                $method->getName(),
-                is_int($key) ? '#' . $key : '"' . $key . '"',
-            );
-
-            $result[] = $test;
-        }
-
-        return $result;
-    }
-
-    /** @param string[] $groups */
-    private function testMatchGroupOptions(array $groups): bool
-    {
-        if ($this->options->group() === [] && $this->options->excludeGroup() === []) {
-            return true;
-        }
-
-        $matchGroupIncluded = (
-            $this->options->group() !== []
-            && array_intersect($groups, $this->options->group()) !== []
-        );
-
-        $matchGroupNotExcluded = (
-            $this->options->excludeGroup() !== []
-            && array_intersect($groups, $this->options->excludeGroup()) === []
-        );
-
-        return $matchGroupIncluded || $matchGroupNotExcluded;
-    }
-
-    private function createSuite(string $path, ParsedClass $class): Suite
-    {
-        return new Suite($this->executableTests($class), $path);
-    }
-
-    private function createFullSuite(string $suiteName): FullSuite
-    {
-        return new FullSuite($suiteName);
-    }
-
-    /** @see \PHPUnit\TextUI\XmlConfiguration\TestSuiteMapper::map */
-    private function loadFilesFromTestSuite(TestSuite $testSuiteCollection): void
-    {
-        foreach ($testSuiteCollection->directories() as $directory) {
-            if (
-                ! version_compare(
-                    PHP_VERSION,
-                    $directory->phpVersion(),
-                    $directory->phpVersionOperator()->asString(),
-                )
-            ) {
-                continue; // @codeCoverageIgnore
-            }
-
-            $exclude = [];
-
-            foreach ($testSuiteCollection->exclude()->asArray() as $file) {
-                $exclude[] = $file->path();
-            }
-
-            $this->files = array_merge($this->files, (new Facade())->getFilesAsArray(
-                $directory->path(),
-                $directory->suffix(),
-                $directory->prefix(),
-                $exclude,
-            ));
-        }
-
-        foreach ($testSuiteCollection->files() as $file) {
-            if (
-                ! version_compare(
-                    PHP_VERSION,
-                    $file->phpVersion(),
-                    $file->phpVersionOperator()->asString(),
-                )
-            ) {
-                continue; // @codeCoverageIgnore
-            }
-
-            $this->files[] = $file->path();
-        }
-    }
-
-    private function loadConfiguration(): void
-    {
-        if ($this->configuration !== null) {
-            (new PhpHandler())->handle($this->configuration->php());
-        }
-
-        $bootstrap = null;
-        if ($this->options->bootstrap() !== null) {
-            $bootstrap = $this->options->bootstrap();
-        } elseif ($this->configuration !== null && $this->configuration->phpunit()->hasBootstrap()) {
-            $bootstrap = $this->configuration->phpunit()->bootstrap();
-        }
-
-        if ($bootstrap === null) {
-            return;
-        }
-
-        include_once $bootstrap;
-    }
-
-    private function warmCoverageCache(): void
-    {
-        if (
-            ! $this->options->hasCoverage()
-            || ! (new Runtime())->canCollectCodeCoverage()
-            || ($configuration = $this->options->configuration()) === null
-            || ! $configuration->codeCoverage()->hasCacheDirectory()
-        ) {
-            return;
-        }
-
-        $filter = new Filter();
-        (new FilterMapper())->map(
-            $filter,
-            $configuration->codeCoverage(),
-        );
-        $timer = new Timer();
-        $timer->start();
-
-        $this->output->write('Warming cache for static analysis ... ');
-
-        (new CacheWarmer())->warmCache(
-            $configuration->codeCoverage()->cacheDirectory()->path(),
-            ! $configuration->codeCoverage()->disableCodeCoverageIgnore(),
-            $configuration->codeCoverage()->ignoreDeprecatedCodeUnits(),
-            $filter,
-        );
-
-        $this->output->write(sprintf("done [%s]\n\n", $timer->stop()->asString()));
-    }
-
-    /**
-     * @see \PHPUnit\Framework\TestSuite::containsOnlyVirtualGroups
-     *
-     * @param string[] $groups
-     */
-    private function containsOnlyVirtualGroups(array $groups): bool
-    {
-        foreach ($groups as $group) {
-            if (strpos($group, '__phpunit_') !== 0) {
-                return false;
-            }
-        }
-
-        return true;
+        
+        $filename = substr($filename, 1+strlen($this->options->cwd));
+        assert(is_string($filename) && false !== $filename);
+        
+        return $filename;
     }
 }

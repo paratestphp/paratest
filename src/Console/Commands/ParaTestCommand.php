@@ -32,14 +32,20 @@ final class ParaTestCommand extends Command
         'WrapperRunner' => WrapperRunner::class,
     ];
 
-    private string $cwd;
-
-    public function __construct(string $cwd, ?string $name = null)
+    /**
+     * @param non-empty-string $cwd
+     */
+    public function __construct(
+        private readonly string $cwd,
+        ?string $name = null
+    )
     {
-        $this->cwd = $cwd;
         parent::__construct($name);
     }
 
+    /**
+     * @param non-empty-string $cwd
+     */
     public static function applicationFactory(string $cwd): Application
     {
         $application = new Application();
@@ -86,11 +92,7 @@ final class ParaTestCommand extends Command
         $options = Options::fromConsoleInput(
             $input,
             $this->cwd,
-            (new Console())->hasColorSupport(),
         );
-        if ($options->configuration() === null && $options->path() === null) {
-            return $this->displayHelp($output);
-        }
 
         $runnerClass = $this->getRunnerClass($input);
 

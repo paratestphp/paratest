@@ -11,14 +11,9 @@ namespace ParaTest\Logging\JUnit;
  */
 abstract class TestCaseWithMessage extends TestCase
 {
-    /** @var string|null */
-    public $type;
-
-    /** @var string */
-    public $text;
-
-    /** @var string|null */
-    public $systemOutput;
+    public readonly ?string $type;
+    public readonly string $text;
+    public readonly ?string $systemOutput;
 
     public function __construct(
         string $name,

@@ -12,7 +12,7 @@ use function array_reduce;
 use function assert;
 
 /** @internal */
-final class LogInterpreter implements MetaProviderInterface
+final class LogInterpreter
 {
     /**
      * A collection of Reader objects
@@ -123,119 +123,5 @@ final class LogInterpreter implements MetaProviderInterface
         );
 
         return $suite1;
-    }
-
-    public function getTotalTests(): int
-    {
-        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalTests();
-        }, 0);
-    }
-
-    public function getTotalAssertions(): int
-    {
-        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalAssertions();
-        }, 0);
-    }
-
-    public function getTotalErrors(): int
-    {
-        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalErrors();
-        }, 0);
-    }
-
-    public function getTotalFailures(): int
-    {
-        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalFailures();
-        }, 0);
-    }
-
-    public function getTotalWarnings(): int
-    {
-        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalWarnings();
-        }, 0);
-    }
-
-    public function getTotalSkipped(): int
-    {
-        return array_reduce($this->readers, static function (int $result, Reader $reader): int {
-            return $result + $reader->getTotalSkipped();
-        }, 0);
-    }
-
-    public function getTotalTime(): float
-    {
-        return array_reduce($this->readers, static function (float $result, Reader $reader): float {
-            return $result + $reader->getTotalTime();
-        }, 0.0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getErrors(): array
-    {
-        $messages = [];
-        foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->getErrors());
-        }
-
-        return $messages;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getWarnings(): array
-    {
-        $messages = [];
-        foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->getWarnings());
-        }
-
-        return $messages;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getFailures(): array
-    {
-        $messages = [];
-        foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->getFailures());
-        }
-
-        return $messages;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getRisky(): array
-    {
-        $messages = [];
-        foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->getRisky());
-        }
-
-        return $messages;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getSkipped(): array
-    {
-        $messages = [];
-        foreach ($this->readers as $reader) {
-            $messages = array_merge($messages, $reader->getSkipped());
-        }
-
-        return $messages;
     }
 }

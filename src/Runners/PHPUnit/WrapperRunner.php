@@ -4,41 +4,100 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use InvalidArgumentException;
+use ParaTest\Coverage\CoverageMerger;
+use ParaTest\Coverage\CoverageReporter;
+use ParaTest\Logging\JUnit\Writer;
+use ParaTest\Logging\LogInterpreter;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 
+use PHPUnit\TestRunner\TestResult\TestResult;
+use SebastianBergmann\Timer\Timer;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\PhpExecutableFinder;
 use function array_shift;
-use function assert;
 use function count;
 use function max;
 use function usleep;
 
 /** @internal */
-final class WrapperRunner extends BaseRunner
+final class WrapperRunner implements RunnerInterface
 {
-    /** @var array<int,WrapperWorker> */
+    private const CYCLE_SLEEP = 10000;
+    private readonly ResultPrinter $printer;
+
+    /** @var ExecutableTest[] */
+    private array $pending = [];
+    private int $exitcode = -1;
+    /** @var array<positive-int,WrapperWorker> */
     private array $workers = [];
-
     /** @var array<int,int> */
-    private $batches = [];
+    private array $batches = [];
 
-    protected function doRun(): void
+    /** @var list<\SplFileInfo> */
+    private array $testresultFiles = [];
+    /** @var list<\SplFileInfo> */
+    private array $junitFiles = [];
+    /** @var list<\SplFileInfo> */
+    private array $coverageFiles = [];
+    /** @var list<\SplFileInfo> */
+    private array $teamcityFiles = [];
+    /** @var list<\SplFileInfo> */
+    private array $testdoxFiles = [];
+
+    /**
+     * @var non-empty-string[]
+     */
+    private readonly array $parameters;
+
+    public function __construct(
+        private readonly Options $options,
+        private readonly OutputInterface $output
+    )
     {
+        $this->printer = new ResultPrinter($output, $options);
+
+        $wrapper = realpath(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php',
+        );
+        assert($wrapper !== false);
+        $phpFinder = new PhpExecutableFinder();
+        $phpBin    = $phpFinder->find(false);
+        assert($phpBin !== false);
+        $parameters = [$phpBin];
+        $parameters = array_merge($parameters, $phpFinder->findArguments());
+
+        if ($options->passthruPhp !== null) {
+            $parameters = array_merge($parameters, $options->passthruPhp);
+        }
+
+        $parameters[] = $wrapper;
+        
+        $this->parameters = $parameters;
+    }
+
+    final public function run(): void
+    {
+        $suiteLoader = new SuiteLoader($this->options, $this->output);
+
+        $this->pending = $suiteLoader->files;
+        $this->printer->setTestCount($suiteLoader->testCount);
+        $this->printer->start();
         $this->startWorkers();
         $this->assignAllPendingTests();
         $this->waitForAllToFinish();
+        $this->complete();
     }
 
     private function startWorkers(): void
     {
-        for ($token = 1; $token <= $this->options->processes(); ++$token) {
+        for ($token = 1; $token <= $this->options->processes; ++$token) {
             $this->startWorker($token);
         }
     }
 
     private function assignAllPendingTests(): void
     {
-        $batchSize = $this->options->maxBatchSize();
+        $batchSize = $this->options->maxBatchSize;
 
         while (count($this->pending) > 0 && count($this->workers) > 0) {
             foreach ($this->workers as $token => $worker) {
@@ -57,7 +116,12 @@ final class WrapperRunner extends BaseRunner
                     $worker = $this->startWorker($token);
                 }
 
-                if ($this->exitcode > 0 && $this->options->stopOnFailure()) {
+                if ($this->exitcode > 0
+                    && (
+                        $this->options->configuration->stopOnFailure()
+                        || $this->options->configuration->stopOnError()
+                    )
+                ) {
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {
                     $worker->assign($pending);
@@ -72,7 +136,7 @@ final class WrapperRunner extends BaseRunner
     private function flushWorker(WrapperWorker $worker): void
     {
         $this->exitcode = max($this->exitcode, $worker->getExitCode());
-        $worker->printFeedback($this->printer);
+        $this->printer->printFeedback($worker);
         $worker->reset();
     }
 
@@ -104,11 +168,30 @@ final class WrapperRunner extends BaseRunner
 
     private function startWorker(int $token): WrapperWorker
     {
-        $this->workers[$token] = new WrapperWorker($this->output, $this->options, $token);
-        $this->workers[$token]->start();
+        $worker = new WrapperWorker(
+            $this->output,
+            $this->options,
+            $this->parameters,
+            $token
+        );
+        $worker->start();
         $this->batches[$token] = 0;
+        
+        $this->testresultFiles[] = $worker->testresultFile;
+        if (isset($worker->junitFile)) {
+            $this->junitFiles[] = $worker->junitFile;
+        }
+        if (isset($worker->coverageFile)) {
+            $this->coverageFiles[] = $worker->coverageFile;
+        }
+        if (isset($worker->teamcityFile)) {
+            $this->teamcityFiles[] = $worker->teamcityFile;
+        }
+        if (isset($worker->testdoxFile)) {
+            $this->testdoxFiles[] = $worker->testdoxFile;
+        }
 
-        return $this->workers[$token];
+        return $this->workers[$token] = $worker;
     }
 
     private function destroyWorker(int $token): void
@@ -120,5 +203,170 @@ final class WrapperRunner extends BaseRunner
         $this->workers[$token]->stop();
 
         unset($this->workers[$token]);
+    }
+
+    /**
+     * Write output to JUnit format if requested.
+     */
+    final protected function log(): void
+    {
+        if (($logJunit = $this->options->logJunit()) === null) {
+            return;
+        }
+
+        $name = $this->options->path() ?? '';
+
+        $writer = new Writer($this->interpreter, $name);
+        $writer->write($logJunit);
+    }
+
+    /**
+     * Finalizes the run process. This method
+     * prints all results, rewinds the log interpreter,
+     * logs any results to JUnit, and cleans up temporary
+     * files.
+     */
+    private function complete(): void
+    {
+        $testResultSum = null;
+        foreach ($this->testresultFiles as $testresultFile) {
+            $testResult = unserialize(file_get_contents($testresultFile->getPathname()));
+            assert($testResult instanceof TestResult);
+
+            if (null === $testResultSum) {
+                $testResultSum = $testResult;
+                continue;
+            }
+            
+            $testResultSum = new TestResult(
+                $testResultSum->numberOfTests() + $testResult->numberOfTests(),
+                $testResultSum->numberOfTestsRun() + $testResult->numberOfTestsRun(),
+                $testResultSum->numberOfAssertions() + $testResult->numberOfAssertions(),
+                array_merge_recursive($testResultSum->testErroredEvents(), $testResult->testErroredEvents()),
+                array_merge_recursive($testResultSum->testFailedEvents(), $testResult->testFailedEvents()),
+                array_merge_recursive($testResultSum->testConsideredRiskyEvents(), $testResult->testConsideredRiskyEvents()),
+                array_merge_recursive($testResultSum->testSkippedEvents(), $testResult->testSkippedEvents()),
+                array_merge_recursive($testResultSum->testMarkedIncompleteEvents(), $testResult->testMarkedIncompleteEvents()),
+                array_merge_recursive($testResultSum->testTriggeredDeprecationEvents(), $testResult->testTriggeredDeprecationEvents()),
+                array_merge_recursive($testResultSum->testTriggeredPhpDeprecationEvents(), $testResult->testTriggeredPhpDeprecationEvents()),
+                array_merge_recursive($testResultSum->testTriggeredPhpunitDeprecationEvents(), $testResult->testTriggeredPhpunitDeprecationEvents()),
+                array_merge_recursive($testResultSum->testTriggeredErrorEvents(), $testResult->testTriggeredErrorEvents()),
+                array_merge_recursive($testResultSum->testTriggeredNoticeEvents(), $testResult->testTriggeredNoticeEvents()),
+                array_merge_recursive($testResultSum->testTriggeredPhpNoticeEvents(), $testResult->testTriggeredPhpNoticeEvents()),
+                array_merge_recursive($testResultSum->testTriggeredWarningEvents(), $testResult->testTriggeredWarningEvents()),
+                array_merge_recursive($testResultSum->testTriggeredPhpWarningEvents(), $testResult->testTriggeredPhpWarningEvents()),
+                array_merge_recursive($testResultSum->testTriggeredPhpunitErrorEvents(), $testResult->testTriggeredPhpunitErrorEvents()),
+                array_merge_recursive($testResultSum->testTriggeredPhpunitWarningEvents(), $testResult->testTriggeredPhpunitWarningEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredDeprecationEvents(), $testResult->testRunnerTriggeredDeprecationEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredWarningEvents(), $testResult->testRunnerTriggeredWarningEvents()),
+            );
+        }
+        assert(null !== $testResultSum);
+
+        $this->printer->printResults($testResultSum);
+        return;
+        $this->log();
+        $this->logCoverage();
+        $readers = $this->interpreter->getReaders();
+        foreach ($readers as $reader) {
+            $reader->removeLog();
+        }
+    }
+
+    final protected function getCoverage(): ?CoverageMerger
+    {
+        return $this->coverage;
+    }
+
+    /**
+     * Write coverage to file if requested.
+     */
+    final protected function logCoverage(): void
+    {
+        if (!$this->hasCoverage()) {
+            return;
+        }
+
+        $coverageMerger = $this->getCoverage();
+        assert($coverageMerger !== null);
+        $codeCoverage = $coverageMerger->getCodeCoverageObject();
+        assert($codeCoverage !== null);
+        $codeCoverageConfiguration = null;
+        if (($configuration = $this->options->configuration()) !== null) {
+            $codeCoverageConfiguration = $configuration->codeCoverage();
+        }
+
+        $reporter = new CoverageReporter($codeCoverage, $codeCoverageConfiguration);
+
+        $output = $this->output;
+        $timer = new Timer();
+        $start = static function (string $format) use ($output, $timer): void {
+            $output->write(sprintf("\nGenerating code coverage report in %s format ... ", $format));
+
+            $timer->start();
+        };
+        $stop = static function () use ($output, $timer): void {
+            $output->write(sprintf("done [%s]\n", $timer->stop()->asString()));
+        };
+
+        if (($coverageClover = $this->options->coverageClover()) !== null) {
+            $start('Clover XML');
+            $reporter->clover($coverageClover);
+            $stop();
+        }
+
+        if (($coverageCobertura = $this->options->coverageCobertura()) !== null) {
+            $start('Cobertura XML');
+            $reporter->cobertura($coverageCobertura);
+            $stop();
+        }
+
+        if (($coverageCrap4j = $this->options->coverageCrap4j()) !== null) {
+            $start('Crap4J XML');
+            $reporter->crap4j($coverageCrap4j);
+            $stop();
+        }
+
+        if (($coverageHtml = $this->options->coverageHtml()) !== null) {
+            $start('HTML');
+            $reporter->html($coverageHtml);
+            $stop();
+        }
+
+        if (($coveragePhp = $this->options->coveragePhp()) !== null) {
+            $start('PHP');
+            $reporter->php($coveragePhp);
+            $stop();
+        }
+
+        if (($coverageText = $this->options->coverageText()) !== null) {
+            if ($coverageText === '') {
+                $this->output->write($reporter->text($this->options->colors()));
+            } else {
+                file_put_contents($coverageText, $reporter->text($this->options->colors()));
+            }
+        }
+
+        if (($coverageXml = $this->options->coverageXml()) === null) {
+            return;
+        }
+
+        $start('PHPUnit XML');
+        $reporter->xml($coverageXml);
+        $stop();
+    }
+
+    final protected function hasCoverage(): bool
+    {
+        return $this->options->hasCoverage();
+    }
+
+    /**
+     * Returns the highest exit code encountered
+     * throughout the course of test execution.
+     */
+    final public function getExitCode(): int
+    {
+        return $this->exitcode;
     }
 }
