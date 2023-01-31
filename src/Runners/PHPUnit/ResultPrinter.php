@@ -62,15 +62,16 @@ use const PHP_VERSION;
  */
 final class ResultPrinter
 {
-    private LogInterpreter $results;
+    public readonly Printer $printer;
 
+    private LogInterpreter $results;
     private int $numTestsWidth = 0;
     private int $maxColumn = 0;
     private int $totalCases = 0;
     private int $column = 0;
     private int $casesProcessed = 0;
-    private int $numberOfColumns = 80;
 
+    private int $numberOfColumns = 80;
     /** @var bool */
     private $needsTeamcity;
     /** @var bool */
@@ -85,6 +86,20 @@ final class ResultPrinter
         private readonly Options $options
     )
     {
+        $this->printer = new class($this->output) implements Printer {
+            public function __construct(
+                private readonly OutputInterface $output,
+            ) {}
+
+            public function print(string $buffer): void
+            {
+                $this->output->write(OutputFormatter::escape($buffer));
+            }
+
+            public function flush(): void
+            {
+            }
+        };
 //        $this->printsTeamcity = $this->options->teamcity();
 //        $this->needsTeamcity  = $this->options->needsTeamcity();
 //
@@ -154,23 +169,8 @@ final class ResultPrinter
 
     public function printResults(TestResult $testResult): void
     {
-        $printer = new class($this->output) implements Printer {
-            public function __construct(
-                private readonly OutputInterface $output,
-            ) {}
-
-            public function print(string $buffer): void
-            {
-                $this->output->write($buffer);
-            }
-
-            public function flush(): void
-            {
-            }
-        };
-
         $resultPrinter = new DefaultResultPrinter(
-            $printer,
+            $this->printer,
             $this->options->configuration->displayDetailsOnIncompleteTests(),
             $this->options->configuration->displayDetailsOnSkippedTests(),
             $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),
@@ -179,18 +179,14 @@ final class ResultPrinter
             $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
             false,
         );
-        $summaryPrinter = new SummaryPrinter($printer, true);
+        $summaryPrinter = new SummaryPrinter($this->printer, true);
 
-        $printer->print(PHP_EOL . (new ResourceUsageFormatter)->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
+        $this->printer->print(PHP_EOL . (new ResourceUsageFormatter)->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
 
         $resultPrinter->print($testResult);
         $summaryPrinter->print($testResult);
     }
 
-    /**
-     * Prints the individual "quick" feedback for run
-     * tests, that is the ".EF" items.
-     */
     public function printFeedback(WrapperWorker $worker): void
     {
         $feedbackItems = $this->tail($worker->progressFile);

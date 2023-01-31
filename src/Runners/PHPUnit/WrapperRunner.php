@@ -9,7 +9,7 @@ use ParaTest\Coverage\CoverageReporter;
 use ParaTest\Logging\JUnit\Writer;
 use ParaTest\Logging\LogInterpreter;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
-
+use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +25,7 @@ final class WrapperRunner implements RunnerInterface
     private const CYCLE_SLEEP = 10000;
     private readonly ResultPrinter $printer;
 
-    /** @var ExecutableTest[] */
+    /** @var non-empty-string[] */
     private array $pending = [];
     private int $exitcode = -1;
     /** @var array<positive-int,WrapperWorker> */
@@ -264,107 +264,31 @@ final class WrapperRunner implements RunnerInterface
         assert(null !== $testResultSum);
 
         $this->printer->printResults($testResultSum);
-        return;
-        $this->log();
         $this->logCoverage();
-        $readers = $this->interpreter->getReaders();
-        foreach ($readers as $reader) {
-            $reader->removeLog();
-        }
+        return;
+//        $this->log();
+//        $readers = $this->interpreter->getReaders();
+//        foreach ($readers as $reader) {
+//            $reader->removeLog();
+//        }
     }
 
-    final protected function getCoverage(): ?CoverageMerger
-    {
-        return $this->coverage;
-    }
-
-    /**
-     * Write coverage to file if requested.
-     */
     final protected function logCoverage(): void
     {
-        if (!$this->hasCoverage()) {
+        if ([] === $this->coverageFiles) {
             return;
         }
 
-        $coverageMerger = $this->getCoverage();
-        assert($coverageMerger !== null);
-        $codeCoverage = $coverageMerger->getCodeCoverageObject();
-        assert($codeCoverage !== null);
-        $codeCoverageConfiguration = null;
-        if (($configuration = $this->options->configuration()) !== null) {
-            $codeCoverageConfiguration = $configuration->codeCoverage();
+        CodeCoverage::init($this->options->configuration);
+
+        $coverageMerger = new CoverageMerger(CodeCoverage::instance());
+        foreach ($this->coverageFiles as $coverageFile) {
+            $coverageMerger->addCoverageFromFile($coverageFile->getPathname());
         }
 
-        $reporter = new CoverageReporter($codeCoverage, $codeCoverageConfiguration);
-
-        $output = $this->output;
-        $timer = new Timer();
-        $start = static function (string $format) use ($output, $timer): void {
-            $output->write(sprintf("\nGenerating code coverage report in %s format ... ", $format));
-
-            $timer->start();
-        };
-        $stop = static function () use ($output, $timer): void {
-            $output->write(sprintf("done [%s]\n", $timer->stop()->asString()));
-        };
-
-        if (($coverageClover = $this->options->coverageClover()) !== null) {
-            $start('Clover XML');
-            $reporter->clover($coverageClover);
-            $stop();
-        }
-
-        if (($coverageCobertura = $this->options->coverageCobertura()) !== null) {
-            $start('Cobertura XML');
-            $reporter->cobertura($coverageCobertura);
-            $stop();
-        }
-
-        if (($coverageCrap4j = $this->options->coverageCrap4j()) !== null) {
-            $start('Crap4J XML');
-            $reporter->crap4j($coverageCrap4j);
-            $stop();
-        }
-
-        if (($coverageHtml = $this->options->coverageHtml()) !== null) {
-            $start('HTML');
-            $reporter->html($coverageHtml);
-            $stop();
-        }
-
-        if (($coveragePhp = $this->options->coveragePhp()) !== null) {
-            $start('PHP');
-            $reporter->php($coveragePhp);
-            $stop();
-        }
-
-        if (($coverageText = $this->options->coverageText()) !== null) {
-            if ($coverageText === '') {
-                $this->output->write($reporter->text($this->options->colors()));
-            } else {
-                file_put_contents($coverageText, $reporter->text($this->options->colors()));
-            }
-        }
-
-        if (($coverageXml = $this->options->coverageXml()) === null) {
-            return;
-        }
-
-        $start('PHPUnit XML');
-        $reporter->xml($coverageXml);
-        $stop();
+        CodeCoverage::generateReports($this->printer->printer, $this->options->configuration);
     }
 
-    final protected function hasCoverage(): bool
-    {
-        return $this->options->hasCoverage();
-    }
-
-    /**
-     * Returns the highest exit code encountered
-     * throughout the course of test execution.
-     */
     final public function getExitCode(): int
     {
         return $this->exitcode;

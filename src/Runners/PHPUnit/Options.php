@@ -63,7 +63,9 @@ final class Options
     
     private const OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER = [
         'bootstrap' => true,
+        'cache-directory' => true,
         'configuration' => true, 
+        'coverage-filter' => true, 
         'dont-report-useless-tests' => true, 
         'exclude-group' => true, 
         'fail-on-incomplete' => true, 
@@ -161,11 +163,11 @@ final class Options
             if (null === $value || false === $value) {
                 continue;
             }
-            $phpunitArgv[] = "--{$key}";
             if (true === $value) {
+                $phpunitArgv[] = "--{$key}";
                 continue;
             }
-            $phpunitArgv[] = $value;
+            $phpunitArgv[] = "--{$key}={$value}";
         }
         if (null !== ($path = $input->getArgument('path'))) {
             $phpunitArgv[] = '--';
@@ -205,6 +207,12 @@ final class Options
             // Options
             new InputOption(
                 'bootstrap',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide.',
+            ),
+            new InputOption(
+                'cache-directory',
                 null,
                 InputOption::VALUE_REQUIRED,
                 '@see PHPUnit guide.',
@@ -256,13 +264,6 @@ final class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 '@see PHPUnit guide.',
-            ),
-            new InputOption(
-                'coverage-test-limit',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of ' .
-                'coverage reports.',
             ),
             new InputOption(
                 'coverage-text',
