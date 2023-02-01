@@ -179,7 +179,10 @@ final class ResultPrinter
             $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
             false,
         );
-        $summaryPrinter = new SummaryPrinter($this->printer, true);
+        $summaryPrinter = new SummaryPrinter(
+            $this->printer,
+            $this->options->configuration->colors()
+        );
 
         $this->printer->print(PHP_EOL . (new ResourceUsageFormatter)->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
 

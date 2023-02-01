@@ -60,7 +60,8 @@ final class Options
 {
     public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
     public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
-    
+
+    private const COVERAGE_TEXT_DEFAULT = 'php://stdout';
     private const OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER = [
         'bootstrap' => true,
         'cache-directory' => true,
@@ -86,7 +87,7 @@ final class Options
         'strict-global-state' => true, 
         'disallow-test-output' => true,
     ];
-    
+
     public readonly bool $needsTeamcity;
 
     /**
@@ -150,6 +151,18 @@ final class Options
 
         $verbose = $options['verbose'];
         unset($options['verbose']);
+
+        assert(array_key_exists('colors', $options));
+        if (Configuration::COLOR_DEFAULT === $options['colors']) {
+            unset($options['colors']);
+        } elseif (null === $options['colors']) {
+            $options['colors'] = Configuration::COLOR_AUTO;
+        }
+
+        assert(array_key_exists('coverage-text', $options));
+        if (null === $options['coverage-text']) {
+            $options['coverage-text'] = self::COVERAGE_TEXT_DEFAULT;
+        }
 
         // Must be a static non-customizable reference because ParaTest code
         // is strictly coupled with PHPUnit pinned version
@@ -220,8 +233,9 @@ final class Options
             new InputOption(
                 'colors',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_OPTIONAL,
                 '@see PHPUnit guide.',
+                Configuration::COLOR_DEFAULT
             ),
             new InputOption(
                 'configuration',
@@ -268,8 +282,9 @@ final class Options
             new InputOption(
                 'coverage-text',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_OPTIONAL,
                 '@see PHPUnit guide.',
+                self::COVERAGE_TEXT_DEFAULT
             ),
             new InputOption(
                 'coverage-xml',
