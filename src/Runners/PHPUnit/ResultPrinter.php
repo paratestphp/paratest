@@ -14,7 +14,7 @@ use ParaTest\Logging\JUnit\SuccessTestCase;
 use ParaTest\Logging\JUnit\TestCaseWithMessage;
 use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\JUnit\WarningTestCase;
-use ParaTest\Logging\LogInterpreter;
+use ParaTest\Logging\LogMerger;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Logging\TestDox\NamePrettifier;
@@ -64,7 +64,7 @@ final class ResultPrinter
 {
     public readonly Printer $printer;
 
-    private LogInterpreter $results;
+    private LogMerger $results;
     private int $numTestsWidth = 0;
     private int $maxColumn = 0;
     private int $totalCases = 0;

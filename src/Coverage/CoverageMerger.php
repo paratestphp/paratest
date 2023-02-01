@@ -41,6 +41,6 @@ final class CoverageMerger
 
         $this->coverage->merge($coverage);
 
-        unlink($coverageFile);
+//        unlink($coverageFile);
     }
 }

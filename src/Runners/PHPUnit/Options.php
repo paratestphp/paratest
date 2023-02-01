@@ -61,7 +61,6 @@ final class Options
     public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
     public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
 
-    private const COVERAGE_TEXT_DEFAULT = 'php://stdout';
     private const OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER = [
         'bootstrap' => true,
         'cache-directory' => true,
@@ -161,7 +160,7 @@ final class Options
 
         assert(array_key_exists('coverage-text', $options));
         if (null === $options['coverage-text']) {
-            $options['coverage-text'] = self::COVERAGE_TEXT_DEFAULT;
+            $options['coverage-text'] = 'php://stdout';
         }
 
         // Must be a static non-customizable reference because ParaTest code
@@ -284,7 +283,7 @@ final class Options
                 null,
                 InputOption::VALUE_OPTIONAL,
                 '@see PHPUnit guide.',
-                self::COVERAGE_TEXT_DEFAULT
+                false
             ),
             new InputOption(
                 'coverage-xml',

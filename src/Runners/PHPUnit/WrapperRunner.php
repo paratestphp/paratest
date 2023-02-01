@@ -7,7 +7,7 @@ namespace ParaTest\Runners\PHPUnit;
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Coverage\CoverageReporter;
 use ParaTest\Logging\JUnit\Writer;
-use ParaTest\Logging\LogInterpreter;
+use ParaTest\Logging\LogMerger;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\TestRunner\TestResult\TestResult;
@@ -36,9 +36,9 @@ final class WrapperRunner implements RunnerInterface
     /** @var list<\SplFileInfo> */
     private array $testresultFiles = [];
     /** @var list<\SplFileInfo> */
-    private array $junitFiles = [];
-    /** @var list<\SplFileInfo> */
     private array $coverageFiles = [];
+    /** @var list<\SplFileInfo> */
+    private array $junitFiles = [];
     /** @var list<\SplFileInfo> */
     private array $teamcityFiles = [];
     /** @var list<\SplFileInfo> */
@@ -86,6 +86,11 @@ final class WrapperRunner implements RunnerInterface
         $this->assignAllPendingTests();
         $this->waitForAllToFinish();
         $this->complete();
+    }
+
+    final public function getExitCode(): int
+    {
+        return $this->exitcode;
     }
 
     private function startWorkers(): void
@@ -205,27 +210,6 @@ final class WrapperRunner implements RunnerInterface
         unset($this->workers[$token]);
     }
 
-    /**
-     * Write output to JUnit format if requested.
-     */
-    final protected function log(): void
-    {
-        if (($logJunit = $this->options->logJunit()) === null) {
-            return;
-        }
-
-        $name = $this->options->path() ?? '';
-
-        $writer = new Writer($this->interpreter, $name);
-        $writer->write($logJunit);
-    }
-
-    /**
-     * Finalizes the run process. This method
-     * prints all results, rewinds the log interpreter,
-     * logs any results to JUnit, and cleans up temporary
-     * files.
-     */
     private function complete(): void
     {
         $testResultSum = null;
@@ -264,16 +248,11 @@ final class WrapperRunner implements RunnerInterface
         assert(null !== $testResultSum);
 
         $this->printer->printResults($testResultSum);
-        $this->logCoverage();
-        return;
-//        $this->log();
-//        $readers = $this->interpreter->getReaders();
-//        foreach ($readers as $reader) {
-//            $reader->removeLog();
-//        }
+        $this->generateCodeCoverageReports();
+        $this->generateLogs();
     }
 
-    final protected function logCoverage(): void
+    final protected function generateCodeCoverageReports(): void
     {
         if ([] === $this->coverageFiles) {
             return;
@@ -286,11 +265,22 @@ final class WrapperRunner implements RunnerInterface
             $coverageMerger->addCoverageFromFile($coverageFile->getPathname());
         }
 
-        CodeCoverage::generateReports($this->printer->printer, $this->options->configuration);
+        CodeCoverage::generateReports(
+            $this->printer->printer,
+            $this->options->configuration
+        );
     }
 
-    final public function getExitCode(): int
+    private function generateLogs(): void
     {
-        return $this->exitcode;
+        if ([] === $this->junitFiles) {
+            return;
+        }
+
+        $testSuite = (new LogMerger())->merge($this->junitFiles);
+        (new Writer())->write(
+            $testSuite,
+            $this->options->configuration->logfileJunit()
+        );
     }
 }

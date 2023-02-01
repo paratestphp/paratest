@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Logging;
 
 use ParaTest\Logging\JUnit\Reader;
-use ParaTest\Logging\LogInterpreter;
+use ParaTest\Logging\LogMerger;
 use ParaTest\Tests\Unit\ResultTester;
 
 use function array_pop;
@@ -13,22 +13,22 @@ use function array_pop;
 /**
  * @internal
  *
- * @covers \ParaTest\Logging\LogInterpreter
+ * @covers \ParaTest\Logging\LogMerger
  */
 final class LogInterpreterTest extends ResultTester
 {
-    private LogInterpreter $interpreter;
+    private LogMerger $interpreter;
 
     protected function setUpInterpreter(): void
     {
-        $this->interpreter = new LogInterpreter();
+        $this->interpreter = new LogMerger();
         $this->interpreter->addReader(new Reader($this->mixedSuite->getTempFile()));
         $this->interpreter->addReader(new Reader($this->passingSuite->getTempFile()));
     }
 
     public function testConstructor(): void
     {
-        $interpreter = new LogInterpreter();
+        $interpreter = new LogMerger();
         static::assertSame([], $this->getObjectValue($interpreter, 'readers'));
     }
 
@@ -62,14 +62,14 @@ final class LogInterpreterTest extends ResultTester
 
     public function testIsSuccessfulReturnsFalseIfFailuresPresentAndNoErrors(): void
     {
-        $interpreter = new LogInterpreter();
+        $interpreter = new LogMerger();
         $interpreter->addReader(new Reader($this->failureSuite->getTempFile()));
         static::assertFalse($interpreter->isSuccessful());
     }
 
     public function testIsSuccessfulReturnsFalseIfErrorsPresentAndNoFailures(): void
     {
-        $interpreter = new LogInterpreter();
+        $interpreter = new LogMerger();
         $interpreter->addReader(new Reader($this->errorSuite->getTempFile()));
         static::assertFalse($interpreter->isSuccessful());
     }
@@ -81,7 +81,7 @@ final class LogInterpreterTest extends ResultTester
 
     public function testIsSuccessfulReturnsTrueIfNoErrorsOrFailures(): void
     {
-        $interpreter = new LogInterpreter();
+        $interpreter = new LogMerger();
         $interpreter->addReader(new Reader($this->passingSuite->getTempFile()));
         static::assertTrue($interpreter->isSuccessful());
     }
@@ -149,7 +149,7 @@ final class LogInterpreterTest extends ResultTester
 
     public function testGetSkippedReturnsArrayOfTestNames(): void
     {
-        $interpreter = new LogInterpreter();
+        $interpreter = new LogMerger();
         $interpreter->addReader(new Reader($this->skipped->getTempFile()));
         $skipped = [
             "ParaTest\\Tests\\fixtures\\failing_tests\\UnitTestWithMethodAnnotationsTest::testSkipped\n"
@@ -161,11 +161,11 @@ final class LogInterpreterTest extends ResultTester
 
     public function testMergeReaders(): void
     {
-        $one = new LogInterpreter();
+        $one = new LogMerger();
         $one->addReader(new Reader($this->mixedSuite->getTempFile()));
         $one->addReader(new Reader($this->passingSuite->getTempFile()));
 
-        $two = new LogInterpreter();
+        $two = new LogMerger();
         $two->addReader(new Reader($this->passingSuite->getTempFile()));
         $two->addReader(new Reader($this->mixedSuite->getTempFile()));
 

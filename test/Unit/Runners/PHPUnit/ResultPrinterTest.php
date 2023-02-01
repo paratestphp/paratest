@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use ParaTest\Logging\LogInterpreter;
+use ParaTest\Logging\LogMerger;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
@@ -36,7 +36,7 @@ final class ResultPrinterTest extends ResultTester
 {
     private ResultPrinter $printer;
     private BufferedOutput $output;
-    private LogInterpreter $interpreter;
+    private LogMerger $interpreter;
     private Suite $passingSuiteWithWrongTestCountEstimation;
     private Options $options;
 

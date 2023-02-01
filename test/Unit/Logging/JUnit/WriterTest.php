@@ -6,7 +6,7 @@ namespace ParaTest\Tests\Unit\Logging\JUnit;
 
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\Writer;
-use ParaTest\Logging\LogInterpreter;
+use ParaTest\Logging\LogMerger;
 use ParaTest\Tests\TestBase;
 
 use function file_exists;
@@ -29,7 +29,7 @@ use function unlink;
 final class WriterTest extends TestBase
 {
     protected Writer $writer;
-    protected LogInterpreter $interpreter;
+    protected LogMerger $interpreter;
     protected string $passing;
 
     public function setUpTest(): void
@@ -42,7 +42,7 @@ final class WriterTest extends TestBase
     public function testConstructor(): void
     {
         static::assertInstanceOf(
-            LogInterpreter::class,
+            LogMerger::class,
             $this->getObjectValue($this->writer, 'interpreter'),
         );
         static::assertEquals('test/fixtures/tests/', $this->writer->getName());
@@ -142,7 +142,7 @@ final class WriterTest extends TestBase
 
     /**
      * @covers \ParaTest\Logging\JUnit\Reader::parseTestSuite
-     * @covers \ParaTest\Logging\LogInterpreter::mergeSuites
+     * @covers \ParaTest\Logging\LogMerger::mergeSuites
      */
     public function testMergeOfCompleteExampleWithEveryXmlCaseCombination(): void
     {

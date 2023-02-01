@@ -41,19 +41,19 @@ final class TestSuite
         $this->cases  = $cases;
     }
 
-    public static function fromFile(string $logFile): self
+    public static function fromFile(\SplFileInfo $logFile): self
     {
-        if (! file_exists($logFile)) {
-            throw new InvalidArgumentException("Log file {$logFile} does not exist");
+        if (! $logFile->isFile()) {
+            throw new InvalidArgumentException("Log file {$logFile->getPathname()} does not exist");
         }
 
-        if (filesize($logFile) === 0) {
+        if (0 === (int) $logFile->getSize()) {
             throw new InvalidArgumentException(
-                "Log file {$logFile} is empty. This means a PHPUnit process has crashed.",
+                "Log file {$logFile->getPathname()} is empty. This means a PHPUnit process has crashed.",
             );
         }
 
-        $logFileContents = file_get_contents($logFile);
+        $logFileContents = file_get_contents($logFile->getPathname());
         assert($logFileContents !== false);
 
         return self::parseTestSuite(

@@ -6,7 +6,7 @@ namespace ParaTest\Logging\JUnit;
 
 use DOMDocument;
 use DOMElement;
-use ParaTest\Logging\LogInterpreter;
+use ParaTest\Logging\LogMerger;
 
 use function assert;
 use function dirname;
@@ -22,45 +22,29 @@ use const ENT_XML1;
 /** @internal */
 final class Writer
 {
-    /**
-     * The name attribute of the testsuite being
-     * written.
-     */
-    private string $name;
+    private readonly DOMDocument $document;
 
-    private LogInterpreter $interpreter;
-
-    private DOMDocument $document;
-
-    public function __construct(LogInterpreter $interpreter, string $name)
+    public function __construct()
     {
-        $this->name                   = $name;
-        $this->interpreter            = $interpreter;
         $this->document               = new DOMDocument('1.0', 'UTF-8');
         $this->document->formatOutput = true;
     }
 
-    /**
-     * Get the name of the root suite being written.
-     */
-    public function getName(): string
+    public function write(TestSuite $testSuite, string $path): void
     {
-        return $this->name;
-    }
-
-    /**
-     * Returns the xml structure the writer
-     * will use.
-     */
-    public function getXml(): string
-    {
-        $mainSuite = $this->interpreter->mergeReaders();
-        if ($mainSuite->name === '') {
-            $mainSuite->name = $this->name;
+        $dir = dirname($path);
+        if (! is_dir($dir)) {
+            mkdir($dir, 0777, true);
         }
 
+        $result = file_put_contents($path, $this->getXml($testSuite));
+        assert(false !== $result);
+    }
+
+    private function getXml(TestSuite $testSuite): string
+    {
         $xmlTestsuites = $this->document->createElement('testsuites');
-        $xmlTestsuites->appendChild($this->createSuiteNode($mainSuite));
+        $xmlTestsuites->appendChild($this->createSuiteNode($testSuite));
         $this->document->appendChild($xmlTestsuites);
 
         $xml = $this->document->saveXML();
@@ -69,23 +53,6 @@ final class Writer
         return $xml;
     }
 
-    /**
-     * Write the xml structure to a file path.
-     */
-    public function write(string $path): void
-    {
-        $dir = dirname($path);
-        if (! is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-
-        file_put_contents($path, $this->getXml());
-    }
-
-    /**
-     * Append a testsuite node to the given
-     * root element.
-     */
     private function createSuiteNode(TestSuite $parentSuite): DOMElement
     {
         $suiteNode = $this->document->createElement('testsuite');
@@ -113,10 +80,6 @@ final class Writer
         return $suiteNode;
     }
 
-    /**
-     * Append a testcase node to the given testsuite
-     * node.
-     */
     private function createCaseNode(TestCase $case): DOMElement
     {
         $caseNode = $this->document->createElement('testcase');
