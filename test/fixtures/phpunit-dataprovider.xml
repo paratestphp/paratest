@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit>
-    <testsuites>
-        <testsuite name="ParaTest Fixtures">
-            <file>./dataprovider_tests/DataProviderTest.php</file>
-        </testsuite>
-    </testsuites>
-</phpunit>

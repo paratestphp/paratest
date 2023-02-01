@@ -87,7 +87,9 @@ final class SuiteLoader
             return;
         }
 
+        ob_start();
         $result = (new WarmCodeCoverageCacheCommand($this->options->configuration))->execute();
+        $output->write(ob_get_clean());
         $output->write($result->output());
         if (Result::SUCCESS !== $result->shellExitCode()) {
             exit($result->shellExitCode());

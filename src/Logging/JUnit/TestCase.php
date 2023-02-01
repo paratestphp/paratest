@@ -19,9 +19,9 @@ use function sprintf;
  *
  * @internal
  *
- * @readonly
+ * @immutable 
  */
-abstract class TestCase
+class TestCase
 {
     public function __construct(
         public readonly string $name,
@@ -33,10 +33,6 @@ abstract class TestCase
     ) {
     }
 
-    /**
-     * Factory method that creates a TestCase object
-     * from a SimpleXMLElement.
-     */
     final public static function caseFromNode(SimpleXMLElement $node): self
     {
         $systemOutput  = null;
@@ -68,7 +64,7 @@ abstract class TestCase
             $text  = (string) $error;
 
             if ($type === 'PHPUnit\\Framework\\RiskyTest') {
-                return new RiskyTestCase(
+                return new TestCaseWithMessage(
                     (string) $node['name'],
                     (string) $node['class'],
                     (string) $node['file'],
@@ -78,10 +74,11 @@ abstract class TestCase
                     $type,
                     $text,
                     $systemOutput,
+                    MessageType::risky,
                 );
             }
 
-            return new ErrorTestCase(
+            return new TestCaseWithMessage(
                 (string) $node['name'],
                 (string) $node['class'],
                 (string) $node['file'],
@@ -91,6 +88,7 @@ abstract class TestCase
                 $type,
                 $text,
                 $systemOutput,
+                MessageType::error,
             );
         }
 
@@ -99,7 +97,7 @@ abstract class TestCase
             $type    = $getType($warning);
             $text    = (string) $warning;
 
-            return new WarningTestCase(
+            return new TestCaseWithMessage(
                 (string) $node['name'],
                 (string) $node['class'],
                 (string) $node['file'],
@@ -109,6 +107,7 @@ abstract class TestCase
                 $type,
                 $text,
                 $systemOutput,
+                MessageType::warning,
             );
         }
 
@@ -117,7 +116,7 @@ abstract class TestCase
             $type    = $getType($failure);
             $text    = (string) $failure;
 
-            return new FailureTestCase(
+            return new TestCaseWithMessage(
                 (string) $node['name'],
                 (string) $node['class'],
                 (string) $node['file'],
@@ -127,6 +126,7 @@ abstract class TestCase
                 $type,
                 $text,
                 $systemOutput,
+                MessageType::failure,
             );
         }
 
@@ -142,7 +142,7 @@ abstract class TestCase
                 );
             }
 
-            return new SkippedTestCase(
+            return new TestCaseWithMessage(
                 (string) $node['name'],
                 (string) $node['class'],
                 (string) $node['file'],
@@ -152,10 +152,11 @@ abstract class TestCase
                 null,
                 $text,
                 $systemOutput,
+                MessageType::skipped,
             );
         }
 
-        return new SuccessTestCase(
+        return new self(
             (string) $node['name'],
             (string) $node['class'],
             (string) $node['file'],

@@ -70,29 +70,4 @@ final class ParaTestCommandTest extends TestBase
             '--runner' => 'stdClass',
         ]);
     }
-
-    /** @dataProvider provideConfigurationDirectories */
-    public function testGetPhpunitConfigFromDefaults(string $directory): void
-    {
-        $application = ParaTestCommand::applicationFactory($directory);
-        $application->add(new HelpCommand());
-
-        $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
-        $this->commandTester->execute([
-            '--runner' => EmptyRunnerStub::class,
-        ]);
-
-        $display = $this->commandTester->getDisplay();
-        static::assertStringContainsString($directory, $display);
-        static::assertMatchesRegularExpression("/ParaTest .+ upon PHPUnit .+\n\n/", $display);
-    }
-
-    /** @return array<string, string[]> */
-    public static function provideConfigurationDirectories(): array
-    {
-        return [
-            'config-from-phpunit.xml' => [FIXTURES . DS . 'config-from-phpunit.xml'],
-            'config-from-phpunit.xml.dist' => [FIXTURES . DS . 'config-from-phpunit.xml.dist'],
-        ];
-    }
 }

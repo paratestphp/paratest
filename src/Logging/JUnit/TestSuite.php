@@ -16,12 +16,12 @@ final class TestSuite
 {
     /** @var array<string, TestSuite> */
     public readonly array $suites;
-    /** @var TestCase[] */
+    /** @var list<TestCase> */
     public readonly array $cases;
 
     /**
      * @param array<string, TestSuite> $suites
-     * @param TestCase[]               $cases
+     * @param list<TestCase>           $cases
      */
     public function __construct(
         public readonly string $name,
@@ -82,7 +82,10 @@ final class TestSuite
         }
 
         $risky  = array_sum(array_map(static function (TestCase $testCase): int {
-            return (int) ($testCase instanceof RiskyTestCase);
+            return (int) (
+                $testCase instanceof TestCaseWithMessage
+                && $testCase->xmlTagName === MessageType::risky
+            );
         }, $cases));
         $risky += array_sum(array_map(static function (TestSuite $testSuite): int {
             return $testSuite->risky;

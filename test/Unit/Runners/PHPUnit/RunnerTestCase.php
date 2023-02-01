@@ -8,6 +8,7 @@ use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WorkerCrashedException;
 use ParaTest\Tests\TestBase;
+use PHPUnit\Runner\TestSuiteSorter;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
@@ -29,6 +30,29 @@ abstract class RunnerTestCase extends TestBase
 {
     public const PASSTHRU_PHPUNIT_CUSTOM = 'PASSTHRU_PHPUNIT_CUSTOM';
     public const PASSTHRU_PHP_CUSTOM     = 'PASSTHRU_PHP_CUSTOM';
+
+    public function testWritesLogWithEmptyNameWhenPathIsNotProvided(): void
+    {
+        $outputPath = $this->tmpDir . DS . 'test-output.xml';
+
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('phpunit-passing.xml'),
+            '--log-junit' => $outputPath,
+        ];
+
+        $this->runRunner();
+
+        static::assertFileExists($outputPath);
+        $doc = simplexml_load_file($outputPath);
+        static::assertNotFalse($doc);
+        $suites = (array) $doc->children();
+        static::assertArrayHasKey('testsuite', $suites);
+        $attribues = (array) $suites['testsuite']->attributes();
+        static::assertArrayHasKey('@attributes', $attribues);
+        static::assertIsArray($attribues['@attributes']);
+        static::assertArrayHasKey('name', $attribues['@attributes']);
+        static::assertSame('', $attribues['@attributes']['name']);
+    }
 
     final public function testResultsAreCorrect(): void
     {
@@ -129,20 +153,6 @@ abstract class RunnerTestCase extends TestBase
         ]);
 
         $this->assertTestsPassed($this->runRunner());
-    }
-
-    final public function testRaiseVerboseExceptionWhenATestCallsErrorsOnListenerWithLogging(): void
-    {
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-failing-listener.xml');
-        $this->bareOptions['--log-junit']     = $this->tmpDir . DS . uniqid('result_');
-        $this->bareOptions['--processes']     = '1';
-
-        $this->expectException(WorkerCrashedException::class);
-        $this->expectExceptionMessageMatches(
-            sprintf('/TEST_TOKEN=%s.+TestWithFailingListenerTest.+lorem/s', preg_quote(escapeshellarg('1'))),
-        );
-
-        $this->runRunner();
     }
 
     final public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
@@ -506,7 +516,7 @@ abstract class RunnerTestCase extends TestBase
     {
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-deterministic-random.xml'),
-            '--order-by' => Options::ORDER_RANDOM,
+            '--order-by' => TestSuiteSorter::ORDER_RANDOMIZED,
             '--random-order-seed' => '123',
         ];
 

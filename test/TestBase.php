@@ -42,7 +42,7 @@ abstract class TestBase extends TestCase
     }
 
     /** @param array<string, string|bool|int|null> $argv */
-    final protected function createOptionsFromArgv(array $argv, ?string $cwd = null, bool $hasColorSupport = true): Options
+    final protected function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
     {
         $inputDefinition = new InputDefinition();
         Options::setInputDefinition($inputDefinition);
@@ -57,7 +57,7 @@ abstract class TestBase extends TestCase
 
         $input = new ArrayInput($argv, $inputDefinition);
 
-        return Options::fromConsoleInput($input, $cwd ?? __DIR__, $hasColorSupport);
+        return Options::fromConsoleInput($input, $cwd ?? __DIR__);
     }
 
     final protected function runRunner(?string $cwd = null): RunnerResult
@@ -113,15 +113,6 @@ abstract class TestBase extends TestCase
         }
 
         return $fixture;
-    }
-
-    /** @return mixed */
-    final protected function getObjectValue(object $object, string $property)
-    {
-        $prop = (new ReflectionObject($object))->getProperty($property);
-        $prop->setAccessible(true);
-
-        return $prop->getValue($object);
     }
 
     /** @throws SkippedTestError When code coverage library is not found. */

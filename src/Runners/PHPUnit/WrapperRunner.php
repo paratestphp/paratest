@@ -259,10 +259,9 @@ final class WrapperRunner implements RunnerInterface
         }
 
         CodeCoverage::init($this->options->configuration);
-
         $coverageMerger = new CoverageMerger(CodeCoverage::instance());
         foreach ($this->coverageFiles as $coverageFile) {
-            $coverageMerger->addCoverageFromFile($coverageFile->getPathname());
+            $coverageMerger->addCoverageFromFile($coverageFile);
         }
 
         CodeCoverage::generateReports(

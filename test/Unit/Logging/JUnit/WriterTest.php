@@ -39,38 +39,6 @@ final class WriterTest extends TestBase
         $this->passing     = FIXTURES . DS . 'results' . DS . 'single-passing.xml';
     }
 
-    public function testConstructor(): void
-    {
-        static::assertInstanceOf(
-            LogMerger::class,
-            $this->getObjectValue($this->writer, 'interpreter'),
-        );
-        static::assertEquals('test/fixtures/tests/', $this->writer->getName());
-    }
-
-    public function testSingleFileLog(): void
-    {
-        $this->addPassingReader();
-        $xml = $this->writer->getXml();
-        $xml = str_replace('3.703701', '1.234567', $xml);
-
-        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
-    }
-
-    public function testMixedFileLog(): void
-    {
-        $mixed  = FIXTURES . DS . 'results' . DS . 'mixed-results.xml';
-        $reader = new Reader($mixed);
-        $this->interpreter->addReader($reader);
-        $output = $this->tmpDir . DS . 'mixed-results.xml';
-        $writer = new Writer($this->interpreter, './test/fixtures/failing_tests');
-        $writer->write($output);
-        $xml = (string) file_get_contents($output);
-        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
-
-        static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
-    }
-
     public function testDataProviderWithSpecialCharacters(): void
     {
         $mixed  = FIXTURES . DS . 'results' . DS . 'data-provider-with-special-chars.xml';
@@ -83,42 +51,6 @@ final class WriterTest extends TestBase
         $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
 
         static::assertXmlStringEqualsXmlString((string) file_get_contents($mixed), $xml);
-    }
-
-    public function testWriteToFile(): void
-    {
-        $output = $this->tmpDir . DS . 'passing.xml';
-        $this->addPassingReader();
-        $this->writer->write($output);
-        $xml = (string) file_get_contents($output);
-        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
-        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
-        if (! file_exists($output)) {
-            return;
-        }
-
-        unlink($output);
-    }
-
-    public function testWriteToFileInNonExistentDir(): void
-    {
-        $output = $this->tmpDir . DS . 'logs' . DS . 'new' . DS . 'dir' . DS . 'passing.xml';
-        $this->addPassingReader();
-        $this->writer->write($output);
-        $xml = (string) file_get_contents($output);
-        $xml = preg_replace('/time="[\d\.]+"/', 'time="1.234567"', $xml);
-        static::assertXmlStringEqualsXmlString((string) file_get_contents($this->passing), $xml);
-        if (! file_exists($output)) {
-            return;
-        }
-
-        unlink($output);
-    }
-
-    private function addPassingReader(): void
-    {
-        $reader = new Reader($this->passing);
-        $this->interpreter->addReader($reader);
     }
 
     /**

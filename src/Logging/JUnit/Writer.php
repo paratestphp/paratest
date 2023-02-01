@@ -38,9 +38,12 @@ final class Writer
         }
 
         $result = file_put_contents($path, $this->getXml($testSuite));
-        assert(false !== $result);
+        assert(is_int($result) && 0 < $result);
     }
 
+    /**
+     * @return non-empty-string
+     */
     private function getXml(TestSuite $testSuite): string
     {
         $xmlTestsuites = $this->document->createElement('testsuites');
@@ -48,7 +51,7 @@ final class Writer
         $this->document->appendChild($xmlTestsuites);
 
         $xml = $this->document->saveXML();
-        assert($xml !== false);
+        assert(is_string($xml) && '' !== $xml);
 
         return $xml;
     }
@@ -93,10 +96,10 @@ final class Writer
         $caseNode->setAttribute('time', sprintf('%F', $case->time));
 
         if ($case instanceof TestCaseWithMessage) {
-            if ($case instanceof SkippedTestCase) {
-                $defectNode = $this->document->createElement($case->getXmlTagName());
+            if (MessageType::skipped === $case->xmlTagName) {
+                $defectNode = $this->document->createElement($case->xmlTagName->toString());
             } else {
-                $defectNode = $this->document->createElement($case->getXmlTagName(), htmlspecialchars($case->text, ENT_XML1));
+                $defectNode = $this->document->createElement($case->xmlTagName->toString(), htmlspecialchars($case->text, ENT_XML1));
                 $type       = $case->type;
                 if ($type !== null) {
                     $defectNode->setAttribute('type', $type);

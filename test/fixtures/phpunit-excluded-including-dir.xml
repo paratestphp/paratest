@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit>
-    <testsuites>
-        <testsuite name="ParaTest Fixtures">
-            <directory>./excluded_tests</directory>
-            <exclude>./excluded_tests/excluded</exclude>
-        </testsuite>
-    </testsuites>
-</phpunit>

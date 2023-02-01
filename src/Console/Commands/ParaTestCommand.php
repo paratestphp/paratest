@@ -97,22 +97,11 @@ final class ParaTestCommand extends Command
         $runnerClass = $this->getRunnerClass($input);
 
         $runner = new $runnerClass($options, $output);
+        assert($runner instanceof RunnerInterface);
+
         $runner->run();
 
         return $runner->getExitCode();
-    }
-
-    /**
-     * Displays help for the ParaTestCommand.
-     */
-    private function displayHelp(OutputInterface $output): int
-    {
-        $app = $this->getApplication();
-        assert($app !== null);
-        $help  = $app->find('help');
-        $input = new ArrayInput(['command_name' => $this->getName()]);
-
-        return $help->run($input, $output);
     }
 
     /** @return class-string<RunnerInterface> */

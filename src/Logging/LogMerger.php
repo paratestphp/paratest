@@ -11,7 +11,10 @@ use function array_merge;
 use function array_reduce;
 use function assert;
 
-/** @internal */
+/**
+ * @internal 
+ * @immutable 
+ */
 final class LogMerger
 {
     /**

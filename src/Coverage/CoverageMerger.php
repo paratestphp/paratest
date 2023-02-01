@@ -22,25 +22,18 @@ final class CoverageMerger
         private readonly CodeCoverage $coverage
     ) {}
 
-    public function addCoverageFromFile(string $coverageFile): void
+    public function addCoverageFromFile(\SplFileInfo $coverageFile): void
     {
-        if (! is_file($coverageFile) || filesize($coverageFile) === 0) {
-            $extra = 'This means a PHPUnit process has crashed.';
-            if (! (new Runtime())->canCollectCodeCoverage()) {
-                // @codeCoverageIgnoreStart
-                $extra = 'No coverage driver found! Enable one of Xdebug, PHPDBG or PCOV for coverage.';
-                // @codeCoverageIgnoreEnd
-            }
-
-            throw new EmptyCoverageFileException("Coverage file {$coverageFile} is empty. " . $extra);
+        if (! $coverageFile->isFile() || $coverageFile->getSize() === 0) {
+            throw new EmptyCoverageFileException(
+                "Coverage file {$coverageFile->getPathname()} is empty. This means a PHPUnit process has crashed."
+            );
         }
 
         /** @psalm-suppress UnresolvableInclude **/
-        $coverage = include $coverageFile;
+        $coverage = include $coverageFile->getPathname();
         assert($coverage instanceof CodeCoverage);
 
         $this->coverage->merge($coverage);
-
-//        unlink($coverageFile);
     }
 }

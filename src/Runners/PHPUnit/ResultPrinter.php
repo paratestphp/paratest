@@ -201,11 +201,6 @@ final class ResultPrinter
         }
     }
 
-    /**
-     * Prints a single "quick" feedback item and increments
-     * the total number of processed cases and the column
-     * position.
-     */
     private function printFeedbackItem(string $item): void
     {
         $this->printFeedbackItemColor($item);
