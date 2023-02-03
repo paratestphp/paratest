@@ -91,22 +91,6 @@ abstract class TestBase extends TestCase
         return new RunnerResult($runner->getExitCode(), $output->fetch());
     }
 
-    final protected function assertTestsPassed(
-        RunnerResult $proc,
-        ?string $testPattern = null,
-        ?string $assertionPattern = null
-    ): void {
-        static::assertMatchesRegularExpression(
-            sprintf(
-                '/OK \(%s tests?, %s assertions?\)/',
-                $testPattern ?? '\d+',
-                $assertionPattern ?? '\d+',
-            ),
-            $proc->getOutput(),
-        );
-        static::assertEquals(0, $proc->getExitCode());
-    }
-
     final protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
@@ -115,20 +99,5 @@ abstract class TestBase extends TestCase
         }
 
         return $fixture;
-    }
-
-    /** @throws SkippedTestError When code coverage library is not found. */
-    final protected static function skipIfCodeCoverageNotEnabled(): void
-    {
-        static $runtime;
-        if ($runtime === null) {
-            $runtime = new Runtime();
-        }
-
-        if ($runtime->canCollectCodeCoverage()) {
-            return;
-        }
-
-        static::markTestSkipped('No code coverage driver available');
     }
 }

@@ -68,7 +68,7 @@ final class OptionsTest extends TestBase
         $options = $this->createOptionsFromArgv([], __DIR__);
 
         self::assertSame(__DIR__, $options->cwd);
-        self::assertEmpty($options->phpunitOptions);
+        self::assertNotEmpty($options->phpunitOptions);
         self::assertSame(0, $options->maxBatchSize);
         self::assertFalse($options->noTestTokens);
         self::assertEmpty($options->passthruPhp);

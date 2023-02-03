@@ -149,7 +149,7 @@ final class WrapperRunner implements RunnerInterface
     private function flushWorker(WrapperWorker $worker): void
     {
         $this->exitcode = max($this->exitcode, $worker->getExitCode());
-        $this->printer->printFeedback($worker);
+        $this->printer->printFeedback($worker->progressFile);
         $worker->reset();
     }
 

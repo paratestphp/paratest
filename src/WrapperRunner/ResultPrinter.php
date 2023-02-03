@@ -5,13 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\WrapperRunner;
 
 use ParaTest\JUnit\LogMerger;
-use ParaTest\Logging\JUnit\ErrorTestCase;
-use ParaTest\Logging\JUnit\FailureTestCase;
-use ParaTest\Logging\JUnit\Reader;
-use ParaTest\Logging\JUnit\RiskyTestCase;
-use ParaTest\Logging\JUnit\SkippedTestCase;
-use ParaTest\Logging\JUnit\SuccessTestCase;
-use ParaTest\Logging\JUnit\WarningTestCase;
 use ParaTest\Options;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\TestResult;
@@ -36,21 +29,17 @@ use const PHP_EOL;
 use const PHP_VERSION;
 
 /**
- * Used for outputting ParaTest results
- *
  * @internal
  */
 final class ResultPrinter
 {
     public readonly Printer $printer;
 
-    private LogMerger $results;
     private int $numTestsWidth = 0;
     private int $maxColumn = 0;
     private int $totalCases = 0;
     private int $column = 0;
     private int $casesProcessed = 0;
-
     private int $numberOfColumns = 80;
     /** @var bool */
     private $needsTeamcity;
@@ -170,9 +159,9 @@ final class ResultPrinter
         $summaryPrinter->print($testResult);
     }
 
-    public function printFeedback(WrapperWorker $worker): void
+    public function printFeedback(\SplFileInfo $progressFile): void
     {
-        $feedbackItems = $this->tail($worker->progressFile);
+        $feedbackItems = $this->tail($progressFile);
         $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\(\\d+%\\)\\s*/', '', $feedbackItems);
 
         $actualTestCount = strlen($feedbackItems);
@@ -214,9 +203,6 @@ final class ResultPrinter
         $this->output->write($buffer);
     }
 
-    /**
-     * Prints progress for large test collections.
-     */
     private function getProgress(): string
     {
         return sprintf(

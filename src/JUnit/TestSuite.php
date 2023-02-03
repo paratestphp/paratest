@@ -42,15 +42,7 @@ final class TestSuite
 
     public static function fromFile(\SplFileInfo $logFile): self
     {
-        if (! $logFile->isFile()) {
-            throw new InvalidArgumentException("Log file {$logFile->getPathname()} does not exist");
-        }
-
-        if (0 === (int) $logFile->getSize()) {
-            throw new InvalidArgumentException(
-                "Log file {$logFile->getPathname()} is empty. This means a PHPUnit process has crashed.",
-            );
-        }
+        assert($logFile->isFile() && 0 < (int) $logFile->getSize());
 
         $logFileContents = file_get_contents($logFile->getPathname());
         assert($logFileContents !== false);

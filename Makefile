@@ -30,16 +30,6 @@ coverage/junit.xml: vendor $(SRCS) Makefile
 		--no-coverage \
 		--no-logging \
 		$(PHPUNIT_ARGS)
-	php -d zend.assertions=1 bin/paratest \
-		--no-coverage \
-		--processes=1 \
-		--runner=Runner \
-		$(PARATEST_ARGS)
-	php -d zend.assertions=1 bin/paratest \
-		--no-coverage \
-		--processes=1 \
-		--runner=WrapperRunner \
-		$(PARATEST_ARGS)
 	php -d zend.assertions=1 \
 		-d pcov.enabled=1 \
 		bin/paratest \

@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Tests\Unit\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit\WrapperRunner;
 
-use ParaTest\WrapperRunner\PHPUnit\ExecutableTest;
-use ParaTest\WrapperRunner\PHPUnit\FullSuite;
-use ParaTest\WrapperRunner\PHPUnit\Suite;
 use ParaTest\WrapperRunner\SuiteLoader;
 use ParaTest\Tests\TestBase;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -28,17 +25,17 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadTestsuiteFileFromConfig(): void
     {
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-file.xml');
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
 
         $loader = $this->loadSuite();
 
-        static::assertSame(5, $loader->testCount);
-        static::assertCount(1, $loader->files);
+        static::assertSame(7, $loader->testCount);
+        static::assertCount(7, $loader->files);
     }
 
     public function testLoadFileGetsPathOfFile(): void
     {
-        $path  = $this->fixture('failing_tests' . DS . 'UnitTestWithClassAnnotationTest.php');
+        $path  = $this->fixture('common_results'.DS.'SuccessTest.php');
         $this->bareOptions['path'] = $path;
         $files = $this->loadSuite()->files;
 
@@ -47,7 +44,10 @@ final class SuiteLoaderTest extends TestBase
 
     public function testCacheIsWarmedWhenSpecified(): void
     {
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-coverage-cache.xml');
+        $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir;
         $this->loadSuite();
 
         static::assertStringContainsString('Warming cache', $this->output->fetch());

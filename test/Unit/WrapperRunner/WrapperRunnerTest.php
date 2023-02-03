@@ -28,6 +28,8 @@ use const FIXTURES;
  * @covers \ParaTest\WrapperRunner\WrapperRunner
  * @covers \ParaTest\WrapperRunner\WrapperWorker
  * @covers \ParaTest\WrapperRunner\WorkerCrashedException
+ * @covers \ParaTest\WrapperRunner\ResultPrinter
+ * @covers \ParaTest\Coverage\CoverageMerger
  */
 final class WrapperRunnerTest extends TestBase
 {
@@ -98,7 +100,7 @@ final class WrapperRunnerTest extends TestBase
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH420' . DS . 'phpunit.xml');
         $runnerResult = $this->runRunner();
-        $this->assertTestsPassed($runnerResult);
+        static::assertEquals(0, $runnerResult->getExitCode());
     }
 
     public function testRunnerSortTestEqualBySeed(): void
@@ -479,5 +481,13 @@ final class WrapperRunnerTest extends TestBase
 
         $coveragePhp = include $this->bareOptions['--coverage-php'];
         Assert::assertInstanceOf(CodeCoverage::class, $coveragePhp);
+    }
+
+    public function testHandleCollisionWithSymfonyOutput(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('symfony_output_collision'.DS.'FailingSymfonyOutputCollisionTest.php');
+
+        $runnerResult = $this->runRunner();
+        static::assertStringContainsString('<bg=%s>', $runnerResult->getOutput());
     }
 }

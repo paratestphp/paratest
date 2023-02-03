@@ -21,6 +21,10 @@ final class LogMerger
     {
         $mainSuite = null;
         foreach ($junitFiles as $junitFile) {
+            if (! $junitFile->isFile()) {
+                continue;
+            }
+
             $otherSuite = TestSuite::fromFile($junitFile);
             if ($mainSuite === null) {
                 $mainSuite = $otherSuite;
