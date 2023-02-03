@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace ParaTest\Tests;
 
 use InvalidArgumentException;
-use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\Runner;
-use ParaTest\Runners\PHPUnit\RunnerInterface;
-use PHPUnit\Framework\SkippedTestError;
+use ParaTest\Options;
+use ParaTest\WrapperRunner\RunnerInterface;
+use ParaTest\WrapperRunner\WrapperRunner;
 use PHPUnit\Framework\TestCase;
-use ReflectionObject;
-use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -19,14 +16,13 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function file_exists;
 use function getenv;
 use function putenv;
-use function sprintf;
 
 abstract class TestBase extends TestCase
 {
     /** @var class-string<RunnerInterface> */
-    protected $runnerClass = Runner::class;
+    protected string $runnerClass = WrapperRunner::class;
     /** @var array<string, string|bool|int|null> */
-    protected $bareOptions = [];
+    protected array $bareOptions = [];
     /** @var string */
     protected $tmpDir;
 
@@ -42,10 +38,14 @@ abstract class TestBase extends TestCase
     }
 
     /** @param array<string, string|bool|int|null> $argv */
-    final protected function createOptionsFromArgv(array $argv, ?string $cwd = null, bool $hasColorSupport = true): Options
+    final protected function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
     {
         $inputDefinition = new InputDefinition();
         Options::setInputDefinition($inputDefinition);
+
+        if (! isset($argv['--configuration'])) {
+            $argv['--no-configuration'] = true;
+        }
 
         if (! isset($argv['--processes'])) {
             $argv['--processes'] = (string) PROCESSES_FOR_TESTS;
@@ -57,7 +57,7 @@ abstract class TestBase extends TestCase
 
         $input = new ArrayInput($argv, $inputDefinition);
 
-        return Options::fromConsoleInput($input, $cwd ?? __DIR__, $hasColorSupport);
+        return Options::fromConsoleInput($input, $cwd ?? __DIR__);
     }
 
     final protected function runRunner(?string $cwd = null): RunnerResult
@@ -66,7 +66,7 @@ abstract class TestBase extends TestCase
         $runnerClass = $this->runnerClass;
 
         $options                              = $this->createOptionsFromArgv($this->bareOptions, $cwd);
-        $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens();
+        $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens;
         $runner                               = new $runnerClass($options, $output);
         if ($shouldPutEnvForParatestTestingItSelf) {
             $prevToken       = getenv(Options::ENV_KEY_TOKEN);
@@ -89,22 +89,6 @@ abstract class TestBase extends TestCase
         return new RunnerResult($runner->getExitCode(), $output->fetch());
     }
 
-    final protected function assertTestsPassed(
-        RunnerResult $proc,
-        ?string $testPattern = null,
-        ?string $assertionPattern = null
-    ): void {
-        static::assertMatchesRegularExpression(
-            sprintf(
-                '/OK \(%s tests?, %s assertions?\)/',
-                $testPattern ?? '\d+',
-                $assertionPattern ?? '\d+',
-            ),
-            $proc->getOutput(),
-        );
-        static::assertEquals(0, $proc->getExitCode());
-    }
-
     final protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DS . $fixture;
@@ -113,29 +97,5 @@ abstract class TestBase extends TestCase
         }
 
         return $fixture;
-    }
-
-    /** @return mixed */
-    final protected function getObjectValue(object $object, string $property)
-    {
-        $prop = (new ReflectionObject($object))->getProperty($property);
-        $prop->setAccessible(true);
-
-        return $prop->getValue($object);
-    }
-
-    /** @throws SkippedTestError When code coverage library is not found. */
-    final protected static function skipIfCodeCoverageNotEnabled(): void
-    {
-        static $runtime;
-        if ($runtime === null) {
-            $runtime = new Runtime();
-        }
-
-        if ($runtime->canCollectCodeCoverage()) {
-            return;
-        }
-
-        static::markTestSkipped('No code coverage driver available');
     }
 }

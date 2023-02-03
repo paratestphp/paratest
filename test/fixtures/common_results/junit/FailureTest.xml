@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ParaTest\Tests\fixtures\common_results\FailureTest" file="./test/fixtures/common_results/FailureTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="1.234567">
+    <testcase name="testFailure" file="./test/fixtures/common_results/FailureTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\FailureTest" classname="ParaTest.Tests.fixtures.common_results.FailureTest" assertions="1" time="1.234567">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\common_results\FailureTest::testFailure
+Failed asserting that false is true.
+
+./test/fixtures/common_results/FailureTest.php:14</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

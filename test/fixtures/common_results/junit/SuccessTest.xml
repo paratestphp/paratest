@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ParaTest\Tests\fixtures\common_results\SuccessTest" file="./test/fixtures/common_results/SuccessTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="1.234567">
+    <testcase name="testSuccess" file="./test/fixtures/common_results/SuccessTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\SuccessTest" classname="ParaTest.Tests.fixtures.common_results.SuccessTest" assertions="1" time="1.234567"/>
+  </testsuite>
+</testsuites>

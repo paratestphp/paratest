@@ -15,9 +15,9 @@ final class IssueTest extends TestCase
     {
     }
 
-    public function provideIncomplete(): void
+    public static function provideIncomplete(): void
     {
-        $this->markTestIncomplete('foo');
+        self::markTestIncomplete('foo');
     }
 
     /** @dataProvider provideSkipped */
@@ -25,9 +25,9 @@ final class IssueTest extends TestCase
     {
     }
 
-    public function provideSkipped(): void
+    public static function provideSkipped(): void
     {
-        $this->markTestSkipped('bar');
+        self::markTestSkipped('bar');
     }
 
     /** @dataProvider provideError */
@@ -35,7 +35,7 @@ final class IssueTest extends TestCase
     {
     }
 
-    public function provideError(): void
+    public static function provideError(): void
     {
         throw new LogicException('baz');
     }

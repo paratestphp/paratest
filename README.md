@@ -37,56 +37,6 @@ This is because of the following reasons:
 After installation, the binary can be found at `vendor/bin/paratest`. Run it
 with `--help` option to see a complete list of the available options.
 
-## Optimizing Speed
-
-To get the most out of ParaTest, you have to adjust the parameters carefully.
-
-1. **Use the WrapperRunner if possible**
-
-    The default Runner for PHPUnit spawns a new process for each testcase (or method in functional mode). This provides
-    the highest compatibility but comes with the cost of many spawned processes and a bootstrapping for each process.
-    Especially when you have a slow bootstrapping in your tests (like a database setup) you should try the `WrapperRunner`
-    with `--runner WrapperRunner`. It spawns one "worker"-process for each parallel process (`-p`), executes the
-    bootstrapping once and reuses these processes for each test executed. That way the overhead of process spawning and
-    bootstrapping is reduced to the minimum.
-
-    Using the `--max-batch-size` option with the WrapperRunner will reset each worker after `--max-batch-size` testcases, which might help solve memory leaks problems.
-
-2. **Adjust the number of processes with `-p`**
-
-    To allow full usage of your cpu cores, you should have at least one process per core. More processes allow better
-    resource usage but keep in mind that each process has its own costs for spawning. The default is auto, which means
-    the number of logical CPU cores is set as the number of processes. You might try something like logical `CPU cores * 2`
-    (e.g. if you have 8 logical cores, you might try `16`), but keep in mind that each process generates a little bit
-    of overhead as well.
-
-3. **Choose between per-testcase- and per-testmethod-parallelization with `-f`**
-
-    Given you have few testcases (classes) with many long running methods, you should use the `-f` option to enable the
-    `functional mode` and allow different methods of the same class to be executed in parallel. Keep in mind that the
-    default is per-testcase-parallelization to address inter-testmethod dependencies. Note that in most projects, using
-    `-f` is **slower** since each test **method** will need to be bootstrapped separately.
-
-4. **Tune batch max size `--max-batch-size`**
-
-    Batch size will affect the max amount of atomic tests which will be used for a single test method.
-    Please note that it only works with either the `functional mode` OR `--runner WrapperRunner` (mutually exclusive). The following describes the `functional mode` system.
-    One atomic test will be either one test method from test class if no data provider available for
-    method or will be only one item from dataset for method.
-    Increase this value to reduce per-process overhead and in most cases it will also reduce parallel efficiency.
-    Decrease this value to increase per-process overhead and in most cases it will also increase parallel efficiency.
-    If the amount of all tests is less than the max batch size then everything will be processed in one
-    process thread so ParaTest is completely useless in that case.
-    The best way to find the most effective batch size is to test with different batch size values
-    and select best.
-    Max batch size = 0 means that grouping in batches will not be used and one batch will equal
-    all method tests (one or all from data provider).
-    Max batch size = 1 means that each batch will contain only one test from the data provider or one
-    method if the data provider is not used.
-    Bigger max batch size can significantly increase phpunit command line length so the process can fail.
-    Decrease max batch size to reduce command line length.
-    Windows has a limit around 32k, Linux - 2048k, Mac OS X - 256k.
-
 ## Test token
 
 The `TEST_TOKEN` environment variable is guaranteed to have a value that is different

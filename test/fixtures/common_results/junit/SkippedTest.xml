@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ParaTest\Tests\fixtures\common_results\SkippedTest" file="./test/fixtures/common_results/SkippedTest.php" tests="1" assertions="0" errors="0" failures="0" skipped="1" time="1.234567">
+    <testcase name="testSkipped" file="./test/fixtures/common_results/SkippedTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\SkippedTest" classname="ParaTest.Tests.fixtures.common_results.SkippedTest" assertions="0" time="1.234567">
+      <skipped/>
+    </testcase>
+  </testsuite>
+</testsuites>

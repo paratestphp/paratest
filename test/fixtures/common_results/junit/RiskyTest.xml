@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ParaTest\Tests\fixtures\common_results\RiskyTest" file="./test/fixtures/common_results/RiskyTest.php" tests="1" assertions="0" errors="0" failures="0" skipped="0" time="1.234567">
+    <testcase name="testRisky" file="./test/fixtures/common_results/RiskyTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\RiskyTest" classname="ParaTest.Tests.fixtures.common_results.RiskyTest" assertions="0" time="1.234567"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" tests="42" assertions="42" errors="0" failures="42" skipped="0" time="1.234567">
+    <testsuite name="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse" tests="42" assertions="42" errors="0" failures="42" skipped="0" time="1.234567">
+      <testcase name="testIsItFalse with data set #0" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #0
+Failed asserting that '' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #1" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #1
+65
+Failed asserting that 'A' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #2" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #2
+92
+Failed asserting that '\' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #3" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #3
+124
+Failed asserting that '|' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #4" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #4
+33
+Failed asserting that '!' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #5" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #5
+34
+Failed asserting that '"' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #6" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #6
+194
+Failed asserting that '£' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #7" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #7
+36
+Failed asserting that '$' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #8" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #8
+37
+Failed asserting that '%' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #9" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #9
+38
+Failed asserting that '&amp;' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #10" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #10
+40
+Failed asserting that '(' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #11" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #11
+41
+Failed asserting that ')' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #12" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #12
+61
+Failed asserting that '=' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #13" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #13
+63
+Failed asserting that '?' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #14" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #14
+195
+Failed asserting that 'à' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #15" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #15
+195
+Failed asserting that 'è' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #16" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #16
+195
+Failed asserting that 'ì' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #17" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #17
+195
+Failed asserting that 'ò' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #18" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #18
+195
+Failed asserting that 'ù' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #19" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #19
+195
+Failed asserting that 'À' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #20" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #20
+195
+Failed asserting that 'È' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #21" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #21
+195
+Failed asserting that 'Ì' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #22" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #22
+195
+Failed asserting that 'Ò' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #23" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #23
+195
+Failed asserting that 'Ù' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #24" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #24
+60
+Failed asserting that '&lt;' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #25" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #25
+62
+Failed asserting that '&gt;' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #26" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #26
+45
+Failed asserting that '-' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #27" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #27
+95
+Failed asserting that '_' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #28" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #28
+64
+Failed asserting that '@' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #29" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #29
+35
+Failed asserting that '#' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #30" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #30
+91
+Failed asserting that '[' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #31" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #31
+93
+Failed asserting that ']' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #32" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #32
+195
+Failed asserting that 'ß' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #33" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #33
+208
+Failed asserting that 'б' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #34" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #34
+207
+Failed asserting that 'π' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #35" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #35
+226
+Failed asserting that '€' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #36" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #36
+226
+Failed asserting that '✔' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #37" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #37
+228
+Failed asserting that '你' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #38" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #38
+217
+Failed asserting that 'ي' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #39" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #39
+216
+Failed asserting that 'د' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #40" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #40
+90
+Failed asserting that 'Z' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+      <testcase name="testIsItFalse with data set #41" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse with data set #41
+Failed asserting that '' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:18</failure>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>

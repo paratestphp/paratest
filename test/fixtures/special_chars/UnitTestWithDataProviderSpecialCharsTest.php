@@ -19,7 +19,7 @@ final class UnitTestWithDataProviderSpecialCharsTest extends TestCase
     }
 
     /** @return non-empty-list<non-empty-list<string>> */
-    public function provideSpecialChars(): array
+    public static function provideSpecialChars(): array
     {
         return array_map(static function ($specialChar) {
             return [$specialChar];

@@ -33,29 +33,27 @@
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "~8.1.0 || ~8.2.0",
         "ext-dom": "*",
         "ext-pcre": "*",
         "ext-reflection": "*",
         "ext-simplexml": "*",
-        "fidry/cpu-core-counter": "^0.4.1",
+        "fidry/cpu-core-counter": "^0.5.1 || ^0.5.1",
         "jean85/pretty-package-versions": "^2.0.5",
-        "phpunit/php-code-coverage": "^9.2.23",
-        "phpunit/php-file-iterator": "^3.0.6",
-        "phpunit/php-timer": "^5.0.3",
-        "phpunit/phpunit": "^9.5.28",
-        "sebastian/environment": "^5.1.4",
-        "symfony/console": "^5.4.16 || ^6.2.3",
-        "symfony/process": "^5.4.11 || ^6.2"
+        "phpunit/php-code-coverage": "^10.0",
+        "phpunit/php-file-iterator": "^4.0",
+        "phpunit/php-timer": "^6.0",
+        "phpunit/phpunit": "^10.0.0",
+        "sebastian/environment": "^6.0",
+        "symfony/console": "^6.2.5",
+        "symfony/process": "^6.2.5"
     },
     "require-dev": {
         "ext-pcov": "*",
         "ext-posix": "*",
-        "doctrine/coding-standard": "^10.0.0",
-        "infection/infection": "^0.26.16",
+        "doctrine/coding-standard": "^11.1.0",
         "squizlabs/php_codesniffer": "^3.7.1",
-        "symfony/filesystem": "^5.4.13 || ^6.2",
-        "vimeo/psalm": "^5.4"
+        "symfony/filesystem": "^6.2.5"
     },
     "autoload": {
         "psr-4": {

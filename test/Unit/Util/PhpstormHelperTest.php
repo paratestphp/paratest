@@ -49,7 +49,7 @@ final class PhpstormHelperTest extends TestCase
         self::assertSame($expectedBinary, $actualBinary);
     }
 
-    public function providePhpstormCases(): Generator
+    public static function providePhpstormCases(): Generator
     {
         $phpStormHelperBinary = sprintf('%s/bin/paratest_for_phpstorm', uniqid());
         $paratestBinary       = sprintf('%s/vendor/brianium/paratest/bin/paratest', uniqid());
