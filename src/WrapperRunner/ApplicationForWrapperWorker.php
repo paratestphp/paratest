@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\WrapperRunner;
 
+use ParaTest\RunnerInterface;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Event\TestSuite\TestSuite as EventTestSuite;
 use PHPUnit\Framework\TestSuite;

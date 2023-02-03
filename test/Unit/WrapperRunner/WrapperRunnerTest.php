@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
+use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
-use ParaTest\WrapperRunner\RunnerInterface;
 use ParaTest\WrapperRunner\WorkerCrashedException;
 use PHPUnit\Framework\Assert;
 use SebastianBergmann\CodeCoverage\CodeCoverage;

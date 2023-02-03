@@ -6,7 +6,7 @@ namespace ParaTest\Tests;
 
 use InvalidArgumentException;
 use ParaTest\Options;
-use ParaTest\WrapperRunner\RunnerInterface;
+use ParaTest\RunnerInterface;
 use ParaTest\WrapperRunner\WrapperRunner;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
