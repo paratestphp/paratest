@@ -2,35 +2,24 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit\Worker;
+namespace ParaTest\WrapperRunner;
 
 use ParaTest\Logging\JUnit\Reader;
-use ParaTest\Runners\PHPUnit\EmptyLogFileException;
-use ParaTest\Runners\PHPUnit\ExecutableTest;
-use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\ResultPrinter;
-use ParaTest\Runners\PHPUnit\WorkerCrashedException;
+use ParaTest\Options;
+use ParaTest\WrapperRunner\PHPUnit\ExecutableTest;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\InputStream;
-use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 use Throwable;
-
 use function array_map;
-use function array_merge;
 use function assert;
 use function clearstatcache;
-use function dirname;
-use function end;
 use function filesize;
 use function implode;
-use function realpath;
 use function serialize;
 use function sprintf;
 use function touch;
 use function uniqid;
-use function unlink;
-
 use const DIRECTORY_SEPARATOR;
 
 /** @internal */

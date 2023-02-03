@@ -2,59 +2,28 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\WrapperRunner;
 
+use ParaTest\Options;
 use ParaTest\Parser\NoClassInFileException;
 use ParaTest\Parser\ParsedClass;
 use ParaTest\Parser\Parser;
-use PHPUnit\Framework\ExecutionOrderDependency;
-use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
-use PHPUnit\Metadata\Api\DataProvider;
-use PHPUnit\Metadata\Api\Dependencies;
-use PHPUnit\Metadata\Api\Groups;
 use PHPUnit\Runner\PhptTestCase;
+use PHPUnit\Runner\ResultCache\NullResultCache;
+use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TextUI\Command\Result;
 use PHPUnit\TextUI\Command\WarmCodeCoverageCacheCommand;
 use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
 use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\FilterMapper;
-use PHPUnit\TextUI\XmlConfiguration\LoadedFromFileConfiguration;
-use ReflectionMethod;
-use RuntimeException;
-use SebastianBergmann\CodeCoverage\Filter;
-use SebastianBergmann\CodeCoverage\StaticAnalysis\CacheWarmer;
-use SebastianBergmann\Environment\Runtime;
-use SebastianBergmann\FileIterator\Facade;
-use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
-
-use function array_filter;
-use function array_intersect;
 use function array_keys;
-use function array_map;
-use function array_merge;
-use function array_unique;
-use function array_values;
 use function assert;
 use function count;
-use function in_array;
-use function is_array;
-use function is_int;
-use function ksort;
-use function preg_match;
-use function realpath;
-use function sprintf;
-use function strpos;
-use function strrpos;
 use function substr;
-use function trim;
-use function version_compare;
-
-use const PHP_VERSION;
 
 /** @internal */
 final class SuiteLoader
@@ -75,6 +44,22 @@ final class SuiteLoader
         }
         
         $testSuite = (new TestSuiteBuilder)->build($this->options->configuration);
+        
+        if ($this->options->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
+            mt_srand($this->options->configuration->randomOrderSeed());
+        }
+
+        if ($this->options->configuration->executionOrder() !== TestSuiteSorter::ORDER_DEFAULT ||
+            $this->options->configuration->executionOrderDefects() !== TestSuiteSorter::ORDER_DEFAULT ||
+            $this->options->configuration->resolveDependencies()) {
+
+            (new TestSuiteSorter(new NullResultCache()))->reorderTestsInSuite(
+                $testSuite,
+                $this->options->configuration->executionOrder(),
+                $this->options->configuration->resolveDependencies(),
+                $this->options->configuration->executionOrderDefects()
+            );
+        }
         (new TestSuiteFilterProcessor)->process($this->options->configuration, $testSuite);
 
         $this->testCount = count($testSuite);

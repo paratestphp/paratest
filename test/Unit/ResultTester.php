@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit;
 
-use ParaTest\Runners\PHPUnit\Suite;
-use ParaTest\Runners\PHPUnit\TestMethod;
+use ParaTest\WrapperRunner\PHPUnit\Suite;
+use ParaTest\WrapperRunner\PHPUnit\TestMethod;
 use ParaTest\Tests\TestBase;
 
 use function file_get_contents;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\WrapperRunner;
 
 use ParaTest\JUnit\LogMerger;
 use ParaTest\Logging\JUnit\ErrorTestCase;
@@ -12,7 +12,7 @@ use ParaTest\Logging\JUnit\RiskyTestCase;
 use ParaTest\Logging\JUnit\SkippedTestCase;
 use ParaTest\Logging\JUnit\SuccessTestCase;
 use ParaTest\Logging\JUnit\WarningTestCase;
-use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
+use ParaTest\Options;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Output\Default\ResultPrinter as DefaultResultPrinter;

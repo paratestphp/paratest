@@ -2,54 +2,34 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest;
 
 use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
-use InvalidArgumentException;
 use ParaTest\Util\Str;
-use PHPUnit\TextUI\CliArguments\XmlConfigurationFileFinder;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\Configuration;
-use PHPUnit\TextUI\Configuration\Merger;
-use PHPUnit\TextUI\XmlConfiguration\DefaultConfiguration;
-use PHPUnit\TextUI\XmlConfiguration\LoadedFromFileConfiguration;
-use PHPUnit\TextUI\XmlConfiguration\Loader;
 use RuntimeException;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
-
 use function array_shift;
 use function assert;
 use function count;
 use function dirname;
 use function escapeshellarg;
-use function explode;
 use function file_exists;
-use function implode;
-use function in_array;
-use function intdiv;
 use function is_bool;
-use function is_dir;
-use function is_file;
 use function is_numeric;
 use function is_string;
-use function ksort;
-use function preg_match;
 use function realpath;
 use function sprintf;
 use function strlen;
 use function sys_get_temp_dir;
-use function time;
 use function uniqid;
 use function unserialize;
-
-use const DIRECTORY_SEPARATOR;
 use const PHP_BINARY;
 
 /**
@@ -76,6 +56,7 @@ final class Options
         'group' => true, 
         'no-configuration' => true, 
         'order-by' => true, 
+        'random-order-seed' => true, 
         'stop-on-defect' => true,
         'stop-on-error' => true, 
         'stop-on-warning' => true, 
@@ -248,7 +229,7 @@ final class Options
                 'runner',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'A \\ParaTest\\Runners\\PHPUnit\\RunnerInterface.',
+                'A \\ParaTest\\Runners\\RunnerInterface.',
                 'WrapperRunner',
             ),
             new InputOption(
@@ -352,6 +333,12 @@ final class Options
             ),
             new InputOption(
                 'stop-on-error',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'stop-on-failure',
                 null,
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
@@ -545,9 +532,9 @@ final class Options
     private static function getPhpunitBinary(): string
     {
         $tryPaths = [
-            dirname(__DIR__, 5) . '/bin/phpunit',
-            dirname(__DIR__, 5) . '/phpunit/phpunit/phpunit',
-            dirname(__DIR__, 3) . '/vendor/phpunit/phpunit/phpunit',
+            dirname(__DIR__, 3) . '/bin/phpunit',
+            dirname(__DIR__, 3) . '/phpunit/phpunit/phpunit',
+            dirname(__DIR__) . '/vendor/phpunit/phpunit/phpunit',
         ];
 
         foreach ($tryPaths as $path) {

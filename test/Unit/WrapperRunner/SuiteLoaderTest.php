@@ -4,30 +4,18 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use ParaTest\Runners\PHPUnit\ExecutableTest;
-use ParaTest\Runners\PHPUnit\FullSuite;
-use ParaTest\Runners\PHPUnit\Suite;
-use ParaTest\Runners\PHPUnit\SuiteLoader;
+use ParaTest\WrapperRunner\PHPUnit\ExecutableTest;
+use ParaTest\WrapperRunner\PHPUnit\FullSuite;
+use ParaTest\WrapperRunner\PHPUnit\Suite;
+use ParaTest\WrapperRunner\SuiteLoader;
 use ParaTest\Tests\TestBase;
-use ParseError;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use RuntimeException;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Filesystem\Filesystem;
-
-use function array_keys;
 use function array_shift;
-use function count;
-use function glob;
-use function preg_match;
-use function strstr;
-use function uniqid;
 
 /**
  * @internal
  *
- * @covers \ParaTest\Runners\PHPUnit\SuiteLoader
+ * @covers \ParaTest\WrapperRunner\SuiteLoader
  */
 final class SuiteLoaderTest extends TestBase
 {

@@ -2,40 +2,26 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit\Worker;
+namespace ParaTest\WrapperRunner;
 
-use ParaTest\Runners\PHPUnit\RunnerInterface;
-use ParaTest\Runners\PHPUnit\WrapperRunner;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Event\TestSuite\TestSuite as EventTestSuite;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Logging\JUnit\JunitXmlLogger;
 use PHPUnit\Logging\TeamCity\TeamCityLogger;
-use PHPUnit\Logging\TestDox\HtmlRenderer as TestDoxHtmlRenderer;
-use PHPUnit\Logging\TestDox\PlainTextRenderer as TestDoxTextRenderer;
 use PHPUnit\Logging\TestDox\TestResultCollector;
 use PHPUnit\Runner\CodeCoverage;
-use PHPUnit\Runner\Extension\PharLoader;
-use PHPUnit\Runner\ResultCache\NullResultCache;
 use PHPUnit\Runner\TestSuiteLoader;
+use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
-use PHPUnit\TextUI\CliArguments\Builder as CliBuilder;
-use PHPUnit\TextUI\CliArguments\XmlConfigurationFileFinder;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\Configuration;
-use PHPUnit\TextUI\Configuration\Merger;
 use PHPUnit\TextUI\Configuration\PhpHandler;
-use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
 use PHPUnit\TextUI\Output\Default\ProgressPrinter\ProgressPrinter;
 use PHPUnit\TextUI\Output\DefaultPrinter;
-use PHPUnit\TextUI\Output\Facade as OutputFacade;
 use PHPUnit\TextUI\Output\NullPrinter;
 use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
-use PHPUnit\TextUI\ShellExitCodeCalculator;
-use PHPUnit\TextUI\TestRunner;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
-use PHPUnit\TextUI\XmlConfiguration\DefaultConfiguration;
-use PHPUnit\TextUI\XmlConfiguration\Loader;
 use PHPUnit\Util\ExcludeList;
 
 /** @internal */
@@ -118,6 +104,10 @@ final class ApplicationForWrapperWorker
         TestResultFacade::init();
         EventFacade::seal();
         EventFacade::emitter()->testRunnerStarted();
+
+        if ($this->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
+            mt_srand($this->configuration->randomOrderSeed());
+        }
 
         $this->hasBeenBootstrapped = true;
     }

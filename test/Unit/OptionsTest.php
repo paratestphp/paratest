@@ -2,27 +2,19 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Tests\Unit\Runners\PHPUnit;
+namespace ParaTest\Tests\Unit;
 
-use InvalidArgumentException;
-use ParaTest\Runners\PHPUnit\Options;
+use ParaTest\Options;
 use ParaTest\Tests\TestBase;
-use PHPUnit\Runner\TestSuiteSorter;
-use PHPUnit\TextUI\Configuration\Configuration;
-use Symfony\Component\Console\Input\InputDefinition;
-
 use function defined;
-use function file_put_contents;
-use function intdiv;
 use function mt_rand;
-use function sort;
 use function str_replace;
 use function uniqid;
 
 /**
  * @internal
  *
- * @covers \ParaTest\Runners\PHPUnit\Options
+ * @covers \ParaTest\Options
  */
 final class OptionsTest extends TestBase
 {

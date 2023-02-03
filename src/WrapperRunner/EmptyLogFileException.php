@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\WrapperRunner;
 
 use RuntimeException;
 

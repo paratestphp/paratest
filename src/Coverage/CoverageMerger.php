@@ -25,9 +25,7 @@ final class CoverageMerger
     public function addCoverageFromFile(\SplFileInfo $coverageFile): void
     {
         if (! $coverageFile->isFile() || $coverageFile->getSize() === 0) {
-            throw new EmptyCoverageFileException(
-                "Coverage file {$coverageFile->getPathname()} is empty. This means a PHPUnit process has crashed."
-            );
+            return;
         }
 
         /** @psalm-suppress UnresolvableInclude **/

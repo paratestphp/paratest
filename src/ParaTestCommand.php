@@ -6,9 +6,8 @@ namespace ParaTest;
 
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
-use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\RunnerInterface;
-use ParaTest\Runners\PHPUnit\WrapperRunner;
+use ParaTest\WrapperRunner\RunnerInterface;
+use ParaTest\WrapperRunner\WrapperRunner;
 use PHPUnit\Runner\Version;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;

@@ -2,15 +2,20 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\WrapperRunner;
 
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Coverage\CoverageReporter;
 use ParaTest\JUnit\LogMerger;
 use ParaTest\JUnit\Writer;
-use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
+use ParaTest\Options;
+use PHPUnit\Event\Emitter;
+use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Runner\CodeCoverage;
+use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TestRunner\TestResult\TestResult;
+use PHPUnit\TextUI\ShellExitCodeCalculator;
+use PHPUnit\Util\ExcludeList;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 use function array_shift;
@@ -56,7 +61,7 @@ final class WrapperRunner implements RunnerInterface
         $this->printer = new ResultPrinter($output, $options);
 
         $wrapper = realpath(
-            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php',
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php',
         );
         assert($wrapper !== false);
         $phpFinder = new PhpExecutableFinder();
@@ -74,9 +79,13 @@ final class WrapperRunner implements RunnerInterface
         $this->parameters = $parameters;
     }
 
-    final public function run(): void
+    public function run(): void
     {
+        ExcludeList::addDirectory(dirname(__DIR__));
+        TestResultFacade::init();
+        EventFacade::seal();
         $suiteLoader = new SuiteLoader($this->options, $this->output);
+        $result = TestResultFacade::result();
 
         $this->pending = $suiteLoader->files;
         $this->printer->setTestCount($suiteLoader->testCount);
@@ -84,10 +93,10 @@ final class WrapperRunner implements RunnerInterface
         $this->startWorkers();
         $this->assignAllPendingTests();
         $this->waitForAllToFinish();
-        $this->complete();
+        $this->complete($result);
     }
 
-    final public function getExitCode(): int
+    public function getExitCode(): int
     {
         return $this->exitcode;
     }
@@ -209,17 +218,16 @@ final class WrapperRunner implements RunnerInterface
         unset($this->workers[$token]);
     }
 
-    private function complete(): void
+    private function complete(TestResult $testResultSum): void
     {
-        $testResultSum = null;
         foreach ($this->testresultFiles as $testresultFile) {
-            $testResult = unserialize(file_get_contents($testresultFile->getPathname()));
-            assert($testResult instanceof TestResult);
-
-            if (null === $testResultSum) {
-                $testResultSum = $testResult;
+            if (! $testresultFile->isFile()) {
                 continue;
             }
+            $contents = file_get_contents($testresultFile->getPathname());
+            assert(false !== $contents);
+            $testResult = unserialize($contents);
+            assert($testResult instanceof TestResult);
             
             $testResultSum = new TestResult(
                 $testResultSum->numberOfTests() + $testResult->numberOfTests(),
@@ -244,14 +252,22 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->testRunnerTriggeredWarningEvents(), $testResult->testRunnerTriggeredWarningEvents()),
             );
         }
-        assert(null !== $testResultSum);
 
         $this->printer->printResults($testResultSum);
         $this->generateCodeCoverageReports();
         $this->generateLogs();
+
+        $this->exitcode = (new ShellExitCodeCalculator)->calculate(
+            $this->options->configuration->failOnEmptyTestSuite(),
+            $this->options->configuration->failOnRisky(),
+            $this->options->configuration->failOnWarning(),
+            $this->options->configuration->failOnIncomplete(),
+            $this->options->configuration->failOnSkipped(),
+            $testResultSum
+        );
     }
 
-    final protected function generateCodeCoverageReports(): void
+    protected function generateCodeCoverageReports(): void
     {
         if ([] === $this->coverageFiles) {
             return;

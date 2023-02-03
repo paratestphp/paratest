@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use ParaTest\JUnit\LogMerger;
-use ParaTest\Runners\PHPUnit\ExecutableTest;
-use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\ResultPrinter;
-use ParaTest\Runners\PHPUnit\Suite;
-use ParaTest\Runners\PHPUnit\TestMethod;
+use ParaTest\Options;
 use ParaTest\Tests\Unit\ResultTester;
+use ParaTest\WrapperRunner\PHPUnit\ExecutableTest;
+use ParaTest\WrapperRunner\PHPUnit\Suite;
+use ParaTest\WrapperRunner\PHPUnit\TestMethod;
+use ParaTest\WrapperRunner\ResultPrinter;
 use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
@@ -28,7 +28,7 @@ use const PHP_VERSION;
 /**
  * @internal
  *
- * @covers \ParaTest\Runners\PHPUnit\ResultPrinter
+ * @covers \ParaTest\WrapperRunner\ResultPrinter
  */
 final class ResultPrinterTest extends ResultTester
 {
@@ -523,7 +523,7 @@ final class ResultPrinterTest extends ResultTester
      * This test ensure Code Coverage over printSkippedAndIncomplete
      * but the real case for this test case is missing at the time of writing
      *
-     * @see \ParaTest\Runners\PHPUnit\ResultPrinter::printSkippedAndIncomplete
+     * @see \ParaTest\WrapperRunner\ResultPrinter::printSkippedAndIncomplete
      */
     public function testParallelSuiteProgressOverhead(): void
     {

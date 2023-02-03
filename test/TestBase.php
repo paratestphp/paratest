@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace ParaTest\Tests;
 
 use InvalidArgumentException;
-use ParaTest\Runners\PHPUnit\Options;
-use ParaTest\Runners\PHPUnit\RunnerInterface;
-use ParaTest\Runners\PHPUnit\WrapperRunner;
+use ParaTest\Options;
+use ParaTest\WrapperRunner\RunnerInterface;
+use ParaTest\WrapperRunner\WrapperRunner;
 use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Framework\TestCase;
-use ReflectionObject;
 use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Output\BufferedOutput;
-
 use function file_exists;
 use function getenv;
 use function putenv;
@@ -47,6 +45,10 @@ abstract class TestBase extends TestCase
         $inputDefinition = new InputDefinition();
         Options::setInputDefinition($inputDefinition);
 
+        if (! isset($argv['--configuration'])) {
+            $argv['--no-configuration'] = true;
+        }
+
         if (! isset($argv['--processes'])) {
             $argv['--processes'] = (string) PROCESSES_FOR_TESTS;
         }
@@ -66,7 +68,7 @@ abstract class TestBase extends TestCase
         $runnerClass = $this->runnerClass;
 
         $options                              = $this->createOptionsFromArgv($this->bareOptions, $cwd);
-        $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens();
+        $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens;
         $runner                               = new $runnerClass($options, $output);
         if ($shouldPutEnvForParatestTestingItSelf) {
             $prevToken       = getenv(Options::ENV_KEY_TOKEN);

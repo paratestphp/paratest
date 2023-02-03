@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use ParaTest\Runners\PHPUnit\Worker\ApplicationForWrapperWorker;
-use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
+use ParaTest\WrapperRunner\ApplicationForWrapperWorker;
+use ParaTest\WrapperRunner\WrapperWorker;
 
 (static function (): void {
     $getopt = getopt('', [

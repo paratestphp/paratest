@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Runners\PHPUnit;
+namespace ParaTest\WrapperRunner;
 
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use Throwable;
-
 use function escapeshellarg;
 use function sprintf;
 
