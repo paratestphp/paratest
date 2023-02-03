@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\JUnit;
 
 use SimpleXMLElement;
+
 use function assert;
 use function count;
 use function current;
@@ -14,7 +15,7 @@ use function sprintf;
 /**
  * @internal
  *
- * @immutable 
+ * @immutable
  */
 class TestCase
 {

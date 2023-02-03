@@ -4,22 +4,29 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
-use InvalidArgumentException;
-use ParaTest\Options;
 use ParaTest\Tests\TestBase;
-use ParaTest\Tests\TmpDirCreator;
 use ParaTest\WrapperRunner\RunnerInterface;
 use ParaTest\WrapperRunner\WorkerCrashedException;
 use PHPUnit\Framework\Assert;
-use PHPUnit\Runner\TestSuiteSorter;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
+
 use function array_diff;
+use function array_reverse;
 use function array_unique;
+use function defined;
 use function file_get_contents;
 use function min;
+use function posix_mkfifo;
+use function preg_match;
+use function preg_match_all;
 use function scandir;
+use function simplexml_load_file;
+use function sprintf;
+use function str_replace;
+use function uniqid;
 use function unlink;
+
 use const FIXTURES;
 
 /**
@@ -42,8 +49,8 @@ final class WrapperRunnerTest extends TestBase
     public function testWrapperRunnerHandlesBatchSize(int $processes, ?int $batchSize, int $expectedPidCount): void
     {
         $this->bareOptions['--no-configuration'] = true;
-        $this->bareOptions['--processes']     = (string) $processes;
-        $this->bareOptions['path']            = $this->fixture('wrapper_batchsize_suite');
+        $this->bareOptions['--processes']        = (string) $processes;
+        $this->bareOptions['path']               = $this->fixture('wrapper_batchsize_suite');
         if ($batchSize !== null) {
             $this->bareOptions['--max-batch-size'] = (string) $batchSize;
         }
@@ -99,7 +106,7 @@ final class WrapperRunnerTest extends TestBase
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuite(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH420' . DS . 'phpunit.xml');
-        $runnerResult = $this->runRunner();
+        $runnerResult                         = $this->runRunner();
         static::assertEquals(0, $runnerResult->getExitCode());
     }
 
@@ -113,10 +120,10 @@ final class WrapperRunnerTest extends TestBase
             '--verbose' => true,
         ];
 
-        $runnerResultFirst = $this->runRunner();
+        $runnerResultFirst  = $this->runRunner();
         $runnerResultSecond = $this->runRunner();
 
-        $firstOutput = $this->prepareOutputForTestOrderCheck($runnerResultFirst->getOutput());
+        $firstOutput  = $this->prepareOutputForTestOrderCheck($runnerResultFirst->getOutput());
         $secondOutput = $this->prepareOutputForTestOrderCheck($runnerResultSecond->getOutput());
         Assert::assertSame($firstOutput, $secondOutput);
 
@@ -132,7 +139,7 @@ final class WrapperRunnerTest extends TestBase
     /** @return string[] */
     private function prepareOutputForTestOrderCheck(string $output): array
     {
-        $matchesCount = preg_match_all('/executing: (?<filename>\S+\.php)/',$output,$matches);
+        $matchesCount = preg_match_all('/executing: (?<filename>\S+\.php)/', $output, $matches);
 
         Assert::assertGreaterThan(0, $matchesCount);
 
@@ -162,7 +169,7 @@ final class WrapperRunnerTest extends TestBase
         self::markTestSkipped('Test is correct, but PHPUnit singletons mess things up');
 
         $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH565' . DS . 'phpunit.xml');
-        $runnerResult = $this->runRunner();
+        $runnerResult                         = $this->runRunner();
 
         Assert::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider is invalid', $runnerResult->getOutput());
         Assert::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider is invalid', $runnerResult->getOutput());
@@ -173,7 +180,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens(): void
     {
-        $this->bareOptions['path'] = $this->fixture('paratest_only_tests' . DS . 'EnvironmentTest.php');
+        $this->bareOptions['path']             = $this->fixture('paratest_only_tests' . DS . 'EnvironmentTest.php');
         $this->bareOptions['--no-test-tokens'] = true;
 
         $runnerResult = $this->runRunner();
@@ -198,7 +205,7 @@ final class WrapperRunnerTest extends TestBase
 
         $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $this->bareOptions['--passthru-php'] = str_replace('\'', '"', (string)$this->bareOptions['--passthru-php']);
+            $this->bareOptions['--passthru-php'] = str_replace('\'', '"', (string) $this->bareOptions['--passthru-php']);
         }
 
         $runnerResult = $this->runRunner();
@@ -212,7 +219,7 @@ final class WrapperRunnerTest extends TestBase
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuiteManualBootstrap(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH420bis' . DS . 'phpunit.xml');
-        $this->bareOptions['--bootstrap'] = $this->fixture('github' . DS . 'GH420bis' . DS . 'bootstrap.php');
+        $this->bareOptions['--bootstrap']     = $this->fixture('github' . DS . 'GH420bis' . DS . 'bootstrap.php');
 
         $runnerResult = $this->runRunner();
         static::assertEquals(0, $runnerResult->getExitCode());
@@ -234,7 +241,7 @@ final class WrapperRunnerTest extends TestBase
     public function testExitCodesPathWithoutTests(): void
     {
         $this->bareOptions['path'] = $this->fixture('no_tests');
-        $runnerResult = $this->runRunner();
+        $runnerResult              = $this->runRunner();
 
         Assert::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->getExitCode());
     }
@@ -263,8 +270,8 @@ final class WrapperRunnerTest extends TestBase
     public function testStopOnFailureEndsRunBeforeWholeTestSuite(): void
     {
         $this->bareOptions['--processes'] = '1';
-        $this->bareOptions['path'] = $this->fixture('common_results');
-        $runnerResult = $this->runRunner();
+        $this->bareOptions['path']        = $this->fixture('common_results');
+        $runnerResult                     = $this->runRunner();
 
         $regexp = '/Tests: \d+, Assertions: \d+, Errors: \d+, Failures: \d+, Warnings: \d+, Skipped: \d+, Incomplete: \d+, Risky: \d+\./';
         $output = $runnerResult->getOutput();
@@ -272,7 +279,7 @@ final class WrapperRunnerTest extends TestBase
         Assert::assertSame(1, preg_match($regexp, $output, $matchesOnFullRun));
 
         $this->bareOptions['--stop-on-failure'] = true;
-        $runnerResult = $this->runRunner();
+        $runnerResult                           = $this->runRunner();
 
         $regexp = '/Tests: \d+, Assertions: \d+, Errors: \d+, Skipped: \d+, Incomplete: \d+\./';
         $output = $runnerResult->getOutput();
@@ -284,7 +291,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRaiseExceptionWhenATestCallsExitWithoutCoverageSingleProcess(): void
     {
-        $this->bareOptions['path'] = $this->fixture('exit_tests');
+        $this->bareOptions['path']        = $this->fixture('exit_tests');
         $this->bareOptions['--processes'] = '1';
 
         $this->expectException(WorkerCrashedException::class);
@@ -295,8 +302,8 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
     {
-        $this->bareOptions['path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
-        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('exit_tests');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
@@ -318,8 +325,8 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRaiseExceptionWhenATestCallsExitLoudlyWithCoverage(): void
     {
-        $this->bareOptions['path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
-        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('exit_tests');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
@@ -342,25 +349,25 @@ final class WrapperRunnerTest extends TestBase
     public function testExitCodes(): void
     {
         $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'ErrorTest.php');
-        $runnerResult = $this->runRunner();
+        $runnerResult              = $this->runRunner();
 
         Assert::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
         Assert::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'FailureTest.php');
-        $runnerResult = $this->runRunner();
+        $runnerResult              = $this->runRunner();
 
         Assert::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
         Assert::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'SuccessTest.php');
-        $runnerResult = $this->runRunner();
+        $runnerResult              = $this->runRunner();
 
         Assert::assertStringContainsString('OK', $runnerResult->getOutput());
         Assert::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->getExitCode());
 
         $this->bareOptions['path'] = $this->fixture('common_results');
-        $runnerResult = $this->runRunner();
+        $runnerResult              = $this->runRunner();
 
         Assert::assertStringContainsString('Failures: 1', $runnerResult->getOutput());
         Assert::assertStringContainsString('Errors: 1', $runnerResult->getOutput());
@@ -381,9 +388,9 @@ final class WrapperRunnerTest extends TestBase
         Assert::assertFileExists($outputPath);
         $doc = simplexml_load_file($outputPath);
         Assert::assertNotFalse($doc);
-        $suites = (array)$doc->children();
+        $suites = (array) $doc->children();
         Assert::assertArrayHasKey('testsuite', $suites);
-        $attribues = (array)$suites['testsuite']->attributes();
+        $attribues = (array) $suites['testsuite']->attributes();
         Assert::assertArrayHasKey('@attributes', $attribues);
         Assert::assertIsArray($attribues['@attributes']);
         Assert::assertArrayHasKey('name', $attribues['@attributes']);
@@ -417,8 +424,8 @@ final class WrapperRunnerTest extends TestBase
     public function testTokensAreAbsentWhenNoTestTokensIsSpecified(): void
     {
         $this->bareOptions['--no-test-tokens'] = true;
-        $this->bareOptions['--processes'] = '1';
-        $this->bareOptions['path'] = $this->fixture('github' . DS . 'GH505');
+        $this->bareOptions['--processes']      = '1';
+        $this->bareOptions['path']             = $this->fixture('github' . DS . 'GH505');
 
         $runnerResult = $this->runRunner();
         static::assertEquals(0, $runnerResult->getExitCode());
@@ -462,7 +469,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void
     {
-        $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $this->bareOptions['path']        = $this->fixture('common_results' . DS . 'SuccessTest.php');
         $this->bareOptions['--processes'] = '10';
 
         $runnerResult = $this->runRunner();
@@ -471,8 +478,8 @@ final class WrapperRunnerTest extends TestBase
 
     public function testResultsAreCorrect(): void
     {
-        $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'SuccessTest.php');
-        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
@@ -485,7 +492,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testHandleCollisionWithSymfonyOutput(): void
     {
-        $this->bareOptions['path'] = $this->fixture('symfony_output_collision'.DS.'FailingSymfonyOutputCollisionTest.php');
+        $this->bareOptions['path'] = $this->fixture('symfony_output_collision' . DS . 'FailingSymfonyOutputCollisionTest.php');
 
         $runnerResult = $this->runRunner();
         static::assertStringContainsString('<bg=%s>', $runnerResult->getOutput());

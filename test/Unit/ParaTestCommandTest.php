@@ -8,10 +8,12 @@ use InvalidArgumentException;
 use Jean85\PrettyVersions;
 use ParaTest\ParaTestCommand;
 use ParaTest\Tests\TmpDirCreator;
-use ParaTest\Tests\Unit\Runners\PHPUnit\EmptyRunnerStub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;
+
+use function chdir;
+use function getcwd;
 
 /**
  * @internal
@@ -34,7 +36,7 @@ final class ParaTestCommandTest extends TestCase
 
         $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
     }
-    
+
     protected function tearDown(): void
     {
         chdir($this->getcwd);

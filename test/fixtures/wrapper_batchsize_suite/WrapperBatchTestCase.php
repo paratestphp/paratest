@@ -12,6 +12,8 @@ use function getenv;
 use function getmypid;
 use function str_replace;
 
+use const DIRECTORY_SEPARATOR;
+
 abstract class WrapperBatchTestCase extends TestCase
 {
     private const TMP_DIR_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'tmp';

@@ -6,7 +6,6 @@ namespace ParaTest;
 
 use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
-use ParaTest\Util\Str;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
@@ -15,6 +14,10 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
+
+use function array_filter;
+use function array_intersect_key;
+use function array_key_exists;
 use function array_shift;
 use function assert;
 use function count;
@@ -26,15 +29,19 @@ use function is_numeric;
 use function is_string;
 use function realpath;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
+use function substr;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unserialize;
+
 use const PHP_BINARY;
 
 /**
- * @immutable 
  * @internal
+ *
+ * @immutable
  */
 final class Options
 {
@@ -44,39 +51,39 @@ final class Options
     private const OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER = [
         'bootstrap' => true,
         'cache-directory' => true,
-        'configuration' => true, 
-        'coverage-filter' => true, 
-        'dont-report-useless-tests' => true, 
-        'exclude-group' => true, 
-        'fail-on-incomplete' => true, 
-        'fail-on-risky' => true, 
-        'fail-on-skipped' => true, 
-        'fail-on-warning' => true, 
-        'filter' => true, 
-        'group' => true, 
-        'no-configuration' => true, 
-        'order-by' => true, 
-        'random-order-seed' => true, 
+        'configuration' => true,
+        'coverage-filter' => true,
+        'dont-report-useless-tests' => true,
+        'exclude-group' => true,
+        'fail-on-incomplete' => true,
+        'fail-on-risky' => true,
+        'fail-on-skipped' => true,
+        'fail-on-warning' => true,
+        'filter' => true,
+        'group' => true,
+        'no-configuration' => true,
+        'order-by' => true,
+        'random-order-seed' => true,
         'stop-on-defect' => true,
-        'stop-on-error' => true, 
-        'stop-on-warning' => true, 
-        'stop-on-risky' => true, 
-        'stop-on-skipped' => true, 
-        'stop-on-incomplete' => true, 
-        'strict-coverage' => true, 
-        'strict-global-state' => true, 
+        'stop-on-error' => true,
+        'stop-on-warning' => true,
+        'stop-on-risky' => true,
+        'stop-on-skipped' => true,
+        'stop-on-incomplete' => true,
+        'strict-coverage' => true,
+        'strict-global-state' => true,
         'disallow-test-output' => true,
     ];
 
     public readonly bool $needsTeamcity;
 
     /**
-     * @param non-empty-string $phpunit
-     * @param non-empty-string $cwd
+     * @param non-empty-string        $phpunit
+     * @param non-empty-string        $cwd
      * @param non-empty-string[]|null $passthruPhp
      * @param non-empty-string[]|null $phpunitOptions
-     * @param non-empty-string $runner
-     * @param non-empty-string $tmpDir
+     * @param non-empty-string        $runner
+     * @param non-empty-string        $tmpDir
      */
     private function __construct(
         public readonly Configuration $configuration,
@@ -94,9 +101,7 @@ final class Options
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
     }
 
-    /**
-     * @param non-empty-string $cwd
-     */
+    /** @param non-empty-string $cwd */
     public static function fromConsoleInput(InputInterface $input, string $cwd): self
     {
         $options = $input->getOptions();
@@ -119,8 +124,7 @@ final class Options
 
         $processes = is_numeric($options['processes'])
             ? (int) $options['processes']
-            : self::getNumberOfCPUCores()
-        ;
+            : self::getNumberOfCPUCores();
         unset($options['processes']);
 
         $runner = $options['runner'];
@@ -133,14 +137,14 @@ final class Options
         unset($options['verbose']);
 
         assert(array_key_exists('colors', $options));
-        if (Configuration::COLOR_DEFAULT === $options['colors']) {
+        if ($options['colors'] === Configuration::COLOR_DEFAULT) {
             unset($options['colors']);
-        } elseif (null === $options['colors']) {
+        } elseif ($options['colors'] === null) {
             $options['colors'] = Configuration::COLOR_AUTO;
         }
 
         assert(array_key_exists('coverage-text', $options));
-        if (null === $options['coverage-text']) {
+        if ($options['coverage-text'] === null) {
             $options['coverage-text'] = 'php://stdout';
         }
 
@@ -148,27 +152,30 @@ final class Options
         // is strictly coupled with PHPUnit pinned version
         $phpunit = self::getPhpunitBinary();
         if (str_starts_with($phpunit, $cwd)) {
-            $phpunit = substr($phpunit, 1+strlen($cwd));
+            $phpunit = substr($phpunit, 1 + strlen($cwd));
         }
 
         $phpunitArgv = [$phpunit];
         foreach ($options as $key => $value) {
-            if (null === $value || false === $value) {
+            if ($value === null || $value === false) {
                 continue;
             }
-            if (true === $value) {
+
+            if ($value === true) {
                 $phpunitArgv[] = "--{$key}";
                 continue;
             }
+
             $phpunitArgv[] = "--{$key}={$value}";
         }
-        if (null !== ($path = $input->getArgument('path'))) {
+
+        if (($path = $input->getArgument('path')) !== null) {
             $phpunitArgv[] = '--';
             $phpunitArgv[] = $path;
         }
 
         $configuration = (new Builder())->build($phpunitArgv);
-        
+
         $phpunitOptions = array_intersect_key($options, self::OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER);
         $phpunitOptions = array_filter($phpunitOptions);
 
@@ -408,7 +415,7 @@ final class Options
                 null,
                 InputOption::VALUE_OPTIONAL,
                 '@see PHPUnit guide, chapter: ' . $chapter = 'Reporting',
-                Configuration::COLOR_DEFAULT
+                Configuration::COLOR_DEFAULT,
             ),
             new InputOption(
                 'display-incomplete',
@@ -505,7 +512,7 @@ final class Options
                 null,
                 InputOption::VALUE_OPTIONAL,
                 '@see PHPUnit guide, chapter: ' . $chapter,
-                false
+                false,
             ),
             new InputOption(
                 'coverage-xml',

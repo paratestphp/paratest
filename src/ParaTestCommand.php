@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function assert;
 use function class_exists;
 use function is_string;
@@ -29,20 +30,15 @@ final class ParaTestCommand extends Command
         'WrapperRunner' => WrapperRunner::class,
     ];
 
-    /**
-     * @param non-empty-string $cwd
-     */
+    /** @param non-empty-string $cwd */
     public function __construct(
         private readonly string $cwd,
         ?string $name = null
-    )
-    {
+    ) {
         parent::__construct($name);
     }
 
-    /**
-     * @param non-empty-string $cwd
-     */
+    /** @param non-empty-string $cwd */
     public static function applicationFactory(string $cwd): Application
     {
         $application = new Application();

@@ -26,20 +26,14 @@ static-analysis: vendor
 	php -d zend.assertions=1 vendor/bin/psalm $(PSALM_ARGS)
 
 coverage/junit.xml: vendor $(SRCS) Makefile
-	php -d zend.assertions=1 vendor/bin/phpunit \
-		--no-coverage \
-		--no-logging \
-		$(PHPUNIT_ARGS)
 	php -d zend.assertions=1 \
 		-d pcov.enabled=1 \
-		bin/paratest \
-		--passthru-php="'-d' 'pcov.enabled=1'" \
+		vendor/bin/phpunit \
 		--coverage-clover=coverage/clover.xml \
 		--coverage-xml=coverage/xml \
 		--coverage-html=coverage/html \
 		--log-junit=$@ \
-		--processes=$(shell nproc) \
-		$(PARATEST_ARGS) \
+		$(PHPUNIT_ARGS) \
 		|| (rm $@ && exit 1)
 
 .PHONY: test

@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\WrapperRunner;
 
 use ParaTest\Options;
-use ParaTest\Parser\NoClassInFileException;
-use ParaTest\Parser\ParsedClass;
-use ParaTest\Parser\Parser;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\PhptTestCase;
@@ -18,11 +15,19 @@ use PHPUnit\TextUI\Command\WarmCodeCoverageCacheCommand;
 use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
-use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\FilterMapper;
+use ReflectionClass;
+use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function array_keys;
 use function assert;
 use function count;
+use function is_string;
+use function mt_srand;
+use function ob_get_clean;
+use function ob_start;
+use function str_starts_with;
+use function strlen;
 use function substr;
 
 /** @internal */
@@ -35,32 +40,33 @@ final class SuiteLoader
     public function __construct(
         private readonly Options $options,
         OutputInterface $output
-    )
-    {
-        (new PhpHandler)->handle($this->options->configuration->php());
+    ) {
+        (new PhpHandler())->handle($this->options->configuration->php());
 
         if ($this->options->configuration->hasBootstrap()) {
             include_once $this->options->configuration->bootstrap();
         }
-        
-        $testSuite = (new TestSuiteBuilder)->build($this->options->configuration);
-        
+
+        $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
+
         if ($this->options->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
             mt_srand($this->options->configuration->randomOrderSeed());
         }
 
-        if ($this->options->configuration->executionOrder() !== TestSuiteSorter::ORDER_DEFAULT ||
+        if (
+            $this->options->configuration->executionOrder() !== TestSuiteSorter::ORDER_DEFAULT ||
             $this->options->configuration->executionOrderDefects() !== TestSuiteSorter::ORDER_DEFAULT ||
-            $this->options->configuration->resolveDependencies()) {
-
+            $this->options->configuration->resolveDependencies()
+        ) {
             (new TestSuiteSorter(new NullResultCache()))->reorderTestsInSuite(
                 $testSuite,
                 $this->options->configuration->executionOrder(),
                 $this->options->configuration->resolveDependencies(),
-                $this->options->configuration->executionOrderDefects()
+                $this->options->configuration->executionOrderDefects(),
             );
         }
-        (new TestSuiteFilterProcessor)->process($this->options->configuration, $testSuite);
+
+        (new TestSuiteFilterProcessor())->process($this->options->configuration, $testSuite);
 
         $this->testCount = count($testSuite);
 
@@ -76,34 +82,35 @@ final class SuiteLoader
         $result = (new WarmCodeCoverageCacheCommand($this->options->configuration))->execute();
         $output->write(ob_get_clean());
         $output->write($result->output());
-        if (Result::SUCCESS !== $result->shellExitCode()) {
+        if ($result->shellExitCode() !== Result::SUCCESS) {
             exit($result->shellExitCode());
         }
     }
 
-    private function loadFiles(TestSuite $testSuite, array & $files): void
+    /** @param array<string, bool> $files */
+    private function loadFiles(TestSuite $testSuite, array &$files): void
     {
         foreach ($testSuite as $test) {
             if ($test instanceof TestSuite) {
                 $this->loadFiles($test, $files);
                 continue;
             }
-            
+
             if ($test instanceof PhptTestCase) {
-                $refProperty = new \ReflectionProperty(PhptTestCase::class, 'filename');
-                $filename = $refProperty->getValue($test);
-                assert(is_string($filename) && '' !== $filename);
-                $filename = $this->stripCwd($filename);
+                $refProperty = new ReflectionProperty(PhptTestCase::class, 'filename');
+                $filename    = $refProperty->getValue($test);
+                assert(is_string($filename) && $filename !== '');
+                $filename         = $this->stripCwd($filename);
                 $files[$filename] = true;
-                
+
                 continue;
             }
-            
+
             if ($test instanceof TestCase) {
-                $refClass = new \ReflectionClass($test);
+                $refClass = new ReflectionClass($test);
                 $filename = $refClass->getFileName();
-                assert(is_string($filename) && '' !== $filename);
-                $filename = $this->stripCwd($filename);
+                assert(is_string($filename) && $filename !== '');
+                $filename         = $this->stripCwd($filename);
                 $files[$filename] = true;
 
                 continue;
@@ -113,6 +120,7 @@ final class SuiteLoader
 
     /**
      * @param non-empty-string $filename
+     *
      * @return non-empty-string
      */
     private function stripCwd(string $filename): string
@@ -120,10 +128,10 @@ final class SuiteLoader
         if (! str_starts_with($filename, $this->options->cwd)) {
             return $filename;
         }
-        
-        $filename = substr($filename, 1+strlen($this->options->cwd));
-        assert(is_string($filename) && false !== $filename);
-        
+
+        $filename = substr($filename, 1 + strlen($this->options->cwd));
+        assert(is_string($filename) && $filename !== false);
+
         return $filename;
     }
 }

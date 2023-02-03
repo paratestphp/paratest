@@ -6,14 +6,18 @@ namespace ParaTest\JUnit;
 
 use DOMDocument;
 use DOMElement;
+
 use function assert;
 use function dirname;
 use function file_put_contents;
 use function htmlspecialchars;
 use function is_dir;
+use function is_int;
+use function is_string;
 use function mkdir;
 use function sprintf;
 use function str_replace;
+
 use const ENT_XML1;
 
 /** @internal */
@@ -38,9 +42,7 @@ final class Writer
         assert(is_int($result) && 0 < $result);
     }
 
-    /**
-     * @return non-empty-string
-     */
+    /** @return non-empty-string */
     private function getXml(TestSuite $testSuite): string
     {
         $xmlTestsuites = $this->document->createElement('testsuites');
@@ -48,7 +50,7 @@ final class Writer
         $this->document->appendChild($xmlTestsuites);
 
         $xml = $this->document->saveXML();
-        assert(is_string($xml) && '' !== $xml);
+        assert(is_string($xml) && $xml !== '');
 
         return $xml;
     }
@@ -92,7 +94,7 @@ final class Writer
         $caseNode->setAttribute('time', sprintf('%F', $case->time));
 
         if ($case instanceof TestCaseWithMessage) {
-            if (MessageType::skipped === $case->xmlTagName) {
+            if ($case->xmlTagName === MessageType::skipped) {
                 $defectNode = $this->document->createElement($case->xmlTagName->toString());
             } else {
                 $defectNode = $this->document->createElement($case->xmlTagName->toString(), htmlspecialchars($case->text, ENT_XML1));

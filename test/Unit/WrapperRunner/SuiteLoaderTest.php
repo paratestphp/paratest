@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
-use ParaTest\WrapperRunner\SuiteLoader;
 use ParaTest\Tests\TestBase;
+use ParaTest\WrapperRunner\SuiteLoader;
 use Symfony\Component\Console\Output\BufferedOutput;
+
 use function array_shift;
+use function uniqid;
 
 /**
  * @internal
@@ -35,17 +37,17 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadFileGetsPathOfFile(): void
     {
-        $path  = $this->fixture('common_results'.DS.'SuccessTest.php');
+        $path                      = $this->fixture('common_results' . DS . 'SuccessTest.php');
         $this->bareOptions['path'] = $path;
-        $files = $this->loadSuite()->files;
+        $files                     = $this->loadSuite()->files;
 
         static::assertStringContainsString(array_shift($files), $path);
     }
 
     public function testCacheIsWarmedWhenSpecified(): void
     {
-        $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'SuccessTest.php');
-        $this->bareOptions['--coverage-php'] = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
         $this->loadSuite();

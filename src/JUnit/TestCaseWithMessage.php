@@ -12,14 +12,14 @@ namespace ParaTest\JUnit;
 final class TestCaseWithMessage extends TestCase
 {
     public function __construct(
-        string                  $name,
-        string                  $class,
-        string                  $file,
-        int                     $line,
-        int                     $assertions,
-        float                   $time,
+        string $name,
+        string $class,
+        string $file,
+        int $line,
+        int $assertions,
+        float $time,
         public readonly ?string $type,
-        public readonly string  $text,
+        public readonly string $text,
         public readonly ?string $systemOutput,
         public readonly MessageType $xmlTagName
     ) {

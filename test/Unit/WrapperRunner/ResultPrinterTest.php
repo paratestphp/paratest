@@ -4,28 +4,22 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
-use ParaTest\JUnit\LogMerger;
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
-use ParaTest\Tests\Unit\ResultTester;
-use ParaTest\WrapperRunner\PHPUnit\ExecutableTest;
-use ParaTest\WrapperRunner\PHPUnit\Suite;
-use ParaTest\WrapperRunner\PHPUnit\TestMethod;
 use ParaTest\WrapperRunner\ResultPrinter;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
+use SplFileInfo;
 use Symfony\Component\Console\Output\BufferedOutput;
-use function defined;
+
 use function file_get_contents;
 use function file_put_contents;
 use function phpversion;
 use function preg_match_all;
 use function sprintf;
-use function str_repeat;
-use function uniqid;
+
 use const PHP_VERSION;
 
 /**
@@ -41,9 +35,9 @@ final class ResultPrinterTest extends TestBase
 
     protected function setUpTest(): void
     {
-        $this->output      = new BufferedOutput();
-        $this->options     = $this->createOptionsFromArgv(['--verbose' => true], __DIR__);
-        $this->printer     = new ResultPrinter($this->output, $this->options);
+        $this->output  = new BufferedOutput();
+        $this->options = $this->createOptionsFromArgv(['--verbose' => true], __DIR__);
+        $this->printer = new ResultPrinter($this->output, $this->options);
     }
 
     public function testStartPrintsOptionInfo(): void
@@ -126,7 +120,7 @@ final class ResultPrinterTest extends TestBase
 
     public function testGetHeader(): void
     {
-        $this->printer->printResults(new TestResult(0,0,0,[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]));
+        $this->printer->printResults(new TestResult(0, 0, 0, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []));
 
         static::assertMatchesRegularExpression(
             "/\nTime: ([.:]?[0-9]{1,3})+ ?" .
@@ -139,15 +133,15 @@ final class ResultPrinterTest extends TestBase
     public function testPrintFeedbackForMixed(): void
     {
         $this->printer->setTestCount(20);
-        $feedbackFile = $this->tmpDir.DS.'feedback1';
-        file_put_contents($feedbackFile,'EWWFFFRRSSSS....... 19 / 19 (100%)');
-        $this->printer->printFeedback(new \SplFileInfo($feedbackFile));
+        $feedbackFile = $this->tmpDir . DS . 'feedback1';
+        file_put_contents($feedbackFile, 'EWWFFFRRSSSS....... 19 / 19 (100%)');
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile));
         $contents = $this->output->fetch();
-        static::assertSame("EWWFFFRRSSSS.......", $contents);
+        static::assertSame('EWWFFFRRSSSS.......', $contents);
 
-        $feedbackFile = $this->tmpDir.DS.'feedback2';
-        file_put_contents($feedbackFile,'E 1 / 1 (100%)');
-        $this->printer->printFeedback(new \SplFileInfo($feedbackFile));
+        $feedbackFile = $this->tmpDir . DS . 'feedback2';
+        file_put_contents($feedbackFile, 'E 1 / 1 (100%)');
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile));
         $contents = $this->output->fetch();
         static::assertSame("E 20 / 20 (100%)\n", $contents);
     }
@@ -157,12 +151,12 @@ final class ResultPrinterTest extends TestBase
         $this->options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS]);
         $this->printer = new ResultPrinter($this->output, $this->options);
         $this->printer->setTestCount(20);
-        $feedbackFile = $this->tmpDir.DS.'feedback1';
-        file_put_contents($feedbackFile,'E');
-        $this->printer->printFeedback(new \SplFileInfo($feedbackFile));
+        $feedbackFile = $this->tmpDir . DS . 'feedback1';
+        file_put_contents($feedbackFile, 'E');
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile));
         $contents = $this->output->fetch();
-        static::assertStringContainsString("E", $contents);
-        static::assertStringContainsString("31;1", $contents);
+        static::assertStringContainsString('E', $contents);
+        static::assertStringContainsString('31;1', $contents);
     }
 
     public function testTeamcityEmptyLogFileRaiseException(): void

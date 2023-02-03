@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace ParaTest\JUnit;
 
-use ParaTest\Logging\JUnit\Reader;
+use SplFileInfo;
+
 use function array_merge;
 use function assert;
 
 /**
- * @internal 
- * @immutable 
+ * @internal
+ *
+ * @immutable
  */
 final class LogMerger
 {
-    /**
-     * @param list<\SplFileInfo> $junitFiles
-     */
+    /** @param list<SplFileInfo> $junitFiles */
     public function merge(array $junitFiles): TestSuite
     {
         $mainSuite = null;

@@ -6,6 +6,10 @@ namespace ParaTest\Tests\fixtures\common_results;
 
 use PHPUnit\Framework\TestCase;
 
+use function trigger_error;
+
+use const E_USER_WARNING;
+
 /** @internal */
 final class WarningTest extends TestCase
 {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\WrapperRunner;
 
-use ParaTest\JUnit\LogMerger;
 use ParaTest\Options;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\TestResult;
@@ -15,31 +14,37 @@ use PHPUnit\Util\Color;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
+use SplFileInfo;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function assert;
 use function fclose;
+use function feof;
 use function floor;
 use function fopen;
+use function fread;
+use function fseek;
+use function ftell;
+use function preg_replace;
 use function sprintf;
 use function str_repeat;
 use function strlen;
+
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_VERSION;
 
-/**
- * @internal
- */
+/** @internal */
 final class ResultPrinter
 {
     public readonly Printer $printer;
 
-    private int $numTestsWidth = 0;
-    private int $maxColumn = 0;
-    private int $totalCases = 0;
-    private int $column = 0;
-    private int $casesProcessed = 0;
+    private int $numTestsWidth   = 0;
+    private int $maxColumn       = 0;
+    private int $totalCases      = 0;
+    private int $column          = 0;
+    private int $casesProcessed  = 0;
     private int $numberOfColumns = 80;
     /** @var bool */
     private $needsTeamcity;
@@ -53,12 +58,12 @@ final class ResultPrinter
     public function __construct(
         private readonly OutputInterface $output,
         private readonly Options $options
-    )
-    {
-        $this->printer = new class($this->output) implements Printer {
+    ) {
+        $this->printer = new class ($this->output) implements Printer {
             public function __construct(
                 private readonly OutputInterface $output,
-            ) {}
+            ) {
+            }
 
             public function print(string $buffer): void
             {
@@ -138,7 +143,7 @@ final class ResultPrinter
 
     public function printResults(TestResult $testResult): void
     {
-        $resultPrinter = new DefaultResultPrinter(
+        $resultPrinter  = new DefaultResultPrinter(
             $this->printer,
             $this->options->configuration->displayDetailsOnIncompleteTests(),
             $this->options->configuration->displayDetailsOnSkippedTests(),
@@ -150,16 +155,16 @@ final class ResultPrinter
         );
         $summaryPrinter = new SummaryPrinter(
             $this->printer,
-            $this->options->configuration->colors()
+            $this->options->configuration->colors(),
         );
 
-        $this->printer->print(PHP_EOL . (new ResourceUsageFormatter)->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
+        $this->printer->print(PHP_EOL . (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
 
         $resultPrinter->print($testResult);
         $summaryPrinter->print($testResult);
     }
 
-    public function printFeedback(\SplFileInfo $progressFile): void
+    public function printFeedback(SplFileInfo $progressFile): void
     {
         $feedbackItems = $this->tail($progressFile);
         $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\(\\d+%\\)\\s*/', '', $feedbackItems);
@@ -222,22 +227,23 @@ final class ResultPrinter
         return Color::colorizeTextBox($color, $buffer);
     }
 
-    private function tail(\SplFileInfo $progressFile): string
+    private function tail(SplFileInfo $progressFile): string
     {
-        $path = $progressFile->getPathname();
+        $path   = $progressFile->getPathname();
         $handle = fopen($path, 'r');
-        assert(false !== $handle);
+        assert($handle !== false);
         $fseek = fseek($handle, $this->tailPositions[$path] ?? 0);
-        assert(0 === $fseek);
+        assert($fseek === 0);
 
         $contents = '';
-        while (!feof($handle)) {
+        while (! feof($handle)) {
             $fread = fread($handle, 8192);
-            assert(false !== $fread);
+            assert($fread !== false);
             $contents .= $fread;
         }
+
         $ftell = ftell($handle);
-        assert(false !== $ftell);
+        assert($ftell !== false);
         $this->tailPositions[$path] = $ftell;
         fclose($handle);
 

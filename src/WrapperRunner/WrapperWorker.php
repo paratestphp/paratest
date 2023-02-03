@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace ParaTest\WrapperRunner;
 
-use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Options;
-use ParaTest\WrapperRunner\PHPUnit\ExecutableTest;
+use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 use Throwable;
+
 use function array_map;
 use function assert;
 use function clearstatcache;
+use function file_get_contents;
 use function filesize;
 use function implode;
+use function is_string;
 use function serialize;
 use function sprintf;
 use function touch;
 use function uniqid;
+
 use const DIRECTORY_SEPARATOR;
 
 /** @internal */
@@ -27,12 +30,12 @@ final class WrapperWorker
 {
     public const COMMAND_EXIT = "EXIT\n";
 
-    public readonly \SplFileInfo $progressFile;
-    public readonly \SplFileInfo $testresultFile;
-    public readonly \SplFileInfo $junitFile;
-    public readonly \SplFileInfo $coverageFile;
-    public readonly \SplFileInfo $teamcityFile;
-    public readonly \SplFileInfo $testdoxFile;
+    public readonly SplFileInfo $progressFile;
+    public readonly SplFileInfo $testresultFile;
+    public readonly SplFileInfo $junitFile;
+    public readonly SplFileInfo $coverageFile;
+    public readonly SplFileInfo $teamcityFile;
+    public readonly SplFileInfo $testdoxFile;
 
     private ?string $currentlyExecuting = null;
     private Process $process;
@@ -41,17 +44,14 @@ final class WrapperWorker
     private int $exitCode = -1;
     private string $statusFilepath;
 
-    /**
-     * @param non-empty-string[] $parameters
-     */
+    /** @param non-empty-string[] $parameters */
     public function __construct(
         private readonly OutputInterface $output,
         private readonly Options $options,
         array $parameters,
         private readonly int $token
-    )
-    {
-        $commonTmpFilePath = sprintf(
+    ) {
+        $commonTmpFilePath    = sprintf(
             '%s%sworker_%02s_stdout_%s_',
             $options->tmpDir,
             DIRECTORY_SEPARATOR,
@@ -60,20 +60,23 @@ final class WrapperWorker
         );
         $this->statusFilepath = $commonTmpFilePath . 'status';
         touch($this->statusFilepath);
-        $this->progressFile = new \SplFileInfo($commonTmpFilePath . 'progress');
+        $this->progressFile = new SplFileInfo($commonTmpFilePath . 'progress');
         touch($this->progressFile->getPathname());
-        $this->testresultFile = new \SplFileInfo($commonTmpFilePath . 'testresult');
+        $this->testresultFile = new SplFileInfo($commonTmpFilePath . 'testresult');
         if ($options->configuration->hasLogfileJunit()) {
-            $this->junitFile = new \SplFileInfo($commonTmpFilePath . 'junit');
+            $this->junitFile = new SplFileInfo($commonTmpFilePath . 'junit');
         }
+
         if ($options->configuration->hasCoverageReport()) {
-            $this->coverageFile = new \SplFileInfo($commonTmpFilePath.'coverage');
+            $this->coverageFile = new SplFileInfo($commonTmpFilePath . 'coverage');
         }
+
         if ($options->needsTeamcity) {
-            $this->teamcityFile = new \SplFileInfo($commonTmpFilePath.'teamcity');
+            $this->teamcityFile = new SplFileInfo($commonTmpFilePath . 'teamcity');
         }
+
         if ($options->configuration->outputIsTestDox()) {
-            $this->testdoxFile = new \SplFileInfo($commonTmpFilePath.'testdox');
+            $this->testdoxFile = new SplFileInfo($commonTmpFilePath . 'testdox');
         }
 
         $parameters[] = '--status-file';
@@ -86,6 +89,7 @@ final class WrapperWorker
             $parameters[] = '--teamcity-file';
             $parameters[] = $this->teamcityFile->getPathname();
         }
+
         if (isset($this->testdoxFile)) {
             $parameters[] = '--testdox-file';
             $parameters[] = $this->testdoxFile->getPathname();
@@ -103,6 +107,7 @@ final class WrapperWorker
 
             $phpunitArguments[] = $value;
         }
+
         $phpunitArguments[] = '--do-not-cache-result';
         $phpunitArguments[] = '--no-logging';
         $phpunitArguments[] = '--no-coverage';
@@ -111,11 +116,12 @@ final class WrapperWorker
             $phpunitArguments[] = '--log-junit';
             $phpunitArguments[] = $this->junitFile->getPathname();
         }
+
         if (isset($this->coverageFile)) {
             $phpunitArguments[] = '--coverage-php';
             $phpunitArguments[] = $this->coverageFile->getPathname();
         }
-        
+
         $parameters[] = '--phpunit-argv';
         $parameters[] = serialize($phpunitArguments);
 
@@ -136,12 +142,6 @@ final class WrapperWorker
         );
     }
 
-//    public function __destruct()
-//    {
-//        @unlink($this->statusFilepath);
-//        @unlink($this->progressFilepath);
-//    }
-
     public function start(): void
     {
         $this->process->start();
@@ -152,14 +152,14 @@ final class WrapperWorker
         return WorkerCrashedException::fromProcess(
             $this->process,
             $this->currentlyExecuting ?? 'N.A.',
-            $previousException
+            $previousException,
         );
     }
 
     public function assign(string $test): void
     {
         assert($this->currentlyExecuting === null);
-        
+
         if ($this->options->verbose) {
             $this->output->write("Process {$this->token} executing: {$test}\n");
         }
@@ -184,16 +184,16 @@ final class WrapperWorker
         clearstatcache(true, $this->statusFilepath);
 
         $isFree = $this->inExecution === filesize($this->statusFilepath);
-        
+
         if ($isFree && $this->inExecution > 0) {
             $exitCodes = file_get_contents($this->statusFilepath);
-            assert(is_string($exitCodes) && '' !== $exitCodes);
+            assert(is_string($exitCodes) && $exitCodes !== '');
             $this->exitCode = (int) $exitCodes[-1];
         }
 
         return $isFree;
     }
-    
+
     public function getExitCode(): int
     {
         return $this->exitCode;

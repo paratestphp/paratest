@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace ParaTest\JUnit;
 
-use InvalidArgumentException;
 use SimpleXMLElement;
+use SplFileInfo;
 
+use function array_map;
+use function array_sum;
+use function assert;
+use function file_get_contents;
 
 /**
  * @internal
+ *
  * @immutable
  */
 final class TestSuite
@@ -21,7 +26,7 @@ final class TestSuite
 
     /**
      * @param array<string, TestSuite> $suites
-     * @param TestCase $cases
+     * @param list<TestCase>           $cases
      */
     public function __construct(
         public readonly string $name,
@@ -40,7 +45,7 @@ final class TestSuite
         $this->cases  = $cases;
     }
 
-    public static function fromFile(\SplFileInfo $logFile): self
+    public static function fromFile(SplFileInfo $logFile): self
     {
         assert($logFile->isFile() && 0 < (int) $logFile->getSize());
 
@@ -49,7 +54,7 @@ final class TestSuite
 
         return self::parseTestSuite(
             new SimpleXMLElement($logFileContents),
-            true
+            true,
         );
     }
 

@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit;
 
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
+
 use function defined;
 use function mt_rand;
 use function str_replace;
@@ -50,9 +51,7 @@ final class OptionsTest extends TestBase
 
     public function testPassthru(): void
     {
-        $argv = [
-            '--passthru-php' => "'-d' 'zend_extension=xdebug.so'",
-        ];
+        $argv = ['--passthru-php' => "'-d' 'zend_extension=xdebug.so'"];
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $argv['--passthru-php'] = str_replace('\'', '"', $argv['--passthru-php']);
         }
@@ -63,6 +62,7 @@ final class OptionsTest extends TestBase
 
         self::assertSame($expectedPassthruPhp, $options->passthruPhp);
     }
+
     public function testDefaultOptions(): void
     {
         $options = $this->createOptionsFromArgv([], __DIR__);
@@ -81,7 +81,7 @@ final class OptionsTest extends TestBase
 
     public function testProvidedOptions(): void
     {
-        $argv                 = [
+        $argv = [
             '--max-batch-size' => 5,
             '--no-test-tokens' => true,
             '--passthru-php' => '-d a=1',

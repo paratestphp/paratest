@@ -24,6 +24,10 @@ use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
 use PHPUnit\Util\ExcludeList;
 
+use function file_put_contents;
+use function mt_srand;
+use function serialize;
+
 /** @internal */
 final class ApplicationForWrapperWorker
 {
@@ -31,35 +35,35 @@ final class ApplicationForWrapperWorker
     private Configuration $configuration;
     private TestResultCollector $testdoxResultCollector;
 
+    /** @param list<string> $argv */
     public function __construct(
-        private readonly array  $argv,
+        private readonly array $argv,
         private readonly string $progressFile,
         private readonly string $testresultFile,
         private readonly ?string $teamcityFile,
         private readonly ?string $testdoxFile,
         private readonly bool $testdoxColor,
-    )
-    {}
+    ) {
+    }
 
     public function runTest(string $testPath): int
     {
         $this->bootstrap();
 
         $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
-        $testSuite = TestSuite::fromClassReflector($testSuiteRefl);
+        $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
 
-        (new TestSuiteFilterProcessor)->process($this->configuration, $testSuite);
+        (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
 
         EventFacade::emitter()->testRunnerExecutionStarted(
-            EventTestSuite::fromTestSuite($testSuite)
+            EventTestSuite::fromTestSuite($testSuite),
         );
 
         $testSuite->run();
-        
+
         return TestResultFacade::result()->wasSuccessfulIgnoringPhpunitWarnings()
             ? RunnerInterface::SUCCESS_EXIT
-            : RunnerInterface::FAILURE_EXIT
-        ;
+            : RunnerInterface::FAILURE_EXIT;
     }
 
     private function bootstrap(): void
@@ -73,7 +77,7 @@ final class ApplicationForWrapperWorker
 
         $this->configuration = (new Builder())->build($this->argv);
 
-        (new PhpHandler)->handle($this->configuration->php());
+        (new PhpHandler())->handle($this->configuration->php());
 
         if ($this->configuration->hasBootstrap()) {
             $bootstrapFilename = $this->configuration->bootstrap();
@@ -90,7 +94,7 @@ final class ApplicationForWrapperWorker
         new ProgressPrinter(
             DefaultPrinter::from($this->progressFile),
             false,
-            120
+            120,
         );
 
         if (isset($this->teamcityFile)) {
@@ -117,14 +121,14 @@ final class ApplicationForWrapperWorker
         EventFacade::emitter()->testRunnerExecutionFinished();
         EventFacade::emitter()->testRunnerFinished();
 
-        CodeCoverage::generateReports(new NullPrinter, $this->configuration);
+        CodeCoverage::generateReports(new NullPrinter(), $this->configuration);
 
         if (isset($this->testdoxResultCollector)) {
             (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor))->print(
                 $this->testdoxResultCollector->testMethodsGroupedByClass(),
             );
         }
-        
+
         $result = TestResultFacade::result();
         file_put_contents($this->testresultFile, serialize($result));
 

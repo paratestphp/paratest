@@ -8,16 +8,14 @@ use InvalidArgumentException;
 use ParaTest\Options;
 use ParaTest\WrapperRunner\RunnerInterface;
 use ParaTest\WrapperRunner\WrapperRunner;
-use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Output\BufferedOutput;
+
 use function file_exists;
 use function getenv;
 use function putenv;
-use function sprintf;
 
 abstract class TestBase extends TestCase
 {
