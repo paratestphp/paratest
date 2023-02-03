@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\WrapperRunner;
+namespace ParaTest;
 
 interface RunnerInterface
 {

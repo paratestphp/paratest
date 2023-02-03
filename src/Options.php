@@ -236,7 +236,7 @@ final class Options
                 'runner',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'A \\ParaTest\\Runners\\RunnerInterface.',
+                sprintf('A %s.', RunnerInterface::class),
                 'WrapperRunner',
             ),
             new InputOption(

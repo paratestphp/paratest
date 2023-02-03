@@ -8,6 +8,7 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\JUnit\LogMerger;
 use ParaTest\JUnit\Writer;
 use ParaTest\Options;
+use ParaTest\RunnerInterface;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
