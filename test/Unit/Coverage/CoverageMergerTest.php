@@ -23,7 +23,7 @@ use function touch;
  */
 final class CoverageMergerTest extends TestBase
 {
-    public function testCoverageFileIsEmpty(): void
+    public function testEmptyCoverageFileRaisesException(): void
     {
         $filename = $this->tmpDir . DS . 'coverage.php';
         touch($filename);

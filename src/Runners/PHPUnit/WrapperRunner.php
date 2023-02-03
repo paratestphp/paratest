@@ -6,12 +6,11 @@ namespace ParaTest\Runners\PHPUnit;
 
 use ParaTest\Coverage\CoverageMerger;
 use ParaTest\Coverage\CoverageReporter;
-use ParaTest\Logging\JUnit\Writer;
-use ParaTest\Logging\LogMerger;
+use ParaTest\JUnit\LogMerger;
+use ParaTest\JUnit\Writer;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\TestRunner\TestResult\TestResult;
-use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 use function array_shift;

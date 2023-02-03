@@ -34,4 +34,4 @@ if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
 }
 
 assert(is_string($cwd) && '' !== $cwd);
-\ParaTest\Console\Commands\ParaTestCommand::applicationFactory($cwd)->run();
+ParaTest\ParaTestCommand::applicationFactory($cwd)->run();

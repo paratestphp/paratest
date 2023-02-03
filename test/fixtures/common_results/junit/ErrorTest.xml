@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ParaTest\Tests\fixtures\common_results\ErrorTest" file="./test/fixtures/common_results/ErrorTest.php" tests="1" assertions="0" errors="1" failures="0" skipped="0" time="1.234567">
+    <testcase name="testError" file="./test/fixtures/common_results/ErrorTest.php" line="13" class="ParaTest\Tests\fixtures\common_results\ErrorTest" classname="ParaTest.Tests.fixtures.common_results.ErrorTest" assertions="0" time="1.234567">
+      <error type="RuntimeException">ParaTest\Tests\fixtures\common_results\ErrorTest::testError
+RuntimeException: Error here!
+
+./test/fixtures/common_results/ErrorTest.php:15</error>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
-use ParaTest\Logging\LogMerger;
+use ParaTest\JUnit\LogMerger;
 use ParaTest\Runners\PHPUnit\ExecutableTest;
 use ParaTest\Runners\PHPUnit\Options;
 use ParaTest\Runners\PHPUnit\ResultPrinter;
@@ -15,7 +15,6 @@ use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
 use Symfony\Component\Console\Output\BufferedOutput;
-
 use function defined;
 use function file_get_contents;
 use function file_put_contents;
@@ -24,7 +23,6 @@ use function preg_match_all;
 use function sprintf;
 use function str_repeat;
 use function uniqid;
-
 use const PHP_VERSION;
 
 /**

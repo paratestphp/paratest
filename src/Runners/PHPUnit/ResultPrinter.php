@@ -4,24 +4,18 @@ declare(strict_types=1);
 
 namespace ParaTest\Runners\PHPUnit;
 
-use InvalidArgumentException;
+use ParaTest\JUnit\LogMerger;
 use ParaTest\Logging\JUnit\ErrorTestCase;
 use ParaTest\Logging\JUnit\FailureTestCase;
 use ParaTest\Logging\JUnit\Reader;
 use ParaTest\Logging\JUnit\RiskyTestCase;
 use ParaTest\Logging\JUnit\SkippedTestCase;
 use ParaTest\Logging\JUnit\SuccessTestCase;
-use ParaTest\Logging\JUnit\TestCaseWithMessage;
-use ParaTest\Logging\JUnit\TestSuite;
 use ParaTest\Logging\JUnit\WarningTestCase;
-use ParaTest\Logging\LogMerger;
 use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Logging\TestDox\NamePrettifier;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Output\Default\ResultPrinter as DefaultResultPrinter;
-use PHPUnit\TextUI\Output\DefaultPrinter;
 use PHPUnit\TextUI\Output\Printer;
 use PHPUnit\TextUI\Output\SummaryPrinter;
 use PHPUnit\Util\Color;
@@ -30,29 +24,15 @@ use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use function array_filter;
-use function array_map;
 use function assert;
-use function class_exists;
-use function count;
-use function explode;
 use function fclose;
-use function file_get_contents;
-use function filesize;
 use function floor;
 use function fopen;
-use function fwrite;
-use function get_class;
-use function implode;
-use function rtrim;
 use function sprintf;
 use function str_repeat;
 use function strlen;
-
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
-use const PHP_SAPI;
 use const PHP_VERSION;
 
 /**

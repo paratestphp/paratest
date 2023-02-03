@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest" file="./test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php" tests="3" assertions="3" errors="0" failures="0" skipped="0" time="1.234567">
-    <testcase name="testTruth" file="./test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php" line="13" class="ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest" classname="ParaTest.Tests.fixtures.passthru_tests.level1.AnotherUnitTestInSubLevelTest" assertions="1" time="1.234567"/>
-    <testcase name="testFalsehood" file="./test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php" line="19" class="ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest" classname="ParaTest.Tests.fixtures.passthru_tests.level1.AnotherUnitTestInSubLevelTest" assertions="1" time="1.234567"/>
-    <testcase name="testArrayLength" file="./test/fixtures/passing_tests/level1/AnotherUnitTestInSubLevelTest.php" line="25" class="ParaTest\Tests\fixtures\passthru_tests\level1\AnotherUnitTestInSubLevelTest" classname="ParaTest.Tests.fixtures.passthru_tests.level1.AnotherUnitTestInSubLevelTest" assertions="1" time="1.234567"/>
-  </testsuite>
-</testsuites>

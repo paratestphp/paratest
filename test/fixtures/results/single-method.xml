@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="1.234567">
-    <testcase name="testArrayLength" file="./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php" line="36" class="ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotationTest" classname="ParaTest.Tests.fixtures.failing_tests.UnitTestWithClassAnnotationTest" assertions="1" time="1.234567"/>
-  </testsuite>
-</testsuites>
