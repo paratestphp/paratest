@@ -28,6 +28,7 @@ use function dirname;
 use function file_get_contents;
 use function max;
 use function realpath;
+use function unlink;
 use function unserialize;
 use function usleep;
 
@@ -249,6 +250,7 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->testErroredEvents(), $testResult->testErroredEvents()),
                 array_merge_recursive($testResultSum->testFailedEvents(), $testResult->testFailedEvents()),
                 array_merge_recursive($testResultSum->testConsideredRiskyEvents(), $testResult->testConsideredRiskyEvents()),
+                array_merge_recursive($testResultSum->testSuiteSkippedEvents(), $testResult->testSuiteSkippedEvents()),
                 array_merge_recursive($testResultSum->testSkippedEvents(), $testResult->testSkippedEvents()),
                 array_merge_recursive($testResultSum->testMarkedIncompleteEvents(), $testResult->testMarkedIncompleteEvents()),
                 array_merge_recursive($testResultSum->testTriggeredDeprecationEvents(), $testResult->testTriggeredDeprecationEvents()),
@@ -282,7 +284,7 @@ final class WrapperRunner implements RunnerInterface
             $this->options->configuration->failOnSkipped(),
             $testResultSum,
         );
-        
+
         $this->clearFiles($this->testresultFiles);
         $this->clearFiles($this->coverageFiles);
         $this->clearFiles($this->junitFiles);
@@ -323,9 +325,7 @@ final class WrapperRunner implements RunnerInterface
         );
     }
 
-    /**
-     * @param list<SplFileInfo> $files
-     */
+    /** @param list<SplFileInfo> $files */
     private function clearFiles(array $files): void
     {
         foreach ($files as $file) {

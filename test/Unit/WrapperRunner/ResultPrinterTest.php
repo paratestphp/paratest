@@ -270,6 +270,7 @@ final class ResultPrinterTest extends TestBase
             [],
             [],
             [],
+            [],
         );
     }
 }

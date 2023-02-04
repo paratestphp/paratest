@@ -18,7 +18,6 @@ use function defined;
 use function file_get_contents;
 use function min;
 use function posix_mkfifo;
-use function preg_match;
 use function preg_match_all;
 use function scandir;
 use function simplexml_load_file;
@@ -227,7 +226,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testTeamcityOutput(): void
     {
-        $this->bareOptions['path']        = $this->fixture('common_results');
+        $this->bareOptions['path']       = $this->fixture('common_results');
         $this->bareOptions['--teamcity'] = true;
 
         $result = $this->runRunner();
@@ -265,11 +264,11 @@ final class WrapperRunnerTest extends TestBase
     {
         $this->bareOptions['--processes'] = '1';
         $this->bareOptions['path']        = $this->fixture('common_results');
-        $output = $this->runRunner()->output;
+        $output                           = $this->runRunner()->output;
         self::assertStringContainsString('Tests: 59, Assertions: 185,', $output);
 
         $this->bareOptions['--stop-on-failure'] = true;
-        $output = $this->runRunner()->output;
+        $output                                 = $this->runRunner()->output;
         self::assertStringContainsString('Tests: 53, Assertions: 182,', $output);
     }
 
