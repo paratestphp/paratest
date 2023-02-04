@@ -9,7 +9,6 @@ use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ResultPrinter;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Configuration\Configuration;
-use RuntimeException;
 use SebastianBergmann\Environment\Runtime;
 use SplFileInfo;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -17,8 +16,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function file_get_contents;
 use function file_put_contents;
 use function phpversion;
-use function preg_match_all;
 use function sprintf;
+use function uniqid;
 
 use const PHP_VERSION;
 
@@ -120,7 +119,7 @@ final class ResultPrinterTest extends TestBase
 
     public function testGetHeader(): void
     {
-        $this->printer->printResults(new TestResult(0, 0, 0, [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []));
+        $this->printer->printResults($this->getEmptyTestResult(), [], []);
 
         static::assertMatchesRegularExpression(
             "/\nTime: ([.:]?[0-9]{1,3})+ ?" .
@@ -135,13 +134,13 @@ final class ResultPrinterTest extends TestBase
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DS . 'feedback1';
         file_put_contents($feedbackFile, 'EWWFFFRRSSSS....... 19 / 19 (100%)');
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile));
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $contents = $this->output->fetch();
         static::assertSame('EWWFFFRRSSSS.......', $contents);
 
         $feedbackFile = $this->tmpDir . DS . 'feedback2';
         file_put_contents($feedbackFile, 'E 1 / 1 (100%)');
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile));
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $contents = $this->output->fetch();
         static::assertSame("E 20 / 20 (100%)\n", $contents);
     }
@@ -153,251 +152,92 @@ final class ResultPrinterTest extends TestBase
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DS . 'feedback1';
         file_put_contents($feedbackFile, 'E');
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile));
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $contents = $this->output->fetch();
         static::assertStringContainsString('E', $contents);
         static::assertStringContainsString('31;1', $contents);
     }
 
-    public function testTeamcityEmptyLogFileRaiseException(): void
-    {
-        self::markTestIncomplete();
-        $teamcityLog = $this->tmpDir . DS . 'teamcity.log';
-
-        $this->options = $this->createOptionsFromArgv(['--log-teamcity' => $teamcityLog]);
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
-
-        $test = $this->getSuiteWithResult('single-passing.xml', 1);
-
-        file_put_contents($test->getTeamcityTempFile(), '');
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches('/Teamcity/');
-
-        $this->printer->printFeedback($test);
-    }
-
     public function testTeamcityFeedbackOnFile(): void
     {
-        self::markTestIncomplete();
+        $teamcitySource        = $this->tmpDir . DS . 'source';
+        $teamcitySourceContent = uniqid('##teamcity_');
+        file_put_contents($teamcitySource, $teamcitySourceContent);
         $teamcityLog = $this->tmpDir . DS . 'teamcity2.log';
 
         $this->options = $this->createOptionsFromArgv(['--log-teamcity' => $teamcityLog]);
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
-        $this->printer->addTest($this->passingSuite);
+        $this->printer = new ResultPrinter($this->output, $this->options);
 
-        $this->printer->start();
-        $this->printer->printFeedback($this->passingSuite);
-        $this->printer->printResults();
+        $this->printer->setTestCount(20);
+        $feedbackFile = $this->tmpDir . DS . 'feedback1';
+        file_put_contents($feedbackFile, 'E');
 
-        static::assertStringContainsString('OK', $this->output->fetch());
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), [new SplFileInfo($teamcitySource)]);
+
+        static::assertSame('E', $this->output->fetch());
         static::assertFileExists($teamcityLog);
 
         $logContent = file_get_contents($teamcityLog);
 
         self::assertNotFalse($logContent);
-        self::assertSame(9, preg_match_all('/^##teamcity/m', $logContent));
+        self::assertSame($teamcitySourceContent, $logContent);
     }
 
     public function testTeamcityFeedbackOnStdout(): void
     {
-        self::markTestIncomplete();
+        $teamcitySource        = $this->tmpDir . DS . 'source';
+        $teamcitySourceContent = uniqid('##teamcity_');
+        file_put_contents($teamcitySource, $teamcitySourceContent);
+
         $this->options = $this->createOptionsFromArgv(['--teamcity' => true]);
-        $this->printer = new ResultPrinter($this->interpreter, $this->output, $this->options);
-        $this->printer->addTest($this->passingSuite);
+        $this->printer = new ResultPrinter($this->output, $this->options);
 
-        $this->printer->start();
-        $this->printer->printFeedback($this->passingSuite);
-        $this->printer->printResults();
+        $this->printer->setTestCount(20);
+        $feedbackFile = $this->tmpDir . DS . 'feedback1';
+        file_put_contents($feedbackFile, 'E');
 
-        $output = $this->output->fetch();
-        static::assertStringContainsString('OK', $output);
-        self::assertSame(9, preg_match_all('/^##teamcity/m', $output));
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), [new SplFileInfo($teamcitySource)]);
+        $this->printer->printResults($this->getEmptyTestResult(), [new SplFileInfo($teamcitySource)], []);
+
+        static::assertSame($teamcitySourceContent, $this->output->fetch());
     }
 
-    public function testTestdoxOutputNonVerbose(): void
+    public function testTestdoxOutputWithProgress(): void
     {
-        self::markTestIncomplete();
-        $options = $this->createOptionsFromArgv(['--testdox' => true, '--verbose' => false]);
-        $printer = new ResultPrinter($this->interpreter, $this->output, $options);
-        $printer->printFeedback($this->mixedSuite);
-        $contents = $this->output->fetch();
+        $testdoxSource        = $this->tmpDir . DS . 'source';
+        $testdoxSourceContent = uniqid('Success!');
+        file_put_contents($testdoxSource, $testdoxSourceContent);
 
-        $expected = <<<'EOF'
-Unit Test With Class Annotation (ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotation)
- ✔ Truth
- ✘ Falsehood
-   │
-   │ Failed asserting that true is false.
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32
-   │
+        $this->options = $this->createOptionsFromArgv(['--testdox' => true]);
+        $this->printer = new ResultPrinter($this->output, $this->options);
 
- ✔ Array length
- ✔ Its a test
+        $this->printer->setTestCount(20);
+        $feedbackFile = $this->tmpDir . DS . 'feedback1';
+        file_put_contents($feedbackFile, 'EEE');
 
-Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
- ✘ Truth
-   │
-   │ RuntimeException: Error!!!
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:19
-   │
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
- ✔ Is it false
- ✘ Falsehood
-   │
-   │ Failed asserting that two strings are identical.
-   │ --- Expected
-   │ +++ Actual
-   │ @@ @@
-   │ -'foo'
-   │ +'bar'
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
-   │
-
- ✔ Array length
- ⚠ Warning
-   │
-   │ MyWarning
-   │
-
- ↩ Skipped
- ↩ Incomplete
- ☢ Risky
-
-Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotations)
- ✔ Truth
- ✘ Falsehood
-   │
-   │ Failed asserting that two strings are identical.
-   │ --- Expected
-   │ +++ Actual
-   │ @@ @@
-   │ -'foo'
-   │ +'bar'
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
-   │
-
- ✔ Array length
- ⚠ Warning
-   │
-   │ MyWarning
-   │
-
- ↩ Skipped
- ↩ Incomplete
- ☢ Risky
-
-
-EOF;
-
-        static::assertSame($expected, $contents);
+        static::assertSame('EEE' . $testdoxSourceContent, $this->output->fetch());
     }
 
-    public function testTestdoxOutputVerbose(): void
+    public function testTestdoxOutputWithoutProgress(): void
     {
-        self::markTestIncomplete();
-        $options = $this->createOptionsFromArgv(['--testdox' => true, '--verbose' => true]);
-        $printer = new ResultPrinter($this->interpreter, $this->output, $options);
-        $printer->printFeedback($this->mixedSuite);
-        $contents = $this->output->fetch();
+        $testdoxSource        = $this->tmpDir . DS . 'source';
+        $testdoxSourceContent = uniqid('Success!');
+        file_put_contents($testdoxSource, $testdoxSourceContent);
 
-        $expected = <<<'EOF'
-Unit Test With Class Annotation (ParaTest\Tests\fixtures\failing_tests\UnitTestWithClassAnnotation)
- ✔ Truth [1234.57 ms]
- ✘ Falsehood [1234.57 ms]
-   │
-   │ Failed asserting that true is false.
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithClassAnnotationTest.php:32
-   │
+        $this->options = $this->createOptionsFromArgv(['--testdox' => true, '--no-progress' => true]);
+        $this->printer = new ResultPrinter($this->output, $this->options);
 
- ✔ Array length [1234.57 ms]
- ✔ Its a test [1234.57 ms]
+        $this->printer->setTestCount(20);
+        $feedbackFile = $this->tmpDir . DS . 'feedback1';
+        file_put_contents($feedbackFile, 'EEE');
 
-Unit Test With Error (ParaTest\Tests\fixtures\failing_tests\UnitTestWithError)
- ✘ Truth [1234.57 ms]
-   │
-   │ RuntimeException: Error!!!
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithErrorTest.php:19
-   │
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
- ✔ Is it false [1234.57 ms]
- ✘ Falsehood [1234.57 ms]
-   │
-   │ Failed asserting that two strings are identical.
-   │ --- Expected
-   │ +++ Actual
-   │ @@ @@
-   │ -'foo'
-   │ +'bar'
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
-   │
-
- ✔ Array length [1234.57 ms]
- ⚠ Warning [1234.57 ms]
-   │
-   │ MyWarning
-   │
-
- ↩ Skipped [1234.57 ms]
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:39
-   │
-
- ↩ Incomplete [1234.57 ms]
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:45
-   │
-
- ☢ Risky [1234.57 ms]
-   │
-   │ This test did not perform any assertions
-   │
-
-Unit Test With Method Annotations (ParaTest\Tests\fixtures\failing_tests\UnitTestWithMethodAnnotations)
- ✔ Truth [1234.57 ms]
- ✘ Falsehood [1234.57 ms]
-   │
-   │ Failed asserting that two strings are identical.
-   │ --- Expected
-   │ +++ Actual
-   │ @@ @@
-   │ -'foo'
-   │ +'bar'
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:21
-   │
-
- ✔ Array length [1234.57 ms]
- ⚠ Warning [1234.57 ms]
-   │
-   │ MyWarning
-   │
-
- ↩ Skipped [1234.57 ms]
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:39
-   │
-
- ↩ Incomplete [1234.57 ms]
-   │
-   │ ./test/fixtures/failing_tests/UnitTestWithMethodAnnotationsTest.php:45
-   │
-
- ☢ Risky [1234.57 ms]
-   │
-   │ This test did not perform any assertions
-   │
-
-
-EOF;
-
-        static::assertSame($expected, $contents);
+        static::assertSame($testdoxSourceContent, $this->output->fetch());
     }
 
     private function getStartOutput(): string
@@ -405,5 +245,32 @@ EOF;
         $this->printer->start();
 
         return $this->output->fetch();
+    }
+
+    private function getEmptyTestResult(): TestResult
+    {
+        return new TestResult(
+            0,
+            0,
+            0,
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+        );
     }
 }

@@ -418,6 +418,12 @@ final class Options
                 Configuration::COLOR_DEFAULT,
             ),
             new InputOption(
+                'no-progress',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
                 'display-incomplete',
                 null,
                 InputOption::VALUE_NONE,

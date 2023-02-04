@@ -26,6 +26,7 @@ use function fopen;
 use function fread;
 use function fseek;
 use function ftell;
+use function fwrite;
 use function preg_replace;
 use function sprintf;
 use function str_repeat;
@@ -46,10 +47,6 @@ final class ResultPrinter
     private int $column          = 0;
     private int $casesProcessed  = 0;
     private int $numberOfColumns = 80;
-    /** @var bool */
-    private $needsTeamcity;
-    /** @var bool */
-    private $printsTeamcity;
     /** @var resource|null */
     private $teamcityLogFileHandle;
     /** @var array<non-empty-string, int> */
@@ -74,16 +71,14 @@ final class ResultPrinter
             {
             }
         };
-//        $this->printsTeamcity = $this->options->teamcity();
-//        $this->needsTeamcity  = $this->options->needsTeamcity();
-//
-//        if (($teamcityLogFile = $this->options->logTeamcity()) === null) {
-//            return;
-//        }
-//
-//        $teamcityLogFileHandle = fopen($teamcityLogFile, 'ab+');
-//        assert($teamcityLogFileHandle !== false);
-//        $this->teamcityLogFileHandle = $teamcityLogFileHandle;
+
+        if (! $this->options->configuration->hasLogfileTeamcity()) {
+            return;
+        }
+
+        $teamcityLogFileHandle = fopen($this->options->configuration->logfileTeamcity(), 'ab+');
+        assert($teamcityLogFileHandle !== false);
+        $this->teamcityLogFileHandle = $teamcityLogFileHandle;
     }
 
     public function setTestCount(int $testCount): void
@@ -135,14 +130,67 @@ final class ResultPrinter
         $output->write("\n");
     }
 
-    public function println(string $string = ''): void
+    /** @param list<SplFileInfo> $teamcityFiles */
+    public function printFeedback(SplFileInfo $progressFile, array $teamcityFiles): void
     {
-        $this->column = 0;
-        $this->output->write($string . "\n");
+        if ($this->options->needsTeamcity) {
+            $teamcityProgress = $this->tailMultiple($teamcityFiles);
+
+            if ($this->teamcityLogFileHandle !== null) {
+                fwrite($this->teamcityLogFileHandle, $teamcityProgress);
+            }
+        }
+
+        if ($this->options->configuration->outputIsTeamCity()) {
+            assert(isset($teamcityProgress));
+            $this->output->write($teamcityProgress);
+
+            return;
+        }
+
+        if ($this->options->configuration->noProgress()) {
+            return;
+        }
+
+        $feedbackItems = $this->tail($progressFile);
+        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\(\\d+%\\)\\s*/', '', $feedbackItems);
+
+        $actualTestCount = strlen($feedbackItems);
+        for ($index = 0; $index < $actualTestCount; ++$index) {
+            $this->printFeedbackItem($feedbackItems[$index]);
+        }
     }
 
-    public function printResults(TestResult $testResult): void
+    /**
+     * @param list<SplFileInfo> $teamcityFiles
+     * @param list<SplFileInfo> $testdoxFiles
+     */
+    public function printResults(TestResult $testResult, array $teamcityFiles, array $testdoxFiles): void
     {
+        if ($this->options->needsTeamcity) {
+            $teamcityProgress = $this->tailMultiple($teamcityFiles);
+
+            if ($this->teamcityLogFileHandle !== null) {
+                fwrite($this->teamcityLogFileHandle, $teamcityProgress);
+                $resource                    = $this->teamcityLogFileHandle;
+                $this->teamcityLogFileHandle = null;
+                fclose($resource);
+            }
+        }
+
+        if ($this->options->configuration->outputIsTeamCity()) {
+            assert(isset($teamcityProgress));
+            $this->output->write($teamcityProgress);
+
+            return;
+        }
+
+        if ($this->options->configuration->outputIsTestDox()) {
+            $this->output->write($this->tailMultiple($testdoxFiles));
+
+            return;
+        }
+
         $resultPrinter  = new DefaultResultPrinter(
             $this->printer,
             $this->options->configuration->displayDetailsOnIncompleteTests(),
@@ -164,17 +212,6 @@ final class ResultPrinter
         $summaryPrinter->print($testResult);
     }
 
-    public function printFeedback(SplFileInfo $progressFile): void
-    {
-        $feedbackItems = $this->tail($progressFile);
-        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\(\\d+%\\)\\s*/', '', $feedbackItems);
-
-        $actualTestCount = strlen($feedbackItems);
-        for ($index = 0; $index < $actualTestCount; ++$index) {
-            $this->printFeedbackItem($feedbackItems[$index]);
-        }
-    }
-
     private function printFeedbackItem(string $item): void
     {
         $this->printFeedbackItemColor($item);
@@ -192,8 +229,7 @@ final class ResultPrinter
             $this->output->write(str_repeat(' ', $pad));
         }
 
-        $this->output->write($this->getProgress());
-        $this->println();
+        $this->output->write($this->getProgress() . "\n");
     }
 
     private function printFeedbackItemColor(string $item): void
@@ -227,9 +263,24 @@ final class ResultPrinter
         return Color::colorizeTextBox($color, $buffer);
     }
 
-    private function tail(SplFileInfo $progressFile): string
+    /** @param list<SplFileInfo> $files */
+    private function tailMultiple(array $files): string
     {
-        $path   = $progressFile->getPathname();
+        $content = '';
+        foreach ($files as $file) {
+            if (! $file->isFile()) {
+                continue;
+            }
+
+            $content .= $this->tail($file);
+        }
+
+        return $content;
+    }
+
+    private function tail(SplFileInfo $file): string
+    {
+        $path   = $file->getPathname();
         $handle = fopen($path, 'r');
         assert($handle !== false);
         $fseek = fseek($handle, $this->tailPositions[$path] ?? 0);

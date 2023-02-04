@@ -28,6 +28,7 @@ use function dirname;
 use function file_get_contents;
 use function max;
 use function realpath;
+use function unlink;
 use function unserialize;
 use function usleep;
 
@@ -86,7 +87,7 @@ final class WrapperRunner implements RunnerInterface
         $this->parameters = $parameters;
     }
 
-    public function run(): void
+    public function run(): int
     {
         ExcludeList::addDirectory(dirname(__DIR__));
         TestResultFacade::init();
@@ -100,7 +101,8 @@ final class WrapperRunner implements RunnerInterface
         $this->startWorkers();
         $this->assignAllPendingTests();
         $this->waitForAllToFinish();
-        $this->complete($result);
+
+        return $this->complete($result);
     }
 
     public function getExitCode(): int
@@ -138,10 +140,7 @@ final class WrapperRunner implements RunnerInterface
 
                 if (
                     $this->exitcode > 0
-                    && (
-                        $this->options->configuration->stopOnFailure()
-                        || $this->options->configuration->stopOnError()
-                    )
+                    && $this->options->configuration->stopOnFailure()
                 ) {
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {
@@ -157,7 +156,10 @@ final class WrapperRunner implements RunnerInterface
     private function flushWorker(WrapperWorker $worker): void
     {
         $this->exitcode = max($this->exitcode, $worker->getExitCode());
-        $this->printer->printFeedback($worker->progressFile);
+        $this->printer->printFeedback(
+            $worker->progressFile,
+            $this->teamcityFiles,
+        );
         $worker->reset();
     }
 
@@ -229,7 +231,7 @@ final class WrapperRunner implements RunnerInterface
         unset($this->workers[$token]);
     }
 
-    private function complete(TestResult $testResultSum): void
+    private function complete(TestResult $testResultSum): int
     {
         foreach ($this->testresultFiles as $testresultFile) {
             if (! $testresultFile->isFile()) {
@@ -248,6 +250,7 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->testErroredEvents(), $testResult->testErroredEvents()),
                 array_merge_recursive($testResultSum->testFailedEvents(), $testResult->testFailedEvents()),
                 array_merge_recursive($testResultSum->testConsideredRiskyEvents(), $testResult->testConsideredRiskyEvents()),
+                array_merge_recursive($testResultSum->testSuiteSkippedEvents(), $testResult->testSuiteSkippedEvents()),
                 array_merge_recursive($testResultSum->testSkippedEvents(), $testResult->testSkippedEvents()),
                 array_merge_recursive($testResultSum->testMarkedIncompleteEvents(), $testResult->testMarkedIncompleteEvents()),
                 array_merge_recursive($testResultSum->testTriggeredDeprecationEvents(), $testResult->testTriggeredDeprecationEvents()),
@@ -265,11 +268,15 @@ final class WrapperRunner implements RunnerInterface
             );
         }
 
-        $this->printer->printResults($testResultSum);
+        $this->printer->printResults(
+            $testResultSum,
+            $this->teamcityFiles,
+            $this->testdoxFiles,
+        );
         $this->generateCodeCoverageReports();
         $this->generateLogs();
 
-        $this->exitcode = (new ShellExitCodeCalculator())->calculate(
+        $exitcode = (new ShellExitCodeCalculator())->calculate(
             $this->options->configuration->failOnEmptyTestSuite(),
             $this->options->configuration->failOnRisky(),
             $this->options->configuration->failOnWarning(),
@@ -277,6 +284,14 @@ final class WrapperRunner implements RunnerInterface
             $this->options->configuration->failOnSkipped(),
             $testResultSum,
         );
+
+        $this->clearFiles($this->testresultFiles);
+        $this->clearFiles($this->coverageFiles);
+        $this->clearFiles($this->junitFiles);
+        $this->clearFiles($this->teamcityFiles);
+        $this->clearFiles($this->testdoxFiles);
+
+        return $exitcode;
     }
 
     protected function generateCodeCoverageReports(): void
@@ -308,5 +323,17 @@ final class WrapperRunner implements RunnerInterface
             $testSuite,
             $this->options->configuration->logfileJunit(),
         );
+    }
+
+    /** @param list<SplFileInfo> $files */
+    private function clearFiles(array $files): void
+    {
+        foreach ($files as $file) {
+            if (! $file->isFile()) {
+                continue;
+            }
+
+            unlink($file->getPathname());
+        }
     }
 }
