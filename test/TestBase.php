@@ -78,7 +78,7 @@ abstract class TestBase extends TestCase
             unset($_SERVER[Options::ENV_KEY_UNIQUE_TOKEN]);
         }
 
-        $runner->run();
+        $exitCode = $runner->run();
         if ($shouldPutEnvForParatestTestingItSelf) {
             putenv(Options::ENV_KEY_TOKEN . '=' . $prevToken);
             putenv(Options::ENV_KEY_UNIQUE_TOKEN . '=' . $prevUniqueToken);
@@ -86,7 +86,7 @@ abstract class TestBase extends TestCase
             $_SERVER[Options::ENV_KEY_UNIQUE_TOKEN] = $prevUniqueToken;
         }
 
-        return new RunnerResult($runner->getExitCode(), $output->fetch());
+        return new RunnerResult($exitCode, $output->fetch());
     }
 
     final protected function fixture(string $fixture): string

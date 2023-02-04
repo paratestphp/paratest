@@ -10,7 +10,5 @@ interface RunnerInterface
     public const FAILURE_EXIT   = 1;
     public const EXCEPTION_EXIT = 2;
 
-    public function run(): void;
-
-    public function getExitCode(): int;
+    public function run(): int;
 }
