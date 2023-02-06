@@ -153,7 +153,11 @@ final class ResultPrinter
         }
 
         $feedbackItems = $this->tail($progressFile);
-        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\(\\d+%\\)\\s*/', '', $feedbackItems);
+        if ($feedbackItems === '') {
+            return;
+        }
+
+        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\( ?\\d+%\\)\\s*/', '', $feedbackItems);
 
         $actualTestCount = strlen($feedbackItems);
         for ($index = 0; $index < $actualTestCount; ++$index) {
@@ -230,6 +234,7 @@ final class ResultPrinter
         }
 
         $this->output->write($this->getProgress() . "\n");
+        $this->column = 0;
     }
 
     private function printFeedbackItemColor(string $item): void
@@ -237,7 +242,7 @@ final class ResultPrinter
         $buffer = match ($item) {
             'E' => $this->colorizeTextBox('fg-red, bold', $item),
             'F' => $this->colorizeTextBox('bg-red, fg-white', $item),
-            'W', 'I', 'R' => $this->colorizeTextBox('fg-yellow, bold', $item),
+            'I', 'N', 'D', 'R', 'W' => $this->colorizeTextBox('fg-yellow, bold', $item),
             'S' => $this->colorizeTextBox('fg-cyan, bold', $item),
             default => $item,
         };

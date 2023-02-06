@@ -240,6 +240,27 @@ final class ResultPrinterTest extends TestBase
         static::assertSame($testdoxSourceContent, $this->output->fetch());
     }
 
+    public function testPrintFeedbackFromMultilineSource(): void
+    {
+        $source = <<<'EOF'
+        ...............................................................  63 / 300 ( 21%)
+        ............................................................... 126 / 300 ( 42%)
+        ............................................................... 189 / 300 ( 63%)
+        ............................................................... 252 / 300 ( 84%)
+        ................................................                300 / 300 (100%)
+        
+        EOF;
+
+        $this->printer->setTestCount(300);
+        $this->printer->start();
+        $this->output->fetch();
+        $feedbackFile = $this->tmpDir . DS . 'feedback1';
+        file_put_contents($feedbackFile, $source);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $contents = $this->output->fetch();
+        static::assertSame($source, $contents);
+    }
+
     private function getStartOutput(): string
     {
         $this->printer->start();

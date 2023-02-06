@@ -265,11 +265,11 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--processes'] = '1';
         $this->bareOptions['path']        = $this->fixture('common_results');
         $output                           = $this->runRunner()->output;
-        self::assertStringContainsString('Tests: 59, Assertions: 185,', $output);
+        self::assertStringContainsString('Tests: 60, Assertions: 187,', $output);
 
         $this->bareOptions['--stop-on-failure'] = true;
         $output                                 = $this->runRunner()->output;
-        self::assertStringContainsString('Tests: 53, Assertions: 182,', $output);
+        self::assertStringContainsString('Tests: 54, Assertions: 184,', $output);
     }
 
     public function testRaiseExceptionWhenATestCallsExitWithoutCoverageSingleProcess(): void

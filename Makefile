@@ -13,7 +13,7 @@ all: csfix test
 
 vendor: composer.json
 	composer update
-	composer bump
+	#composer bump
 	touch vendor
 
 .PHONY: csfix
