@@ -12,6 +12,9 @@ use PHPUnit\Logging\JUnit\JunitXmlLogger;
 use PHPUnit\Logging\TeamCity\TeamCityLogger;
 use PHPUnit\Logging\TestDox\TestResultCollector;
 use PHPUnit\Runner\CodeCoverage;
+use PHPUnit\Runner\Extension\ExtensionBootstrapper;
+use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
+use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
@@ -84,6 +87,26 @@ final class ApplicationForWrapperWorker
             $bootstrapFilename = $this->configuration->bootstrap();
             include_once $bootstrapFilename;
             EventFacade::emitter()->testRunnerBootstrapFinished($bootstrapFilename);
+        }
+
+        if (! $this->configuration->noExtensions()) {
+            if ($this->configuration->hasPharExtensionDirectory()) {
+                (new PharLoader())->loadPharExtensionsInDirectory(
+                    $this->configuration->pharExtensionDirectory(),
+                );
+            }
+
+            $extensionBootstrapper = new ExtensionBootstrapper(
+                $this->configuration,
+                new ExtensionFacade(),
+            );
+
+            foreach ($this->configuration->extensionBootstrappers() as $bootstrapper) {
+                $extensionBootstrapper->bootstrap(
+                    $bootstrapper['className'],
+                    $bootstrapper['parameters'],
+                );
+            }
         }
 
         CodeCoverage::init($this->configuration);
