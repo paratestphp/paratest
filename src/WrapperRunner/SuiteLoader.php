@@ -12,6 +12,7 @@ use PHPUnit\Runner\ResultCache\NullResultCache;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TextUI\Command\Result;
 use PHPUnit\TextUI\Command\WarmCodeCoverageCacheCommand;
+use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
@@ -39,7 +40,8 @@ final class SuiteLoader
 
     public function __construct(
         private readonly Options $options,
-        OutputInterface $output
+        OutputInterface $output,
+        CodeCoverageFilterRegistry $codeCoverageFilterRegistry,
     ) {
         (new PhpHandler())->handle($this->options->configuration->php());
 
@@ -79,7 +81,10 @@ final class SuiteLoader
         }
 
         ob_start();
-        $result = (new WarmCodeCoverageCacheCommand($this->options->configuration))->execute();
+        $result = (new WarmCodeCoverageCacheCommand(
+            $this->options->configuration,
+            $codeCoverageFilterRegistry,
+        ))->execute();
         $output->write(ob_get_clean());
         $output->write($result->output());
         if ($result->shellExitCode() !== Result::SUCCESS) {
