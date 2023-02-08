@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\SuiteLoader;
+use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function array_shift;
@@ -59,6 +60,6 @@ final class SuiteLoaderTest extends TestBase
     {
         $options = $this->createOptionsFromArgv($this->bareOptions, $cwd);
 
-        return new SuiteLoader($options, $this->output);
+        return new SuiteLoader($options, $this->output, new CodeCoverageFilterRegistry());
     }
 }

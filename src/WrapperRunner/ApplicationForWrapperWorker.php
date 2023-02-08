@@ -19,6 +19,7 @@ use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TextUI\Configuration\Builder;
+use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Output\Default\ProgressPrinter\ProgressPrinter;
@@ -32,7 +33,11 @@ use function file_put_contents;
 use function mt_srand;
 use function serialize;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @codeCoverageIgnore
+ */
 final class ApplicationForWrapperWorker
 {
     private bool $hasBeenBootstrapped = false;
@@ -109,7 +114,7 @@ final class ApplicationForWrapperWorker
             }
         }
 
-        CodeCoverage::init($this->configuration);
+        CodeCoverage::instance()->init($this->configuration, CodeCoverageFilterRegistry::instance());
 
         if ($this->configuration->hasLogfileJunit()) {
             new JunitXmlLogger(DefaultPrinter::from($this->configuration->logfileJunit()));
@@ -145,15 +150,16 @@ final class ApplicationForWrapperWorker
         EventFacade::emitter()->testRunnerExecutionFinished();
         EventFacade::emitter()->testRunnerFinished();
 
-        CodeCoverage::generateReports(new NullPrinter(), $this->configuration);
+        CodeCoverage::instance()->generateReports(new NullPrinter(), $this->configuration);
 
+        $result = TestResultFacade::result();
         if (isset($this->testdoxResultCollector)) {
             (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor))->print(
                 $this->testdoxResultCollector->testMethodsGroupedByClass(),
+                $result,
             );
         }
 
-        $result = TestResultFacade::result();
         file_put_contents($this->testresultFile, serialize($result));
 
         EventFacade::emitter()->applicationFinished(0);
