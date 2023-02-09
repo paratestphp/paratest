@@ -7,7 +7,6 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\WorkerCrashedException;
-use PHPUnit\Framework\Assert;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
@@ -16,11 +15,12 @@ use function array_reverse;
 use function array_unique;
 use function defined;
 use function file_get_contents;
+use function file_put_contents;
 use function min;
 use function posix_mkfifo;
 use function preg_match_all;
+use function preg_replace;
 use function scandir;
-use function simplexml_load_file;
 use function sprintf;
 use function str_replace;
 use function uniqid;
@@ -36,6 +36,7 @@ use const FIXTURES;
  * @covers \ParaTest\WrapperRunner\WorkerCrashedException
  * @covers \ParaTest\WrapperRunner\ResultPrinter
  * @covers \ParaTest\Coverage\CoverageMerger
+ * @covers \ParaTest\JUnit\TestSuite
  */
 final class WrapperRunnerTest extends TestBase
 {
@@ -124,7 +125,7 @@ final class WrapperRunnerTest extends TestBase
 
         $firstOutput  = $this->prepareOutputForTestOrderCheck($runnerResultFirst->output);
         $secondOutput = $this->prepareOutputForTestOrderCheck($runnerResultSecond->output);
-        Assert::assertSame($firstOutput, $secondOutput);
+        self::assertSame($firstOutput, $secondOutput);
 
         $this->bareOptions['--random-order-seed'] = '321';
 
@@ -132,7 +133,7 @@ final class WrapperRunnerTest extends TestBase
 
         $thirdOutput = $this->prepareOutputForTestOrderCheck($runnerResultThird->output);
 
-        Assert::assertNotSame($thirdOutput, $firstOutput);
+        self::assertNotSame($thirdOutput, $firstOutput);
     }
 
     /** @return string[] */
@@ -140,7 +141,7 @@ final class WrapperRunnerTest extends TestBase
     {
         $matchesCount = preg_match_all('/executing: (?<filename>\S+\.php)/', $output, $matches);
 
-        Assert::assertGreaterThan(0, $matchesCount);
+        self::assertGreaterThan(0, $matchesCount);
 
         return $matches['filename'];
     }
@@ -156,7 +157,7 @@ final class WrapperRunnerTest extends TestBase
 
         $runnerResult = $this->runRunner();
 
-        Assert::assertStringContainsString('Random Seed:', $runnerResult->output);
+        self::assertStringContainsString('Random Seed:', $runnerResult->output);
     }
 
     /**
@@ -170,11 +171,11 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH565' . DS . 'phpunit.xml');
         $runnerResult                         = $this->runRunner();
 
-        Assert::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider is invalid', $runnerResult->output);
-        Assert::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider is invalid', $runnerResult->output);
-        Assert::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testErrorByDataProvider is invalid', $runnerResult->output);
-        Assert::assertStringContainsString('Warnings: 1', $runnerResult->output);
-        Assert::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
+        self::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider is invalid', $runnerResult->output);
+        self::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testSkippedByDataProvider is invalid', $runnerResult->output);
+        self::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testErrorByDataProvider is invalid', $runnerResult->output);
+        self::assertStringContainsString('Warnings: 1', $runnerResult->output);
+        self::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
     }
 
     public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens(): void
@@ -184,8 +185,8 @@ final class WrapperRunnerTest extends TestBase
 
         $runnerResult = $this->runRunner();
 
-        Assert::assertStringContainsString('Failures: 1', $runnerResult->output);
-        Assert::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+        self::assertStringContainsString('Failures: 1', $runnerResult->output);
+        self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
     }
 
     public function testParatestEnvironmentVariable(): void
@@ -200,7 +201,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['path'] = $this->fixture('passthru_tests' . DS . 'PassthruTest.php');
 
         $runnerResult = $this->runRunner();
-        Assert::assertSame(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
@@ -231,7 +232,7 @@ final class WrapperRunnerTest extends TestBase
 
         $result = $this->runRunner();
 
-        Assert::assertSame(35, preg_match_all('/^##teamcity/m', $result->output));
+        self::assertSame(35, preg_match_all('/^##teamcity/m', $result->output));
     }
 
     public function testExitCodesPathWithoutTests(): void
@@ -239,7 +240,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['path'] = $this->fixture('no_tests');
         $runnerResult              = $this->runRunner();
 
-        Assert::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     /** @requires OSFAMILY Linux */
@@ -256,8 +257,8 @@ final class WrapperRunnerTest extends TestBase
 
         $this->runRunner();
 
-        Assert::assertSame(0, $fifoReader->wait());
-        Assert::assertSame(5, preg_match_all('/^##teamcity/m', $fifoReader->getOutput()));
+        self::assertSame(0, $fifoReader->wait());
+        self::assertSame(5, preg_match_all('/^##teamcity/m', $fifoReader->getOutput()));
     }
 
     public function testStopOnFailureEndsRunBeforeWholeTestSuite(): void
@@ -334,50 +335,47 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'ErrorTest.php');
         $runnerResult              = $this->runRunner();
 
-        Assert::assertStringContainsString('Errors: 1', $runnerResult->output);
-        Assert::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
+        self::assertStringContainsString('Errors: 1', $runnerResult->output);
+        self::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'FailureTest.php');
         $runnerResult              = $this->runRunner();
 
-        Assert::assertStringContainsString('Failures: 1', $runnerResult->output);
-        Assert::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+        self::assertStringContainsString('Failures: 1', $runnerResult->output);
+        self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'SuccessTest.php');
         $runnerResult              = $this->runRunner();
 
-        Assert::assertStringContainsString('OK', $runnerResult->output);
-        Assert::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        self::assertStringContainsString('OK', $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['path'] = $this->fixture('common_results');
         $runnerResult              = $this->runRunner();
 
-        Assert::assertStringContainsString('Failures: 1', $runnerResult->output);
-        Assert::assertStringContainsString('Errors: 1', $runnerResult->output);
-        Assert::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
+        self::assertStringContainsString('Failures: 1', $runnerResult->output);
+        self::assertStringContainsString('Errors: 1', $runnerResult->output);
+        self::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
     }
 
     public function testWritesLogWithEmptyNameWhenPathIsNotProvided(): void
     {
-        $outputPath = $this->tmpDir . DS . 'test-output.xml';
+        $outputFile = $this->tmpDir . DS . 'test-output.xml';
 
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-common_results.xml'),
-            '--log-junit' => $outputPath,
+            '--log-junit' => $outputFile,
         ];
 
         $this->runRunner();
 
-        Assert::assertFileExists($outputPath);
-        $doc = simplexml_load_file($outputPath);
-        Assert::assertNotFalse($doc);
-        $suites = (array) $doc->children();
-        Assert::assertArrayHasKey('testsuite', $suites);
-        $attribues = (array) $suites['testsuite']->attributes();
-        Assert::assertArrayHasKey('@attributes', $attribues);
-        Assert::assertIsArray($attribues['@attributes']);
-        Assert::assertArrayHasKey('name', $attribues['@attributes']);
-        Assert::assertSame('', $attribues['@attributes']['name']);
+        self::assertFileExists($outputFile);
+        $xml = file_get_contents($outputFile);
+        $xml = str_replace(FIXTURES, './test/fixtures', $xml);
+        $xml = preg_replace('/time="[^"]+"/', 'time="1.234567"', $xml);
+        file_put_contents($outputFile, $xml);
+
+        self::assertXmlFileEqualsXmlFile(FIXTURES . '/common_results/combined.xml', $outputFile);
     }
 
     public function testRunnerReversed(): void
@@ -397,7 +395,7 @@ final class WrapperRunnerTest extends TestBase
 
         $reverseOrderReversed = array_reverse($reverseOrder);
 
-        Assert::assertSame($defaultOrder, $reverseOrderReversed);
+        self::assertSame($defaultOrder, $reverseOrderReversed);
     }
 
     /**
@@ -440,11 +438,11 @@ final class WrapperRunnerTest extends TestBase
 
         $this->runRunner();
 
-        Assert::assertFileExists($outputPath);
+        self::assertFileExists($outputPath);
         $content = file_get_contents($outputPath);
-        Assert::assertNotFalse($content);
+        self::assertNotFalse($content);
 
-        Assert::assertSame(35, preg_match_all('/^##teamcity/m', $content));
+        self::assertSame(35, preg_match_all('/^##teamcity/m', $content));
     }
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void
@@ -467,7 +465,7 @@ final class WrapperRunnerTest extends TestBase
         static::assertEquals(0, $runnerResult->exitCode);
 
         $coveragePhp = include $this->bareOptions['--coverage-php'];
-        Assert::assertInstanceOf(CodeCoverage::class, $coveragePhp);
+        self::assertInstanceOf(CodeCoverage::class, $coveragePhp);
     }
 
     public function testHandleCollisionWithSymfonyOutput(): void

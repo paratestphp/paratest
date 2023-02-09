@@ -65,7 +65,7 @@ final class Writer
 
         $suiteNode->setAttribute('tests', (string) $parentSuite->tests);
         $suiteNode->setAttribute('assertions', (string) $parentSuite->assertions);
-        $suiteNode->setAttribute('errors', (string) ($parentSuite->errors + $parentSuite->risky));
+        $suiteNode->setAttribute('errors', (string) $parentSuite->errors);
         $suiteNode->setAttribute('failures', (string) $parentSuite->failures);
         $suiteNode->setAttribute('skipped', (string) $parentSuite->skipped);
         $suiteNode->setAttribute('time', (string) $parentSuite->time);

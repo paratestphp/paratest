@@ -20,7 +20,6 @@ final class TestCaseWithMessage extends TestCase
         float $time,
         public readonly ?string $type,
         public readonly string $text,
-        public readonly ?string $systemOutput,
         public readonly MessageType $xmlTagName
     ) {
         parent::__construct($name, $class, $file, $line, $assertions, $time);

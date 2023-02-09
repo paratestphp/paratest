@@ -7,9 +7,8 @@ namespace ParaTest\JUnit;
 use SimpleXMLElement;
 use SplFileInfo;
 
-use function array_map;
-use function array_sum;
 use function assert;
+use function count;
 use function file_get_contents;
 
 /**
@@ -19,11 +18,6 @@ use function file_get_contents;
  */
 final class TestSuite
 {
-    /** @var array<string, TestSuite> */
-    public readonly array $suites;
-    /** @var TestCase */
-    public readonly array $cases;
-
     /**
      * @param array<string, TestSuite> $suites
      * @param list<TestCase>           $cases
@@ -34,15 +28,12 @@ final class TestSuite
         public readonly int $assertions,
         public readonly int $failures,
         public readonly int $errors,
-        public readonly int $risky,
         public readonly int $skipped,
         public readonly float $time,
         public readonly string $file,
-        array $suites,
-        array $cases
+        public readonly array $suites,
+        public readonly array $cases
     ) {
-        $this->suites = $suites;
-        $this->cases  = $cases;
     }
 
     public static function fromFile(SplFileInfo $logFile): self
@@ -61,15 +52,41 @@ final class TestSuite
     private static function parseTestSuite(SimpleXMLElement $node, bool $isRootSuite): self
     {
         if ($isRootSuite) {
-            foreach ($node->testsuite as $singleTestSuiteXml) {
-                return self::parseTestSuite($singleTestSuiteXml, false);
-            }
+            $tests      = 0;
+            $assertions = 0;
+            $failures   = 0;
+            $errors     = 0;
+            $skipped    = 0;
+            $time       = 0;
+        } else {
+            $tests      = (int) $node['tests'];
+            $assertions = (int) $node['assertions'];
+            $failures   = (int) $node['failures'];
+            $errors     = (int) $node['errors'];
+            $skipped    = (int) $node['skipped'];
+            $time       = (float) $node['time'];
         }
 
+        $count  = count($node->testsuite);
         $suites = [];
         foreach ($node->testsuite as $singleTestSuiteXml) {
-            $testSuite                = self::parseTestSuite($singleTestSuiteXml, false);
+            $testSuite = self::parseTestSuite($singleTestSuiteXml, false);
+            if ($isRootSuite && $count === 1) {
+                return $testSuite;
+            }
+
             $suites[$testSuite->name] = $testSuite;
+
+            if (! $isRootSuite) {
+                continue;
+            }
+
+            $tests      += $testSuite->tests;
+            $assertions += $testSuite->assertions;
+            $failures   += $testSuite->failures;
+            $errors     += $testSuite->errors;
+            $skipped    += $testSuite->skipped;
+            $time       += $testSuite->time;
         }
 
         $cases = [];
@@ -77,25 +94,14 @@ final class TestSuite
             $cases[] = TestCase::caseFromNode($singleTestCase);
         }
 
-        $risky  = array_sum(array_map(static function (TestCase $testCase): int {
-            return (int) (
-                $testCase instanceof TestCaseWithMessage
-                && $testCase->xmlTagName === MessageType::risky
-            );
-        }, $cases));
-        $risky += array_sum(array_map(static function (TestSuite $testSuite): int {
-            return $testSuite->risky;
-        }, $suites));
-
         return new self(
             (string) $node['name'],
-            (int) $node['tests'],
-            (int) $node['assertions'],
-            (int) $node['failures'],
-            (int) $node['errors'] - $risky,
-            $risky,
-            (int) $node['skipped'],
-            (float) $node['time'],
+            $tests,
+            $assertions,
+            $failures,
+            $errors,
+            $skipped,
+            $time,
             (string) $node['file'],
             $suites,
             $cases,
