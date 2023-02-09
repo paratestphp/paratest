@@ -8,6 +8,7 @@ use SplFileInfo;
 
 use function array_merge;
 use function assert;
+use function ksort;
 
 /**
  * @internal
@@ -39,7 +40,6 @@ final class LogMerger
                         $mainSuite->assertions,
                         $mainSuite->failures,
                         $mainSuite->errors,
-                        $mainSuite->risky,
                         $mainSuite->skipped,
                         $mainSuite->time,
                         '',
@@ -55,7 +55,6 @@ final class LogMerger
                         $otherSuite->assertions,
                         $otherSuite->failures,
                         $otherSuite->errors,
-                        $otherSuite->risky,
                         $otherSuite->skipped,
                         $otherSuite->time,
                         '',
@@ -90,13 +89,14 @@ final class LogMerger
             );
         }
 
+        ksort($suites);
+
         return new TestSuite(
             $suite1->name,
             $suite1->tests + $suite2->tests,
             $suite1->assertions + $suite2->assertions,
             $suite1->failures + $suite2->failures,
             $suite1->errors + $suite2->errors,
-            $suite1->risky + $suite2->risky,
             $suite1->skipped + $suite2->skipped,
             $suite1->time + $suite2->time,
             $suite1->file,

@@ -31,13 +31,6 @@ class TestCase
 
     final public static function caseFromNode(SimpleXMLElement $node): self
     {
-        $systemOutput  = null;
-        $systemOutputs = $node->xpath('system-out');
-        if ($systemOutputs !== null && $systemOutputs !== []) {
-            assert(count($systemOutputs) === 1);
-            $systemOutput = (string) current($systemOutputs);
-        }
-
         $getFirstNode = static function (array $nodes): SimpleXMLElement {
             assert(count($nodes) === 1);
             $node = current($nodes);
@@ -59,21 +52,6 @@ class TestCase
             $type  = $getType($error);
             $text  = (string) $error;
 
-            if ($type === 'PHPUnit\\Framework\\RiskyTest') {
-                return new TestCaseWithMessage(
-                    (string) $node['name'],
-                    (string) $node['class'],
-                    (string) $node['file'],
-                    (int) $node['line'],
-                    (int) $node['assertions'],
-                    (float) $node['time'],
-                    $type,
-                    $text,
-                    $systemOutput,
-                    MessageType::risky,
-                );
-            }
-
             return new TestCaseWithMessage(
                 (string) $node['name'],
                 (string) $node['class'],
@@ -83,7 +61,6 @@ class TestCase
                 (float) $node['time'],
                 $type,
                 $text,
-                $systemOutput,
                 MessageType::error,
             );
         }
@@ -102,7 +79,6 @@ class TestCase
                 (float) $node['time'],
                 $type,
                 $text,
-                $systemOutput,
                 MessageType::failure,
             );
         }
@@ -128,7 +104,6 @@ class TestCase
                 (float) $node['time'],
                 null,
                 $text,
-                $systemOutput,
                 MessageType::skipped,
             );
         }
