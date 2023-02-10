@@ -38,7 +38,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testLoadFileGetsPathOfFile(): void
     {
-        $path                      = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $path                      = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $this->bareOptions['path'] = $path;
         $files                     = $this->loadSuite()->files;
 
@@ -47,8 +47,8 @@ final class SuiteLoaderTest extends TestBase
 
     public function testCacheIsWarmedWhenSpecified(): void
     {
-        $this->bareOptions['path']              = $this->fixture('common_results' . DS . 'SuccessTest.php');
-        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
         $this->loadSuite();

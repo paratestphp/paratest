@@ -35,7 +35,7 @@ use function substr;
 final class SuiteLoader
 {
     public readonly int $testCount;
-    /** @var array<non-empty-string, bool> */
+    /** @var list<non-empty-string> */
     public readonly array $files;
 
     public function __construct(
@@ -134,9 +134,6 @@ final class SuiteLoader
             return $filename;
         }
 
-        $filename = substr($filename, 1 + strlen($this->options->cwd));
-        assert(is_string($filename) && $filename !== false);
-
-        return $filename;
+        return substr($filename, 1 + strlen($this->options->cwd));
     }
 }

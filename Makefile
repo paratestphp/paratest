@@ -23,7 +23,7 @@ csfix: vendor
 
 .PHONY: static-analysis
 static-analysis: vendor
-	php -d zend.assertions=1 vendor/bin/psalm $(PSALM_ARGS)
+	php -d zend.assertions=1 vendor/bin/phpstan $(PHPSTAN_ARGS)
 
 coverage/junit.xml: vendor $(SRCS) Makefile
 	php -d zend.assertions=1 \

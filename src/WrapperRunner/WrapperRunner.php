@@ -41,7 +41,7 @@ final class WrapperRunner implements RunnerInterface
     private const CYCLE_SLEEP = 10000;
     private readonly ResultPrinter $printer;
 
-    /** @var non-empty-string[] */
+    /** @var list<non-empty-string> */
     private array $pending = [];
     private int $exitcode  = -1;
     /** @var array<positive-int,WrapperWorker> */
@@ -134,7 +134,7 @@ final class WrapperRunner implements RunnerInterface
 
                 $this->flushWorker($worker);
 
-                if ($batchSize !== null && $batchSize !== 0 && $this->batches[$token] === $batchSize) {
+                if ($batchSize !== 0 && $this->batches[$token] === $batchSize) {
                     $this->destroyWorker($token);
                     $worker = $this->startWorker($token);
                 }

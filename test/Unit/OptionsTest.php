@@ -87,7 +87,7 @@ final class OptionsTest extends TestBase
             '--passthru-php' => '-d a=1',
             '--processes' => '999',
             '--runner' => 'MYRUNNER',
-            '--tmp-dir' => ($tmpDir = uniqid($this->tmpDir . DS . 't')),
+            '--tmp-dir' => ($tmpDir = uniqid($this->tmpDir . DIRECTORY_SEPARATOR . 't')),
             '--verbose' => true,
             'path' => 'PATH',
         ];
@@ -115,7 +115,6 @@ final class OptionsTest extends TestBase
         self::assertArrayHasKey(Options::ENV_KEY_TOKEN, $env);
         self::assertSame($inc, $env[Options::ENV_KEY_TOKEN]);
         self::assertArrayHasKey(Options::ENV_KEY_UNIQUE_TOKEN, $env);
-        self::assertIsString($env[Options::ENV_KEY_UNIQUE_TOKEN]);
         self::assertStringContainsString($inc . '_', $env[Options::ENV_KEY_UNIQUE_TOKEN]);
 
         $options = $this->createOptionsFromArgv(['--no-test-tokens' => true]);

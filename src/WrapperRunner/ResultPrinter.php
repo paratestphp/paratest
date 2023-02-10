@@ -102,13 +102,11 @@ final class ResultPrinter
         // @see \PHPUnit\TextUI\Application::writeRuntimeInformation()
         $write('Processes', (string) $this->options->processes);
 
-        $configuration = $this->options->configuration;
-
         $runtime = 'PHP ' . PHP_VERSION;
 
         if ($this->options->configuration->hasCoverageReport()) {
             $filter = new Filter();
-            if ($configuration !== null && $configuration->pathCoverage()) {
+            if ($this->options->configuration->pathCoverage()) {
                 $codeCoverageDriver = (new Selector())->forLineAndPathCoverage($filter); // @codeCoverageIgnore
             } else {
                 $codeCoverageDriver = (new Selector())->forLineCoverage($filter);
@@ -119,8 +117,8 @@ final class ResultPrinter
 
         $write('Runtime', $runtime);
 
-        if ($configuration->hasConfigurationFile()) {
-            $write('Configuration', $configuration->configurationFile());
+        if ($this->options->configuration->hasConfigurationFile()) {
+            $write('Configuration', $this->options->configuration->configurationFile());
         }
 
         if ($this->options->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {

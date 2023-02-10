@@ -55,9 +55,9 @@ final class WrapperRunnerTest extends TestBase
             $this->bareOptions['--max-batch-size'] = (string) $batchSize;
         }
 
-        $tmpDir        = FIXTURES . DS . 'wrapper_batchsize_suite' . DS . 'tmp';
-        $pidFilesDir   = $tmpDir . DS . 'pid';
-        $tokenFilesDir = $tmpDir . DS . 'token';
+        $tmpDir        = FIXTURES . DIRECTORY_SEPARATOR . 'wrapper_batchsize_suite' . DIRECTORY_SEPARATOR . 'tmp';
+        $pidFilesDir   = $tmpDir . DIRECTORY_SEPARATOR . 'pid';
+        $tokenFilesDir = $tmpDir . DIRECTORY_SEPARATOR . 'token';
 
         $this->cleanContentFromDir($pidFilesDir);
         $this->cleanContentFromDir($tokenFilesDir);
@@ -82,7 +82,7 @@ final class WrapperRunnerTest extends TestBase
     {
         $cleanableFiles = array_diff(scandir($path), self::UNPROCESSABLE_FILENAMES);
         foreach ($cleanableFiles as $cleanableFile) {
-            unlink($path . DS . $cleanableFile);
+            unlink($path . DIRECTORY_SEPARATOR . $cleanableFile);
         }
     }
 
@@ -93,7 +93,7 @@ final class WrapperRunnerTest extends TestBase
         $processableFiles = array_diff(scandir($path), self::UNPROCESSABLE_FILENAMES);
         self::assertCount(self::NUMBER_OF_CLASS_TESTS_FOR_BATCH_SIZE, $processableFiles);
         foreach ($processableFiles as $processableFile) {
-            $res[] = file_get_contents($path . DS . $processableFile);
+            $res[] = file_get_contents($path . DIRECTORY_SEPARATOR . $processableFile);
         }
 
         return array_unique($res);
@@ -105,7 +105,7 @@ final class WrapperRunnerTest extends TestBase
      */
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuite(): void
     {
-        $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH420' . DS . 'phpunit.xml');
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420' . DIRECTORY_SEPARATOR . 'phpunit.xml');
         $runnerResult                         = $this->runRunner();
         static::assertEquals(0, $runnerResult->exitCode);
     }
@@ -168,7 +168,7 @@ final class WrapperRunnerTest extends TestBase
     {
         self::markTestSkipped('Test is correct, but PHPUnit singletons mess things up');
 
-        $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH565' . DS . 'phpunit.xml');
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH565' . DIRECTORY_SEPARATOR . 'phpunit.xml');
         $runnerResult                         = $this->runRunner();
 
         self::assertStringContainsString('The data provider specified for ParaTest\Tests\fixtures\github\GH565\IssueTest::testIncompleteByDataProvider is invalid', $runnerResult->output);
@@ -180,7 +180,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testParatestEnvironmentVariableWithWrapperRunnerWithoutTestTokens(): void
     {
-        $this->bareOptions['path']             = $this->fixture('paratest_only_tests' . DS . 'EnvironmentTest.php');
+        $this->bareOptions['path']             = $this->fixture('paratest_only_tests' . DIRECTORY_SEPARATOR . 'EnvironmentTest.php');
         $this->bareOptions['--no-test-tokens'] = true;
 
         $runnerResult = $this->runRunner();
@@ -191,21 +191,21 @@ final class WrapperRunnerTest extends TestBase
 
     public function testParatestEnvironmentVariable(): void
     {
-        $this->bareOptions['path'] = $this->fixture('paratest_only_tests' . DS . 'EnvironmentTest.php');
+        $this->bareOptions['path'] = $this->fixture('paratest_only_tests' . DIRECTORY_SEPARATOR . 'EnvironmentTest.php');
 
         static::assertEquals(0, $this->runRunner()->exitCode);
     }
 
     public function testPassthrus(): void
     {
-        $this->bareOptions['path'] = $this->fixture('passthru_tests' . DS . 'PassthruTest.php');
+        $this->bareOptions['path'] = $this->fixture('passthru_tests' . DIRECTORY_SEPARATOR . 'PassthruTest.php');
 
         $runnerResult = $this->runRunner();
         self::assertSame(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $this->bareOptions['--passthru-php'] = str_replace('\'', '"', (string) $this->bareOptions['--passthru-php']);
+            $this->bareOptions['--passthru-php'] = str_replace('\'', '"', $this->bareOptions['--passthru-php']);
         }
 
         $runnerResult = $this->runRunner();
@@ -218,8 +218,8 @@ final class WrapperRunnerTest extends TestBase
      */
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuiteManualBootstrap(): void
     {
-        $this->bareOptions['--configuration'] = $this->fixture('github' . DS . 'GH420bis' . DS . 'phpunit.xml');
-        $this->bareOptions['--bootstrap']     = $this->fixture('github' . DS . 'GH420bis' . DS . 'bootstrap.php');
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420bis' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--bootstrap']     = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420bis' . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
         $runnerResult = $this->runRunner();
         static::assertEquals(0, $runnerResult->exitCode);
@@ -246,10 +246,10 @@ final class WrapperRunnerTest extends TestBase
     /** @requires OSFAMILY Linux */
     public function testTeamcityLogHandlesFifoFiles(): void
     {
-        $outputPath = $this->tmpDir . DS . 'test-output.teamcity';
+        $outputPath = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.teamcity';
 
         posix_mkfifo($outputPath, 0600);
-        $this->bareOptions['path']           = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $this->bareOptions['path']           = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $this->bareOptions['--log-teamcity'] = $outputPath;
 
         $fifoReader = new Process(['cat', $outputPath]);
@@ -286,8 +286,8 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRaiseExceptionWhenATestCallsExitSilentlyWithCoverage(): void
     {
-        $this->bareOptions['path']              = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
-        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('exit_tests' . DIRECTORY_SEPARATOR . 'UnitTestThatExitsSilentlyTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('exit_tests');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
@@ -299,7 +299,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRaiseExceptionWhenATestCallsExitSilentlyWithoutCoverage(): void
     {
-        $this->bareOptions['path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsSilentlyTest.php');
+        $this->bareOptions['path'] = $this->fixture('exit_tests' . DIRECTORY_SEPARATOR . 'UnitTestThatExitsSilentlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
         $this->expectExceptionMessageMatches('/UnitTestThatExitsSilentlyTest/');
@@ -309,8 +309,8 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRaiseExceptionWhenATestCallsExitLoudlyWithCoverage(): void
     {
-        $this->bareOptions['path']              = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
-        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('exit_tests' . DIRECTORY_SEPARATOR . 'UnitTestThatExitsLoudlyTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('exit_tests');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
@@ -322,7 +322,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRaiseExceptionWhenATestCallsExitLoudlyWithoutCoverage(): void
     {
-        $this->bareOptions['path'] = $this->fixture('exit_tests' . DS . 'UnitTestThatExitsLoudlyTest.php');
+        $this->bareOptions['path'] = $this->fixture('exit_tests' . DIRECTORY_SEPARATOR . 'UnitTestThatExitsLoudlyTest.php');
 
         $this->expectException(WorkerCrashedException::class);
         $this->expectExceptionMessageMatches('/UnitTestThatExitsLoudlyTest/');
@@ -332,19 +332,19 @@ final class WrapperRunnerTest extends TestBase
 
     public function testExitCodes(): void
     {
-        $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'ErrorTest.php');
+        $this->bareOptions['path'] = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'ErrorTest.php');
         $runnerResult              = $this->runRunner();
 
         self::assertStringContainsString('Errors: 1', $runnerResult->output);
         self::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
 
-        $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'FailureTest.php');
+        $this->bareOptions['path'] = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'FailureTest.php');
         $runnerResult              = $this->runRunner();
 
         self::assertStringContainsString('Failures: 1', $runnerResult->output);
         self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
 
-        $this->bareOptions['path'] = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $this->bareOptions['path'] = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $runnerResult              = $this->runRunner();
 
         self::assertStringContainsString('OK', $runnerResult->output);
@@ -360,7 +360,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testWritesLogWithEmptyNameWhenPathIsNotProvided(): void
     {
-        $outputFile = $this->tmpDir . DS . 'test-output.xml';
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
 
         $this->bareOptions = [
             '--configuration' => $this->fixture('phpunit-common_results.xml'),
@@ -406,7 +406,7 @@ final class WrapperRunnerTest extends TestBase
     {
         $this->bareOptions['--no-test-tokens'] = true;
         $this->bareOptions['--processes']      = '1';
-        $this->bareOptions['path']             = $this->fixture('github' . DS . 'GH505');
+        $this->bareOptions['path']             = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH505');
 
         $runnerResult = $this->runRunner();
         static::assertEquals(0, $runnerResult->exitCode);
@@ -431,7 +431,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testTeamcityLog(): void
     {
-        $outputPath = $this->tmpDir . DS . 'test-output.teamcity';
+        $outputPath = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.teamcity';
 
         $this->bareOptions['path']           = $this->fixture('common_results');
         $this->bareOptions['--log-teamcity'] = $outputPath;
@@ -447,7 +447,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void
     {
-        $this->bareOptions['path']        = $this->fixture('common_results' . DS . 'SuccessTest.php');
+        $this->bareOptions['path']        = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $this->bareOptions['--processes'] = '10';
 
         $runnerResult = $this->runRunner();
@@ -456,8 +456,8 @@ final class WrapperRunnerTest extends TestBase
 
     public function testResultsAreCorrect(): void
     {
-        $this->bareOptions['path']              = $this->fixture('common_results' . DS . 'SuccessTest.php');
-        $this->bareOptions['--coverage-php']    = $this->tmpDir . DS . uniqid('result_');
+        $this->bareOptions['path']              = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
@@ -470,7 +470,7 @@ final class WrapperRunnerTest extends TestBase
 
     public function testHandleCollisionWithSymfonyOutput(): void
     {
-        $this->bareOptions['path'] = $this->fixture('symfony_output_collision' . DS . 'FailingSymfonyOutputCollisionTest.php');
+        $this->bareOptions['path'] = $this->fixture('symfony_output_collision' . DIRECTORY_SEPARATOR . 'FailingSymfonyOutputCollisionTest.php');
 
         $runnerResult = $this->runRunner();
         static::assertStringContainsString('<bg=%s>', $runnerResult->output);

@@ -91,7 +91,7 @@ abstract class TestBase extends TestCase
 
     final protected function fixture(string $fixture): string
     {
-        $fixture = FIXTURES . DS . $fixture;
+        $fixture = FIXTURES . DIRECTORY_SEPARATOR . $fixture;
         if (! file_exists($fixture)) {
             throw new InvalidArgumentException("Fixture {$fixture} not found");
         }

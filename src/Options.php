@@ -81,7 +81,7 @@ final class Options
      * @param non-empty-string        $phpunit
      * @param non-empty-string        $cwd
      * @param non-empty-string[]|null $passthruPhp
-     * @param non-empty-string[]|null $phpunitOptions
+     * @param array<non-empty-string, non-empty-string|true> $phpunitOptions
      * @param non-empty-string        $runner
      * @param non-empty-string        $tmpDir
      */
@@ -174,10 +174,10 @@ final class Options
             $phpunitArgv[] = $path;
         }
 
-        $configuration = (new Builder())->build($phpunitArgv);
-
         $phpunitOptions = array_intersect_key($options, self::OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER);
         $phpunitOptions = array_filter($phpunitOptions);
+
+        $configuration = (new Builder())->build($phpunitArgv);
 
         return new self(
             $configuration,
