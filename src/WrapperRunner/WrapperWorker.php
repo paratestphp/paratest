@@ -101,7 +101,7 @@ final class WrapperWorker
         $phpunitArguments = [$options->phpunit];
         foreach ($options->phpunitOptions as $key => $value) {
             $phpunitArguments[] = "--{$key}";
-            if ($value === null) {
+            if ($value === true) {
                 continue;
             }
 

@@ -47,7 +47,7 @@ class TestCase
             return (string) $attributes['type'];
         };
 
-        if (($errors = $node->xpath('error')) !== null && $errors !== []) {
+        if (($errors = $node->xpath('error')) !== []) {
             $error = $getFirstNode($errors);
             $type  = $getType($error);
             $text  = (string) $error;
@@ -65,7 +65,7 @@ class TestCase
             );
         }
 
-        if (($failures = $node->xpath('failure')) !== null && $failures !== []) {
+        if (($failures = $node->xpath('failure')) !== []) {
             $failure = $getFirstNode($failures);
             $type    = $getType($failure);
             $text    = (string) $failure;

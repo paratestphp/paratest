@@ -24,6 +24,7 @@ use function count;
 use function dirname;
 use function escapeshellarg;
 use function file_exists;
+use function is_array;
 use function is_bool;
 use function is_numeric;
 use function is_string;
@@ -78,12 +79,12 @@ final class Options
     public readonly bool $needsTeamcity;
 
     /**
-     * @param non-empty-string        $phpunit
-     * @param non-empty-string        $cwd
-     * @param non-empty-string[]|null $passthruPhp
-     * @param non-empty-string[]|null $phpunitOptions
-     * @param non-empty-string        $runner
-     * @param non-empty-string        $tmpDir
+     * @param non-empty-string                               $phpunit
+     * @param non-empty-string                               $cwd
+     * @param list<non-empty-string>|null                    $passthruPhp
+     * @param array<non-empty-string, non-empty-string|true> $phpunitOptions
+     * @param non-empty-string                               $runner
+     * @param non-empty-string                               $tmpDir
      */
     private function __construct(
         public readonly Configuration $configuration,
@@ -106,33 +107,32 @@ final class Options
     {
         $options = $input->getOptions();
 
-        assert(is_bool($options['no-test-tokens']));
-        assert($options['passthru-php'] === null || is_string($options['passthru-php']));
-        assert(is_string($options['processes']));
-        assert(is_string($options['runner']));
-        assert(is_string($options['tmp-dir']));
-        assert(is_bool($options['verbose']));
-
         $maxBatchSize = (int) $options['max-batch-size'];
         unset($options['max-batch-size']);
 
+        assert(is_bool($options['no-test-tokens']));
         $noTestTokens = $options['no-test-tokens'];
         unset($options['no-test-tokens']);
 
+        assert($options['passthru-php'] === null || is_string($options['passthru-php']));
         $passthruPhp = self::parsePassthru($options['passthru-php']);
         unset($options['passthru-php']);
 
+        assert(is_string($options['processes']));
         $processes = is_numeric($options['processes'])
             ? (int) $options['processes']
             : self::getNumberOfCPUCores();
         unset($options['processes']);
 
+        assert(is_string($options['runner']) && $options['runner'] !== '');
         $runner = $options['runner'];
         unset($options['runner']);
 
+        assert(is_string($options['tmp-dir']) && $options['tmp-dir'] !== '');
         $tmpDir = $options['tmp-dir'];
         unset($options['tmp-dir']);
 
+        assert(is_bool($options['verbose']));
         $verbose = $options['verbose'];
         unset($options['verbose']);
 
@@ -174,10 +174,10 @@ final class Options
             $phpunitArgv[] = $path;
         }
 
-        $configuration = (new Builder())->build($phpunitArgv);
-
         $phpunitOptions = array_intersect_key($options, self::OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER);
         $phpunitOptions = array_filter($phpunitOptions);
+
+        $configuration = (new Builder())->build($phpunitArgv);
 
         return new self(
             $configuration,
@@ -541,7 +541,7 @@ final class Options
         ]);
     }
 
-    /** @return string $phpunit the path to phpunit */
+    /** @return non-empty-string $phpunit the path to phpunit */
     private static function getPhpunitBinary(): string
     {
         $tryPaths = [
@@ -568,7 +568,7 @@ final class Options
         }
     }
 
-    /** @return non-empty-string[]|null */
+    /** @return list<non-empty-string>|null */
     private static function parsePassthru(?string $param): ?array
     {
         if ($param === null) {
@@ -585,8 +585,8 @@ final class Options
         );
         $stringToArgumentProcess->mustRun();
 
-        /** @var string[] $passthruAsArguments */
         $passthruAsArguments = unserialize($stringToArgumentProcess->getOutput());
+        assert(is_array($passthruAsArguments));
         array_shift($passthruAsArguments);
 
         if (count($passthruAsArguments) === 0) {

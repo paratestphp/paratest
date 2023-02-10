@@ -14,9 +14,10 @@ use const DIRECTORY_SEPARATOR;
 
 final class TmpDirCreator
 {
+    /** @return non-empty-string */
     public function create(): string
     {
-        $tmpDir = TEST_DIR . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'token_' . (string) getenv('TEST_TOKEN');
+        $tmpDir = __DIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'token_' . (string) getenv('TEST_TOKEN');
 
         $glob = glob($tmpDir . DIRECTORY_SEPARATOR . '*');
         Assert::assertNotFalse($glob);

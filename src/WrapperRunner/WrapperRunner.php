@@ -41,7 +41,7 @@ final class WrapperRunner implements RunnerInterface
     private const CYCLE_SLEEP = 10000;
     private readonly ResultPrinter $printer;
 
-    /** @var non-empty-string[] */
+    /** @var list<non-empty-string> */
     private array $pending = [];
     private int $exitcode  = -1;
     /** @var array<positive-int,WrapperWorker> */
@@ -91,7 +91,9 @@ final class WrapperRunner implements RunnerInterface
 
     public function run(): int
     {
-        ExcludeList::addDirectory(dirname(__DIR__));
+        $directory = dirname(__DIR__);
+        assert($directory !== '');
+        ExcludeList::addDirectory($directory);
         TestResultFacade::init();
         EventFacade::seal();
         $suiteLoader = new SuiteLoader(
@@ -134,7 +136,7 @@ final class WrapperRunner implements RunnerInterface
 
                 $this->flushWorker($worker);
 
-                if ($batchSize !== null && $batchSize !== 0 && $this->batches[$token] === $batchSize) {
+                if ($batchSize !== 0 && $this->batches[$token] === $batchSize) {
                     $this->destroyWorker($token);
                     $worker = $this->startWorker($token);
                 }
@@ -190,6 +192,7 @@ final class WrapperRunner implements RunnerInterface
         }
     }
 
+    /** @param positive-int $token */
     private function startWorker(int $token): WrapperWorker
     {
         $worker = new WrapperWorker(

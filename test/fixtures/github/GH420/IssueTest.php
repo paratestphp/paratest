@@ -15,7 +15,7 @@ final class IssueTest extends TestCase
     /** @dataProvider provideCases */
     public function testCases(bool $true): void
     {
-        static::assertTrue($true);
+        self::assertTrue($true);
     }
 
     /** @return true[][] */
@@ -36,8 +36,8 @@ final class IssueTest extends TestCase
 
         // If the gathered variables are emtpy, the number of assertions will differ
         foreach ($cases as $index => $case) {
-            static::assertIsString($case, $index);
-            static::assertStringContainsString('ISSUE_420_', $case, $index);
+            self::assertIsString($case, $index);
+            self::assertStringContainsString('ISSUE_420_', $case, $index);
         }
 
         return [[true]];

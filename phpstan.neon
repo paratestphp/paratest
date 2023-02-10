@@ -1,0 +1,16 @@
+includes:
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: max
+    tipsOfTheDay: false
+    paths:
+        - src/
+        - test/
+    excludePaths:
+        analyseAndScan:
+            - test/fixtures/*
+            - test/tmp/*

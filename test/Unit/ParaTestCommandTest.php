@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function assert;
 use function chdir;
 use function getcwd;
 
@@ -23,12 +24,16 @@ use function getcwd;
 final class ParaTestCommandTest extends TestCase
 {
     private CommandTester $commandTester;
+    /** @var non-empty-string */
     private string $tmpDir;
+    /** @var non-empty-string */
     private string $getcwd;
 
     protected function setUp(): void
     {
-        $this->getcwd = getcwd();
+        $getcwd = getcwd();
+        assert($getcwd !== false);
+        $this->getcwd = $getcwd;
         $this->tmpDir = (new TmpDirCreator())->create();
         chdir($this->tmpDir);
         $application = ParaTestCommand::applicationFactory($this->tmpDir);
@@ -47,9 +52,9 @@ final class ParaTestCommandTest extends TestCase
         $application = ParaTestCommand::applicationFactory($this->tmpDir);
         $commands    = $application->all();
 
-        static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
-        static::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
-        static::assertSame(
+        self::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
+        self::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
+        self::assertSame(
             'ParaTest <info>' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion() . '</info>',
             $application->getLongVersion(),
         );
@@ -59,7 +64,7 @@ final class ParaTestCommandTest extends TestCase
     {
         $this->commandTester->execute([]);
 
-        static::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
+        self::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
     }
 
     public function testCustomRunnerMustBeAValidRunner(): void

@@ -14,6 +14,6 @@ final class PassthruTest extends TestCase
 {
     public function testExit(): void
     {
-        static::assertSame(WrapperRunnerTest::PASSTHRU_PHP_CUSTOM, ini_get('highlight.comment'));
+        self::assertSame(WrapperRunnerTest::PASSTHRU_PHP_CUSTOM, ini_get('highlight.comment'));
     }
 }
