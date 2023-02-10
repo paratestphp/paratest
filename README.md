@@ -3,10 +3,8 @@ ParaTest
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
 [![Downloads](https://img.shields.io/packagist/dt/brianium/paratest.svg)](https://packagist.org/packages/brianium/paratest)
-[![Integrate](https://github.com/paratestphp/paratest/workflows/Integrate/badge.svg?branch=6.x)](https://github.com/paratestphp/paratest/actions)
-[![Code Coverage](https://codecov.io/gh/paratestphp/paratest/coverage.svg?branch=6.x)](https://codecov.io/gh/paratestphp/paratest?branch=6.x)
-[![Type Coverage](https://shepherd.dev/github/paratestphp/paratest/coverage.svg)](https://shepherd.dev/github/paratestphp/paratest)
-[![Infection MSI](https://badge.stryker-mutator.io/github.com/paratestphp/paratest/6.x)](https://dashboard.stryker-mutator.io/reports/github.com/paratestphp/paratest/6.x)
+[![Integrate](https://github.com/paratestphp/paratest/workflows/CI/badge.svg)](https://github.com/paratestphp/paratest/actions)
+[![Infection MSI](https://badge.stryker-mutator.io/github.com/paratestphp/paratest/7.x)](https://dashboard.stryker-mutator.io/reports/github.com/paratestphp/paratest/7.x)
 
 The objective of ParaTest is to support parallel testing in PHPUnit. Provided you have well-written PHPUnit tests, you can drop `paratest` in your project and
 start using it with no additional bootstrap or configurations!
@@ -15,7 +13,6 @@ Benefits:
 
 * Zero configuration. After the installation, run with `vendor/bin/paratest`. That's it!
 * Code Coverage report combining. Run your tests in N parallel processes and all the code coverage output will be combined into one report.
-* Flexible. Isolate test files in separate processes or take advantage of `WrapperRunner` for even faster runs.
 
 # Installation
 
@@ -55,9 +52,6 @@ A `UNIQUE_TEST_TOKEN` environment variable is also available and guaranteed to h
 per run and per process.
 
 ## Code coverage
-
-Beginning from PHPUnit 9.3.4, it is strongly advised to set a coverage cache directory,
-see [PHPUnit Changelog @ 9.3.4](https://github.com/sebastianbergmann/phpunit/blob/9.3.4/ChangeLog-9.3.md#934---2020-08-10).
 
 The cache is always warmed up by ParaTest before executing the test suite.
 
