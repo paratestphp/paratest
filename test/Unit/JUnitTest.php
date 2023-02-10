@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit;
 
 use ParaTest\JUnit\LogMerger;
+use ParaTest\JUnit\MessageType;
+use ParaTest\JUnit\TestCase as JunitTestCase;
+use ParaTest\JUnit\TestCaseWithMessage;
+use ParaTest\JUnit\TestSuite;
 use ParaTest\JUnit\Writer;
 use ParaTest\Tests\TmpDirCreator;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 
@@ -15,16 +20,13 @@ use function file_put_contents;
 use function glob;
 use function str_replace;
 
-/**
- * @internal
- *
- * @covers \ParaTest\JUnit\LogMerger
- * @covers \ParaTest\JUnit\MessageType
- * @covers \ParaTest\JUnit\TestCase
- * @covers \ParaTest\JUnit\TestCaseWithMessage
- * @covers \ParaTest\JUnit\TestSuite
- * @covers \ParaTest\JUnit\Writer
- */
+/** @internal */
+#[CoversClass(LogMerger::class)]
+#[CoversClass(MessageType::class)]
+#[CoversClass(JunitTestCase::class)]
+#[CoversClass(TestCaseWithMessage::class)]
+#[CoversClass(TestSuite::class)]
+#[CoversClass(Writer::class)]
 final class JUnitTest extends TestCase
 {
     public function testMergeJunitLogs(): void

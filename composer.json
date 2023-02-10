@@ -52,6 +52,7 @@
         "ext-pcov": "*",
         "ext-posix": "*",
         "doctrine/coding-standard": "^11.1.0",
+        "infection/infection": "^0.26.19",
         "phpstan/phpstan": "^1.9",
         "phpstan/phpstan-deprecation-rules": "^1.1",
         "phpstan/phpstan-phpunit": "^1.3",

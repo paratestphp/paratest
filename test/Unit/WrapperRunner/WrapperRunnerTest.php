@@ -4,9 +4,16 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
+use ParaTest\Coverage\CoverageMerger;
+use ParaTest\JUnit\TestSuite;
 use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
+use ParaTest\WrapperRunner\ResultPrinter;
 use ParaTest\WrapperRunner\WorkerCrashedException;
+use ParaTest\WrapperRunner\WrapperRunner;
+use ParaTest\WrapperRunner\WrapperWorker;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
@@ -30,16 +37,13 @@ use function unlink;
 use const DIRECTORY_SEPARATOR;
 use const FIXTURES;
 
-/**
- * @internal
- *
- * @covers \ParaTest\WrapperRunner\WrapperRunner
- * @covers \ParaTest\WrapperRunner\WrapperWorker
- * @covers \ParaTest\WrapperRunner\WorkerCrashedException
- * @covers \ParaTest\WrapperRunner\ResultPrinter
- * @covers \ParaTest\Coverage\CoverageMerger
- * @covers \ParaTest\JUnit\TestSuite
- */
+/** @internal */
+#[CoversClass(WrapperRunner::class)]
+#[CoversClass(WrapperWorker::class)]
+#[CoversClass(WorkerCrashedException::class)]
+#[CoversClass(ResultPrinter::class)]
+#[CoversClass(CoverageMerger::class)]
+#[CoversClass(TestSuite::class)]
 final class WrapperRunnerTest extends TestBase
 {
     protected const NUMBER_OF_CLASS_TESTS_FOR_BATCH_SIZE = 4;
@@ -108,10 +112,8 @@ final class WrapperRunnerTest extends TestBase
         return array_unique($res);
     }
 
-    /**
-     * @group github
-     * @coversNothing
-     */
+    /** @group github */
+    #[CoversNothing]
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuite(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -169,10 +171,8 @@ final class WrapperRunnerTest extends TestBase
         self::assertStringContainsString('Random Seed:', $runnerResult->output);
     }
 
-    /**
-     * @group github
-     * @coversNothing
-     */
+    /** @group github */
+    #[CoversNothing]
     public function testErrorsInDataProviderAreHandled(): void
     {
         self::markTestSkipped('Test is correct, but PHPUnit singletons mess things up');
@@ -221,10 +221,8 @@ final class WrapperRunnerTest extends TestBase
         self::assertEquals(0, $runnerResult->exitCode);
     }
 
-    /**
-     * @group github
-     * @coversNothing
-     */
+    /** @group github */
+    #[CoversNothing]
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuiteManualBootstrap(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420bis' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -418,10 +416,8 @@ final class WrapperRunnerTest extends TestBase
         self::assertSame($defaultOrder, $reverseOrderReversed);
     }
 
-    /**
-     * @group github
-     * @coversNothing
-     */
+    /** @group github */
+    #[CoversNothing]
     public function testTokensAreAbsentWhenNoTestTokensIsSpecified(): void
     {
         $this->bareOptions['--no-test-tokens'] = true;

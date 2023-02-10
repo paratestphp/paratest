@@ -35,7 +35,7 @@ jobs:
 
   xml-lint:
     name: "Lint XMLs"
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-latest"
     strategy:
       matrix:
         php-version:
@@ -58,12 +58,10 @@ jobs:
 
   tests:
     name: "Tests"
-    runs-on: ${{ matrix.os }}
+    runs-on: "ubuntu-latest"
 
     strategy:
       matrix:
-        os:
-          - "ubuntu-latest"
         php-version:
           - "8.1"
           - "8.2"
@@ -86,75 +84,43 @@ jobs:
         timeout-minutes: 3
         run: "vendor/bin/phpunit --no-coverage --no-logging"
 
-#  code-coverage:
-#    name: "Code Coverage"
-#
-#    runs-on: ${{ matrix.os }}
-#
-#    strategy:
-#      matrix:
-#        os:
-#          - "ubuntu-latest"
-#        php-version:
-#          - "8.1"
-#        dependencies:
-#          - "highest"
-#
-#    steps:
-#      - name: "Checkout"
-#        uses: "actions/checkout@v3"
-#
-#      - name: "Install PHP"
-#        uses: "shivammathur/setup-php@v2"
-#        with:
-#          coverage: "pcov"
-#          php-version: "${{ matrix.php-version }}"
-#          ini-values: zend.assertions=1
-#
-#      - name: "Get composer cache directory"
-#        id: composercache
-#        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-#
-#      - name: "Cache dependencies"
-#        uses: actions/cache@v3
-#        with:
-#          path: ${{ steps.composercache.outputs.dir }}
-#          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
-#          restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
-#
-#      - name: "Install highest dependencies"
-#        if: ${{ matrix.dependencies == 'highest' }}
-#        run: "composer update --no-interaction --no-progress"
-#
-#      - name: "Run tests"
-#        timeout-minutes: 5
-#        run: "make test"
-#
-#      - name: "Send code coverage report to Codecov.io"
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          file: ./coverage/clover.xml
-#          fail_ci_if_error: true
-#
-#      - name: "Gather base branch for diff"
-#        if: ${{ github.event_name == 'pull_request' }}
-#        run: git fetch origin --no-tags --prune --depth=1 ${{ github.base_ref }} ${{ github.event.pull_request.base.sha }}
-#
-#      - name: "Infection on DIFF"
-#        if: ${{ github.event_name == 'pull_request' }}
-#        timeout-minutes: 10
-#        run: make code-coverage INFECTION_ARGS="--logger-github"
-#        env:
-#          BASE_BRANCH: origin/${{ github.base_ref }}
-#          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
-#
-#      - name: "Infection on complete code base"
-#        if: ${{ github.event_name != 'pull_request' }}
-#        timeout-minutes: 10
-#        run: "vendor/bin/infection --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
-#        env:
-#          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
+  code-coverage:
+    name: "Code Coverage"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        php-version:
+          - "8.2"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+      - uses: "ramsey/composer-install@v2"
+
+      - run: "make test"
+        timeout-minutes: 3
+
+      - name: "Gather base branch for diff"
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin --no-tags --prune --depth=1 ${{ github.base_ref }} ${{ github.event.pull_request.base.sha }}
+
+      - name: "Infection on DIFF"
+        if: ${{ github.event_name == 'pull_request' }}
+        timeout-minutes: 30
+        run: make code-coverage INFECTION_ARGS="--logger-github"
+        env:
+          BASE_BRANCH: origin/${{ github.base_ref }}
+
+      - name: "Infection on complete code base"
+        if: ${{ github.event_name != 'pull_request' }}
+        timeout-minutes: 30
+        run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
+        env:
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
 
   coding-standards:
     name: "Coding Standards"

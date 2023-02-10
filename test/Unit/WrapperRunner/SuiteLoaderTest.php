@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\SuiteLoader;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -14,11 +15,8 @@ use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
 
-/**
- * @internal
- *
- * @covers \ParaTest\WrapperRunner\SuiteLoader
- */
+/** @internal */
+#[CoversClass(SuiteLoader::class)]
 final class SuiteLoaderTest extends TestBase
 {
     private BufferedOutput $output;
@@ -58,6 +56,16 @@ final class SuiteLoaderTest extends TestBase
         $this->loadSuite();
 
         self::assertStringContainsString('Warming cache', $this->output->fetch());
+    }
+
+    public function testLoadsPhptFiles(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('phpt');
+        $files                     = $this->loadSuite()->files;
+
+        $file = array_shift($files);
+        self::assertNotNull($file);
+        self::assertStringContainsString('my_test.phpt', $file);
     }
 
     private function loadSuite(): SuiteLoader
