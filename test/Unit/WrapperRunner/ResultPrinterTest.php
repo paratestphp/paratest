@@ -45,7 +45,7 @@ final class ResultPrinterTest extends TestBase
         $contents = $this->getStartOutput();
         $expected = sprintf("Processes:     %s\n", PROCESSES_FOR_TESTS);
 
-        static::assertStringStartsWith($expected, $contents);
+        self::assertStringStartsWith($expected, $contents);
     }
 
     public function testStartPrintsRuntimeInfosWithoutCcDriver(): void
@@ -57,7 +57,7 @@ final class ResultPrinterTest extends TestBase
         $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv(['--verbose' => true]));
         $contents      = $this->getStartOutput();
 
-        static::assertStringContainsString(sprintf("Runtime:       PHP %s\n", PHP_VERSION), $contents);
+        self::assertStringContainsString(sprintf("Runtime:       PHP %s\n", PHP_VERSION), $contents);
     }
 
     public function testStartPrintsRuntimeInfosWithCcDriver(): void
@@ -72,7 +72,7 @@ final class ResultPrinterTest extends TestBase
         ]));
         $contents      = $this->getStartOutput();
 
-        static::assertStringContainsString(sprintf("Runtime:       PHP %s with PCOV %s\n", PHP_VERSION, phpversion('pcov')), $contents);
+        self::assertStringContainsString(sprintf("Runtime:       PHP %s with PCOV %s\n", PHP_VERSION, phpversion('pcov')), $contents);
     }
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void
@@ -86,7 +86,7 @@ final class ResultPrinterTest extends TestBase
         ]));
         $contents      = $this->getStartOutput();
         $expected      = sprintf("Configuration: %s\n\n", $pathToConfig);
-        static::assertStringEndsWith($expected, $contents);
+        self::assertStringEndsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithRandom(): void
@@ -104,7 +104,7 @@ final class ResultPrinterTest extends TestBase
         $contents      = $this->getStartOutput();
         $expected      = sprintf("Random Seed:   %s\n\n", $random_seed);
 
-        static::assertStringEndsWith($expected, $contents);
+        self::assertStringEndsWith($expected, $contents);
     }
 
     public function testStartPrintsOptionInfoWithSingularForOneProcess(): void
@@ -115,14 +115,14 @@ final class ResultPrinterTest extends TestBase
         ]));
         $contents      = $this->getStartOutput();
 
-        static::assertStringStartsWith("Processes:     1\n", $contents);
+        self::assertStringStartsWith("Processes:     1\n", $contents);
     }
 
     public function testGetHeader(): void
     {
         $this->printer->printResults($this->getEmptyTestResult(), [], []);
 
-        static::assertMatchesRegularExpression(
+        self::assertMatchesRegularExpression(
             "/\nTime: ([.:]?[0-9]{1,3})+ ?" .
             '(minute|minutes|second|seconds|ms|)?,' .
             " Memory:[\\s][0-9]+([.][0-9]{1,2})? ?M[Bb]\n\n/",
@@ -137,13 +137,13 @@ final class ResultPrinterTest extends TestBase
         file_put_contents($feedbackFile, 'EWWFFFRRSSSS....... 19 / 19 (100%)');
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $contents = $this->output->fetch();
-        static::assertSame('EWWFFFRRSSSS.......', $contents);
+        self::assertSame('EWWFFFRRSSSS.......', $contents);
 
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback2';
         file_put_contents($feedbackFile, 'E 1 / 1 (100%)');
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $contents = $this->output->fetch();
-        static::assertSame("E 20 / 20 (100%)\n", $contents);
+        self::assertSame("E 20 / 20 (100%)\n", $contents);
     }
 
     public function testColorsForFailing(): void
@@ -155,8 +155,8 @@ final class ResultPrinterTest extends TestBase
         file_put_contents($feedbackFile, 'E');
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $contents = $this->output->fetch();
-        static::assertStringContainsString('E', $contents);
-        static::assertStringContainsString('31;1', $contents);
+        self::assertStringContainsString('E', $contents);
+        self::assertStringContainsString('31;1', $contents);
     }
 
     public function testTeamcityFeedbackOnFile(): void
@@ -175,8 +175,8 @@ final class ResultPrinterTest extends TestBase
 
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), [new SplFileInfo($teamcitySource)]);
 
-        static::assertSame('E', $this->output->fetch());
-        static::assertFileExists($teamcityLog);
+        self::assertSame('E', $this->output->fetch());
+        self::assertFileExists($teamcityLog);
 
         $logContent = file_get_contents($teamcityLog);
 
@@ -200,7 +200,7 @@ final class ResultPrinterTest extends TestBase
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), [new SplFileInfo($teamcitySource)]);
         $this->printer->printResults($this->getEmptyTestResult(), [new SplFileInfo($teamcitySource)], []);
 
-        static::assertSame($teamcitySourceContent, $this->output->fetch());
+        self::assertSame($teamcitySourceContent, $this->output->fetch());
     }
 
     public function testTestdoxOutputWithProgress(): void
@@ -219,7 +219,7 @@ final class ResultPrinterTest extends TestBase
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
-        static::assertSame('EEE' . $testdoxSourceContent, $this->output->fetch());
+        self::assertSame('EEE' . $testdoxSourceContent, $this->output->fetch());
     }
 
     public function testTestdoxOutputWithoutProgress(): void
@@ -238,7 +238,7 @@ final class ResultPrinterTest extends TestBase
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
-        static::assertSame($testdoxSourceContent, $this->output->fetch());
+        self::assertSame($testdoxSourceContent, $this->output->fetch());
     }
 
     public function testPrintFeedbackFromMultilineSource(): void
@@ -259,7 +259,7 @@ final class ResultPrinterTest extends TestBase
         file_put_contents($feedbackFile, $source);
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
         $contents = $this->output->fetch();
-        static::assertSame($source, $contents);
+        self::assertSame($source, $contents);
     }
 
     private function getStartOutput(): string

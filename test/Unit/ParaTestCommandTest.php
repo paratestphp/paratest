@@ -52,9 +52,9 @@ final class ParaTestCommandTest extends TestCase
         $application = ParaTestCommand::applicationFactory($this->tmpDir);
         $commands    = $application->all();
 
-        static::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
-        static::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
-        static::assertSame(
+        self::assertArrayHasKey(ParaTestCommand::COMMAND_NAME, $commands);
+        self::assertInstanceOf(ParaTestCommand::class, $commands[ParaTestCommand::COMMAND_NAME]);
+        self::assertSame(
             'ParaTest <info>' . PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion() . '</info>',
             $application->getLongVersion(),
         );
@@ -64,7 +64,7 @@ final class ParaTestCommandTest extends TestCase
     {
         $this->commandTester->execute([]);
 
-        static::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
+        self::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
     }
 
     public function testCustomRunnerMustBeAValidRunner(): void

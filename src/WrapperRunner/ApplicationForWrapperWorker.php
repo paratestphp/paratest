@@ -29,6 +29,7 @@ use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
 use PHPUnit\Util\ExcludeList;
 
+use function assert;
 use function file_put_contents;
 use function mt_srand;
 use function serialize;
@@ -154,6 +155,8 @@ final class ApplicationForWrapperWorker
 
         $result = TestResultFacade::result();
         if (isset($this->testdoxResultCollector)) {
+            assert(isset($this->testdoxFile));
+
             (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor))->print(
                 $this->testdoxResultCollector->testMethodsGroupedByClass(),
                 $result,

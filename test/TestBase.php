@@ -94,6 +94,11 @@ abstract class TestBase extends TestCase
         return new RunnerResult($exitCode, $output->fetch());
     }
 
+    /**
+     * @param non-empty-string $fixture
+     *
+     * @return non-empty-string
+     */
     final protected function fixture(string $fixture): string
     {
         $fixture = FIXTURES . DIRECTORY_SEPARATOR . $fixture;

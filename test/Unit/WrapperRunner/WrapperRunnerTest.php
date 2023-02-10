@@ -115,7 +115,7 @@ final class WrapperRunnerTest extends TestBase
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420' . DIRECTORY_SEPARATOR . 'phpunit.xml');
         $runnerResult                         = $this->runRunner();
-        static::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(0, $runnerResult->exitCode);
     }
 
     public function testRunnerSortTestEqualBySeed(): void
@@ -201,7 +201,7 @@ final class WrapperRunnerTest extends TestBase
     {
         $this->bareOptions['path'] = $this->fixture('paratest_only_tests' . DIRECTORY_SEPARATOR . 'EnvironmentTest.php');
 
-        static::assertEquals(0, $this->runRunner()->exitCode);
+        self::assertEquals(0, $this->runRunner()->exitCode);
     }
 
     public function testPassthrus(): void
@@ -217,7 +217,7 @@ final class WrapperRunnerTest extends TestBase
         }
 
         $runnerResult = $this->runRunner();
-        static::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(0, $runnerResult->exitCode);
     }
 
     /**
@@ -230,7 +230,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--bootstrap']     = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420bis' . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
         $runnerResult = $this->runRunner();
-        static::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(0, $runnerResult->exitCode);
     }
 
     public function testTeamcityOutput(): void
@@ -418,7 +418,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['path']             = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH505');
 
         $runnerResult = $this->runRunner();
-        static::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(0, $runnerResult->exitCode);
     }
 
     /**
@@ -435,7 +435,7 @@ final class WrapperRunnerTest extends TestBase
         ];
 
         $runnerResult = $this->runRunner();
-        static::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(0, $runnerResult->exitCode);
     }
 
     public function testTeamcityLog(): void
@@ -460,7 +460,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--processes'] = '10';
 
         $runnerResult = $this->runRunner();
-        static::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(0, $runnerResult->exitCode);
     }
 
     public function testResultsAreCorrect(): void
@@ -471,7 +471,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
         $runnerResult = $this->runRunner();
-        static::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(0, $runnerResult->exitCode);
 
         $coveragePhp = include $this->bareOptions['--coverage-php'];
         self::assertInstanceOf(CodeCoverage::class, $coveragePhp);
@@ -482,6 +482,6 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['path'] = $this->fixture('symfony_output_collision' . DIRECTORY_SEPARATOR . 'FailingSymfonyOutputCollisionTest.php');
 
         $runnerResult = $this->runRunner();
-        static::assertStringContainsString('<bg=%s>', $runnerResult->output);
+        self::assertStringContainsString('<bg=%s>', $runnerResult->output);
     }
 }

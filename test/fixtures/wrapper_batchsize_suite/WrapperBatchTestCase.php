@@ -22,9 +22,9 @@ abstract class WrapperBatchTestCase extends TestCase
     {
         $tokenFile = self::TMP_DIR_PATH . DIRECTORY_SEPARATOR . 'token' . DIRECTORY_SEPARATOR . $this->getFileSuffix();
         $token     = getenv('TEST_TOKEN');
-        static::assertIsString($token);
+        self::assertIsString($token);
         file_put_contents($tokenFile, $token);
-        static::assertStringEqualsFile($tokenFile, $token);
+        self::assertStringEqualsFile($tokenFile, $token);
     }
 
     public function testPid(): void
@@ -33,7 +33,7 @@ abstract class WrapperBatchTestCase extends TestCase
         $pid     = (string) getmypid();
         file_put_contents($pidFile, $pid);
 
-        static::assertStringEqualsFile($pidFile, $pid);
+        self::assertStringEqualsFile($pidFile, $pid);
     }
 
     private function getFileSuffix(): string

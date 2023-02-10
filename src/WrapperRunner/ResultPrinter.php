@@ -156,6 +156,7 @@ final class ResultPrinter
         }
 
         $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\( ?\\d+%\\)\\s*/', '', $feedbackItems);
+        assert($feedbackItems !== null);
 
         $actualTestCount = strlen($feedbackItems);
         for ($index = 0; $index < $actualTestCount; ++$index) {

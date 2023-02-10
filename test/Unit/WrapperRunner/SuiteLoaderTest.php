@@ -34,8 +34,8 @@ final class SuiteLoaderTest extends TestBase
 
         $loader = $this->loadSuite();
 
-        static::assertSame(7, $loader->testCount);
-        static::assertCount(7, $loader->files);
+        self::assertSame(7, $loader->testCount);
+        self::assertCount(7, $loader->files);
     }
 
     public function testLoadFileGetsPathOfFile(): void
@@ -44,7 +44,9 @@ final class SuiteLoaderTest extends TestBase
         $this->bareOptions['path'] = $path;
         $files                     = $this->loadSuite()->files;
 
-        static::assertStringContainsString(array_shift($files), $path);
+        $file = array_shift($files);
+        self::assertNotNull($file);
+        self::assertStringContainsString($file, $path);
     }
 
     public function testCacheIsWarmedWhenSpecified(): void
@@ -55,7 +57,7 @@ final class SuiteLoaderTest extends TestBase
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
         $this->loadSuite();
 
-        static::assertStringContainsString('Warming cache', $this->output->fetch());
+        self::assertStringContainsString('Warming cache', $this->output->fetch());
     }
 
     private function loadSuite(): SuiteLoader
