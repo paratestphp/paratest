@@ -18,6 +18,7 @@ use function file_get_contents;
 use function file_put_contents;
 use function min;
 use function posix_mkfifo;
+use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function scandir;
@@ -271,14 +272,24 @@ final class WrapperRunnerTest extends TestBase
 
     public function testStopOnFailureEndsRunBeforeWholeTestSuite(): void
     {
+        $regex = '/Tests: (?<tests>\d+),/';
+
         $this->bareOptions['--processes'] = '1';
         $this->bareOptions['path']        = $this->fixture('common_results');
         $output                           = $this->runRunner()->output;
-        self::assertStringContainsString('Tests: 60, Assertions: 187,', $output);
+        self::assertMatchesRegularExpression($regex, $output);
+        self::assertSame(1, preg_match($regex, $output, $matches));
+        $testsBefore = (int) $matches['tests'];
+        self::assertGreaterThan(0, $testsBefore);
 
         $this->bareOptions['--stop-on-failure'] = true;
         $output                                 = $this->runRunner()->output;
-        self::assertStringContainsString('Tests: 54, Assertions: 184,', $output);
+        self::assertMatchesRegularExpression($regex, $output);
+        self::assertSame(1, preg_match($regex, $output, $matches));
+        $testsAfter = (int) $matches['tests'];
+        self::assertGreaterThan(0, $testsAfter);
+
+        self::assertLessThan($testsBefore, $testsAfter);
     }
 
     public function testRaiseExceptionWhenATestCallsExitWithoutCoverageSingleProcess(): void

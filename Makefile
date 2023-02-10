@@ -8,7 +8,7 @@ endif
 BASE_BRANCH ?= $(LOCAL_BASE_BRANCH)
 
 #all: csfix static-analysis code-coverage
-all: csfix test 
+all: csfix static-analysis test
 	@echo "Done."
 
 vendor: composer.json
