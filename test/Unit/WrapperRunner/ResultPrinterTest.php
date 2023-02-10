@@ -7,6 +7,7 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ResultPrinter;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Configuration\Configuration;
 use SebastianBergmann\Environment\Runtime;
@@ -22,11 +23,8 @@ use function uniqid;
 use const DIRECTORY_SEPARATOR;
 use const PHP_VERSION;
 
-/**
- * @internal
- *
- * @covers \ParaTest\WrapperRunner\ResultPrinter
- */
+/** @internal */
+#[CoversClass(ResultPrinter::class)]
 final class ResultPrinterTest extends TestBase
 {
     private ResultPrinter $printer;

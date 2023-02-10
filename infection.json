@@ -5,7 +5,7 @@
             "src"
         ]
     },
-    "timeout": 30,
+    "timeout": 10,
     "logs": {
         "text": "coverage/infections.log",
         "html": "coverage/mutants.html",
@@ -17,7 +17,8 @@
         "@default": true,
         "global-ignoreSourceCodeByRegex": [
             "assert\\(.+\\);",
-            "mkdir\\(\\$dir, 0777, true\\);"
+            "mkdir\\(\\$dir, 0777, true\\);",
+            ".+'@see PHPUnit guide, chapter: '.+"
         ]
     }
 }

@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit\Util;
 
 use Generator;
 use ParaTest\Util\PhpstormHelper;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -13,11 +14,8 @@ use function array_values;
 use function sprintf;
 use function uniqid;
 
-/**
- * @internal
- *
- * @covers \ParaTest\Util\PhpstormHelper
- */
+/** @internal */
+#[CoversClass(PhpstormHelper::class)]
 final class PhpstormHelperTest extends TestCase
 {
     public function testThrowExceptionWithInvalidArgv(): void

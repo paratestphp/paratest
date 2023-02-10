@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Jean85\PrettyVersions;
 use ParaTest\ParaTestCommand;
 use ParaTest\Tests\TmpDirCreator;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -15,12 +16,10 @@ use Symfony\Component\Console\Tester\CommandTester;
 use function assert;
 use function chdir;
 use function getcwd;
+use function uniqid;
 
-/**
- * @internal
- *
- * @covers \ParaTest\ParaTestCommand
- */
+/** @internal */
+#[CoversClass(ParaTestCommand::class)]
 final class ParaTestCommandTest extends TestCase
 {
     private CommandTester $commandTester;
@@ -67,6 +66,18 @@ final class ParaTestCommandTest extends TestCase
         self::assertStringContainsString('Usage:', $this->commandTester->getDisplay());
     }
 
+    public function testCustomRunnerMustBeAValidClass(): void
+    {
+        $className = uniqid('invalid_class_name_');
+        static::expectException(InvalidArgumentException::class);
+        static::expectExceptionMessage($className);
+
+        $this->commandTester->execute([
+            '--runner' => $className,
+            'path' => $this->tmpDir,
+        ]);
+    }
+
     public function testCustomRunnerMustBeAValidRunner(): void
     {
         static::expectException(InvalidArgumentException::class);
@@ -76,5 +87,15 @@ final class ParaTestCommandTest extends TestCase
             '--runner' => 'stdClass',
             'path' => $this->tmpDir,
         ]);
+    }
+
+    public function testAllowCustomRunners(): void
+    {
+        $returnCode = $this->commandTester->execute([
+            '--runner' => CustomRunner::class,
+            'path' => $this->tmpDir,
+        ]);
+
+        self::assertSame(CustomRunner::EXIT_CODE, $returnCode);
     }
 }

@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit;
 
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 use function defined;
 use function mt_rand;
@@ -14,11 +15,8 @@ use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
 
-/**
- * @internal
- *
- * @covers \ParaTest\Options
- */
+/** @internal */
+#[CoversClass(Options::class)]
 final class OptionsTest extends TestBase
 {
     private Options $options;

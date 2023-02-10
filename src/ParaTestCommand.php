@@ -46,14 +46,13 @@ final class ParaTestCommand extends Command
         $application->setName('ParaTest');
         $application->setVersion(PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion());
         $application->add($command);
-        $application->setDefaultCommand((string) $command->getName(), true);
+        $commandName = $command->getName();
+        assert($commandName !== null);
+        $application->setDefaultCommand($commandName, true);
 
         return $application;
     }
 
-    /**
-     * Ubiquitous configuration options for ParaTest.
-     */
     protected function configure(): void
     {
         Options::setInputDefinition($this->getDefinition());
@@ -66,20 +65,16 @@ final class ParaTestCommand extends Command
     {
     }
 
-    /**
-     * Executes the specified tester.
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $application = $this->getApplication();
         assert($application !== null);
 
         $output->write(sprintf(
-            "%s upon %s\n",
+            "%s upon %s\n\n",
             $application->getLongVersion(),
             Version::getVersionString(),
         ));
-        $output->write("\n");
 
         $options = Options::fromConsoleInput(
             $input,
