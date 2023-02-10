@@ -17,6 +17,8 @@ use function file_exists;
 use function getenv;
 use function putenv;
 
+use const DIRECTORY_SEPARATOR;
+
 abstract class TestBase extends TestCase
 {
     /** @var class-string<RunnerInterface> */
@@ -37,7 +39,10 @@ abstract class TestBase extends TestCase
     {
     }
 
-    /** @param array<string, string|bool|int|null> $argv */
+    /**
+     * @param array<string, string|bool|int|null> $argv
+     * @param non-empty-string|null               $cwd
+     */
     final protected function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
     {
         $inputDefinition = new InputDefinition();
@@ -60,12 +65,12 @@ abstract class TestBase extends TestCase
         return Options::fromConsoleInput($input, $cwd ?? __DIR__);
     }
 
-    final protected function runRunner(?string $cwd = null): RunnerResult
+    final protected function runRunner(): RunnerResult
     {
         $output      = new BufferedOutput();
         $runnerClass = $this->runnerClass;
 
-        $options                              = $this->createOptionsFromArgv($this->bareOptions, $cwd);
+        $options                              = $this->createOptionsFromArgv($this->bareOptions);
         $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens;
         $runner                               = new $runnerClass($options, $output);
         if ($shouldPutEnvForParatestTestingItSelf) {

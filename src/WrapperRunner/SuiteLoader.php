@@ -81,18 +81,20 @@ final class SuiteLoader
         }
 
         ob_start();
-        $result = (new WarmCodeCoverageCacheCommand(
+        $result       = (new WarmCodeCoverageCacheCommand(
             $this->options->configuration,
             $codeCoverageFilterRegistry,
         ))->execute();
-        $output->write(ob_get_clean());
+        $ob_get_clean = ob_get_clean();
+        assert($ob_get_clean !== false);
+        $output->write($ob_get_clean);
         $output->write($result->output());
         if ($result->shellExitCode() !== Result::SUCCESS) {
             exit($result->shellExitCode());
         }
     }
 
-    /** @param array<string, bool> $files */
+    /** @param array<non-empty-string, bool> $files */
     private function loadFiles(TestSuite $testSuite, array &$files): void
     {
         foreach ($testSuite as $test) {
@@ -134,6 +136,9 @@ final class SuiteLoader
             return $filename;
         }
 
-        return substr($filename, 1 + strlen($this->options->cwd));
+        $substr = substr($filename, 1 + strlen($this->options->cwd));
+        assert($substr !== '');
+
+        return $substr;
     }
 }

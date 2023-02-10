@@ -19,6 +19,7 @@ use function phpversion;
 use function sprintf;
 use function uniqid;
 
+use const DIRECTORY_SEPARATOR;
 use const PHP_VERSION;
 
 /**

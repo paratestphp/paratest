@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function assert;
 use function chdir;
 use function getcwd;
 
@@ -23,12 +24,16 @@ use function getcwd;
 final class ParaTestCommandTest extends TestCase
 {
     private CommandTester $commandTester;
+    /** @var non-empty-string */
     private string $tmpDir;
+    /** @var non-empty-string */
     private string $getcwd;
 
     protected function setUp(): void
     {
-        $this->getcwd = getcwd();
+        $getcwd = getcwd();
+        assert($getcwd !== false);
+        $this->getcwd = $getcwd;
         $this->tmpDir = (new TmpDirCreator())->create();
         chdir($this->tmpDir);
         $application = ParaTestCommand::applicationFactory($this->tmpDir);

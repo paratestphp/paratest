@@ -12,6 +12,8 @@ use function mt_rand;
 use function str_replace;
 use function uniqid;
 
+use const DIRECTORY_SEPARATOR;
+
 /**
  * @internal
  *

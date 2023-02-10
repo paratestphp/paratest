@@ -26,6 +26,7 @@ use function str_replace;
 use function uniqid;
 use function unlink;
 
+use const DIRECTORY_SEPARATOR;
 use const FIXTURES;
 
 /**
@@ -80,7 +81,9 @@ final class WrapperRunnerTest extends TestBase
 
     private function cleanContentFromDir(string $path): void
     {
-        $cleanableFiles = array_diff(scandir($path), self::UNPROCESSABLE_FILENAMES);
+        $array = scandir($path);
+        self::assertNotFalse($array);
+        $cleanableFiles = array_diff($array, self::UNPROCESSABLE_FILENAMES);
         foreach ($cleanableFiles as $cleanableFile) {
             unlink($path . DIRECTORY_SEPARATOR . $cleanableFile);
         }
@@ -89,11 +92,16 @@ final class WrapperRunnerTest extends TestBase
     /** @return array<string> */
     private function extractContentFromDirFiles(string $path): array
     {
-        $res              = [];
-        $processableFiles = array_diff(scandir($path), self::UNPROCESSABLE_FILENAMES);
+        $array = scandir($path);
+        self::assertNotFalse($array);
+        $processableFiles = array_diff($array, self::UNPROCESSABLE_FILENAMES);
         self::assertCount(self::NUMBER_OF_CLASS_TESTS_FOR_BATCH_SIZE, $processableFiles);
+        $res = [];
         foreach ($processableFiles as $processableFile) {
-            $res[] = file_get_contents($path . DIRECTORY_SEPARATOR . $processableFile);
+            $contents = file_get_contents($path . DIRECTORY_SEPARATOR . $processableFile);
+            self::assertNotFalse($contents);
+
+            $res[] = $contents;
         }
 
         return array_unique($res);
@@ -371,6 +379,7 @@ final class WrapperRunnerTest extends TestBase
 
         self::assertFileExists($outputFile);
         $xml = file_get_contents($outputFile);
+        self::assertNotFalse($xml);
         $xml = str_replace(FIXTURES, './test/fixtures', $xml);
         $xml = preg_replace('/time="[^"]+"/', 'time="1.234567"', $xml);
         file_put_contents($outputFile, $xml);

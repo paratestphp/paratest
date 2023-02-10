@@ -14,6 +14,7 @@ use const DIRECTORY_SEPARATOR;
 
 final class TmpDirCreator
 {
+    /** @return non-empty-string */
     public function create(): string
     {
         $tmpDir = __DIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'token_' . (string) getenv('TEST_TOKEN');

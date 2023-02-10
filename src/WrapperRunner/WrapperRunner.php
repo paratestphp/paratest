@@ -91,7 +91,9 @@ final class WrapperRunner implements RunnerInterface
 
     public function run(): int
     {
-        ExcludeList::addDirectory(dirname(__DIR__));
+        $directory = dirname(__DIR__);
+        assert($directory !== '');
+        ExcludeList::addDirectory($directory);
         TestResultFacade::init();
         EventFacade::seal();
         $suiteLoader = new SuiteLoader(
@@ -190,6 +192,7 @@ final class WrapperRunner implements RunnerInterface
         }
     }
 
+    /** @param positive-int $token */
     private function startWorker(int $token): WrapperWorker
     {
         $worker = new WrapperWorker(

@@ -283,7 +283,8 @@ final class ResultPrinter
 
     private function tail(SplFileInfo $file): string
     {
-        $path   = $file->getPathname();
+        $path = $file->getPathname();
+        assert($path !== '');
         $handle = fopen($path, 'r');
         assert($handle !== false);
         $fseek = fseek($handle, $this->tailPositions[$path] ?? 0);

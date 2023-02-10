@@ -32,7 +32,9 @@ final class JUnitTest extends TestCase
         $tmpDir = (new TmpDirCreator())->create();
 
         $junitFiles = [];
-        foreach (glob(FIXTURES . '/common_results/junit/*') as $file) {
+        $glob       = glob(FIXTURES . '/common_results/junit/*');
+        self::assertNotFalse($glob);
+        foreach ($glob as $file) {
             $junitFiles[] = new SplFileInfo($file);
         }
 
@@ -46,6 +48,7 @@ final class JUnitTest extends TestCase
         );
 
         $xml = file_get_contents($outputFile);
+        self::assertNotFalse($xml);
         $xml = str_replace('time="8.641969"', 'time="1.234567"', $xml);
         file_put_contents($outputFile, $xml);
 

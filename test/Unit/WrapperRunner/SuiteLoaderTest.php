@@ -12,6 +12,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function array_shift;
 use function uniqid;
 
+use const DIRECTORY_SEPARATOR;
+
 /**
  * @internal
  *
@@ -56,9 +58,9 @@ final class SuiteLoaderTest extends TestBase
         static::assertStringContainsString('Warming cache', $this->output->fetch());
     }
 
-    private function loadSuite(?string $cwd = null): SuiteLoader
+    private function loadSuite(): SuiteLoader
     {
-        $options = $this->createOptionsFromArgv($this->bareOptions, $cwd);
+        $options = $this->createOptionsFromArgv($this->bareOptions);
 
         return new SuiteLoader($options, $this->output, new CodeCoverageFilterRegistry());
     }
