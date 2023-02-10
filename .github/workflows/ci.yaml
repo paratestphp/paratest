@@ -22,7 +22,7 @@ jobs:
       - uses: "actions/checkout@v3"
       - uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: composer-normalize, composer-require-checker
@@ -45,7 +45,7 @@ jobs:
       - uses: "actions/checkout@v3"
       - uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
       - uses: "ramsey/composer-install@v2"
@@ -168,7 +168,7 @@ jobs:
       - uses: "actions/checkout@v3"
       - uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: cs2pr
@@ -189,7 +189,7 @@ jobs:
       - uses: "actions/checkout@v3"
       - uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
       - uses: "ramsey/composer-install@v2"
