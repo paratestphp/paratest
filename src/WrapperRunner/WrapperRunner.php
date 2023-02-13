@@ -50,6 +50,10 @@ final class WrapperRunner implements RunnerInterface
     private array $batches = [];
 
     /** @var list<SplFileInfo> */
+    private array $statusFiles = [];
+    /** @var list<SplFileInfo> */
+    private array $progressFiles = [];
+    /** @var list<SplFileInfo> */
     private array $testresultFiles = [];
     /** @var list<SplFileInfo> */
     private array $coverageFiles = [];
@@ -204,7 +208,10 @@ final class WrapperRunner implements RunnerInterface
         $worker->start();
         $this->batches[$token] = 0;
 
+        $this->statusFiles[]     = $worker->statusFile;
+        $this->progressFiles[]   = $worker->progressFile;
         $this->testresultFiles[] = $worker->testresultFile;
+
         if (isset($worker->junitFile)) {
             $this->junitFiles[] = $worker->junitFile;
         }
@@ -289,6 +296,8 @@ final class WrapperRunner implements RunnerInterface
             $testResultSum,
         );
 
+        $this->clearFiles($this->statusFiles);
+        $this->clearFiles($this->progressFiles);
         $this->clearFiles($this->testresultFiles);
         $this->clearFiles($this->coverageFiles);
         $this->clearFiles($this->junitFiles);
