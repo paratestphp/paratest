@@ -155,7 +155,7 @@ final class ResultPrinter
             return;
         }
 
-        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\( ?\\d+%\\)\\s*/', '', $feedbackItems);
+        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\( *\\d+%\\)\\s*/', '', $feedbackItems);
         assert($feedbackItems !== null);
 
         $actualTestCount = strlen($feedbackItems);
