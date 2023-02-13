@@ -30,19 +30,19 @@ final class WrapperWorker
 {
     public const COMMAND_EXIT = "EXIT\n";
 
+    public readonly SplFileInfo $statusFile;
     public readonly SplFileInfo $progressFile;
     public readonly SplFileInfo $testresultFile;
     public readonly SplFileInfo $junitFile;
     public readonly SplFileInfo $coverageFile;
     public readonly SplFileInfo $teamcityFile;
-    public readonly SplFileInfo $testdoxFile;
 
+    public readonly SplFileInfo $testdoxFile;
     private ?string $currentlyExecuting = null;
     private Process $process;
     private int $inExecution = 0;
     private InputStream $input;
     private int $exitCode = -1;
-    private string $statusFilepath;
 
     /** @param non-empty-string[] $parameters */
     public function __construct(
@@ -51,15 +51,15 @@ final class WrapperWorker
         array $parameters,
         private readonly int $token
     ) {
-        $commonTmpFilePath    = sprintf(
+        $commonTmpFilePath = sprintf(
             '%s%sworker_%02s_stdout_%s_',
             $options->tmpDir,
             DIRECTORY_SEPARATOR,
             $token,
             uniqid(),
         );
-        $this->statusFilepath = $commonTmpFilePath . 'status';
-        touch($this->statusFilepath);
+        $this->statusFile  = new SplFileInfo($commonTmpFilePath . 'status');
+        touch($this->statusFile->getPathname());
         $this->progressFile = new SplFileInfo($commonTmpFilePath . 'progress');
         touch($this->progressFile->getPathname());
         $this->testresultFile = new SplFileInfo($commonTmpFilePath . 'testresult');
@@ -80,7 +80,7 @@ final class WrapperWorker
         }
 
         $parameters[] = '--status-file';
-        $parameters[] = $this->statusFilepath;
+        $parameters[] = $this->statusFile->getPathname();
         $parameters[] = '--progress-file';
         $parameters[] = $this->progressFile->getPathname();
         $parameters[] = '--testresult-file';
@@ -181,12 +181,13 @@ final class WrapperWorker
 
     public function isFree(): bool
     {
-        clearstatcache(true, $this->statusFilepath);
+        $statusFilepath = $this->statusFile->getPathname();
+        clearstatcache(true, $statusFilepath);
 
-        $isFree = $this->inExecution === filesize($this->statusFilepath);
+        $isFree = $this->inExecution === filesize($statusFilepath);
 
         if ($isFree && $this->inExecution > 0) {
-            $exitCodes = file_get_contents($this->statusFilepath);
+            $exitCodes = file_get_contents($statusFilepath);
             assert(is_string($exitCodes) && $exitCodes !== '');
             $this->exitCode = (int) $exitCodes[-1];
         }

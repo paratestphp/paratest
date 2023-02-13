@@ -25,8 +25,7 @@ abstract class TestBase extends TestCase
     protected string $runnerClass = WrapperRunner::class;
     /** @var array<string, string|bool|int|null> */
     protected array $bareOptions = [];
-    /** @var string */
-    protected $tmpDir;
+    protected string $tmpDir;
 
     final protected function setUp(): void
     {

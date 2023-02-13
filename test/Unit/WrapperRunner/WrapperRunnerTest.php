@@ -23,6 +23,7 @@ use function array_unique;
 use function defined;
 use function file_get_contents;
 use function file_put_contents;
+use function glob;
 use function min;
 use function posix_mkfifo;
 use function preg_match;
@@ -468,6 +469,9 @@ final class WrapperRunnerTest extends TestBase
 
         $runnerResult = $this->runRunner();
         self::assertEquals(0, $runnerResult->exitCode);
+        $glob = glob($this->tmpDir . '/*');
+        self::assertNotFalse($glob);
+        self::assertCount(0, $glob);
     }
 
     public function testResultsAreCorrect(): void
