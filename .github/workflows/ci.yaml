@@ -1,0 +1,163 @@
+name: "CI"
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "*.x"
+
+env:
+  INI_VALUES: zend.assertions=1,error_reporting=-1,date.timezone="Europe/Rome"
+
+jobs:
+  composer-json-lint:
+    name: "Lint composer.json"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+          tools: composer-normalize, composer-require-checker
+      - uses: "ramsey/composer-install@v2"
+
+      - run: "make vendor"
+      - run: "composer validate --strict"
+      - run: "composer-normalize --dry-run"
+      - run: "composer-require-checker check"
+
+  xml-lint:
+    name: "Lint XMLs"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+      - uses: "ramsey/composer-install@v2"
+
+      - run: "make vendor"
+      - name: "Lint XMLs"
+        uses: ./.github/lint-xml-configuration
+        with:
+          args: bash .github/lint-xml-configuration/lint-xml-configuration.sh
+
+  tests:
+    name: "Tests"
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+          - "8.2"
+        dependencies:
+          - "lowest"
+          - "highest"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+      - uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+
+      - name: "Run tests"
+        timeout-minutes: 3
+        run: "vendor/bin/phpunit --no-coverage --no-logging"
+
+  code-coverage:
+    name: "Code Coverage"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        php-version:
+          - "8.2"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+      - uses: "ramsey/composer-install@v2"
+
+      - run: "make test"
+        timeout-minutes: 3
+
+      - name: "Gather base branch for diff"
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin --no-tags --prune --depth=1 ${{ github.base_ref }} ${{ github.event.pull_request.base.sha }}
+
+      - name: "Infection on DIFF"
+        if: ${{ github.event_name == 'pull_request' }}
+        timeout-minutes: 30
+        run: make code-coverage INFECTION_ARGS="--logger-github"
+        env:
+          BASE_BRANCH: origin/${{ github.base_ref }}
+
+      - name: "Infection on complete code base"
+        if: ${{ github.event_name != 'pull_request' }}
+        timeout-minutes: 30
+        run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
+        env:
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
+
+  coding-standards:
+    name: "Coding Standards"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+          tools: cs2pr
+      - uses: "ramsey/composer-install@v2"
+
+      - run: "make vendor"
+      - run: "vendor/bin/phpcs -q --report=checkstyle | cs2pr"
+
+  static-analysis:
+    name: "Static Analysis"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+      - uses: "ramsey/composer-install@v2"
+
+      - run: "make static-analysis PHPSTAN_ARGS='--ansi --no-progress'"

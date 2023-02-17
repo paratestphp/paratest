@@ -1,0 +1,24 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "timeout": 10,
+    "logs": {
+        "text": "coverage/infections.log",
+        "html": "coverage/mutants.html",
+        "stryker": {
+            "report": "/^\\d+\\.x$/"
+        }
+    },
+    "mutators": {
+        "@default": true,
+        "global-ignoreSourceCodeByRegex": [
+            "assert\\(.+\\);",
+            "mkdir\\(\\$dir, 0777, true\\);",
+            ".+'@see PHPUnit guide, chapter: '.+"
+        ]
+    }
+}

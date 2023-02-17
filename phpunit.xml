@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="./test/bootstrap.php"
+    colors="true"
+    failOnRisky="true"
+    failOnWarning="true"
+    failOnEmptyTestSuite="true"
+    beStrictAboutChangesToGlobalState="true"
+    beStrictAboutOutputDuringTests="true"
+    cacheDirectory=".phpunit.cache">
+  <coverage>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <report>
+      <text outputFile="php://stdout" showOnlySummary="true"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="ParaTest Unit Tests">
+      <directory>./test/Unit/</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

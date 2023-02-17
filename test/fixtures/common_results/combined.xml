@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="7" assertions="3" errors="1" failures="1" skipped="2" time="1.234567">
+    <testsuite name="ParaTest\Tests\fixtures\common_results\ErrorTest" file="./test/fixtures/common_results/ErrorTest.php" tests="1" assertions="0" errors="1" failures="0" skipped="0" time="1.234567">
+      <testcase name="testError" file="./test/fixtures/common_results/ErrorTest.php" line="13" class="ParaTest\Tests\fixtures\common_results\ErrorTest" classname="ParaTest.Tests.fixtures.common_results.ErrorTest" assertions="0" time="1.234567">
+        <error type="RuntimeException">ParaTest\Tests\fixtures\common_results\ErrorTest::testError
+RuntimeException: Error here!
+
+./test/fixtures/common_results/ErrorTest.php:15</error>
+      </testcase>
+    </testsuite>
+    <testsuite name="ParaTest\Tests\fixtures\common_results\FailureTest" file="./test/fixtures/common_results/FailureTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="1.234567">
+      <testcase name="testFailure" file="./test/fixtures/common_results/FailureTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\FailureTest" classname="ParaTest.Tests.fixtures.common_results.FailureTest" assertions="1" time="1.234567">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">ParaTest\Tests\fixtures\common_results\FailureTest::testFailure
+Failed asserting that false is true.
+
+./test/fixtures/common_results/FailureTest.php:14</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="ParaTest\Tests\fixtures\common_results\IncompleteTest" file="./test/fixtures/common_results/IncompleteTest.php" tests="1" assertions="0" errors="0" failures="0" skipped="1" time="1.234567">
+      <testcase name="testIncomplete" file="./test/fixtures/common_results/IncompleteTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\IncompleteTest" classname="ParaTest.Tests.fixtures.common_results.IncompleteTest" assertions="0" time="1.234567">
+        <skipped/>
+      </testcase>
+    </testsuite>
+    <testsuite name="ParaTest\Tests\fixtures\common_results\RiskyTest" file="./test/fixtures/common_results/RiskyTest.php" tests="1" assertions="0" errors="0" failures="0" skipped="0" time="1.234567">
+      <testcase name="testRisky" file="./test/fixtures/common_results/RiskyTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\RiskyTest" classname="ParaTest.Tests.fixtures.common_results.RiskyTest" assertions="0" time="1.234567"/>
+    </testsuite>
+    <testsuite name="ParaTest\Tests\fixtures\common_results\SkippedTest" file="./test/fixtures/common_results/SkippedTest.php" tests="1" assertions="0" errors="0" failures="0" skipped="1" time="1.234567">
+      <testcase name="testSkipped" file="./test/fixtures/common_results/SkippedTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\SkippedTest" classname="ParaTest.Tests.fixtures.common_results.SkippedTest" assertions="0" time="1.234567">
+        <skipped/>
+      </testcase>
+    </testsuite>
+    <testsuite name="ParaTest\Tests\fixtures\common_results\SuccessTest" file="./test/fixtures/common_results/SuccessTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="1.234567">
+      <testcase name="testSuccess" file="./test/fixtures/common_results/SuccessTest.php" line="12" class="ParaTest\Tests\fixtures\common_results\SuccessTest" classname="ParaTest.Tests.fixtures.common_results.SuccessTest" assertions="1" time="1.234567"/>
+    </testsuite>
+    <testsuite name="ParaTest\Tests\fixtures\common_results\WarningTest" file="./test/fixtures/common_results/WarningTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="1.234567">
+      <testcase name="testWarning" file="./test/fixtures/common_results/WarningTest.php" line="16" class="ParaTest\Tests\fixtures\common_results\WarningTest" classname="ParaTest.Tests.fixtures.common_results.WarningTest" assertions="1" time="1.234567"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
