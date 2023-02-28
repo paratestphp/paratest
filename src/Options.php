@@ -64,6 +64,7 @@ final class Options
         'group' => true,
         'no-configuration' => true,
         'order-by' => true,
+        'process-isolation' => true,
         'random-order-seed' => true,
         'stop-on-defect' => true,
         'stop-on-error' => true,
@@ -309,10 +310,16 @@ final class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
-                'strict-coverage',
+                'process-isolation',
                 null,
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter = 'Execution',
+            ),
+            new InputOption(
+                'strict-coverage',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
                 'strict-global-state',

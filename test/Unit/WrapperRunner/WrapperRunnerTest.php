@@ -495,4 +495,13 @@ final class WrapperRunnerTest extends TestBase
         $runnerResult = $this->runRunner();
         self::assertStringContainsString('<bg=%s>', $runnerResult->output);
     }
+
+    public function testProcessIsolation(): void
+    {
+        $this->bareOptions['path']                = $this->fixture('process_isolation' . DIRECTORY_SEPARATOR . 'FooTest.php');
+        $this->bareOptions['--process-isolation'] = true;
+
+        $runnerResult = $this->runRunner();
+        self::assertEquals(0, $runnerResult->exitCode);
+    }
 }
