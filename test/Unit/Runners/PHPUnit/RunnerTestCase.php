@@ -533,6 +533,19 @@ abstract class RunnerTestCase extends TestBase
         static::assertSame($defaultOrder, $reverseOrderReversed);
     }
 
+    final public function testTestdoxAndDataProvider(): void
+    {
+        $this->bareOptions['--path'] = $this->fixture('testdox_dataprovider');
+        $this->bareOptions['--testdox'] = true;
+
+        $runnerResult = $this->runRunner();
+
+        $output = $runnerResult->getOutput();
+        static::assertStringContainsString('✔ Trim with data set "leading space is trimmed"', $output);
+        static::assertStringContainsString('✔ Trim with data set "trailing space and newline are trimmed"', $output);
+        static::assertStringContainsString('OK (2 tests, 2 assertions)', $output);
+    }
+
     /** @return string[] */
     private function prepareOutputForTestOrderCheck(string $output): array
     {

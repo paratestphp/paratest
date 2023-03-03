@@ -687,13 +687,15 @@ final class ResultPrinter
 
         $prettifier = new NamePrettifier(false);
 
-        $class = $testSuite->name;
-        assert(class_exists($class));
-
-        $this->output->writeln($prettifier->prettifyTestClass($class));
-
         $separator = PHP_EOL;
-        foreach ($testSuite->cases as $case) {
+        foreach ($testSuite->cases as $index => $case) {
+            if (0 === $index) {
+                $class = $case->class;
+                assert(class_exists($class));
+
+                $this->output->writeln($prettifier->prettifyTestClass($class));
+            }
+
             $separator = PHP_EOL;
             $testCase  = new $class($case->name);
             assert($testCase instanceof TestCase);
