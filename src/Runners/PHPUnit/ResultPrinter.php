@@ -39,6 +39,7 @@ use function fwrite;
 use function get_class;
 use function implode;
 use function is_array;
+use function is_string;
 use function max;
 use function preg_split;
 use function rtrim;
@@ -687,13 +688,17 @@ final class ResultPrinter
 
         $prettifier = new NamePrettifier(false);
 
-        $class = $testSuite->name;
-        assert(class_exists($class));
-
-        $this->output->writeln($prettifier->prettifyTestClass($class));
-
         $separator = PHP_EOL;
-        foreach ($testSuite->cases as $case) {
+        foreach ($testSuite->cases as $index => $case) {
+            if ($index === 0) {
+                $class = $case->class;
+                assert(class_exists($class));
+
+                $this->output->writeln($prettifier->prettifyTestClass($class));
+            }
+
+            assert(isset($class) && is_string($class) && class_exists($class));
+
             $separator = PHP_EOL;
             $testCase  = new $class($case->name);
             assert($testCase instanceof TestCase);
