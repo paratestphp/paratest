@@ -535,7 +535,7 @@ abstract class RunnerTestCase extends TestBase
 
     final public function testTestdoxAndDataProvider(): void
     {
-        $this->bareOptions['--path'] = $this->fixture('testdox_dataprovider');
+        $this->bareOptions['--path']    = $this->fixture('testdox_dataprovider');
         $this->bareOptions['--testdox'] = true;
 
         $runnerResult = $this->runRunner();
