@@ -196,6 +196,12 @@ final class ResultPrinter
 
         $resultPrinter  = new DefaultResultPrinter(
             $this->printer,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
             $this->options->configuration->displayDetailsOnIncompleteTests(),
             $this->options->configuration->displayDetailsOnSkippedTests(),
             $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),

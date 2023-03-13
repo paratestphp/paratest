@@ -6,7 +6,7 @@ namespace ParaTest\WrapperRunner;
 
 use ParaTest\RunnerInterface;
 use PHPUnit\Event\Facade as EventFacade;
-use PHPUnit\Event\TestSuite\TestSuite as EventTestSuite;
+use PHPUnit\Event\TestSuite\TestSuiteBuilder;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Logging\JUnit\JunitXmlLogger;
 use PHPUnit\Logging\TeamCity\TeamCityLogger;
@@ -66,7 +66,7 @@ final class ApplicationForWrapperWorker
         (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
 
         EventFacade::emitter()->testRunnerExecutionStarted(
-            EventTestSuite::fromTestSuite($testSuite),
+            TestSuiteBuilder::from($testSuite),
         );
 
         $testSuite->run();
@@ -159,7 +159,6 @@ final class ApplicationForWrapperWorker
 
             (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor))->print(
                 $this->testdoxResultCollector->testMethodsGroupedByClass(),
-                $result,
             );
         }
 
