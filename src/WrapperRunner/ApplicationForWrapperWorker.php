@@ -118,25 +118,32 @@ final class ApplicationForWrapperWorker
         CodeCoverage::instance()->init($this->configuration, CodeCoverageFilterRegistry::instance());
 
         if ($this->configuration->hasLogfileJunit()) {
-            new JunitXmlLogger(DefaultPrinter::from($this->configuration->logfileJunit()));
+            new JunitXmlLogger(
+                DefaultPrinter::from($this->configuration->logfileJunit()),
+                EventFacade::instance(),
+            );
         }
 
         new ProgressPrinter(
             DefaultPrinter::from($this->progressFile),
             false,
             120,
+            EventFacade::instance(),
         );
 
         if (isset($this->teamcityFile)) {
-            new TeamCityLogger(DefaultPrinter::from($this->teamcityFile));
+            new TeamCityLogger(
+                DefaultPrinter::from($this->teamcityFile),
+                EventFacade::instance(),
+            );
         }
 
         if (isset($this->testdoxFile)) {
-            $this->testdoxResultCollector = new TestResultCollector();
+            $this->testdoxResultCollector = new TestResultCollector(EventFacade::instance());
         }
 
         TestResultFacade::init();
-        EventFacade::seal();
+        EventFacade::instance()->seal();
         EventFacade::emitter()->testRunnerStarted();
 
         if ($this->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {

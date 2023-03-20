@@ -99,7 +99,7 @@ final class WrapperRunner implements RunnerInterface
         assert($directory !== '');
         ExcludeList::addDirectory($directory);
         TestResultFacade::init();
-        EventFacade::seal();
+        EventFacade::instance()->seal();
         $suiteLoader = new SuiteLoader(
             $this->options,
             $this->output,
