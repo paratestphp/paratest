@@ -10,10 +10,12 @@
     beStrictAboutChangesToGlobalState="true"
     beStrictAboutOutputDuringTests="true"
     cacheDirectory=".phpunit.cache">
-  <coverage>
+  <source>
     <include>
-      <directory suffix=".php">src</directory>
+      <directory>src</directory>
     </include>
+  </source>
+  <coverage>
     <report>
       <text outputFile="php://stdout" showOnlySummary="true"/>
     </report>
