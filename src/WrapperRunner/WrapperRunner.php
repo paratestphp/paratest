@@ -288,11 +288,13 @@ final class WrapperRunner implements RunnerInterface
         $this->generateLogs();
 
         $exitcode = (new ShellExitCodeCalculator())->calculate(
+            $this->options->configuration->failOnDeprecation(),
             $this->options->configuration->failOnEmptyTestSuite(),
-            $this->options->configuration->failOnRisky(),
-            $this->options->configuration->failOnWarning(),
             $this->options->configuration->failOnIncomplete(),
+            $this->options->configuration->failOnNotice(),
+            $this->options->configuration->failOnRisky(),
             $this->options->configuration->failOnSkipped(),
+            $this->options->configuration->failOnWarning(),
             $testResultSum,
         );
 
@@ -314,7 +316,11 @@ final class WrapperRunner implements RunnerInterface
         }
 
         $coverageManager = new CodeCoverage();
-        $coverageManager->init($this->options->configuration, $this->codeCoverageFilterRegistry);
+        $coverageManager->init(
+            $this->options->configuration,
+            $this->codeCoverageFilterRegistry,
+            false,
+        );
         $coverageMerger = new CoverageMerger($coverageManager->codeCoverage());
         foreach ($this->coverageFiles as $coverageFile) {
             $coverageMerger->addCoverageFromFile($coverageFile);
