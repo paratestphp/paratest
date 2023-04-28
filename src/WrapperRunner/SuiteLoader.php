@@ -37,7 +37,6 @@ use function substr;
 final class SuiteLoader
 {
     public readonly int $testCount;
-    public readonly int $testCountWithDatasets;
     /** @var list<non-empty-string> */
     public readonly array $files;
     /** @var list<non-empty-string> */
