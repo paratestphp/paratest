@@ -38,7 +38,6 @@ final class WrapperWorker
     public readonly SplFileInfo $teamcityFile;
 
     public readonly SplFileInfo $testdoxFile;
-    private readonly bool $functional;
     private ?string $currentlyExecuting = null;
     private Process $process;
     private int $inExecution = 0;
