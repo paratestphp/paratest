@@ -38,6 +38,7 @@ final class WrapperWorker
     public readonly SplFileInfo $teamcityFile;
 
     public readonly SplFileInfo $testdoxFile;
+    private readonly bool $functional;
     private ?string $currentlyExecuting = null;
     private Process $process;
     private int $inExecution = 0;
@@ -100,6 +101,10 @@ final class WrapperWorker
 
         $phpunitArguments = [$options->phpunit];
         foreach ($options->phpunitOptions as $key => $value) {
+            if ($options->functional && $key === 'filter') {
+                continue;
+            }
+
             $phpunitArguments[] = "--{$key}";
             if ($value === true) {
                 continue;

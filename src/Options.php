@@ -99,6 +99,7 @@ final class Options
         public readonly string $runner,
         public readonly string $tmpDir,
         public readonly bool $verbose,
+        public readonly bool $functional,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
     }
@@ -136,6 +137,10 @@ final class Options
         assert(is_bool($options['verbose']));
         $verbose = $options['verbose'];
         unset($options['verbose']);
+
+        assert(is_bool($options['functional']));
+        $functional = $options['functional'];
+        unset($options['functional']);
 
         assert(array_key_exists('colors', $options));
         if ($options['colors'] === Configuration::COLOR_DEFAULT) {
@@ -192,6 +197,7 @@ final class Options
             $runner,
             $tmpDir,
             $verbose,
+            $functional,
         );
     }
 
@@ -252,6 +258,13 @@ final class Options
                 'v',
                 InputOption::VALUE_NONE,
                 'Output more verbose information',
+            ),
+
+            new InputOption(
+                'functional',
+                'f',
+                InputOption::VALUE_NONE,
+                'Functional testing',
             ),
 
             // PHPUnit options
