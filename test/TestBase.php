@@ -107,9 +107,9 @@ abstract class TestBase extends TestCase
                 $_SERVER[Options::ENV_KEY_UNIQUE_TOKEN] = $prevUniqueToken;
             }
 
-            if ($last) {
-                $this->assertEquals($last->exitCode, $exitCode);
-                $this->assertEquals(
+            if ($last !== null) {
+                self::assertEquals($last->exitCode, $exitCode);
+                self::assertEquals(
                     preg_replace(self::SANITIZE, '', $last->output),
                     preg_replace(self::SANITIZE, '', $output->fetch()),
                 );
