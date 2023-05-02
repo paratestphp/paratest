@@ -213,6 +213,12 @@ final class Options
 
             // ParaTest options
             new InputOption(
+                'functional',
+                'f',
+                InputOption::VALUE_NONE,
+                'Whether to enable functional testing, for unit and dataset parallelization',
+            ),
+            new InputOption(
                 'max-batch-size',
                 'm',
                 InputOption::VALUE_REQUIRED,
@@ -258,13 +264,6 @@ final class Options
                 'v',
                 InputOption::VALUE_NONE,
                 'Output more verbose information',
-            ),
-
-            new InputOption(
-                'functional',
-                'f',
-                InputOption::VALUE_NONE,
-                'Functional testing',
             ),
 
             // PHPUnit options
