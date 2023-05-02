@@ -79,11 +79,11 @@ final class SuiteLoader
         $files = [];
         $tests = [];
         foreach ($this->loadFiles($testSuite) as $file => $test) {
-            $files[$file] = true;
+            $files[$file] = null;
 
             if ($test instanceof TestCase) {
                 $name = str_replace(' with data set ', '', $test->nameWithDataSet());
-            } elseif ($test instanceof PhptTestCase) {
+            } else {
                 $name = $test->getName();
             }
 
