@@ -15,6 +15,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 use function file_exists;
 use function getenv;
+use function preg_replace;
 use function putenv;
 
 use const DIRECTORY_SEPARATOR;
@@ -64,33 +65,62 @@ abstract class TestBase extends TestCase
         return Options::fromConsoleInput($input, $cwd ?? __DIR__);
     }
 
+    public const SANITIZE = [
+        '/^Time: .+/m',
+        '/^Random Seed: .+/m',
+        '/Warming cache for static analysis ... \[[^]]+\]/',
+        "/flowId='\d+'/",
+        "/duration='\d+'/",
+    ];
+
     final protected function runRunner(): RunnerResult
     {
-        $output      = new BufferedOutput();
-        $runnerClass = $this->runnerClass;
+        $last = null;
+        foreach (
+            isset($this->bareOptions['--max-batch-size'])
+            || isset($this->bareOptions['--verbose'])
+            || isset($this->bareOptions['--log-teamcity'])
+            || isset($this->bareOptions['--teamcity'])
+            ? [false] : [true, false] as $functional
+        ) {
+            $output      = new BufferedOutput();
+            $runnerClass = $this->runnerClass;
 
-        $options                              = $this->createOptionsFromArgv($this->bareOptions);
-        $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens;
-        $runner                               = new $runnerClass($options, $output);
-        if ($shouldPutEnvForParatestTestingItSelf) {
-            $prevToken       = getenv(Options::ENV_KEY_TOKEN);
-            $prevUniqueToken = getenv(Options::ENV_KEY_UNIQUE_TOKEN);
+            $options                              = $this->createOptionsFromArgv($this->bareOptions + ['--functional' => $functional]);
+            $shouldPutEnvForParatestTestingItSelf = $options->noTestTokens;
+            $runner                               = new $runnerClass($options, $output);
+            if ($shouldPutEnvForParatestTestingItSelf) {
+                $prevToken       = getenv(Options::ENV_KEY_TOKEN);
+                $prevUniqueToken = getenv(Options::ENV_KEY_UNIQUE_TOKEN);
 
-            putenv(Options::ENV_KEY_TOKEN);
-            putenv(Options::ENV_KEY_UNIQUE_TOKEN);
-            unset($_SERVER[Options::ENV_KEY_TOKEN]);
-            unset($_SERVER[Options::ENV_KEY_UNIQUE_TOKEN]);
+                putenv(Options::ENV_KEY_TOKEN);
+                putenv(Options::ENV_KEY_UNIQUE_TOKEN);
+                unset($_SERVER[Options::ENV_KEY_TOKEN]);
+                unset($_SERVER[Options::ENV_KEY_UNIQUE_TOKEN]);
+            }
+
+            $exitCode = $runner->run();
+            if ($shouldPutEnvForParatestTestingItSelf) {
+                putenv(Options::ENV_KEY_TOKEN . '=' . $prevToken);
+                putenv(Options::ENV_KEY_UNIQUE_TOKEN . '=' . $prevUniqueToken);
+                $_SERVER[Options::ENV_KEY_TOKEN]        = $prevToken;
+                $_SERVER[Options::ENV_KEY_UNIQUE_TOKEN] = $prevUniqueToken;
+            }
+
+            if ($last) {
+                $this->assertEquals($last->exitCode, $exitCode);
+                $this->assertEquals(
+                    preg_replace(self::SANITIZE, '', $last->output),
+                    preg_replace(self::SANITIZE, '', $output->fetch()),
+                );
+
+                return $last;
+            }
+
+            $last = new RunnerResult($exitCode, $output->fetch());
         }
 
-        $exitCode = $runner->run();
-        if ($shouldPutEnvForParatestTestingItSelf) {
-            putenv(Options::ENV_KEY_TOKEN . '=' . $prevToken);
-            putenv(Options::ENV_KEY_UNIQUE_TOKEN . '=' . $prevUniqueToken);
-            $_SERVER[Options::ENV_KEY_TOKEN]        = $prevToken;
-            $_SERVER[Options::ENV_KEY_UNIQUE_TOKEN] = $prevUniqueToken;
-        }
-
-        return new RunnerResult($exitCode, $output->fetch());
+        return $last;
     }
 
     /**
