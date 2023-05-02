@@ -68,6 +68,7 @@ abstract class TestBase extends TestCase
     public const SANITIZE = [
         '/^Time: .+/m',
         '/^Random Seed: .+/m',
+        '/^.+[(]100%[)]$/m',
         '/Warming cache for static analysis ... \[[^]]+\]/',
         "/flowId='\d+'/",
         "/duration='\d+'/",
