@@ -1,0 +1,19 @@
+<phpunit cacheDirectory="tmp">
+    <source>
+        <include>
+            <file>CoveredOneClass.php</file>
+            <file>CoveredTwoClass.php</file>
+        </include>
+    </source>
+    <coverage>
+        <report>
+            <text outputFile="php://stdout"/>
+        </report>
+    </coverage>
+    <testsuites>
+        <testsuite name="Github issue">
+            <file>CoveredOneTest.php</file>
+            <file>CoveredTwoTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

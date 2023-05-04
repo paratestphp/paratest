@@ -496,6 +496,25 @@ final class WrapperRunnerTest extends TestBase
         self::assertStringContainsString('<bg=%s>', $runnerResult->output);
     }
 
+    /** @group github */
+    #[CoversNothing]
+    public function testIgnoreAttributes(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH756' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--processes']     = '1';
+        $runnerResult                         = $this->runRunner();
+
+        $expectedContains = <<<'EOF'
+        ParaTest\Tests\fixtures\github\GH756\CoveredOneClass
+          Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+        ParaTest\Tests\fixtures\github\GH756\CoveredTwoClass
+          Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+        EOF;
+
+        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertStringContainsString($expectedContains, $runnerResult->output);
+    }
+
     public function testProcessIsolation(): void
     {
         $this->bareOptions['path']                = $this->fixture('process_isolation' . DIRECTORY_SEPARATOR . 'FooTest.php');
