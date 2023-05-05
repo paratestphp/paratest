@@ -240,7 +240,7 @@ final class WrapperRunnerTest extends TestBase
 
         $result = $this->runRunner();
 
-        self::assertSame(35, preg_match_all('/^##teamcity/m', $result->output));
+        self::assertSame(36, preg_match_all('/^##teamcity/m', $result->output));
     }
 
     public function testExitCodesPathWithoutTests(): void
@@ -459,7 +459,7 @@ final class WrapperRunnerTest extends TestBase
         $content = file_get_contents($outputPath);
         self::assertNotFalse($content);
 
-        self::assertSame(35, preg_match_all('/^##teamcity/m', $content));
+        self::assertSame(36, preg_match_all('/^##teamcity/m', $content));
     }
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void
