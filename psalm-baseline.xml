@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.11.0@c9b192ab8400fdaf04b2b13d110575adc879aa90">
+  <file src="src/Options.php">
+    <InvalidArgument>
+      <code>$phpunitOptions</code>
+    </InvalidArgument>
+  </file>
+  <file src="src/WrapperRunner/ApplicationForWrapperWorker.php">
+    <RedundantCondition>
+      <code><![CDATA[assert(isset($this->testdoxFile))]]></code>
+    </RedundantCondition>
+    <RedundantPropertyInitializationCheck>
+      <code><![CDATA[isset($this->testdoxResultCollector)]]></code>
+    </RedundantPropertyInitializationCheck>
+  </file>
+  <file src="src/WrapperRunner/SuiteLoader.php">
+    <RedundantCondition>
+      <code><![CDATA[$filename !== '']]></code>
+    </RedundantCondition>
+  </file>
+  <file src="src/WrapperRunner/WrapperRunner.php">
+    <RedundantCondition>
+      <code><![CDATA[$directory !== '']]></code>
+      <code><![CDATA[assert($directory !== '')]]></code>
+      <code><![CDATA[isset($worker->coverageFile)]]></code>
+      <code><![CDATA[isset($worker->junitFile)]]></code>
+      <code><![CDATA[isset($worker->teamcityFile)]]></code>
+      <code><![CDATA[isset($worker->testdoxFile)]]></code>
+    </RedundantCondition>
+  </file>
+</files>

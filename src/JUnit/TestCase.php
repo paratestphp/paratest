@@ -88,10 +88,10 @@ class TestCase
             if ((string) $node['class'] !== '') {
                 $text = sprintf(
                     "%s::%s\n\n%s:%s",
-                    $node['class'],
-                    $node['name'],
-                    $node['file'],
-                    $node['line'],
+                    (string) $node['class'],
+                    (string) $node['name'],
+                    (string) $node['file'],
+                    (string) $node['line'],
                 );
             }
 

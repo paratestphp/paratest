@@ -11,7 +11,7 @@ start using it with no additional bootstrap or configurations!
 
 Benefits:
 
-* Zero configuration. After the installation, run with `vendor/bin/paratest`. That's it!
+* Zero configuration. After the installation, run with `vendor/bin/paratest` to parallelize by testsuite or `vendor/bin/paratest -f` to parallelize by unit test. That's it!
 * Code Coverage report combining. Run your tests in N parallel processes and all the code coverage output will be combined into one report.
 
 # Installation

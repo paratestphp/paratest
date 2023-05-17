@@ -28,7 +28,6 @@ use function is_string;
 use function mt_srand;
 use function ob_get_clean;
 use function ob_start;
-use function str_replace;
 use function str_starts_with;
 use function strlen;
 use function substr;
@@ -82,7 +81,7 @@ final class SuiteLoader
             $files[$file] = null;
 
             if ($test instanceof TestCase) {
-                $name = str_replace(' with data set ', '', $test->nameWithDataSet());
+                $name = $test->nameWithDataSet();
             } else {
                 $name = $test->getName();
             }
