@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 /** @internal */
 final class FunctionalParallelizationTest extends TestCase
 {
+    /** @return list<array{string, string}> */
     public function dataProvider1(): array
     {
         return [
@@ -18,6 +19,7 @@ final class FunctionalParallelizationTest extends TestCase
         ];
     }
 
+    /** @return array<string, array{string, string}> */
     public function dataProvider2(): array
     {
         return [

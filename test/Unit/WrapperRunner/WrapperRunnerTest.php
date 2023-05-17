@@ -569,7 +569,7 @@ EOF;
 
     public function testFunctionalParallelization(): void
     {
-        $this->bareOptions['path'] = $this->fixture('functional_parallelization_tests' . DIRECTORY_SEPARATOR . 'FunctionalParallelizationTest.php');
+        $this->bareOptions['path'] = $this->fixture('function_parallelization_tests' . DIRECTORY_SEPARATOR . 'FunctionalParallelizationTest.php');
         $this->bareOptions['-f']   = true;
 
         $runnerResult = $this->runRunner();
