@@ -16,16 +16,6 @@ parameters:
 			path: src/Options.php
 
 		-
-			message: "#^Variable \\$prevToken might not be defined\\.$#"
-			count: 2
-			path: test/TestBase.php
-
-		-
-			message: "#^Variable \\$prevUniqueToken might not be defined\\.$#"
-			count: 2
-			path: test/TestBase.php
-
-		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 1
 			path: test/Unit/WrapperRunner/WrapperRunnerTest.php

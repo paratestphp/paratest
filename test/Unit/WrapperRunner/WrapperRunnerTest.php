@@ -523,4 +523,13 @@ final class WrapperRunnerTest extends TestBase
         $runnerResult = $this->runRunner();
         self::assertEquals(0, $runnerResult->exitCode);
     }
+
+    public function testFunctionalParallelization(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('functional_parallelization_tests' . DIRECTORY_SEPARATOR . 'FunctionalParallelizationTest.php');
+        $this->bareOptions['-f']   = true;
+
+        $runnerResult = $this->runRunner();
+        self::assertEquals(0, $runnerResult->exitCode);
+    }
 }
