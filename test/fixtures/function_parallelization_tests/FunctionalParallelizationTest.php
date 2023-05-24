@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 final class FunctionalParallelizationTest extends TestCase
 {
     /** @return list<array{string, string}> */
-    public function dataProvider1(): array
+    public static function dataProvider1(): array
     {
         return [
             ['a', 'a'],
@@ -20,7 +20,7 @@ final class FunctionalParallelizationTest extends TestCase
     }
 
     /** @return array<string, array{string, string}> */
-    public function dataProvider2(): array
+    public static function dataProvider2(): array
     {
         return [
             'test1 with spaces' => ['a', 'a'],
