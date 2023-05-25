@@ -70,7 +70,7 @@ final class WrapperRunner extends BaseRunner
                     $worker = $this->startWorker($token);
                 }
 
-                if ($this->exitcode > 0 && $this->options->stopOnFailure()) {
+                if ($this->exitcode > 0 && ($this->options->stopOnFailure() || $this->options->stopOnError())) {
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {
                     $worker->assign($pending, $phpunit, $phpunitOptions, $this->options);

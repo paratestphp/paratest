@@ -91,7 +91,7 @@ final class Runner extends BaseRunner
         }
 
         $this->exitcode = max($this->exitcode, (int) $worker->stop());
-        if ($this->options->stopOnFailure() && $this->exitcode > 0) {
+        if (($this->options->stopOnFailure() || $this->options->stopOnError()) && $this->exitcode > 0) {
             $this->pending = [];
         }
 
