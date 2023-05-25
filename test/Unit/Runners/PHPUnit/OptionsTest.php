@@ -258,6 +258,7 @@ final class OptionsTest extends TestBase
         static::assertSame(PROCESSES_FOR_TESTS, $options->processes());
         static::assertSame('Runner', $options->runner());
         static::assertFalse($options->stopOnFailure());
+        static::assertFalse($options->stopOnError());
         static::assertEmpty($options->testsuite());
         static::assertSame($this->tmpDir, $options->tmpDir());
         static::assertFalse($options->verbose());
@@ -304,6 +305,7 @@ final class OptionsTest extends TestBase
             '--processes' => '999',
             '--runner' => 'MYRUNNER',
             '--stop-on-failure' => true,
+            '--stop-on-error' => true,
             '--testsuite' => 'TESTSUITE',
             '--tmp-dir' => ($tmpDir = uniqid($this->tmpDir . DS . 't')),
             '--verbose' => true,
@@ -346,6 +348,7 @@ final class OptionsTest extends TestBase
         static::assertSame(999, $options->processes());
         static::assertSame('MYRUNNER', $options->runner());
         static::assertTrue($options->stopOnFailure());
+        static::assertTrue($options->stopOnError());
         static::assertSame(['TESTSUITE'], $options->testsuite());
         static::assertSame($tmpDir, $options->tmpDir());
         static::assertTrue($options->verbose());
@@ -364,6 +367,7 @@ final class OptionsTest extends TestBase
             'order-by' => Options::ORDER_RANDOM,
             'random-order-seed' => (string) $expected_random_seed,
             'repeat' => '2',
+            'stop-on-error' => null,
             'stop-on-failure' => null,
             'whitelist' => 'WHITELIST',
         ], $options->filtered());

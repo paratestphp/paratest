@@ -112,6 +112,13 @@ final class Options
     private $stopOnFailure;
 
     /**
+     * Prevents starting new tests after a test has errored.
+     *
+     * @var bool
+     */
+    private $stopOnError;
+
+    /**
      * A collection of post-processed option values. This is the collection
      * containing ParaTest specific options.
      *
@@ -261,6 +268,7 @@ final class Options
         int $processes,
         string $runner,
         bool $stopOnFailure,
+        bool $stopOnError,
         array $testsuite,
         string $tmpDir,
         bool $verbose,
@@ -302,6 +310,7 @@ final class Options
         $this->processes         = $processes;
         $this->runner            = $runner;
         $this->stopOnFailure     = $stopOnFailure;
+        $this->stopOnError       = $stopOnError;
         $this->testsuite         = $testsuite;
         $this->tmpDir            = $tmpDir;
         $this->verbose           = $verbose;
@@ -344,6 +353,7 @@ final class Options
         assert($options['random-order-seed'] === null || is_string($options['random-order-seed']));
         assert(is_string($options['runner']));
         assert(is_bool($options['stop-on-failure']));
+        assert(is_bool($options['stop-on-error']));
         assert(is_string($options['tmp-dir']));
         assert($options['whitelist'] === null || is_string($options['whitelist']));
         assert($options['repeat'] === null || is_string($options['repeat']));
@@ -456,6 +466,10 @@ final class Options
             $filtered['stop-on-failure'] = null;
         }
 
+        if ($options['stop-on-error']) {
+            $filtered['stop-on-error'] = null;
+        }
+
         $configuration     = null;
         $configurationFile = self::guessConfigurationFile($options['configuration'], $cwd);
         if ($configurationFile !== null) {
@@ -557,6 +571,7 @@ final class Options
             $options['processes'],
             $options['runner'],
             $options['stop-on-failure'],
+            $options['stop-on-error'],
             $testsuite,
             $options['tmp-dir'],
             $options['verbose'],
@@ -790,6 +805,12 @@ final class Options
                 'Runner',
             ),
             new InputOption(
+                'stop-on-error',
+                null,
+                InputOption::VALUE_NONE,
+                'Don\'t start any more processes after an error.',
+            ),
+            new InputOption(
                 'stop-on-failure',
                 null,
                 InputOption::VALUE_NONE,
@@ -959,6 +980,11 @@ final class Options
     public function stopOnFailure(): bool
     {
         return $this->stopOnFailure;
+    }
+
+    public function stopOnError(): bool
+    {
+        return $this->stopOnError;
     }
 
     /** @return array<string, string|null> */
