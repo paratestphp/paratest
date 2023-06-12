@@ -145,9 +145,6 @@ final class ApplicationForWrapperWorker
             false,
             120,
             $this->configuration->source(),
-            $this->configuration->restrictDeprecations(),
-            $this->configuration->restrictNotices(),
-            $this->configuration->restrictWarnings(),
         );
 
         if (isset($this->teamcityFile)) {
