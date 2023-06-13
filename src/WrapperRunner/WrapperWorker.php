@@ -32,6 +32,7 @@ final class WrapperWorker
 
     public readonly SplFileInfo $statusFile;
     public readonly SplFileInfo $progressFile;
+    public readonly SplFileInfo $unexpectedOutputFile;
     public readonly SplFileInfo $testresultFile;
     public readonly SplFileInfo $junitFile;
     public readonly SplFileInfo $coverageFile;
@@ -62,6 +63,8 @@ final class WrapperWorker
         touch($this->statusFile->getPathname());
         $this->progressFile = new SplFileInfo($commonTmpFilePath . 'progress');
         touch($this->progressFile->getPathname());
+        $this->unexpectedOutputFile = new SplFileInfo($commonTmpFilePath . 'unexpected_output');
+        touch($this->unexpectedOutputFile->getPathname());
         $this->testresultFile = new SplFileInfo($commonTmpFilePath . 'testresult');
         if ($options->configuration->hasLogfileJunit()) {
             $this->junitFile = new SplFileInfo($commonTmpFilePath . 'junit');
@@ -83,6 +86,8 @@ final class WrapperWorker
         $parameters[] = $this->statusFile->getPathname();
         $parameters[] = '--progress-file';
         $parameters[] = $this->progressFile->getPathname();
+        $parameters[] = '--unexpected-output-file';
+        $parameters[] = $this->unexpectedOutputFile->getPathname();
         $parameters[] = '--testresult-file';
         $parameters[] = $this->testresultFile->getPathname();
         if (isset($this->teamcityFile)) {

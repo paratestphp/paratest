@@ -50,6 +50,7 @@ final class ApplicationForWrapperWorker
     public function __construct(
         private readonly array $argv,
         private readonly string $progressFile,
+        private readonly string $unexpectedOutputFile,
         private readonly string $testresultFile,
         private readonly ?string $teamcityFile,
         private readonly ?string $testdoxFile,
@@ -140,7 +141,10 @@ final class ApplicationForWrapperWorker
         }
 
         new ProgressPrinter(
-            DefaultPrinter::from($this->progressFile),
+            new ProgressPrinterOutput(
+                DefaultPrinter::from($this->progressFile),
+                DefaultPrinter::from($this->unexpectedOutputFile),
+            ),
             EventFacade::instance(),
             false,
             120,

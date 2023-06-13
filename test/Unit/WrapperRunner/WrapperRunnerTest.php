@@ -515,6 +515,49 @@ final class WrapperRunnerTest extends TestBase
         self::assertStringContainsString($expectedContains, $runnerResult->output);
     }
 
+    public function testHandleUnexpectedOutput(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('unexpected_output' . DIRECTORY_SEPARATOR . 'UnexpectedOutputTest.php');
+
+        $expectedOutput = <<<'EOF'
+Processes:     2
+Runtime:       PHP %s
+
+foobar.                                                                   1 / 1 (100%)
+
+Time: %s, Memory: %s MB
+
+OK%a
+EOF;
+
+        $runnerResult = $this->runRunner();
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+
+        $this->bareOptions['--disallow-test-output'] = true;
+
+        $expectedOutput = <<<'EOF'
+Processes:     2
+Runtime:       PHP %s
+
+foobarR                                                                   1 / 1 (100%)
+
+Time: %s, Memory: %s MB
+
+There was 1 risky test:
+
+1) ParaTest\Tests\fixtures\unexpected_output\UnexpectedOutputTest::testInvalidLogic
+This test printed output: foobar
+
+%s/test/fixtures/unexpected_output/UnexpectedOutputTest.php:%d
+
+OK, but there are issues!
+%a
+EOF;
+
+        $runnerResult = $this->runRunner();
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+    }
+
     public function testProcessIsolation(): void
     {
         $this->bareOptions['path']                = $this->fixture('process_isolation' . DIRECTORY_SEPARATOR . 'FooTest.php');
