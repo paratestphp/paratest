@@ -9,6 +9,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
     $getopt = getopt('', [
         'status-file:',
         'progress-file:',
+        'unexpected-output-file:',
         'testresult-file:',
         'teamcity-file:',
         'testdox-file:',
@@ -36,6 +37,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
     assert(is_resource($statusFile));
 
     assert(isset($getopt['progress-file']) && is_string($getopt['progress-file']));
+    assert(isset($getopt['unexpected-output-file']) && is_string($getopt['unexpected-output-file']));
     assert(isset($getopt['testresult-file']) && is_string($getopt['testresult-file']));
     assert(!isset($getopt['teamcity-file']) || is_string($getopt['teamcity-file']));
     assert(!isset($getopt['testdox-file']) || is_string($getopt['testdox-file']));
@@ -47,6 +49,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
     $application = new ApplicationForWrapperWorker(
         $phpunitArgv,
         $getopt['progress-file'],
+        $getopt['unexpected-output-file'],
         $getopt['testresult-file'],
         $getopt['teamcity-file'] ?? null,
         $getopt['testdox-file'] ?? null,

@@ -27,7 +27,6 @@ use function fread;
 use function fseek;
 use function ftell;
 use function fwrite;
-use function preg_replace;
 use function sprintf;
 use function str_repeat;
 use function strlen;
@@ -129,8 +128,11 @@ final class ResultPrinter
     }
 
     /** @param list<SplFileInfo> $teamcityFiles */
-    public function printFeedback(SplFileInfo $progressFile, array $teamcityFiles): void
-    {
+    public function printFeedback(
+        SplFileInfo $progressFile,
+        SplFileInfo $outputFile,
+        array $teamcityFiles
+    ): void {
         if ($this->options->needsTeamcity) {
             $teamcityProgress = $this->tailMultiple($teamcityFiles);
 
@@ -150,13 +152,15 @@ final class ResultPrinter
             return;
         }
 
+        $unexpectedOutput = $this->tail($outputFile);
+        if ($unexpectedOutput !== '') {
+            $this->output->write($unexpectedOutput);
+        }
+
         $feedbackItems = $this->tail($progressFile);
         if ($feedbackItems === '') {
             return;
         }
-
-        $feedbackItems = preg_replace('/ +\\d+ \\/ \\d+ \\( *\\d+%\\)\\s*/', '', $feedbackItems);
-        assert($feedbackItems !== null);
 
         $actualTestCount = strlen($feedbackItems);
         for ($index = 0; $index < $actualTestCount; ++$index) {
@@ -249,7 +253,7 @@ final class ResultPrinter
             'F' => $this->colorizeTextBox('bg-red, fg-white', $item),
             'I', 'N', 'D', 'R', 'W' => $this->colorizeTextBox('fg-yellow, bold', $item),
             'S' => $this->colorizeTextBox('fg-cyan, bold', $item),
-            default => $item,
+            '.' => $item,
         };
         $this->output->write($buffer);
     }

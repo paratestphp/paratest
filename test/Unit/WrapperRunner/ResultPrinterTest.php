@@ -18,6 +18,8 @@ use function file_get_contents;
 use function file_put_contents;
 use function phpversion;
 use function sprintf;
+use function str_repeat;
+use function touch;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
@@ -132,14 +134,18 @@ final class ResultPrinterTest extends TestBase
     {
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
-        file_put_contents($feedbackFile, 'EWWFFFRRSSSS....... 19 / 19 (100%)');
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
+        file_put_contents($feedbackFile, 'EWWFFFRRSSSS.......');
+        touch($outputFile);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $contents = $this->output->fetch();
         self::assertSame('EWWFFFRRSSSS.......', $contents);
 
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback2';
-        file_put_contents($feedbackFile, 'E 1 / 1 (100%)');
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output2';
+        file_put_contents($feedbackFile, 'E');
+        touch($outputFile);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $contents = $this->output->fetch();
         self::assertSame("E 20 / 20 (100%)\n", $contents);
     }
@@ -150,8 +156,10 @@ final class ResultPrinterTest extends TestBase
         $this->printer = new ResultPrinter($this->output, $this->options);
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
         file_put_contents($feedbackFile, 'E');
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        touch($outputFile);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $contents = $this->output->fetch();
         self::assertStringContainsString('E', $contents);
         self::assertStringContainsString('31;1', $contents);
@@ -169,9 +177,11 @@ final class ResultPrinterTest extends TestBase
 
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
         file_put_contents($feedbackFile, 'E');
+        touch($outputFile);
 
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), [new SplFileInfo($teamcitySource)]);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), [new SplFileInfo($teamcitySource)]);
 
         self::assertSame('E', $this->output->fetch());
         self::assertFileExists($teamcityLog);
@@ -193,9 +203,11 @@ final class ResultPrinterTest extends TestBase
 
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
         file_put_contents($feedbackFile, 'E');
+        touch($outputFile);
 
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), [new SplFileInfo($teamcitySource)]);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), [new SplFileInfo($teamcitySource)]);
         $this->printer->printResults($this->getEmptyTestResult(), [new SplFileInfo($teamcitySource)], []);
 
         self::assertSame($teamcitySourceContent, $this->output->fetch());
@@ -212,9 +224,11 @@ final class ResultPrinterTest extends TestBase
 
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
         file_put_contents($feedbackFile, 'EEE');
+        touch($outputFile);
 
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
         self::assertSame('EEE' . $testdoxSourceContent, $this->output->fetch());
@@ -231,9 +245,11 @@ final class ResultPrinterTest extends TestBase
 
         $this->printer->setTestCount(20);
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
         file_put_contents($feedbackFile, 'EEE');
+        touch($outputFile);
 
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
         self::assertSame($testdoxSourceContent, $this->output->fetch());
@@ -241,7 +257,7 @@ final class ResultPrinterTest extends TestBase
 
     public function testPrintFeedbackFromMultilineSource(): void
     {
-        $source = <<<'EOF'
+        $expected = <<<'EOF'
         ...............................................................  63 / 300 ( 21%)
         ............................................................... 126 / 300 ( 42%)
         ............................................................... 189 / 300 ( 63%)
@@ -254,43 +270,16 @@ final class ResultPrinterTest extends TestBase
         $this->printer->start();
         $this->output->fetch();
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
-        file_put_contents($feedbackFile, $source);
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
+        file_put_contents($feedbackFile, str_repeat('.', 300));
+        touch($outputFile);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $contents = $this->output->fetch();
-        self::assertSame($source, $contents);
+        self::assertSame($expected, $contents);
     }
 
     public function testPrintFeedbackFromMultilineSource2(): void
     {
-        $source = <<<'EOF'
-        .....................................................................................................  101 / 2484 (  4%)
-        .....................................................................................................  202 / 2484 (  8%)
-        .....................................................................................................  303 / 2484 ( 12%)
-        .....................................................................................................  404 / 2484 ( 16%)
-        .....................................................................................................  505 / 2484 ( 20%)
-        .....................................................................................................  606 / 2484 ( 24%)
-        .....................................................................................................  707 / 2484 ( 28%)
-        .....................................................................................................  808 / 2484 ( 32%)
-        .....................................................................................................  909 / 2484 ( 36%)
-        ..................................................................................................... 1010 / 2484 ( 40%)
-        ..................................................................................................... 1111 / 2484 ( 44%)
-        ..................................................................................................... 1212 / 2484 ( 48%)
-        ..................................................................................................... 1313 / 2484 ( 52%)
-        ..................................................................................................... 1414 / 2484 ( 56%)
-        ..................................................................................................... 1515 / 2484 ( 60%)
-        ..................................................................................................... 1616 / 2484 ( 65%)
-        ..................................................................................................... 1717 / 2484 ( 69%)
-        ..................................................................................................... 1818 / 2484 ( 73%)
-        ..................................................................................................... 1919 / 2484 ( 77%)
-        ..................................................................................................... 2020 / 2484 ( 81%)
-        ..................................................................................................... 2121 / 2484 ( 85%)
-        ..................................................................................................... 2222 / 2484 ( 89%)
-        ..................................................................................................... 2323 / 2484 ( 93%)
-        ..................................................................................................... 2424 / 2484 ( 97%)
-        ............................................................                                          2484 / 2484 (100%)
-        
-        EOF;
-
         $expected = <<<'EOF'
         .............................................................   61 / 2484 (  2%)
         .............................................................  122 / 2484 (  4%)
@@ -340,8 +329,10 @@ final class ResultPrinterTest extends TestBase
         $this->printer->start();
         $this->output->fetch();
         $feedbackFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'feedback1';
-        file_put_contents($feedbackFile, $source);
-        $this->printer->printFeedback(new SplFileInfo($feedbackFile), []);
+        $outputFile   = $this->tmpDir . DIRECTORY_SEPARATOR . 'output1';
+        file_put_contents($feedbackFile, str_repeat('.', 2484));
+        touch($outputFile);
+        $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $contents = $this->output->fetch();
         self::assertSame($expected, $contents);
     }
