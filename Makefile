@@ -55,6 +55,10 @@ code-coverage: coverage/junit.xml
 		--ignore-msi-with-no-mutations \
 		--min-msi=100 \
 		$(INFECTION_ARGS)
+		
+.PHONY: clean
+clean:
+	rm -r test/tmp/*
 
 .PHONY: regenerate-fixture-results
 regenerate-fixture-results: vendor
