@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ParaTest\Tests\fixtures\paratest_only_tests;
+namespace ParaTest\Tests\fixtures\function_parallelization_tests;
 
 use PHPUnit\Framework\TestCase;
 

@@ -119,7 +119,7 @@ final class WrapperRunnerTest extends TestBase
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420' . DIRECTORY_SEPARATOR . 'phpunit.xml');
         $runnerResult                         = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     public function testRunnerSortTestEqualBySeed(): void
@@ -196,14 +196,14 @@ final class WrapperRunnerTest extends TestBase
         $runnerResult = $this->runRunner();
 
         self::assertStringContainsString('Failures: 1', $runnerResult->output);
-        self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
     }
 
     public function testParatestEnvironmentVariable(): void
     {
         $this->bareOptions['path'] = $this->fixture('paratest_only_tests' . DIRECTORY_SEPARATOR . 'EnvironmentTest.php');
 
-        self::assertEquals(0, $this->runRunner()->exitCode);
+        self::assertSame(0, $this->runRunner()->exitCode);
     }
 
     public function testPassthrus(): void
@@ -219,7 +219,7 @@ final class WrapperRunnerTest extends TestBase
         }
 
         $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     /** @group github */
@@ -230,7 +230,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--bootstrap']     = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420bis' . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
         $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     public function testTeamcityOutput(): void
@@ -248,7 +248,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['path'] = $this->fixture('no_tests');
         $runnerResult              = $this->runRunner();
 
-        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     /** @requires OSFAMILY Linux */
@@ -354,26 +354,26 @@ final class WrapperRunnerTest extends TestBase
         $runnerResult              = $this->runRunner();
 
         self::assertStringContainsString('Errors: 1', $runnerResult->output);
-        self::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['path'] = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'FailureTest.php');
         $runnerResult              = $this->runRunner();
 
         self::assertStringContainsString('Failures: 1', $runnerResult->output);
-        self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['path'] = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $runnerResult              = $this->runRunner();
 
         self::assertStringContainsString('OK', $runnerResult->output);
-        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['path'] = $this->fixture('common_results');
         $runnerResult              = $this->runRunner();
 
         self::assertStringContainsString('Failures: 1', $runnerResult->output);
         self::assertStringContainsString('Errors: 1', $runnerResult->output);
-        self::assertEquals(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
     }
 
     public function testWritesLogWithEmptyNameWhenPathIsNotProvided(): void
@@ -426,7 +426,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['path']             = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH505');
 
         $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     /**
@@ -443,7 +443,7 @@ final class WrapperRunnerTest extends TestBase
         ];
 
         $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     public function testTeamcityLog(): void
@@ -468,7 +468,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--processes'] = '10';
 
         $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
         $glob = glob($this->tmpDir . '/*');
         self::assertNotFalse($glob);
         self::assertCount(0, $glob);
@@ -482,7 +482,7 @@ final class WrapperRunnerTest extends TestBase
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
 
         $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
 
         $coveragePhp = include $this->bareOptions['--coverage-php'];
         self::assertInstanceOf(CodeCoverage::class, $coveragePhp);
@@ -511,7 +511,7 @@ final class WrapperRunnerTest extends TestBase
           Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
         EOF;
 
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
         self::assertStringContainsString($expectedContains, $runnerResult->output);
     }
 
@@ -558,21 +558,22 @@ EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
     }
 
+    public function testFunctionalParallelization(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('function_parallelization_tests');
+        $this->bareOptions['-f']   = true;
+
+        $runnerResult = $this->runRunner();
+        self::assertStringContainsString('.......', $runnerResult->output);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
     public function testProcessIsolation(): void
     {
         $this->bareOptions['path']                = $this->fixture('process_isolation' . DIRECTORY_SEPARATOR . 'FooTest.php');
         $this->bareOptions['--process-isolation'] = true;
 
         $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
-    }
-
-    public function testFunctionalParallelization(): void
-    {
-        $this->bareOptions['path'] = $this->fixture('function_parallelization_tests' . DIRECTORY_SEPARATOR . 'FunctionalParallelizationTest.php');
-        $this->bareOptions['-f']   = true;
-
-        $runnerResult = $this->runRunner();
-        self::assertEquals(0, $runnerResult->exitCode);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 }

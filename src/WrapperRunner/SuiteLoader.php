@@ -24,6 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function array_keys;
 use function assert;
 use function count;
+use function is_int;
 use function is_string;
 use function mt_srand;
 use function ob_get_clean;
@@ -80,13 +81,21 @@ final class SuiteLoader
         foreach ($this->loadFiles($testSuite) as $file => $test) {
             $files[$file] = null;
 
-            if ($test instanceof TestCase) {
-                $name = $test->nameWithDataSet();
+            if ($test instanceof PhptTestCase) {
+                $tests[] = $file;
             } else {
-                $name = $test->getName();
-            }
+                $name = $test->name();
+                if ($test->providedData() !== []) {
+                    $dataName = $test->dataName();
+                    if (is_int($dataName)) {
+                        $name .= '#' . $dataName;
+                    } else {
+                        $name .= '@' . $dataName;
+                    }
+                }
 
-            $tests[] = "$file\0$name";
+                $tests[] = "$file\0$name";
+            }
         }
 
         $this->files = array_keys($files);

@@ -18,7 +18,6 @@ use function getenv;
 use function putenv;
 
 use const DIRECTORY_SEPARATOR;
-use const FIXTURES;
 
 abstract class TestBase extends TestCase
 {

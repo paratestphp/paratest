@@ -20,8 +20,6 @@ use function file_put_contents;
 use function glob;
 use function str_replace;
 
-use const FIXTURES;
-
 /** @internal */
 #[CoversClass(LogMerger::class)]
 #[CoversClass(MessageType::class)]

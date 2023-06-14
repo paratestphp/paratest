@@ -33,8 +33,10 @@ use PHPUnit\Util\ExcludeList;
 
 use function assert;
 use function file_put_contents;
+use function is_file;
 use function mt_srand;
 use function serialize;
+use function str_ends_with;
 use function strpos;
 use function substr;
 
@@ -73,8 +75,13 @@ final class ApplicationForWrapperWorker
 
         $this->bootstrap();
 
-        $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
-        $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
+        if (is_file($testPath) && str_ends_with($testPath, '.phpt')) {
+            $testSuite = TestSuite::empty($testPath);
+            $testSuite->addTestFile($testPath);
+        } else {
+            $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
+            $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
+        }
 
         (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
 
