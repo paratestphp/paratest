@@ -6,7 +6,6 @@ ifeq ($(strip $(LOCAL_BASE_BRANCH)),)
 	LOCAL_BASE_BRANCH := HEAD^
 endif
 BASE_BRANCH ?= $(LOCAL_BASE_BRANCH)
-PSALM_ARGS ?= --no-cache
 
 all: csfix static-analysis code-coverage
 	@echo "Done."
@@ -24,7 +23,6 @@ csfix: vendor
 .PHONY: static-analysis
 static-analysis: vendor
 	php -d zend.assertions=1 vendor/bin/phpstan $(PHPSTAN_ARGS)
-	php -d zend.assertions=1 vendor/bin/psalm $(PSALM_ARGS)
 
 coverage/junit.xml: vendor $(SRCS) Makefile
 	php -d zend.assertions=1 \
