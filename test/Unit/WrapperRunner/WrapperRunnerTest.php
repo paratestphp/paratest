@@ -14,6 +14,7 @@ use ParaTest\WrapperRunner\WrapperRunner;
 use ParaTest\WrapperRunner\WrapperWorker;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
@@ -558,6 +559,16 @@ EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
     }
 
+    /**
+     * \PHPUnit\Runner\Filter\NameFilterIterator uses `preg_match`, and in
+     * \ParaTest\Tests\fixtures\function_parallelization_tests\FunctionalParallelizationTest::dataProvider2
+     * on the second data name we explicitly test a NULL-byte for our internal implementation, but
+     * NULL-byte isn't supported in PHP < 8.2
+     *
+     * @see https://bugs.php.net/bug.php?id=77726
+     * @see https://github.com/php/php-src/pull/8114
+     */
+    #[RequiresPhp('8.2')]
     public function testFunctionalParallelization(): void
     {
         $this->bareOptions['path']         = $this->fixture('function_parallelization_tests');
