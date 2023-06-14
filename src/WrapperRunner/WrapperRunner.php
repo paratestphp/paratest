@@ -109,7 +109,7 @@ final class WrapperRunner implements RunnerInterface
         );
         $result      = TestResultFacade::result();
 
-        $this->pending = $this->options->functional ? $suiteLoader->tests : $suiteLoader->files;
+        $this->pending = $suiteLoader->tests;
         $this->printer->setTestCount($suiteLoader->testCount);
         $this->printer->start();
         $this->startWorkers();

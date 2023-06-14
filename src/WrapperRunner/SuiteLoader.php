@@ -38,8 +38,6 @@ final class SuiteLoader
 {
     public readonly int $testCount;
     /** @var list<non-empty-string> */
-    public readonly array $files;
-    /** @var list<non-empty-string> */
     public readonly array $tests;
 
     public function __construct(
@@ -98,8 +96,9 @@ final class SuiteLoader
             }
         }
 
-        $this->files = array_keys($files);
-        $this->tests = $tests;
+        $this->tests = $this->options->functional
+            ? $tests
+            : array_keys($files);
 
         if (! $this->options->configuration->hasCoverageReport()) {
             return;
