@@ -214,7 +214,7 @@ final class Options
             // ParaTest options
             new InputOption(
                 'functional',
-                'f',
+                null,
                 InputOption::VALUE_NONE,
                 'Whether to enable functional testing, for unit and dataset parallelization',
             ),

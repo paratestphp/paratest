@@ -560,8 +560,8 @@ EOF;
 
     public function testFunctionalParallelization(): void
     {
-        $this->bareOptions['path'] = $this->fixture('function_parallelization_tests');
-        $this->bareOptions['-f']   = true;
+        $this->bareOptions['path']         = $this->fixture('function_parallelization_tests');
+        $this->bareOptions['--functional'] = true;
 
         $runnerResult = $this->runRunner();
         self::assertStringContainsString('.......', $runnerResult->output);

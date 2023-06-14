@@ -11,7 +11,7 @@ start using it with no additional bootstrap or configurations!
 
 Benefits:
 
-* Zero configuration. After the installation, run with `vendor/bin/paratest` to parallelize by testsuite or `vendor/bin/paratest -f` to parallelize by unit test. That's it!
+* Zero configuration. After the installation, run with `vendor/bin/paratest` to parallelize by TestCase or `vendor/bin/paratest --functional` to parallelize by Test. That's it!
 * Code Coverage report combining. Run your tests in N parallel processes and all the code coverage output will be combined into one report.
 
 # Installation
@@ -70,14 +70,6 @@ If you have `xDebug` installed, activating it by the environment variable is eno
 
 ```
 XDEBUG_MODE=coverage vendor/bin/paratest
-```
-
-### PHPDBG
-
-`PHPDBG` is automatically detected and used in the subprocesses if it's the running binary of the main process:
-
-```
-phpdbg vendor/bin/paratest
 ```
 
 ## Initial setup for all tests
