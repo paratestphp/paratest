@@ -16,6 +16,7 @@ use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
+use PHPUnit\Runner\Filter\Factory;
 use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
@@ -32,8 +33,12 @@ use PHPUnit\Util\ExcludeList;
 
 use function assert;
 use function file_put_contents;
+use function is_file;
 use function mt_srand;
 use function serialize;
+use function str_ends_with;
+use function strpos;
+use function substr;
 
 /**
  * @internal
@@ -60,16 +65,37 @@ final class ApplicationForWrapperWorker
 
     public function runTest(string $testPath): int
     {
+        $null   = strpos($testPath, "\0");
+        $filter = null;
+        if ($null !== false) {
+            $filter = new Factory();
+            $filter->addNameFilter(substr($testPath, $null + 1));
+            $testPath = substr($testPath, 0, $null);
+        }
+
         $this->bootstrap();
 
-        $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
-        $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
+        if (is_file($testPath) && str_ends_with($testPath, '.phpt')) {
+            $testSuite = TestSuite::empty($testPath);
+            $testSuite->addTestFile($testPath);
+        } else {
+            $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
+            $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
+        }
 
         (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
 
         if (CodeCoverage::instance()->isActive()) {
             CodeCoverage::instance()->ignoreLines(
                 (new CodeCoverageMetadataApi())->linesToBeIgnored($testSuite),
+            );
+        }
+
+        if ($filter !== null) {
+            $testSuite->injectFilter($filter);
+
+            EventFacade::emitter()->testSuiteFiltered(
+                TestSuiteBuilder::from($testSuite),
             );
         }
 

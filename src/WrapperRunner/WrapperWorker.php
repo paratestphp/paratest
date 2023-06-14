@@ -105,6 +105,10 @@ final class WrapperWorker
 
         $phpunitArguments = [$options->phpunit];
         foreach ($options->phpunitOptions as $key => $value) {
+            if ($options->functional && $key === 'filter') {
+                continue;
+            }
+
             $phpunitArguments[] = "--{$key}";
             if ($value === true) {
                 continue;

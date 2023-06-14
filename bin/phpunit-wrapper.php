@@ -69,7 +69,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
         }
 
         // It must be a 1 byte string to ensure filesize() is equal to the number of tests executed
-        $exitCode = $application->runTest(trim($testPath));
+        $exitCode = $application->runTest(trim($testPath, "\n"));
 
         fwrite($statusFile, (string) $exitCode);
         fflush($statusFile);

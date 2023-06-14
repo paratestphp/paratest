@@ -21,11 +21,6 @@ parameters:
 			path: src/WrapperRunner/ResultPrinter.php
 
 		-
-			message: "#^Property ParaTest\\\\WrapperRunner\\\\SuiteLoader\\:\\:\\$files \\(array\\<int, non\\-empty\\-string\\>\\) does not accept array\\<int, int\\|string\\>\\.$#"
-			count: 1
-			path: src/WrapperRunner/SuiteLoader.php
-
-		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 1
 			path: test/Unit/WrapperRunner/WrapperRunnerTest.php

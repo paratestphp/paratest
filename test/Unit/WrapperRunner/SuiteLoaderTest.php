@@ -33,14 +33,14 @@ final class SuiteLoaderTest extends TestBase
         $loader = $this->loadSuite();
 
         self::assertSame(7, $loader->testCount);
-        self::assertCount(7, $loader->files);
+        self::assertCount(7, $loader->tests);
     }
 
     public function testLoadFileGetsPathOfFile(): void
     {
         $path                      = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $this->bareOptions['path'] = $path;
-        $files                     = $this->loadSuite()->files;
+        $files                     = $this->loadSuite()->tests;
 
         $file = array_shift($files);
         self::assertNotNull($file);
@@ -61,7 +61,7 @@ final class SuiteLoaderTest extends TestBase
     public function testLoadsPhptFiles(): void
     {
         $this->bareOptions['path'] = $this->fixture('phpt');
-        $files                     = $this->loadSuite()->files;
+        $files                     = $this->loadSuite()->tests;
 
         $file = array_shift($files);
         self::assertNotNull($file);
