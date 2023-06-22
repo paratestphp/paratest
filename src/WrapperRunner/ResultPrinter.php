@@ -196,26 +196,45 @@ final class ResultPrinter
 
         $this->printer->print(PHP_EOL . (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
 
+        $defaultResultPrinter = new DefaultResultPrinter(
+            $this->printer,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            $this->options->configuration->displayDetailsOnIncompleteTests(),
+            $this->options->configuration->displayDetailsOnSkippedTests(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerErrors(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerNotices(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
+            false,
+        );
+
         if ($this->options->configuration->outputIsTestDox()) {
             $this->output->write($this->tailMultiple($testdoxFiles));
-        } else {
-            (new DefaultResultPrinter(
+
+            $defaultResultPrinter = new DefaultResultPrinter(
                 $this->printer,
                 true,
                 true,
                 true,
-                true,
-                true,
-                true,
-                $this->options->configuration->displayDetailsOnIncompleteTests(),
-                $this->options->configuration->displayDetailsOnSkippedTests(),
-                $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),
-                $this->options->configuration->displayDetailsOnTestsThatTriggerErrors(),
-                $this->options->configuration->displayDetailsOnTestsThatTriggerNotices(),
-                $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
                 false,
-            ))->print($testResult);
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+            );
         }
+
+        $defaultResultPrinter->print($testResult);
 
         (new SummaryPrinter(
             $this->printer,
