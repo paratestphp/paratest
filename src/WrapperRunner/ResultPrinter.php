@@ -40,12 +40,12 @@ final class ResultPrinter
 {
     public readonly Printer $printer;
 
-    private int $numTestsWidth   = 0;
-    private int $maxColumn       = 0;
-    private int $totalCases      = 0;
-    private int $column          = 0;
-    private int $casesProcessed  = 0;
-    private int $numberOfColumns = 80;
+    private int $numTestsWidth  = 0;
+    private int $maxColumn      = 0;
+    private int $totalCases     = 0;
+    private int $column         = 0;
+    private int $casesProcessed = 0;
+    private int $numberOfColumns;
     /** @var resource|null */
     private $teamcityLogFileHandle;
     /** @var array<non-empty-string, int> */
@@ -70,6 +70,8 @@ final class ResultPrinter
             {
             }
         };
+
+        $this->numberOfColumns = $this->options->configuration->columns();
 
         if (! $this->options->configuration->hasLogfileTeamcity()) {
             return;
