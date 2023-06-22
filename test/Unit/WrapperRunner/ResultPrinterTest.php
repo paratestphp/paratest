@@ -231,7 +231,10 @@ final class ResultPrinterTest extends TestBase
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
-        self::assertSame('EEE' . $testdoxSourceContent, $this->output->fetch());
+        self::assertStringMatchesFormat(
+            'EEE' . "\n" . 'Time: %a, Memory: %a' . "\n\n" . $testdoxSourceContent . 'No tests executed!',
+            $this->output->fetch(),
+        );
     }
 
     public function testTestdoxOutputWithoutProgress(): void
@@ -252,7 +255,10 @@ final class ResultPrinterTest extends TestBase
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), []);
         $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
 
-        self::assertSame($testdoxSourceContent, $this->output->fetch());
+        self::assertStringMatchesFormat(
+            "\n" . 'Time: %a, Memory: %a' . "\n\n" . $testdoxSourceContent . 'No tests executed!',
+            $this->output->fetch(),
+        );
     }
 
     public function testPrintFeedbackFromMultilineSource(): void

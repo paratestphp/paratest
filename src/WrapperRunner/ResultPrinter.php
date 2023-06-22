@@ -192,37 +192,33 @@ final class ResultPrinter
             return;
         }
 
-        if ($this->options->configuration->outputIsTestDox()) {
-            $this->output->write($this->tailMultiple($testdoxFiles));
-
-            return;
-        }
-
-        $resultPrinter  = new DefaultResultPrinter(
-            $this->printer,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            $this->options->configuration->displayDetailsOnIncompleteTests(),
-            $this->options->configuration->displayDetailsOnSkippedTests(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerErrors(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerNotices(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
-            false,
-        );
-        $summaryPrinter = new SummaryPrinter(
-            $this->printer,
-            $this->options->configuration->colors(),
-        );
-
         $this->printer->print(PHP_EOL . (new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest() . PHP_EOL . PHP_EOL);
 
-        $resultPrinter->print($testResult);
-        $summaryPrinter->print($testResult);
+        if ($this->options->configuration->outputIsTestDox()) {
+            $this->output->write($this->tailMultiple($testdoxFiles));
+        } else {
+            (new DefaultResultPrinter(
+                $this->printer,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                $this->options->configuration->displayDetailsOnIncompleteTests(),
+                $this->options->configuration->displayDetailsOnSkippedTests(),
+                $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),
+                $this->options->configuration->displayDetailsOnTestsThatTriggerErrors(),
+                $this->options->configuration->displayDetailsOnTestsThatTriggerNotices(),
+                $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
+                false,
+            ))->print($testResult);
+        }
+
+        (new SummaryPrinter(
+            $this->printer,
+            $this->options->configuration->colors(),
+        ))->print($testResult);
     }
 
     private function printFeedbackItem(string $item): void
