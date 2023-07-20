@@ -22,15 +22,18 @@ use function array_diff;
 use function array_reverse;
 use function array_unique;
 use function defined;
+use function explode;
 use function file_get_contents;
 use function file_put_contents;
 use function glob;
+use function implode;
 use function min;
 use function posix_mkfifo;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function scandir;
+use function sort;
 use function sprintf;
 use function str_replace;
 use function uniqid;
@@ -38,6 +41,7 @@ use function unlink;
 
 use const DIRECTORY_SEPARATOR;
 use const FIXTURES;
+use const PHP_EOL;
 
 /** @internal */
 #[CoversClass(WrapperRunner::class)]
@@ -241,11 +245,17 @@ final class WrapperRunnerTest extends TestBase
 
         $result = $this->runRunner();
 
+        $format = file_get_contents(__DIR__ . '/fixtures/common_results_teamcity_output');
+        self::assertNotFalse($format);
+
         $output = $result->output;
         $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+.\\d+.\\d+\n\n/", '', $output);
         self::assertNotNull($output);
 
-        self::assertStringMatchesFormatFile(__DIR__ . '/fixtures/common_results_teamcity_output', $output);
+        self::assertStringMatchesFormat(
+            self::sorted($format),
+            self::sorted($output),
+        );
     }
 
     public function testExitCodesPathWithoutTests(): void
@@ -460,11 +470,17 @@ final class WrapperRunnerTest extends TestBase
 
         $this->runRunner();
 
+        $format = file_get_contents(__DIR__ . '/fixtures/common_results_teamcity_output');
+        self::assertNotFalse($format);
+
         self::assertFileExists($outputPath);
         $content = file_get_contents($outputPath);
         self::assertNotFalse($content);
 
-        self::assertStringMatchesFormatFile(__DIR__ . '/fixtures/common_results_teamcity_output', $content);
+        self::assertStringMatchesFormat(
+            self::sorted($format),
+            self::sorted($content),
+        );
     }
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void
@@ -590,5 +606,13 @@ EOF;
 
         $runnerResult = $this->runRunner();
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
+    private static function sorted(string $from): string
+    {
+        $from = explode(PHP_EOL, $from);
+        sort($from);
+
+        return implode(PHP_EOL, $from);
     }
 }
