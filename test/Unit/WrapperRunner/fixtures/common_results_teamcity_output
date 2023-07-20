@@ -1,0 +1,70 @@
+
+##teamcity[testCount count='1' flowId='%d']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\common_results\ErrorTest' locationHint='php_qn://%s/test/fixtures/common_results/ErrorTest.php::\ParaTest\Tests\fixtures\common_results\ErrorTest' flowId='%d']
+
+##teamcity[testStarted name='testError' locationHint='php_qn://%s/test/fixtures/common_results/ErrorTest.php::\ParaTest\Tests\fixtures\common_results\ErrorTest::testError' flowId='%d']
+
+##teamcity[testFailed name='testError' message='RuntimeException: Error here!' details='%s/test/fixtures/common_results/ErrorTest.php:15|n' duration='%d' flowId='%d']
+
+##teamcity[testFinished name='testError' duration='%d' flowId='%d']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\common_results\ErrorTest' flowId='%d']
+
+##teamcity[testCount count='1' flowId='%d']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\common_results\FailureTest' locationHint='php_qn://%s/test/fixtures/common_results/FailureTest.php::\ParaTest\Tests\fixtures\common_results\FailureTest' flowId='%d']
+
+##teamcity[testStarted name='testFailure' locationHint='php_qn://%s/test/fixtures/common_results/FailureTest.php::\ParaTest\Tests\fixtures\common_results\FailureTest::testFailure' flowId='%d']
+
+##teamcity[testFailed name='testFailure' message='Failed asserting that false is true.' details='%s/test/fixtures/common_results/FailureTest.php:14|n' duration='%d' flowId='%d']
+
+##teamcity[testFinished name='testFailure' duration='%d' flowId='%d']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\common_results\FailureTest' flowId='%d']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\common_results\IncompleteTest' locationHint='php_qn://%s/test/fixtures/common_results/IncompleteTest.php::\ParaTest\Tests\fixtures\common_results\IncompleteTest' flowId='%d']
+
+##teamcity[testStarted name='testIncomplete' locationHint='php_qn://%s/test/fixtures/common_results/IncompleteTest.php::\ParaTest\Tests\fixtures\common_results\IncompleteTest::testIncomplete' flowId='%d']
+
+##teamcity[testIgnored name='testIncomplete' message='' details='%s/test/fixtures/common_results/IncompleteTest.php:14|n' duration='%d' flowId='%d']
+
+##teamcity[testFinished name='testIncomplete' duration='%d' flowId='%d']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\common_results\IncompleteTest' flowId='%d']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\common_results\RiskyTest' locationHint='php_qn://%s/test/fixtures/common_results/RiskyTest.php::\ParaTest\Tests\fixtures\common_results\RiskyTest' flowId='%d']
+
+##teamcity[testStarted name='testRisky' locationHint='php_qn://%s/test/fixtures/common_results/RiskyTest.php::\ParaTest\Tests\fixtures\common_results\RiskyTest::testRisky' flowId='%d']
+
+##teamcity[testFailed name='testRisky' message='This test did not perform any assertions' details='' duration='%d' flowId='%d']
+
+##teamcity[testFinished name='testRisky' duration='%d' flowId='%d']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\common_results\RiskyTest' flowId='%d']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\common_results\SkippedTest' locationHint='php_qn://%s/test/fixtures/common_results/SkippedTest.php::\ParaTest\Tests\fixtures\common_results\SkippedTest' flowId='%d']
+
+##teamcity[testStarted name='testSkipped' locationHint='php_qn://%s/test/fixtures/common_results/SkippedTest.php::\ParaTest\Tests\fixtures\common_results\SkippedTest::testSkipped' flowId='%d']
+
+##teamcity[testIgnored name='testSkipped' message='' duration='%d' flowId='%d']
+
+##teamcity[testFinished name='testSkipped' duration='%d' flowId='%d']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\common_results\SkippedTest' flowId='%d']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\common_results\SuccessTest' locationHint='php_qn://%s/test/fixtures/common_results/SuccessTest.php::\ParaTest\Tests\fixtures\common_results\SuccessTest' flowId='%d']
+
+##teamcity[testStarted name='testSuccess' locationHint='php_qn://%s/test/fixtures/common_results/SuccessTest.php::\ParaTest\Tests\fixtures\common_results\SuccessTest::testSuccess' flowId='%d']
+
+##teamcity[testFinished name='testSuccess' duration='%d' flowId='%d']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\common_results\SuccessTest' flowId='%d']
+
+##teamcity[testSuiteStarted name='ParaTest\Tests\fixtures\common_results\WarningTest' locationHint='php_qn://%s/test/fixtures/common_results/WarningTest.php::\ParaTest\Tests\fixtures\common_results\WarningTest' flowId='%d']
+
+##teamcity[testStarted name='testWarning' locationHint='php_qn://%s/test/fixtures/common_results/WarningTest.php::\ParaTest\Tests\fixtures\common_results\WarningTest::testWarning' flowId='%d']
+
+##teamcity[testFinished name='testWarning' duration='%d' flowId='%d']
+
+##teamcity[testSuiteFinished name='ParaTest\Tests\fixtures\common_results\WarningTest' flowId='%d']
