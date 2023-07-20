@@ -249,7 +249,8 @@ final class WrapperRunnerTest extends TestBase
         self::assertNotFalse($format);
 
         $output = $result->output;
-        $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+.\\d+.\\d+\n\n/", '', $output);
+        $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+.\\d+.\\d+(-dev)?\n\n/", '', $output, 1, $count);
+        self::assertSame(1, $count);
         self::assertNotNull($output);
 
         self::assertStringMatchesFormat(
