@@ -25,6 +25,7 @@ use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Configuration\Configuration;
 use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Output\Default\ProgressPrinter\ProgressPrinter;
+use PHPUnit\TextUI\Output\Default\UnexpectedOutputPrinter;
 use PHPUnit\TextUI\Output\DefaultPrinter;
 use PHPUnit\TextUI\Output\NullPrinter;
 use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
@@ -166,11 +167,14 @@ final class ApplicationForWrapperWorker
             );
         }
 
+        $printer = new ProgressPrinterOutput(
+            DefaultPrinter::from($this->progressFile),
+            DefaultPrinter::from($this->unexpectedOutputFile),
+        );
+
+        new UnexpectedOutputPrinter($printer, EventFacade::instance());
         new ProgressPrinter(
-            new ProgressPrinterOutput(
-                DefaultPrinter::from($this->progressFile),
-                DefaultPrinter::from($this->unexpectedOutputFile),
-            ),
+            $printer,
             EventFacade::instance(),
             false,
             120,

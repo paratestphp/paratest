@@ -1,6 +1,3 @@
-Processes:     2
-Runtime:       PHP %d.%d.%d
-
 
 ##teamcity[testCount count='1' flowId='%d']
 
@@ -9,8 +6,6 @@ Runtime:       PHP %d.%d.%d
 ##teamcity[testStarted name='testError' locationHint='php_qn://%s/test/fixtures/common_results/ErrorTest.php::\ParaTest\Tests\fixtures\common_results\ErrorTest::testError' flowId='%d']
 
 ##teamcity[testFailed name='testError' message='RuntimeException: Error here!' details='%s/test/fixtures/common_results/ErrorTest.php:15|n' duration='%d' flowId='%d']
-
-##teamcity[testFailed name='testError' message='This test did not perform any assertions' details='' duration='%d' flowId='%d']
 
 ##teamcity[testFinished name='testError' duration='%d' flowId='%d']
 

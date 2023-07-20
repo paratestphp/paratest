@@ -241,7 +241,11 @@ final class WrapperRunnerTest extends TestBase
 
         $result = $this->runRunner();
 
-        self::assertStringMatchesFormatFile(__DIR__.'/fixtures/common_results_teamcity_output', $result->output);
+        $output = $result->output;
+        $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+.\\d+.\\d+\n\n/", '', $output);
+        self::assertNotNull($output);
+
+        self::assertStringMatchesFormatFile(__DIR__ . '/fixtures/common_results_teamcity_output', $output);
     }
 
     public function testExitCodesPathWithoutTests(): void
@@ -460,7 +464,7 @@ final class WrapperRunnerTest extends TestBase
         $content = file_get_contents($outputPath);
         self::assertNotFalse($content);
 
-        self::assertSame(36, preg_match_all('/^##teamcity/m', $content));
+        self::assertStringMatchesFormatFile(__DIR__ . '/fixtures/common_results_teamcity_output', $content);
     }
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void
