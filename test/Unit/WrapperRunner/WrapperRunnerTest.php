@@ -241,7 +241,7 @@ final class WrapperRunnerTest extends TestBase
 
         $result = $this->runRunner();
 
-        self::assertSame(36, preg_match_all('/^##teamcity/m', $result->output));
+        self::assertStringMatchesFormatFile(__DIR__.'/fixtures/common_results_teamcity_output', $result->output);
     }
 
     public function testExitCodesPathWithoutTests(): void
