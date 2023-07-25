@@ -85,6 +85,38 @@ jobs:
         timeout-minutes: 3
         run: "vendor/bin/phpunit --no-coverage --no-logging"
 
+  tests-symfony-7:
+    name: "Tests for Symfony 7"
+    runs-on: "ubuntu-latest"
+    env:
+      SYMFONY_REQUIRE: "${{ matrix.symfony-version }}"
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.2"
+        symfony-version:
+          - "7.x-dev"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "pcov"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: "${{ env.INI_VALUES }}"
+
+      - name: "Install Symfony Flex"
+        run: |
+          composer config --global --no-plugins allow-plugins.symfony/flex true
+          composer global require --no-progress --no-scripts --no-plugins symfony/flex
+
+      - uses: "ramsey/composer-install@v2"
+
+      - name: "Run tests"
+        timeout-minutes: 3
+        run: "vendor/bin/phpunit --no-coverage --no-logging"
+
   code-coverage:
     name: "Code Coverage"
     runs-on: "ubuntu-latest"
