@@ -572,7 +572,7 @@ This test printed output: foobar
 
 %s/test/fixtures/unexpected_output/UnexpectedOutputTest.php:%d
 
-OK, but there are issues!
+OK, but there were issues!
 %a
 EOF;
 
