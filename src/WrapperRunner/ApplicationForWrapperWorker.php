@@ -84,13 +84,13 @@ final class ApplicationForWrapperWorker
             $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
         }
 
-        (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
-
         if (CodeCoverage::instance()->isActive()) {
             CodeCoverage::instance()->ignoreLines(
                 (new CodeCoverageMetadataApi())->linesToBeIgnored($testSuite),
             );
         }
+
+        (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
 
         if ($filter !== null) {
             $testSuite->injectFilter($filter);
