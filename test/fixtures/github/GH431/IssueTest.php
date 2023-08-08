@@ -14,7 +14,7 @@ final class IssueTest extends TestCase
     public function testFillBuffers(): void
     {
         // the string is larger than the output buffer.
-        // if the parent process doesnt read the output buffer, this test will hang forever.
+        // if the parent process doesn't read the output buffer, this test will hang forever.
         echo str_repeat('a', 10000);
 
         $this->assertTrue(true);

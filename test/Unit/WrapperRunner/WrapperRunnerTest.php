@@ -580,6 +580,17 @@ EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
     }
 
+    /** @group github */
+    #[CoversNothing]
+    public function testGroupOptionWithDataProviderAndCodeCoverageEnabled(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH782' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--group']         = 'default';
+
+        $runnerResult = $this->runRunner();
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
     /**
      * \PHPUnit\Runner\Filter\NameFilterIterator uses `preg_match`, and in
      * \ParaTest\Tests\fixtures\function_parallelization_tests\FunctionalParallelizationTest::dataProvider2

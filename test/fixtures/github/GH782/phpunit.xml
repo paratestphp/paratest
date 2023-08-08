@@ -1,0 +1,17 @@
+<phpunit cacheDirectory="tmp">
+    <testsuites>
+        <testsuite name="Github issue">
+            <file>IssueTest.php</file>
+        </testsuite>
+    </testsuites>
+    <coverage>
+        <report>
+            <text outputFile="php://stdout"/>
+        </report>
+    </coverage>
+    <source>
+        <include>
+            <file>Something.php</file>
+        </include>
+    </source>
+</phpunit>
