@@ -611,6 +611,22 @@ EOF;
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
+    #[RequiresPhp('8.2')]
+    public function testFunctionalParallelizationWithJunitLogging(): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']             = $this->fixture('function_parallelization_tests');
+        $this->bareOptions['--processes']      = '1';
+        $this->bareOptions['--functional']     = true;
+        $this->bareOptions['--max-batch-size'] = 1;
+        $this->bareOptions['--log-junit']      = $outputFile;
+
+        $runnerResult = $this->runRunner();
+        self::assertStringContainsString('.......', $runnerResult->output);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
     public function testProcessIsolation(): void
     {
         $this->bareOptions['path']                = $this->fixture('process_isolation' . DIRECTORY_SEPARATOR . 'FooTest.php');
