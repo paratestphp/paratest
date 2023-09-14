@@ -205,6 +205,10 @@ final class ApplicationForWrapperWorker
 
     public function end(): void
     {
+        if (! $this->hasBeenBootstrapped) {
+            return;
+        }
+
         EventFacade::emitter()->testRunnerExecutionFinished();
         EventFacade::emitter()->testRunnerFinished();
 
