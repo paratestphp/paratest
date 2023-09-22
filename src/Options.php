@@ -121,9 +121,14 @@ final class Options
         unset($options['passthru-php']);
 
         assert(is_string($options['processes']));
-        $processes = is_numeric($options['processes'])
-            ? (int) $options['processes']
-            : self::getNumberOfCPUCores();
+        if (is_numeric($options['processes'])) {
+            $processes = (int) $options['processes'];
+        } elseif ($options['processes'] ===  'spare') {
+            $processes = self::getNumberOfCPUCores() - 1;
+        } else {
+            $processes = self::getNumberOfCPUCores();
+        }
+
         unset($options['processes']);
 
         assert(is_string($options['runner']) && $options['runner'] !== '');
