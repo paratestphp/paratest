@@ -15,8 +15,8 @@ use ParaTest\Runners\PHPUnit\Worker\WrapperWorker;
 
     foreach ($composerAutoloadFiles as $file) {
         if (file_exists($file)) {
-            require_once $file;
             define('PHPUNIT_COMPOSER_INSTALL', $file);
+            require_once $file;
 
             break;
         }
