@@ -280,6 +280,7 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->phpDeprecations(), $testResult->phpDeprecations()),
                 array_merge_recursive($testResultSum->phpNotices(), $testResult->phpNotices()),
                 array_merge_recursive($testResultSum->phpWarnings(), $testResult->phpWarnings()),
+                $testResultSum->numberOfIssuesIgnoredByBaseline() + $testResult->numberOfIssuesIgnoredByBaseline(),
             );
         }
 
