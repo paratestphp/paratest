@@ -97,7 +97,7 @@ final class OptionsTest extends TestBase
         self::assertSame(5, $options->maxBatchSize);
         self::assertTrue($options->noTestTokens);
         self::assertSame(['-d', 'a=1'], $options->passthruPhp);
-        self::assertSame('PATH', $options->configuration->cliArgument());
+        self::assertSame('PATH', $options->configuration->cliArguments()[0]);
         self::assertSame(999, $options->processes);
         self::assertSame('MYRUNNER', $options->runner);
         self::assertSame($tmpDir, $options->tmpDir);

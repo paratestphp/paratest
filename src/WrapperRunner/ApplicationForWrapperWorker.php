@@ -70,7 +70,9 @@ final class ApplicationForWrapperWorker
         $filter = null;
         if ($null !== false) {
             $filter = new Factory();
-            $filter->addNameFilter(substr($testPath, $null + 1));
+            $name   = substr($testPath, $null + 1);
+            assert($name !== '');
+            $filter->addNameFilter($name);
             $testPath = substr($testPath, 0, $null);
         }
 
