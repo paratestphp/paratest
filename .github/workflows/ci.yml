@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "*.x"
+      - "renovate/*"
 
 env:
   INI_VALUES: zend.assertions=1,error_reporting=-1,date.timezone="Europe/Rome"
@@ -117,7 +118,7 @@ jobs:
           BASE_BRANCH: origin/${{ github.base_ref }}
 
       - name: "Infection on complete code base"
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }} && "!startsWith(github.ref, 'renovate/')"
         timeout-minutes: 30
         run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
         env:
