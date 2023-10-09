@@ -118,7 +118,7 @@ jobs:
           BASE_BRANCH: origin/${{ github.base_ref }}
 
       - name: "Infection on complete code base"
-        if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'renovate/') }}
+        if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref_name, 'renovate/') }}
         timeout-minutes: 30
         run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
         env:
