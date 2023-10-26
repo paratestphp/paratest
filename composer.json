@@ -45,8 +45,8 @@
         "phpunit/php-timer": "^5.0.3",
         "phpunit/phpunit": "^9.6.4",
         "sebastian/environment": "^5.1.5",
-        "symfony/console": "^5.4.21 || ^6.2.7",
-        "symfony/process": "^5.4.21 || ^6.2.7"
+        "symfony/console": "^5.4.21 || ^6.2.7 || ^7.0.0",
+        "symfony/process": "^5.4.21 || ^6.2.7 || ^7.0.0"
     },
     "require-dev": {
         "ext-pcov": "*",
@@ -54,7 +54,7 @@
         "doctrine/coding-standard": "^10.0.0",
         "infection/infection": "^0.26.19",
         "squizlabs/php_codesniffer": "^3.7.2",
-        "symfony/filesystem": "^5.4.21 || ^6.2.7",
+        "symfony/filesystem": "^5.4.21 || ^6.2.7 || ^7.0.0",
         "vimeo/psalm": "^5.7.7"
     },
     "autoload": {
