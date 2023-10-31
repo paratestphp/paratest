@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\Runners\PHPUnit;
 
 use InvalidArgumentException;
+use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 
 use function array_diff;
@@ -28,7 +29,8 @@ final class WrapperRunnerTest extends RunnerTestCase
 {
     protected const NUMBER_OF_CLASS_TESTS_FOR_BATCH_SIZE = 4;
     protected const UNPROCESSABLE_FILENAMES              =  ['..', '.', '.gitignore'];
-    /** {@inheritdoc } */
+
+    /** @var class-string<RunnerInterface> */
     protected $runnerClass = WrapperRunner::class;
 
     public function testWrapperRunnerNotAvailableInFunctionalMode(): void

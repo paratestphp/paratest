@@ -40,6 +40,7 @@ final class ParaTestCommand extends Command
     public function __construct(string $cwd, ?string $name = null)
     {
         $this->cwd = $cwd;
+
         parent::__construct($name);
     }
 
