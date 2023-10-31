@@ -51,6 +51,8 @@ final class Reader implements MetaProviderInterface
 
     private function parseTestSuite(SimpleXMLElement $node, bool $isRootSuite): TestSuite
     {
+        assert($node->testsuite !== null);
+
         if ($isRootSuite) {
             foreach ($node->testsuite as $singleTestSuiteXml) {
                 return $this->parseTestSuite($singleTestSuiteXml, false);
@@ -63,6 +65,7 @@ final class Reader implements MetaProviderInterface
             $suites[$testSuite->name] = $testSuite;
         }
 
+        assert($node->testcase !== null);
         $cases = [];
         foreach ($node->testcase as $singleTestCase) {
             $cases[] = TestCase::caseFromNode($singleTestCase);

@@ -491,7 +491,7 @@ final class OptionsTest extends TestBase
         self::assertSame($expected, $this->createOptionsFromArgv($options, __DIR__, $hasColorSupport)->colors());
     }
 
-    /** @return array<int, array<int, (false|array<string, (null|string)>|null)>> */
+    /** @return array<int, array<int, (false|array<string, (string|null)>|null)>> */
     public function provideColorsCases(): array
     {
         return [
