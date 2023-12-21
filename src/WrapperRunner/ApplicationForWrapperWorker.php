@@ -72,7 +72,8 @@ final class ApplicationForWrapperWorker
             $filter = new Factory();
             $name   = substr($testPath, $null + 1);
             assert($name !== '');
-            $filter->addNameFilter($name);
+            $regexName = '/' . $name . '$/';
+            $filter->addNameFilter($regexName);
             $testPath = substr($testPath, 0, $null);
         }
 
