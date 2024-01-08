@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\fixtures\github\GH420bis;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function defined;
@@ -11,7 +12,7 @@ use function defined;
 /** @internal */
 final class IssueTest extends TestCase
 {
-    /** @dataProvider provideCases */
+    #[DataProvider('provideCases')]
     public function testCases(string $constant): void
     {
         self::assertStringContainsString('ISSUE_420_BIS_', $constant);

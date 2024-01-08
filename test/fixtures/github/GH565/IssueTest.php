@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace ParaTest\Tests\fixtures\github\GH565;
 
 use LogicException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /** @internal */
 final class IssueTest extends TestCase
 {
-    /** @dataProvider provideIncomplete */
+    #[DataProvider('provideIncomplete')]
     public function testIncompleteByDataProvider(): void
     {
     }
@@ -20,7 +21,7 @@ final class IssueTest extends TestCase
         self::markTestIncomplete('foo');
     }
 
-    /** @dataProvider provideSkipped */
+    #[DataProvider('provideSkipped')]
     public function testSkippedByDataProvider(): void
     {
     }
@@ -30,7 +31,7 @@ final class IssueTest extends TestCase
         self::markTestSkipped('bar');
     }
 
-    /** @dataProvider provideError */
+    #[DataProvider('provideError')]
     public function testErrorByDataProvider(): void
     {
     }

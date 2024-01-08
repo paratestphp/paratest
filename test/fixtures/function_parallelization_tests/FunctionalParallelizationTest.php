@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\fixtures\function_parallelization_tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /** @internal */
@@ -29,13 +30,13 @@ final class FunctionalParallelizationTest extends TestCase
         ];
     }
 
-    /** @dataProvider dataProvider1 */
+    #[DataProvider('dataProvider1')]
     public function testDataProvider1(string $a, string $b): void
     {
         self::assertEquals($a, $b);
     }
 
-    /** @dataProvider dataProvider2 */
+    #[DataProvider('dataProvider2')]
     public function testDataProvider2(string $a, string $b): void
     {
         self::assertEquals($a, $b);
