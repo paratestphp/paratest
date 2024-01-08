@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\fixtures\fatal_tests;
 
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -11,9 +12,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class UnitTestWithFatalParseErrorTest extends TestCase
 {
-    /**
-     * @group fixtures
-     */
+    #[Group('fixtures')]
     public function testTruth(): void
     {
         I will fail fataly because this is not a php statement .

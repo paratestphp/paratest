@@ -14,7 +14,11 @@ use ParaTest\WrapperRunner\WrapperRunner;
 use ParaTest\WrapperRunner\WrapperWorker;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
 use PHPUnit\Framework\Attributes\RequiresPhp;
+use PHPUnit\Framework\Attributes\RequiresPhpunit;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
@@ -57,7 +61,7 @@ final class WrapperRunnerTest extends TestBase
 
     public const PASSTHRU_PHP_CUSTOM = 'PASSTHRU_PHP_CUSTOM';
 
-    /** @dataProvider provideForWrapperRunnerHandlesBatchSize */
+    #[DataProvider('provideForWrapperRunnerHandlesBatchSize')]
     public function testWrapperRunnerHandlesBatchSize(int $processes, ?int $batchSize, int $expectedPidCount): void
     {
         $this->bareOptions['--no-configuration'] = true;
@@ -118,7 +122,7 @@ final class WrapperRunnerTest extends TestBase
         return array_unique($res);
     }
 
-    /** @group github */
+    #[Group('github')]
     #[CoversNothing]
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuite(): void
     {
@@ -177,7 +181,7 @@ final class WrapperRunnerTest extends TestBase
         self::assertStringContainsString('Random Seed:', $runnerResult->output);
     }
 
-    /** @group github */
+    #[Group('github')]
     #[CoversNothing]
     public function testErrorsInDataProviderAreHandled(): void
     {
@@ -227,7 +231,7 @@ final class WrapperRunnerTest extends TestBase
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
-    /** @group github */
+    #[Group('github')]
     #[CoversNothing]
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuiteManualBootstrap(): void
     {
@@ -267,7 +271,7 @@ final class WrapperRunnerTest extends TestBase
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
-    /** @requires OSFAMILY Linux */
+    #[RequiresOperatingSystemFamily('Linux')]
     public function testTeamcityLogHandlesFifoFiles(): void
     {
         $outputPath = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.teamcity';
@@ -433,7 +437,7 @@ final class WrapperRunnerTest extends TestBase
         self::assertSame($defaultOrder, $reverseOrderReversed);
     }
 
-    /** @group github */
+    #[Group('github')]
     #[CoversNothing]
     public function testTokensAreAbsentWhenNoTestTokensIsSpecified(): void
     {
@@ -518,8 +522,9 @@ final class WrapperRunnerTest extends TestBase
         self::assertStringContainsString('<bg=%s>', $runnerResult->output);
     }
 
-    /** @group github */
+    #[Group('github')]
     #[CoversNothing]
+    #[RequiresPhpunit('10')]
     public function testIgnoreAttributes(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH756' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -580,7 +585,7 @@ EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
     }
 
-    /** @group github */
+    #[Group('github')]
     #[CoversNothing]
     public function testGroupOptionWithDataProviderAndCodeCoverageEnabled(): void
     {
