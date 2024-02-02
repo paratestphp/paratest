@@ -19,6 +19,7 @@ use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Filter\Factory;
 use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Runner\TestSuiteSorter;
+use PHPUnit\Runner\Version;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
@@ -40,6 +41,7 @@ use function serialize;
 use function str_ends_with;
 use function strpos;
 use function substr;
+use function version_compare;
 
 /**
  * @internal
@@ -61,6 +63,7 @@ final class ApplicationForWrapperWorker
         private readonly ?string $teamcityFile,
         private readonly ?string $testdoxFile,
         private readonly bool $testdoxColor,
+        private readonly ?int $testdoxColumns,
     ) {
     }
 
@@ -72,7 +75,12 @@ final class ApplicationForWrapperWorker
             $filter = new Factory();
             $name   = substr($testPath, $null + 1);
             assert($name !== '');
-            $filter->addNameFilter($name);
+            if (version_compare(Version::id(), '11.0.0') >= 0) {
+                $filter->addIncludeNameFilter($name);
+            } else {
+                $filter->addNameFilter($name);
+            }
+
             $testPath = substr($testPath, 0, $null);
         }
 
@@ -86,10 +94,12 @@ final class ApplicationForWrapperWorker
             $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
         }
 
-        if (CodeCoverage::instance()->isActive()) {
-            CodeCoverage::instance()->ignoreLines(
-                (new CodeCoverageMetadataApi())->linesToBeIgnored($testSuite),
-            );
+        if (version_compare(Version::id(), '11.0.0') < 0) {
+            if (CodeCoverage::instance()->isActive()) {
+                CodeCoverage::instance()->ignoreLines(
+                    (new CodeCoverageMetadataApi())->linesToBeIgnored($testSuite),
+                );
+            }
         }
 
         (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
@@ -219,8 +229,9 @@ final class ApplicationForWrapperWorker
         $result = TestResultFacade::result();
         if (isset($this->testdoxResultCollector)) {
             assert(isset($this->testdoxFile));
+            assert(isset($this->testdoxColumns));
 
-            (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor))->print(
+            (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor, $this->testdoxColumns))->print(
                 $this->testdoxResultCollector->testMethodsGroupedByClass(),
             );
         }
