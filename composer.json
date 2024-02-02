@@ -41,7 +41,7 @@
         "fidry/cpu-core-counter": "^0.5.1 || ^1.0.0",
         "jean85/pretty-package-versions": "^2.0.5",
         "phpunit/php-code-coverage": "^10.1.11",
-        "phpunit/php-file-iterator": "^4.1.0",
+        "phpunit/php-file-iterator": "^5.0.0",
         "phpunit/php-timer": "^6.0",
         "phpunit/phpunit": "^10.5.9",
         "sebastian/environment": "^6.0.1",
