@@ -263,6 +263,27 @@ final class WrapperRunnerTest extends TestBase
         );
     }
 
+    public function testTestdoxOutput(): void
+    {
+        $this->bareOptions['path']      = $this->fixture('common_results');
+        $this->bareOptions['--testdox'] = true;
+
+        $result = $this->runRunner();
+
+        $format = file_get_contents(__DIR__ . '/fixtures/common_results_testdox_output');
+        self::assertNotFalse($format);
+
+        $output = $result->output;
+        $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+.\\d+.\\d+(-\w+)?\n\n/", '', $output, 1, $count);
+        self::assertSame(1, $count);
+        self::assertNotNull($output);
+
+        self::assertStringMatchesFormat(
+            self::sorted($format),
+            self::sorted($output),
+        );
+    }
+
     public function testExitCodesPathWithoutTests(): void
     {
         $this->bareOptions['path'] = $this->fixture('no_tests');

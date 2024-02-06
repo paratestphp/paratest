@@ -14,6 +14,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
         'teamcity-file:',
         'testdox-file:',
         'testdox-color',
+        'testdox-columns:',
         'phpunit-argv:',
     ]);
 
@@ -55,7 +56,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
         $getopt['teamcity-file'] ?? null,
         $getopt['testdox-file'] ?? null,
         isset($getopt['testdox-color']),
-        $getopt['testdox-columns'] ?? null,
+        isset($getopt['testdox-columns']) ? (int) $getopt['testdox-columns'] : null,
     );
 
     while (true) {
