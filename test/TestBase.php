@@ -59,6 +59,10 @@ abstract class TestBase extends TestCase
             $argv['--tmp-dir'] = $this->tmpDir;
         }
 
+        if (! isset($argv['--passthru-php'])) {
+            $argv['--passthru-php'] = "'-d' 'zend.assertions=1'";
+        }
+
         $input = new ArrayInput($argv, $inputDefinition);
 
         return Options::fromConsoleInput($input, $cwd ?? __DIR__);
