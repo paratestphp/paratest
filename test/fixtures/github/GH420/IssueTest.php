@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\fixtures\github\GH420;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function defined;
@@ -12,7 +13,7 @@ use function ini_get;
 /** @internal */
 final class IssueTest extends TestCase
 {
-    /** @dataProvider provideCases */
+    #[DataProvider('provideCases')]
     public function testCases(bool $true): void
     {
         self::assertTrue($true);

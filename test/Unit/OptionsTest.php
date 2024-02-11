@@ -71,7 +71,7 @@ final class OptionsTest extends TestBase
         self::assertNotEmpty($options->phpunitOptions);
         self::assertSame(0, $options->maxBatchSize);
         self::assertFalse($options->noTestTokens);
-        self::assertEmpty($options->passthruPhp);
+        self::assertSame(['-d', 'zend.assertions=1'], $options->passthruPhp);
         self::assertStringContainsString('phpunit', $options->phpunit);
         self::assertSame(PROCESSES_FOR_TESTS, $options->processes);
         self::assertSame('WrapperRunner', $options->runner);

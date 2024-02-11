@@ -7,6 +7,7 @@ namespace ParaTest\Tests\Unit\Util;
 use Generator;
 use ParaTest\Util\PhpstormHelper;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -31,9 +32,8 @@ final class PhpstormHelperTest extends TestCase
     /**
      * @param array<int, string> $argv
      * @param array<int, string> $expectedArgv
-     *
-     * @dataProvider providePhpstormCases
      */
+    #[DataProvider('providePhpstormCases')]
     public function testPhpStormHelper(
         array $argv,
         array $expectedArgv,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\fixtures\special_chars;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function array_map;
@@ -12,7 +13,7 @@ use function preg_split;
 
 final class UnitTestWithDataProviderSpecialCharsTest extends TestCase
 {
-    /** @dataProvider provideSpecialChars */
+    #[DataProvider('provideSpecialChars')]
     public function testIsItFalse(string $specialChar): void
     {
         self::assertFalse($specialChar, (string) ord($specialChar));

@@ -101,6 +101,9 @@ final class WrapperWorker
             if ($options->configuration->colors()) {
                 $parameters[] = '--testdox-color';
             }
+
+            $parameters[] = '--testdox-columns';
+            $parameters[] = (string) $options->configuration->columns();
         }
 
         $phpunitArguments = [$options->phpunit];
