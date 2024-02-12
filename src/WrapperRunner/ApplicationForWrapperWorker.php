@@ -75,7 +75,6 @@ final class ApplicationForWrapperWorker
             $filter = new Factory();
             $name   = substr($testPath, $null + 1);
             assert($name !== '');
-            $regexName = '/' . $name . '$/';
             if (version_compare(Version::id(), '11.0.0') >= 0) {
                 $filter->addIncludeNameFilter($name);
             } else {

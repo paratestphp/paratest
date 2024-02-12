@@ -633,7 +633,8 @@ EOF;
         $this->bareOptions['--functional'] = true;
 
         $runnerResult = $this->runRunner();
-        self::assertStringContainsString('.', $runnerResult->output);
+        self::assertStringContainsString('..........', $runnerResult->output);
+        self::assertStringContainsString('10 / 10 (100%)', $runnerResult->output);
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
