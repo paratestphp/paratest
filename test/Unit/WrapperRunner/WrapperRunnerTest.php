@@ -633,7 +633,18 @@ EOF;
         $this->bareOptions['--functional'] = true;
 
         $runnerResult = $this->runRunner();
-        self::assertStringContainsString('.......', $runnerResult->output);
+
+        $expectedOutput = <<<'EOF'
+Processes:     2
+Runtime:       PHP %s
+
+..........                                                        10 / 10 (100%)
+
+Time: %s, Memory: %s MB
+
+OK%a
+EOF;
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
@@ -649,7 +660,18 @@ EOF;
         $this->bareOptions['--log-junit']      = $outputFile;
 
         $runnerResult = $this->runRunner();
-        self::assertStringContainsString('.......', $runnerResult->output);
+
+        $expectedOutput = <<<'EOF'
+Processes:     1
+Runtime:       PHP %s
+
+..........                                                        10 / 10 (100%)
+
+Time: %s, Memory: %s MB
+
+OK%a
+EOF;
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 

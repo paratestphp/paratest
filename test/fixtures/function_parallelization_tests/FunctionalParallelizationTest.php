@@ -41,4 +41,10 @@ final class FunctionalParallelizationTest extends TestCase
     {
         self::assertEquals($a, $b);
     }
+
+    #[DataProvider('dataProvider2')]
+    public function testDataProvider2SameBeginningOfName(string $a, string $b): void
+    {
+        self::assertEquals($a, $b);
+    }
 }
