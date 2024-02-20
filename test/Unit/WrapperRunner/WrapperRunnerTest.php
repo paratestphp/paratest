@@ -649,6 +649,28 @@ EOF;
     }
 
     #[RequiresPhp('8.2')]
+    public function testSameBeginningOfName(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('same_beginning_of_name');
+        $this->bareOptions['--functional'] = true;
+
+        $runnerResult = $this->runRunner();
+
+        $expectedOutput = <<<'EOF'
+Processes:     2
+Runtime:       PHP %s
+
+....                                                                4 / 4 (100%)
+
+Time: %s, Memory: %s MB
+
+OK%a
+EOF;
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
+    #[RequiresPhp('8.2')]
     public function testFunctionalParallelizationWithJunitLogging(): void
     {
         $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';

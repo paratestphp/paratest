@@ -95,6 +95,8 @@ final class SuiteLoader
                             $name .= '@' . $dataName;
                         }
                     }
+                } else {
+                    $name = sprintf('/%s$/', $name);
                 }
 
                 $tests[] = "$file\0$name";
