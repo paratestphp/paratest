@@ -39,7 +39,7 @@
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "fidry/cpu-core-counter": "^1.1.0",
-        "jean85/pretty-package-versions": "^2.0.5",
+        "jean85/pretty-package-versions": "^2.0.6",
         "phpunit/php-code-coverage": "^10.1.11 || ^11.0.0",
         "phpunit/php-file-iterator": "^4.1.0 || ^5.0.0",
         "phpunit/php-timer": "^6.0.0 || ^7.0.0",
