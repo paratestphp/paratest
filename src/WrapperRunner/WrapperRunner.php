@@ -168,7 +168,7 @@ final class WrapperRunner implements RunnerInterface
         $this->printer->printFeedback(
             $worker->progressFile,
             $worker->unexpectedOutputFile,
-            $this->teamcityFiles,
+            $worker->teamcityFile ?? null,
         );
         $worker->reset();
     }
