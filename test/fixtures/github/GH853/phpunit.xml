@@ -1,0 +1,7 @@
+<phpunit>
+    <testsuites>
+        <testsuite name="Github issue">
+            <file>ThousandTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
