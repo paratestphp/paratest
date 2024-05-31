@@ -697,6 +697,23 @@ EOF;
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
+    #[Group('github')]
+    #[CoversNothing]
+    public function testLongDataProviderShouldNotFillUnexpectedOutputFile(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH853' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $runnerResult                         = $this->runRunner();
+
+        self::assertStringNotContainsString('101 / 1000 ( 10%)  202 / 1000 ( 20%)', $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
+    /**
+     * ###   WARNING   ###
+     *
+     * This test MUST be the last of this file,
+     * otherwise the next one will always fail
+     */
     public function testProcessIsolation(): void
     {
         $this->bareOptions['path']                = $this->fixture('process_isolation' . DIRECTORY_SEPARATOR . 'FooTest.php');
