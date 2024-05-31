@@ -189,7 +189,7 @@ final class ApplicationForWrapperWorker
             $printer,
             EventFacade::instance(),
             false,
-            120,
+            99999,
             $this->configuration->source(),
         );
 
