@@ -20,11 +20,12 @@ vendor: .env docker-compose.yml Dockerfile composer.json
 	$(DOCKER_PHP_EXEC) composer update
 	$(DOCKER_PHP_EXEC) composer bump
 	touch vendor
+	mkdir .build-cache
 
 .PHONY: csfix
 csfix: vendor
 	$(DOCKER_PHP_EXEC) vendor/bin/phpcbf || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpcs --cache
+	$(DOCKER_PHP_EXEC) vendor/bin/phpcs --cache=.build-cache/phpcs
 
 .PHONY: static-analysis
 static-analysis: vendor

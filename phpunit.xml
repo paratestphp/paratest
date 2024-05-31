@@ -9,7 +9,7 @@
     failOnEmptyTestSuite="true"
     beStrictAboutChangesToGlobalState="true"
     beStrictAboutOutputDuringTests="true"
-    cacheDirectory=".phpunit.cache">
+    cacheDirectory=".build-cache/.phpunit">
   <source>
     <include>
       <directory>src</directory>
