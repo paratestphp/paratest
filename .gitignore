@@ -1,9 +1,9 @@
 /.idea
+/.build-cache
 /coverage
 /test/fixtures/wrapper_batchsize_suite/tmp
 /vendor
 .env
-.phpunit.cache
 .phpunit.result.cache
 .php_cs.cache
 composer.lock

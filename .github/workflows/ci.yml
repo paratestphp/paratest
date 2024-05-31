@@ -29,7 +29,6 @@ jobs:
           tools: composer-normalize, composer-require-checker
       - uses: "ramsey/composer-install@v2"
 
-      - run: "make vendor"
       - run: "composer validate --strict"
       - run: "composer-normalize --dry-run"
       - run: "composer-require-checker check"
@@ -51,7 +50,6 @@ jobs:
           ini-values: "${{ env.INI_VALUES }}"
       - uses: "ramsey/composer-install@v2"
 
-      - run: "make vendor"
       - name: "Lint XMLs"
         uses: ./.github/lint-xml-configuration
         with:
@@ -102,9 +100,6 @@ jobs:
 #          ini-values: "${{ env.INI_VALUES }}"
 #      - uses: "ramsey/composer-install@v2"
 #
-#      - run: "make test"
-#        timeout-minutes: 3
-#
 #      - name: "Gather base branch for diff"
 #        if: ${{ github.event_name == 'pull_request' }}
 #        run: git fetch origin --no-tags --prune --depth=1 ${{ github.base_ref }} ${{ github.event.pull_request.base.sha }}
@@ -141,7 +136,6 @@ jobs:
           tools: cs2pr
       - uses: "ramsey/composer-install@v2"
 
-      - run: "make vendor"
       - run: "vendor/bin/phpcs -q --report=checkstyle | cs2pr"
 
   static-analysis:
@@ -161,4 +155,4 @@ jobs:
           ini-values: "${{ env.INI_VALUES }}"
       - uses: "ramsey/composer-install@v2"
 
-      - run: "make static-analysis PHPSTAN_ARGS='--ansi --no-progress'"
+      - run: "vendor/bin/phpstan --memory-limit=512M --ansi --no-progress"

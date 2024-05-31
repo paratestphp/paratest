@@ -7,6 +7,7 @@ includes:
 parameters:
     level: max
     tipsOfTheDay: false
+    tmpDir: .build-cache/phpstan
     paths:
         - src/
         - test/
