@@ -2,8 +2,9 @@
 /coverage
 /test/fixtures/wrapper_batchsize_suite/tmp
 /vendor
-/.phpunit.cache
-composer.lock
+.env
+.phpunit.cache
 .phpunit.result.cache
 .php_cs.cache
+composer.lock
 infections.log

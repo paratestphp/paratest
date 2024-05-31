@@ -3,6 +3,8 @@
 /.gitattributes                 export-ignore
 /.gitignore                     export-ignore
 /Makefile                       export-ignore
+/Dockerfile                     export-ignore
+/docker-compose.yml             export-ignore
 /infection.json                 export-ignore
 /phpcs.xml                      export-ignore
 /phpstan.neon                   export-ignore
