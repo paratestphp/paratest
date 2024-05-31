@@ -1,0 +1,10 @@
+services:
+  php:
+    build:
+      context: .
+      args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
+    volumes:
+      - .:${PWD}
+    working_dir: ${PWD}
