@@ -19,8 +19,8 @@ vendor: .env docker-compose.yml Dockerfile composer.json
 	docker compose build --pull
 	$(DOCKER_PHP_EXEC) composer update
 	$(DOCKER_PHP_EXEC) composer bump
-	touch vendor
-	mkdir .build-cache
+	touch --no-create $@
+	mkdir --parents .build-cache
 
 .PHONY: csfix
 csfix: vendor
