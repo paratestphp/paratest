@@ -128,19 +128,6 @@ When a sub-process fails, the originating command is given in the output and can
 to be run and debugged. All internal commands run with `--printer [...]\NullPhpunitPrinter` which silence the original
 PHPUnit output: during a debugging run remove that option to restore the output and see what PHPUnit is doing.
 
-## Windows
-
-Windows users be sure to use the appropriate batch files.
-
-An example being:
-
-`vendor\bin\paratest.bat ...`
-
-ParaTest assumes [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for loading tests.
-
-For convenience, ParaTest for Windows uses 79 columns mode to prevent blank lines in the standard
-80x25 windows console.
-
 ## Caveats
 
 1. Constants, static methods, static variables and everything exposed by test classes consumed by other test classes
