@@ -8,9 +8,7 @@ use ParaTest\Options;
 use ParaTest\Tests\TestBase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-use function defined;
 use function mt_rand;
-use function str_replace;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
@@ -52,9 +50,6 @@ final class OptionsTest extends TestBase
     public function testPassthru(): void
     {
         $argv = ['--passthru-php' => "'-d' 'zend_extension=xdebug.so'"];
-        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $argv['--passthru-php'] = str_replace('\'', '"', $argv['--passthru-php']);
-        }
 
         $options = $this->createOptionsFromArgv($argv);
 
