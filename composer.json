@@ -73,7 +73,6 @@
     },
     "bin": [
         "bin/paratest",
-        "bin/paratest.bat",
         "bin/paratest_for_phpstorm"
     ],
     "config": {
