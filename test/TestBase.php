@@ -23,8 +23,9 @@ abstract class TestBase extends TestCase
 {
     /** @var class-string<RunnerInterface> */
     protected string $runnerClass = WrapperRunner::class;
-    /** @var array<string, string|bool|int|null> */
+    /** @var array<non-empty-string, non-empty-string|list<non-empty-string>|bool|int|null> */
     protected array $bareOptions = [];
+    /** @var non-empty-string */
     protected string $tmpDir;
 
     final protected function setUp(): void
@@ -39,8 +40,8 @@ abstract class TestBase extends TestCase
     }
 
     /**
-     * @param array<string, string|bool|int|null> $argv
-     * @param non-empty-string|null               $cwd
+     * @param array<non-empty-string, non-empty-string|list<non-empty-string>|bool|int|null> $argv
+     * @param non-empty-string|null                                                          $cwd
      */
     final protected function createOptionsFromArgv(array $argv, ?string $cwd = null): Options
     {

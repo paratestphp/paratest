@@ -80,12 +80,12 @@ final class Options
     public readonly bool $needsTeamcity;
 
     /**
-     * @param non-empty-string                               $phpunit
-     * @param non-empty-string                               $cwd
-     * @param list<non-empty-string>|null                    $passthruPhp
-     * @param array<non-empty-string, non-empty-string|true> $phpunitOptions
-     * @param non-empty-string                               $runner
-     * @param non-empty-string                               $tmpDir
+     * @param non-empty-string                                                      $phpunit
+     * @param non-empty-string                                                      $cwd
+     * @param list<non-empty-string>|null                                           $passthruPhp
+     * @param array<non-empty-string, non-empty-string|true|list<non-empty-string>> $phpunitOptions
+     * @param non-empty-string                                                      $runner
+     * @param non-empty-string                                                      $tmpDir
      */
     private function __construct(
         public readonly Configuration $configuration,
@@ -172,7 +172,13 @@ final class Options
                 continue;
             }
 
-            $phpunitArgv[] = "--{$key}={$value}";
+            if (! is_array($value)) {
+                $value = [$value];
+            }
+
+            foreach ($value as $innerValue) {
+                $phpunitArgv[] = "--{$key}={$innerValue}";
+            }
         }
 
         if (($path = $input->getArgument('path')) !== null) {
@@ -306,13 +312,13 @@ final class Options
             new InputOption(
                 'group',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
                 'exclude-group',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
