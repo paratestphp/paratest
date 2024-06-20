@@ -130,7 +130,7 @@ final class WrapperWorker
     public function assign(ExecutableTest $test, string $phpunit, array $phpunitOptions, Options $options): void
     {
         assert($this->currentlyExecuting === null);
-        $commandArguments = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru());
+        $commandArguments = $test->commandArguments($phpunit, $phpunitOptions, $options->passthru(), true);
         $command          = implode(' ', array_map('\\escapeshellarg', $commandArguments));
         if ($options->debug()) {
             $this->output->write("\nExecuting test via: {$command}\n");
@@ -161,6 +161,10 @@ final class WrapperWorker
 
     public function reset(): void
     {
+        if ($this->currentlyExecuting !== null) {
+            $this->currentlyExecuting->deleteWrappedTestSuite();
+        }
+
         $this->currentlyExecuting = null;
     }
 

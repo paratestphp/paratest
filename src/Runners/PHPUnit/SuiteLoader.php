@@ -222,6 +222,7 @@ final class SuiteLoader
         foreach ($methodBatches as $methodBatch) {
             $executableTests[] = new TestMethod(
                 $path,
+                $class->getName(),
                 $methodBatch,
                 $this->options->hasCoverage(),
                 $this->options->needsTeamcity(),
@@ -390,6 +391,7 @@ final class SuiteLoader
     {
         return new Suite(
             $path,
+            $class->getName(),
             $this->executableTests(
                 $path,
                 $class,

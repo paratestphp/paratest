@@ -94,10 +94,10 @@ final class ResultPrinterTest extends ResultTester
     {
         $funcs = [];
         for ($i = 0; $i < 120; ++$i) {
-            $funcs[] = new TestMethod((string) $i, ['testMe'], false, false, $this->tmpDir);
+            $funcs[] = new TestMethod((string) $i, '', ['testMe'], false, false, $this->tmpDir);
         }
 
-        $suite = new Suite('/path', $funcs, false, false, $this->tmpDir);
+        $suite = new Suite('/path', '', $funcs, false, false, $this->tmpDir);
         $this->printer->addTest($suite);
         $this->getStartOutput();
         $numTestsWidth = $this->getObjectValue($this->printer, 'numTestsWidth');
@@ -167,9 +167,9 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddSuiteAddsFunctionCountToTotalTestCases(): void
     {
-        $suite = new Suite('/path', [
-            new TestMethod('funcOne', ['testMe'], false, false, $this->tmpDir),
-            new TestMethod('funcTwo', ['testMe'], false, false, $this->tmpDir),
+        $suite = new Suite('/path', '', [
+            new TestMethod('funcOne', '', ['testMe'], false, false, $this->tmpDir),
+            new TestMethod('funcTwo', '', ['testMe'], false, false, $this->tmpDir),
         ], false, false, $this->tmpDir);
         $this->printer->addTest($suite);
         static::assertSame(2, $this->printer->getTotalCases());
@@ -177,7 +177,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testAddTestMethodIncrementsCountByOne(): void
     {
-        $method = new TestMethod('/path', ['testThisMethod'], false, false, $this->tmpDir);
+        $method = new TestMethod('/path', '', ['testThisMethod'], false, false, $this->tmpDir);
         $this->printer->addTest($method);
         static::assertSame(1, $this->printer->getTotalCases());
     }
@@ -548,7 +548,7 @@ final class ResultPrinterTest extends ResultTester
 
     public function testEmptyLogFileRaiseException(): void
     {
-        $test = new ExecutableTestChild(uniqid(), false, false, $this->tmpDir);
+        $test = new ExecutableTestChild(uniqid(), '', false, false, $this->tmpDir);
 
         $this->expectException(RuntimeException::class);
 

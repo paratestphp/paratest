@@ -21,7 +21,7 @@ final class ExecutableTestTest extends TestBase
 
     public function setUpTest(): void
     {
-        $this->executableTestChild = new ExecutableTestChild('pathToFile', true, true, $this->tmpDir);
+        $this->executableTestChild = new ExecutableTestChild('pathToFile', '', true, true, $this->tmpDir);
     }
 
     public function testConstructor(): void

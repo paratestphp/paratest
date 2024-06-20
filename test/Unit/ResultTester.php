@@ -68,10 +68,10 @@ EOF;
     {
         $functions = [];
         for ($i = 0; $i < $methodCount; ++$i) {
-            $functions[] = new TestMethod((string) $i, ['testMe'], false, true, $this->tmpDir);
+            $functions[] = new TestMethod((string) $i, '', ['testMe'], false, true, $this->tmpDir);
         }
 
-        $suite = new Suite('', $functions, false, true, $this->tmpDir);
+        $suite = new Suite('', '', $functions, false, true, $this->tmpDir);
         file_put_contents($suite->getTempFile(), (string) file_get_contents(FIXTURES . DS . 'results' . DS . $result));
         $teamcityData = 'no data';
         if ($result === 'single-passing.xml') {

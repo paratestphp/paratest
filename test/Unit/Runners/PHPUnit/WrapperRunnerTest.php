@@ -9,10 +9,13 @@ use ParaTest\Runners\PHPUnit\RunnerInterface;
 use ParaTest\Runners\PHPUnit\WrapperRunner;
 
 use function array_diff;
+use function array_map;
 use function array_unique;
 use function file_get_contents;
+use function implode;
 use function min;
 use function scandir;
+use function sha1;
 use function unlink;
 
 use const FIXTURES;
@@ -32,6 +35,21 @@ final class WrapperRunnerTest extends RunnerTestCase
 
     /** @var class-string<RunnerInterface> */
     protected $runnerClass = WrapperRunner::class;
+
+    /**
+     * Wrapper runner will use a TestSuite wrapper class based on the sha1 hash
+     * of the class name.
+     *
+     * @param array<class-string> $classes
+     */
+    protected function expectExceptionMessageContainsClasses(array $classes): void
+    {
+        $classes = array_map(static function (string $class): string {
+            return 'TestSuite' . sha1($class);
+        }, $classes);
+
+        $this->expectExceptionMessageMatches('/' . implode('|', $classes) . '/');
+    }
 
     public function testWrapperRunnerNotAvailableInFunctionalMode(): void
     {
