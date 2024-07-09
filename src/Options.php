@@ -546,6 +546,12 @@ final class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'coverage-test-limit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Limit the number of tests to record for each line of code. Helps to reduce memory and size of coverage reports.',
+            ),
+            new InputOption(
                 'coverage-filter',
                 null,
                 InputOption::VALUE_REQUIRED,
