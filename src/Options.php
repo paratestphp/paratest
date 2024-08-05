@@ -182,6 +182,7 @@ final class Options
         }
 
         if (($path = $input->getArgument('path')) !== null) {
+            assert(is_string($path));
             $phpunitArgv[] = '--';
             $phpunitArgv[] = $path;
         }

@@ -66,6 +66,7 @@ code-coverage: coverage/junit.xml
 .PHONY: clean
 clean:
 	git clean -dfX
+	docker compose down --remove-orphans
 
 .PHONY: regenerate-fixture-results
 regenerate-fixture-results: vendor
