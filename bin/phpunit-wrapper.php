@@ -15,6 +15,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
         'testdox-file:',
         'testdox-color',
         'testdox-columns:',
+        'testdox-summary',
         'phpunit-argv:',
     ]);
 
@@ -57,6 +58,7 @@ use ParaTest\WrapperRunner\WrapperWorker;
         $getopt['testdox-file'] ?? null,
         isset($getopt['testdox-color']),
         isset($getopt['testdox-columns']) ? (int) $getopt['testdox-columns'] : null,
+        isset($getopt['testdox-summary']),
     );
 
     while (true) {
