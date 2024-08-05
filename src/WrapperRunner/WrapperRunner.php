@@ -344,6 +344,10 @@ final class WrapperRunner implements RunnerInterface
             return;
         }
 
+        if (empty(array_filter(array_map(fn (SplFileInfo $junitFile) => $junitFile->isFile(), $this->junitFiles)))) {
+            return;
+        }
+
         $testSuite = (new LogMerger())->merge($this->junitFiles);
         (new Writer())->write(
             $testSuite,
