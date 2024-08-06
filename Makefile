@@ -1,4 +1,4 @@
-DOCKER_PHP_EXEC := docker compose run php
+DOCKER_PHP_EXEC := docker compose run --rm php
 
 SRCS := $(shell find ./src ./test -type f -not -path "*/tmp/*")
 
@@ -62,7 +62,7 @@ code-coverage: coverage/junit.xml
 		--ignore-msi-with-no-mutations \
 		--min-msi=100 \
 		$(INFECTION_ARGS)
-		
+
 .PHONY: clean
 clean:
 	git clean -dfX
