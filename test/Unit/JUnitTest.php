@@ -42,6 +42,7 @@ final class JUnitTest extends TestCase
 
         self::assertNotSame([], $junitFiles);
         $testSuite = (new LogMerger())->merge($junitFiles);
+        self::assertNotNull($testSuite);
 
         $outputFile = $tmpDir . '/result.xml';
         (new Writer())->write(
@@ -63,6 +64,7 @@ final class JUnitTest extends TestCase
 
         $junitLog  = FIXTURES . '/special_chars/data-provider-with-special-chars.xml';
         $testSuite = (new LogMerger())->merge([new SplFileInfo($junitLog)]);
+        self::assertNotNull($testSuite);
 
         $outputFile = $tmpDir . '/result.xml';
         (new Writer())->write(

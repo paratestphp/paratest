@@ -20,8 +20,6 @@ use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
-use function array_filter;
-use function array_map;
 use function array_merge;
 use function array_merge_recursive;
 use function array_shift;
@@ -346,11 +344,11 @@ final class WrapperRunner implements RunnerInterface
             return;
         }
 
-        if (count(array_filter(array_map(static fn (SplFileInfo $junitFile) => $junitFile->isFile(), $this->junitFiles))) === 0) {
+        $testSuite = (new LogMerger())->merge($this->junitFiles);
+        if ($testSuite === null) {
             return;
         }
 
-        $testSuite = (new LogMerger())->merge($this->junitFiles);
         (new Writer())->write(
             $testSuite,
             $this->options->configuration->logfileJunit(),
