@@ -18,7 +18,7 @@ use function ksort;
 final class LogMerger
 {
     /** @param list<SplFileInfo> $junitFiles */
-    public function merge(array $junitFiles): TestSuite
+    public function merge(array $junitFiles): ?TestSuite
     {
         $mainSuite = null;
         foreach ($junitFiles as $junitFile) {
@@ -66,8 +66,6 @@ final class LogMerger
 
             $mainSuite = $this->mergeSuites($mainSuite, $otherSuite);
         }
-
-        assert($mainSuite !== null);
 
         return $mainSuite;
     }

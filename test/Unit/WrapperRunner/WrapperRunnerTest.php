@@ -280,6 +280,15 @@ final class WrapperRunnerTest extends TestBase
         );
     }
 
+    public function testJunitOutputWithoutTests(): void
+    {
+        $this->bareOptions['path']        = $this->fixture('no_tests');
+        $this->bareOptions['--log-junit'] = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+        $runnerResult                     = $this->runRunner();
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
     public function testExitCodesPathWithoutTests(): void
     {
         $this->bareOptions['path'] = $this->fixture('no_tests');
