@@ -740,6 +740,28 @@ EOF;
         self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
+    #[Group('github')]
+    public function testBaselineIsRespected(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH869' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+
+        $runnerResult = $this->runRunner();
+
+        $expectedOutput = <<<'EOF'
+Processes:     %s
+Runtime:       PHP %s
+Configuration: %s
+
+..                                                                  2 / 2 (100%)
+
+Time: %s, Memory: %s MB
+
+OK%a
+EOF;
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
     /**
      * ###   WARNING   ###
      *
