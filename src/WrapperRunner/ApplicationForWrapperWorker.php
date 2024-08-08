@@ -12,7 +12,10 @@ use PHPUnit\Logging\JUnit\JunitXmlLogger;
 use PHPUnit\Logging\TeamCity\TeamCityLogger;
 use PHPUnit\Logging\TestDox\TestResultCollector;
 use PHPUnit\Metadata\Api\CodeCoverage as CodeCoverageMetadataApi;
+use PHPUnit\Runner\Baseline\CannotLoadBaselineException;
+use PHPUnit\Runner\Baseline\Reader;
 use PHPUnit\Runner\CodeCoverage;
+use PHPUnit\Runner\ErrorHandler;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
@@ -205,6 +208,22 @@ final class ApplicationForWrapperWorker
         }
 
         TestResultFacade::init();
+
+        if ($this->configuration->source()->useBaseline()) {
+            $baselineFile = $this->configuration->source()->baseline();
+            $baseline     = null;
+
+            try {
+                $baseline = (new Reader())->read($baselineFile);
+            } catch (CannotLoadBaselineException $e) {
+                EventFacade::emitter()->testRunnerTriggeredWarning($e->getMessage());
+            }
+
+            if ($baseline !== null) {
+                ErrorHandler::instance()->useBaseline($baseline);
+            }
+        }
+
         EventFacade::instance()->seal();
         EventFacade::emitter()->testRunnerStarted();
 

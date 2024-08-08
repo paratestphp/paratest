@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<files version="1">
+ <file path="Something.php">
+  <line number="17" hash="aa950011fe9480f51290b3dad45f9d052960befd">
+   <issue><![CDATA[what]]></issue>
+  </line>
+ </file>
+</files>
