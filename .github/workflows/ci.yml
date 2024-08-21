@@ -73,7 +73,7 @@ jobs:
       - uses: "actions/checkout@v4"
       - uses: "shivammathur/setup-php@v2"
         with:
-          coverage: ${{ (startsWith( matrix.php-version, "8.4")) && "pcov" || "none" }}
+          coverage: "${{ startsWith( matrix.php-version, '8.4') && 'pcov' || 'none' }}"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
       - uses: "ramsey/composer-install@v2"
