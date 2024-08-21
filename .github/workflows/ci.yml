@@ -100,6 +100,10 @@ jobs:
           ini-values: "${{ env.INI_VALUES }}"
       - uses: "ramsey/composer-install@v2"
 
+      - name: "Run tests"
+        timeout-minutes: 3
+        run: "vendor/bin/phpunit --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml"
+
       - name: "Gather base branch for diff"
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch origin --no-tags --prune --depth=1 ${{ github.base_ref }} ${{ github.event.pull_request.base.sha }}
@@ -107,12 +111,12 @@ jobs:
       - name: "Infection on DIFF"
         if: ${{ github.event_name == 'pull_request' }}
         timeout-minutes: 30
-        run: "vendor/bin/infection run --ansi --threads=$(nproc) --git-diff-lines --git-diff-base=origin/${{ github.base_ref }} --show-mutations --verbose --ignore-msi-with-no-mutations --min-msi=100"
+        run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage --git-diff-lines --git-diff-base=origin/${{ github.base_ref }} --show-mutations --verbose --ignore-msi-with-no-mutations --min-msi=100"
 
       - name: "Infection on complete code base"
         if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref_name, 'renovate/') }}
         timeout-minutes: 30
-        run: "vendor/bin/infection run --ansi --threads=$(nproc)"
+        run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
         env:
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
 
