@@ -107,12 +107,12 @@ jobs:
       - name: "Infection on DIFF"
         if: ${{ github.event_name == 'pull_request' }}
         timeout-minutes: 30
-        run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage --git-diff-lines --git-diff-base=origin/${{ github.base_ref }} --show-mutations --verbose --ignore-msi-with-no-mutations --min-msi=100"
+        run: "vendor/bin/infection run --ansi --threads=$(nproc) --git-diff-lines --git-diff-base=origin/${{ github.base_ref }} --show-mutations --verbose --ignore-msi-with-no-mutations --min-msi=100"
 
       - name: "Infection on complete code base"
         if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref_name, 'renovate/') }}
         timeout-minutes: 30
-        run: "vendor/bin/infection run --ansi --threads=$(nproc) --skip-initial-tests --coverage=coverage"
+        run: "vendor/bin/infection run --ansi --threads=$(nproc)"
         env:
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
 
