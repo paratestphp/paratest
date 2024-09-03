@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
+<testsuites name="PHPUnit tests">
   <testsuite name="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" tests="42" assertions="42" errors="0" failures="42" skipped="0" time="1.234567">
     <testsuite name="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse" tests="42" assertions="42" errors="0" failures="42" skipped="0" time="1.234567">
       <testcase name="testIsItFalse with data set #0" file="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php" line="16" class="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" classname="ParaTest.Tests.fixtures.special_chars.UnitTestWithDataProviderSpecialCharsTest" assertions="1" time="1.234567">
