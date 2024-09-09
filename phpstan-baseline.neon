@@ -16,16 +16,6 @@ parameters:
 			path: src/Options.php
 
 		-
-			message: "#^Call to an undefined method PHPUnit\\\\Metadata\\\\Api\\\\CodeCoverage\\:\\:linesToBeIgnored\\(\\)\\.$#"
-			count: 1
-			path: src/WrapperRunner/ApplicationForWrapperWorker.php
-
-		-
-			message: "#^Call to an undefined method PHPUnit\\\\Runner\\\\Filter\\\\Factory\\:\\:addNameFilter\\(\\)\\.$#"
-			count: 1
-			path: src/WrapperRunner/ApplicationForWrapperWorker.php
-
-		-
 			message: "#^Match expression does not handle remaining value\\: string$#"
 			count: 1
 			path: src/WrapperRunner/ResultPrinter.php
