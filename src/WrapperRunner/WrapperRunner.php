@@ -294,6 +294,7 @@ final class WrapperRunner implements RunnerInterface
 
         $exitcode = (new ShellExitCodeCalculator())->calculate(
             $this->options->configuration->failOnDeprecation(),
+            $this->options->configuration->failOnPhpunitDeprecation(),
             $this->options->configuration->failOnEmptyTestSuite(),
             $this->options->configuration->failOnIncomplete(),
             $this->options->configuration->failOnNotice(),
@@ -345,6 +346,10 @@ final class WrapperRunner implements RunnerInterface
         }
 
         $testSuite = (new LogMerger())->merge($this->junitFiles);
+        if ($testSuite === null) {
+            return;
+        }
+
         (new Writer())->write(
             $testSuite,
             $this->options->configuration->logfileJunit(),

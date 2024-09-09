@@ -1,4 +1,4 @@
-DOCKER_PHP_EXEC := docker compose run php
+DOCKER_PHP_EXEC := docker compose run --rm php
 
 SRCS := $(shell find ./src ./test -type f -not -path "*/tmp/*")
 
@@ -19,8 +19,8 @@ vendor: .env docker-compose.yml Dockerfile composer.json
 	docker compose build --pull
 	$(DOCKER_PHP_EXEC) composer update
 	$(DOCKER_PHP_EXEC) composer bump
-	touch vendor
-	mkdir .build-cache
+	touch --no-create $@
+	mkdir --parents .build-cache
 
 .PHONY: csfix
 csfix: vendor
@@ -62,7 +62,7 @@ code-coverage: coverage/junit.xml
 		--ignore-msi-with-no-mutations \
 		--min-msi=100 \
 		$(INFECTION_ARGS)
-		
+
 .PHONY: clean
 clean:
 	git clean -dfX

@@ -25,7 +25,6 @@ use Symfony\Component\Process\Process;
 use function array_diff;
 use function array_reverse;
 use function array_unique;
-use function defined;
 use function explode;
 use function file_get_contents;
 use function file_put_contents;
@@ -223,9 +222,6 @@ final class WrapperRunnerTest extends TestBase
         self::assertSame(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
 
         $this->bareOptions['--passthru-php'] = sprintf("'-d' 'highlight.comment=%s'", self::PASSTHRU_PHP_CUSTOM);
-        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $this->bareOptions['--passthru-php'] = str_replace('\'', '"', $this->bareOptions['--passthru-php']);
-        }
 
         $runnerResult = $this->runRunner();
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
@@ -282,6 +278,15 @@ final class WrapperRunnerTest extends TestBase
             $format,
             $output,
         );
+    }
+
+    public function testJunitOutputWithoutTests(): void
+    {
+        $this->bareOptions['path']        = $this->fixture('no_tests');
+        $this->bareOptions['--log-junit'] = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+        $runnerResult                     = $this->runRunner();
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     public function testExitCodesPathWithoutTests(): void
