@@ -87,7 +87,7 @@ final class Options
      * @param non-empty-string                                                      $runner
      * @param non-empty-string                                                      $tmpDir
      */
-    private function __construct(
+    public function __construct(
         public readonly Configuration $configuration,
         public readonly string $phpunit,
         public readonly string $cwd,
