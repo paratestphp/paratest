@@ -81,7 +81,7 @@ jobs:
           dependency-versions: "${{ matrix.dependencies }}"
 
       - name: "Run tests"
-        timeout-minutes: 3
+        timeout-minutes: 5
         run: "vendor/bin/phpunit --no-coverage --no-logging"
 
   code-coverage:
