@@ -204,7 +204,10 @@ final class ApplicationForWrapperWorker
         }
 
         if (isset($this->testdoxFile)) {
-            $this->testdoxResultCollector = new TestResultCollector(EventFacade::instance());
+            $this->testdoxResultCollector = new TestResultCollector(
+                EventFacade::instance(),
+                $this->configuration->source(),
+            );
         }
 
         TestResultFacade::init();
