@@ -555,7 +555,7 @@ final class Options
             new InputOption(
                 'coverage-filter',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
