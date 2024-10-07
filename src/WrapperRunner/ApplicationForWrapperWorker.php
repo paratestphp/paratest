@@ -23,6 +23,7 @@ use PHPUnit\Runner\Filter\Factory;
 use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\Runner\Version;
+use PHPUnit\TestRunner\IssueFilter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
@@ -206,7 +207,7 @@ final class ApplicationForWrapperWorker
         if (isset($this->testdoxFile)) {
             $this->testdoxResultCollector = new TestResultCollector(
                 EventFacade::instance(),
-                $this->configuration->source(),
+                new IssueFilter($this->configuration->source()),
             );
         }
 
