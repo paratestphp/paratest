@@ -27,7 +27,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: composer-normalize, composer-require-checker
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - run: "composer validate --strict"
       - run: "composer-normalize --dry-run"
@@ -48,7 +48,7 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - name: "Lint XMLs"
         uses: ./.github/lint-xml-configuration
@@ -64,6 +64,7 @@ jobs:
         php-version:
           - "8.2"
           - "8.3"
+          - "8.4"
         dependencies:
           - "lowest"
           - "highest"
@@ -75,7 +76,7 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
 
@@ -98,7 +99,7 @@ jobs:
 #          coverage: "pcov"
 #          php-version: "${{ matrix.php-version }}"
 #          ini-values: "${{ env.INI_VALUES }}"
-#      - uses: "ramsey/composer-install@v2"
+#      - uses: "ramsey/composer-install@v3"
 #
 #      - name: "Gather base branch for diff"
 #        if: ${{ github.event_name == 'pull_request' }}
@@ -134,7 +135,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: cs2pr
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - run: "vendor/bin/phpcs -q --report=checkstyle | cs2pr"
 
@@ -153,6 +154,6 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - run: "vendor/bin/phpstan --memory-limit=512M --ansi --no-progress"
