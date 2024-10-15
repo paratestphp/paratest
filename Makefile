@@ -8,7 +8,8 @@ ifeq ($(strip $(LOCAL_BASE_BRANCH)),)
 endif
 BASE_BRANCH ?= $(LOCAL_BASE_BRANCH)
 
-all: csfix static-analysis code-coverage
+#all: csfix static-analysis code-coverage
+all: csfix static-analysis test
 	@echo "Done."
 
 .env: /etc/passwd /etc/group Makefile
