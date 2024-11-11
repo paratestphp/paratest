@@ -1,71 +1,229 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#2 \\$phpunit of class ParaTest\\\\Options constructor expects non\\-empty\\-string, string given\\.$#"
+			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
+			identifier: arrayFilter.strict
 			count: 1
 			path: src/Options.php
 
 		-
-			message: "#^Parameter \\#7 \\$phpunitOptions of class ParaTest\\\\Options constructor expects array\\<non\\-empty\\-string, array\\<int, non\\-empty\\-string\\>\\|non\\-empty\\-string\\|true\\>, array\\<'bootstrap'\\|'cache\\-directory'\\|'configuration'\\|'coverage\\-filter'\\|'disallow\\-test\\-output'\\|'dont\\-report\\-useless…'\\|'exclude\\-group'\\|'fail\\-on\\-incomplete'\\|'fail\\-on\\-risky'\\|'fail\\-on\\-skipped'\\|'fail\\-on\\-warning'\\|'filter'\\|'group'\\|'no\\-configuration'\\|'order\\-by'\\|'process\\-isolation'\\|'random\\-order\\-seed'\\|'stop\\-on\\-defect'\\|'stop\\-on\\-error'\\|'stop\\-on\\-incomplete'\\|'stop\\-on\\-risky'\\|'stop\\-on\\-skipped'\\|'stop\\-on\\-warning'\\|'strict\\-coverage'\\|'strict\\-global\\-state', non\\-empty\\-array\\|float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|non\\-falsy\\-string\\|true\\> given\\.$#"
+			message: '#^Method ParaTest\\Options\:\:parsePassthru\(\) should return list\<non\-empty\-string\>\|null but returns non\-empty\-array\<mixed, mixed\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Options.php
 
 		-
-			message: "#^Call to an undefined method PHPUnit\\\\Metadata\\\\Api\\\\CodeCoverage\\:\\:linesToBeIgnored\\(\\)\\.$#"
+			message: '#^Parameter \#2 \$phpunit of class ParaTest\\Options constructor expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Options.php
+
+		-
+			message: '#^Parameter \#7 \$phpunitOptions of class ParaTest\\Options constructor expects array\<non\-empty\-string, list\<non\-empty\-string\>\|non\-empty\-string\|true\>, array\<''bootstrap''\|''cache\-directory''\|''configuration''\|''coverage\-filter''\|''disallow\-test\-output''\|''dont\-report\-useless…''\|''exclude\-group''\|''fail\-on\-incomplete''\|''fail\-on\-risky''\|''fail\-on\-skipped''\|''fail\-on\-warning''\|''filter''\|''group''\|''no\-configuration''\|''order\-by''\|''process\-isolation''\|''random\-order\-seed''\|''stop\-on\-defect''\|''stop\-on\-error''\|''stop\-on\-incomplete''\|''stop\-on\-risky''\|''stop\-on\-skipped''\|''stop\-on\-warning''\|''strict\-coverage''\|''strict\-global\-state'', non\-empty\-array\|float\|int\<min, \-1\>\|int\<1, max\>\|non\-falsy\-string\|true\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Options.php
+
+		-
+			message: '#^Part \$innerValue \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Options.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Metadata\\Api\\CodeCoverage\:\:linesToBeIgnored\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/WrapperRunner/ApplicationForWrapperWorker.php
 
 		-
-			message: "#^Call to an undefined method PHPUnit\\\\Runner\\\\Filter\\\\Factory\\:\\:addNameFilter\\(\\)\\.$#"
+			message: '#^Call to an undefined method PHPUnit\\Runner\\Filter\\Factory\:\:addNameFilter\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/WrapperRunner/ApplicationForWrapperWorker.php
 
 		-
-			message: "#^Match expression does not handle remaining value\\: string$#"
+			message: '#^Parameter \#1 \$linesToBeIgnored of method PHPUnit\\Runner\\CodeCoverage\:\:ignoreLines\(\) expects array\<string, list\<int\>\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/ApplicationForWrapperWorker.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
 			count: 1
 			path: src/WrapperRunner/ResultPrinter.php
 
 		-
-			message: "#^Access to an uninitialized readonly property ParaTest\\\\WrapperRunner\\\\WrapperWorker\\:\\:\\$coverageFile\\.$#"
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/WrapperRunner/WorkerCrashedException.php
+
+		-
+			message: '#^Parameter \#10 \$testTriggeredPhpunitDeprecationEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects array\<string, list\<PHPUnit\\Event\\Test\\PhpunitDeprecationTriggered\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#11 \$testTriggeredPhpunitErrorEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects array\<string, list\<PHPUnit\\Event\\Test\\PhpunitErrorTriggered\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#12 \$testTriggeredPhpunitWarningEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects array\<string, list\<PHPUnit\\Event\\Test\\PhpunitWarningTriggered\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#13 \$testRunnerTriggeredDeprecationEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\DeprecationTriggered\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#14 \$testRunnerTriggeredWarningEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\WarningTriggered\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#15 \$errors of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#16 \$deprecations of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#17 \$notices of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#18 \$warnings of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#19 \$phpDeprecations of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#20 \$phpNotices of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#21 \$phpWarnings of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#4 \$testErroredEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\Test\\BeforeFirstTestMethodErrored\|PHPUnit\\Event\\Test\\Errored\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#5 \$testFailedEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\Test\\Failed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#6 \$testConsideredRiskyEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects array\<string, list\<PHPUnit\\Event\\Test\\ConsideredRisky\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#7 \$testSuiteSkippedEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestSuite\\Skipped\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#8 \$testSkippedEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\Test\\Skipped\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#9 \$testMarkedIncompleteEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\Test\\MarkedIncomplete\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Property ParaTest\\WrapperRunner\\WrapperRunner\:\:\$parameters \(array\<non\-empty\-string\>\) does not accept non\-empty\-array\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Access to an uninitialized readonly property ParaTest\\WrapperRunner\\WrapperWorker\:\:\$coverageFile\.$#'
+			identifier: property.uninitializedReadonly
 			count: 2
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Access to an uninitialized readonly property ParaTest\\\\WrapperRunner\\\\WrapperWorker\\:\\:\\$junitFile\\.$#"
+			message: '#^Access to an uninitialized readonly property ParaTest\\WrapperRunner\\WrapperWorker\:\:\$junitFile\.$#'
+			identifier: property.uninitializedReadonly
 			count: 2
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Access to an uninitialized readonly property ParaTest\\\\WrapperRunner\\\\WrapperWorker\\:\\:\\$teamcityFile\\.$#"
+			message: '#^Access to an uninitialized readonly property ParaTest\\WrapperRunner\\WrapperWorker\:\:\$teamcityFile\.$#'
+			identifier: property.uninitializedReadonly
 			count: 2
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Access to an uninitialized readonly property ParaTest\\\\WrapperRunner\\\\WrapperWorker\\:\\:\\$testdoxFile\\.$#"
+			message: '#^Access to an uninitialized readonly property ParaTest\\WrapperRunner\\WrapperWorker\:\:\$testdoxFile\.$#'
+			identifier: property.uninitializedReadonly
 			count: 2
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Class ParaTest\\\\WrapperRunner\\\\WrapperWorker has an uninitialized readonly property \\$coverageFile\\. Assign it in the constructor\\.$#"
+			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$coverageFile\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
 			count: 1
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Class ParaTest\\\\WrapperRunner\\\\WrapperWorker has an uninitialized readonly property \\$junitFile\\. Assign it in the constructor\\.$#"
+			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$junitFile\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
 			count: 1
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Class ParaTest\\\\WrapperRunner\\\\WrapperWorker has an uninitialized readonly property \\$teamcityFile\\. Assign it in the constructor\\.$#"
+			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$teamcityFile\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
 			count: 1
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Class ParaTest\\\\WrapperRunner\\\\WrapperWorker has an uninitialized readonly property \\$testdoxFile\\. Assign it in the constructor\\.$#"
+			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$testdoxFile\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
 			count: 1
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
 			count: 1
 			path: test/Unit/WrapperRunner/WrapperRunnerTest.php
