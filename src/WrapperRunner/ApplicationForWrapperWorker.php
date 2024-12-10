@@ -15,6 +15,7 @@ use PHPUnit\Metadata\Api\CodeCoverage as CodeCoverageMetadataApi;
 use PHPUnit\Runner\Baseline\CannotLoadBaselineException;
 use PHPUnit\Runner\Baseline\Reader;
 use PHPUnit\Runner\CodeCoverage;
+use PHPUnit\Runner\DeprecationCollector\Facade as DeprecationCollector;
 use PHPUnit\Runner\ErrorHandler;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
@@ -170,12 +171,6 @@ final class ApplicationForWrapperWorker
             $extensionRequiresCodeCoverageCollection = $extensionFacade->requiresCodeCoverageCollection();
         }
 
-        CodeCoverage::instance()->init(
-            $this->configuration,
-            CodeCoverageFilterRegistry::instance(),
-            $extensionRequiresCodeCoverageCollection,
-        );
-
         if ($this->configuration->hasLogfileJunit()) {
             new JunitXmlLogger(
                 DefaultPrinter::from($this->configuration->logfileJunit()),
@@ -212,6 +207,7 @@ final class ApplicationForWrapperWorker
         }
 
         TestResultFacade::init();
+        DeprecationCollector::init();
 
         if ($this->configuration->source()->useBaseline()) {
             $baselineFile = $this->configuration->source()->baseline();
@@ -229,6 +225,13 @@ final class ApplicationForWrapperWorker
         }
 
         EventFacade::instance()->seal();
+
+        CodeCoverage::instance()->init(
+            $this->configuration,
+            CodeCoverageFilterRegistry::instance(),
+            $extensionRequiresCodeCoverageCollection,
+        );
+
         EventFacade::emitter()->testRunnerStarted();
 
         if ($this->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
