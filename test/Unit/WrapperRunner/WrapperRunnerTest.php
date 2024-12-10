@@ -762,6 +762,28 @@ EOF;
         self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
+    #[Group('github')]
+    public function testDeprecationsShouldNotRaiseException(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH915' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+
+        $runnerResult = $this->runRunner();
+
+        $expectedOutput = <<<'EOF'
+Processes:     %s
+Runtime:       PHP %s
+Configuration: %s
+
+.                                                                   1 / 1 (100%)
+
+Time: %s, Memory: %s MB
+
+OK%a
+EOF;
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
     public function testExtensionMustRunBeforeDataProvider(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('extension_run_before_data_provider' . DIRECTORY_SEPARATOR . 'phpunit.xml');
