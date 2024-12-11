@@ -31,24 +31,6 @@ parameters:
 			path: src/Options.php
 
 		-
-			message: '#^Call to an undefined method PHPUnit\\Metadata\\Api\\CodeCoverage\:\:linesToBeIgnored\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/WrapperRunner/ApplicationForWrapperWorker.php
-
-		-
-			message: '#^Call to an undefined method PHPUnit\\Runner\\Filter\\Factory\:\:addNameFilter\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/WrapperRunner/ApplicationForWrapperWorker.php
-
-		-
-			message: '#^Parameter \#1 \$linesToBeIgnored of method PHPUnit\\Runner\\CodeCoverage\:\:ignoreLines\(\) expects array\<string, list\<int\>\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/WrapperRunner/ApplicationForWrapperWorker.php
-
-		-
 			message: '#^Match expression does not handle remaining value\: string$#'
 			identifier: match.unhandled
 			count: 1
@@ -187,6 +169,12 @@ parameters:
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
+			message: '#^Access to an uninitialized readonly property ParaTest\\WrapperRunner\\WrapperWorker\:\:\$resultCacheFile\.$#'
+			identifier: property.uninitializedReadonly
+			count: 2
+			path: src/WrapperRunner/WrapperWorker.php
+
+		-
 			message: '#^Access to an uninitialized readonly property ParaTest\\WrapperRunner\\WrapperWorker\:\:\$teamcityFile\.$#'
 			identifier: property.uninitializedReadonly
 			count: 2
@@ -206,6 +194,12 @@ parameters:
 
 		-
 			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$junitFile\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/WrapperRunner/WrapperWorker.php
+
+		-
+			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$resultCacheFile\. Assign it in the constructor\.$#'
 			identifier: property.uninitializedReadonly
 			count: 1
 			path: src/WrapperRunner/WrapperWorker.php

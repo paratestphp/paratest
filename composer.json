@@ -40,12 +40,12 @@
         "ext-simplexml": "*",
         "fidry/cpu-core-counter": "^1.2.0",
         "jean85/pretty-package-versions": "^2.1.0",
-        "phpunit/php-code-coverage": "^11.0.7",
+        "phpunit/php-code-coverage": "^11.0.8",
         "phpunit/php-file-iterator": "^5.1.0",
         "phpunit/php-timer": "^7.0.1",
-        "phpunit/phpunit": "^11.5.0",
+        "phpunit/phpunit": "^11.5.1",
         "sebastian/environment": "^7.2.0",
-        "symfony/console": "^6.4.14 || ^7.2.0",
+        "symfony/console": "^6.4.14 || ^7.2.1",
         "symfony/process": "^6.4.14 || ^7.2.0"
     },
     "require-dev": {

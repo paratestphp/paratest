@@ -30,6 +30,7 @@ use function file_get_contents;
 use function file_put_contents;
 use function glob;
 use function implode;
+use function is_file;
 use function min;
 use function posix_mkfifo;
 use function preg_match;
@@ -803,6 +804,51 @@ OK%a
 EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
         self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
+    public function testOrderByCache(): void
+    {
+        $resultCacheFile = $this->fixture('order_by') . DIRECTORY_SEPARATOR . '.phpunit.result.cache';
+        if (is_file($resultCacheFile)) {
+            unlink($resultCacheFile);
+        }
+
+        $this->bareOptions['--configuration'] = $this->fixture('order_by' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--processes']     = '1';
+        $this->bareOptions['--order-by']      = 'defects';
+
+        $expectedOutput = static function (string $order): string {
+            return 'Processes:     %s
+Runtime:       PHP %s
+Configuration: %s
+
+' . $order . '                                                                  2 / 2 (100%)
+
+Time: %s, Memory: %s MB
+
+There was 1 failure:
+
+1) ParaTest\Tests\fixtures\order_by\BFailingTest::testFailure
+Failed asserting that false is true.
+
+%s/test/fixtures/order_by/BFailingTest.php:14
+
+FAILURES!
+%s
+';
+        };
+
+        $runnerResult = $this->runRunner();
+
+        self::assertStringMatchesFormat($expectedOutput('.F'), $runnerResult->output);
+        self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+
+        self::assertFileExists($resultCacheFile);
+
+        $runnerResult = $this->runRunner();
+
+        self::assertStringMatchesFormat($expectedOutput('F.'), $runnerResult->output);
+        self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
     }
 
     /**

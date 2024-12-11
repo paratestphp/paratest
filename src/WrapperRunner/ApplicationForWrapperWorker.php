@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestSuite;
 use PHPUnit\Logging\JUnit\JunitXmlLogger;
 use PHPUnit\Logging\TeamCity\TeamCityLogger;
 use PHPUnit\Logging\TestDox\TestResultCollector;
-use PHPUnit\Metadata\Api\CodeCoverage as CodeCoverageMetadataApi;
 use PHPUnit\Runner\Baseline\CannotLoadBaselineException;
 use PHPUnit\Runner\Baseline\Reader;
 use PHPUnit\Runner\CodeCoverage;
@@ -21,9 +20,10 @@ use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Filter\Factory;
+use PHPUnit\Runner\ResultCache\DefaultResultCache;
+use PHPUnit\Runner\ResultCache\ResultCacheHandler;
 use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Runner\TestSuiteSorter;
-use PHPUnit\Runner\Version;
 use PHPUnit\TestRunner\IssueFilter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TextUI\Configuration\Builder;
@@ -46,7 +46,6 @@ use function serialize;
 use function str_ends_with;
 use function strpos;
 use function substr;
-use function version_compare;
 
 /**
  * @internal
@@ -64,7 +63,8 @@ final class ApplicationForWrapperWorker
         private readonly array $argv,
         private readonly string $progressFile,
         private readonly string $unexpectedOutputFile,
-        private readonly string $testresultFile,
+        private readonly string $testResultFile,
+        private readonly ?string $resultCacheFile,
         private readonly ?string $teamcityFile,
         private readonly ?string $testdoxFile,
         private readonly bool $testdoxColor,
@@ -80,11 +80,7 @@ final class ApplicationForWrapperWorker
             $filter = new Factory();
             $name   = substr($testPath, $null + 1);
             assert($name !== '');
-            if (version_compare(Version::id(), '11.0.0') >= 0) {
-                $filter->addIncludeNameFilter($name);
-            } else {
-                $filter->addNameFilter($name);
-            }
+            $filter->addIncludeNameFilter($name);
 
             $testPath = substr($testPath, 0, $null);
         }
@@ -97,14 +93,6 @@ final class ApplicationForWrapperWorker
         } else {
             $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
             $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
-        }
-
-        if (version_compare(Version::id(), '11.0.0') < 0) {
-            if (CodeCoverage::instance()->isActive()) {
-                CodeCoverage::instance()->ignoreLines(
-                    (new CodeCoverageMetadataApi())->linesToBeIgnored($testSuite),
-                );
-            }
         }
 
         (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
@@ -209,6 +197,13 @@ final class ApplicationForWrapperWorker
         TestResultFacade::init();
         DeprecationCollector::init();
 
+        if (isset($this->resultCacheFile)) {
+            new ResultCacheHandler(
+                new DefaultResultCache($this->resultCacheFile),
+                EventFacade::instance(),
+            );
+        }
+
         if ($this->configuration->source()->useBaseline()) {
             $baselineFile = $this->configuration->source()->baseline();
             $baseline     = null;
@@ -262,7 +257,7 @@ final class ApplicationForWrapperWorker
             );
         }
 
-        file_put_contents($this->testresultFile, serialize($result));
+        file_put_contents($this->testResultFile, serialize($result));
 
         EventFacade::emitter()->applicationFinished(0);
     }

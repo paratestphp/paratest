@@ -13,6 +13,7 @@ use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\PhptTestCase;
+use PHPUnit\Runner\ResultCache\DefaultResultCache;
 use PHPUnit\Runner\ResultCache\NullResultCache;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
@@ -95,7 +96,13 @@ final class SuiteLoader
             $this->options->configuration->executionOrderDefects() !== TestSuiteSorter::ORDER_DEFAULT ||
             $this->options->configuration->resolveDependencies()
         ) {
-            (new TestSuiteSorter(new NullResultCache()))->reorderTestsInSuite(
+            $resultCache = new NullResultCache();
+            if ($this->options->configuration->cacheResult()) {
+                $resultCache = new DefaultResultCache($this->options->configuration->testResultCacheFile());
+                $resultCache->load();
+            }
+
+            (new TestSuiteSorter($resultCache))->reorderTestsInSuite(
                 $testSuite,
                 $this->options->configuration->executionOrder(),
                 $this->options->configuration->resolveDependencies(),
