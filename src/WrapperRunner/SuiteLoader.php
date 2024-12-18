@@ -188,7 +188,7 @@ final class SuiteLoader
             if ($test instanceof TestCase) {
                 $refClass = new ReflectionClass($test);
                 $filename = $refClass->getFileName();
-                assert(is_string($filename) && $filename !== '');
+                assert(is_string($filename));
                 $filename = $this->stripCwd($filename);
 
                 yield $filename => $test;
