@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit;
 
 use ParaTest\JUnit\LogMerger;
-use ParaTest\JUnit\MessageType;
 use ParaTest\JUnit\TestCase as JunitTestCase;
 use ParaTest\JUnit\TestCaseWithMessage;
 use ParaTest\JUnit\TestSuite;
@@ -22,7 +21,6 @@ use function str_replace;
 
 /** @internal */
 #[CoversClass(LogMerger::class)]
-#[CoversClass(MessageType::class)]
 #[CoversClass(JunitTestCase::class)]
 #[CoversClass(TestCaseWithMessage::class)]
 #[CoversClass(TestSuite::class)]

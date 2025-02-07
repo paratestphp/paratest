@@ -17,7 +17,6 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\RequiresPhpunit;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
@@ -632,7 +631,6 @@ EOF;
      * @see https://bugs.php.net/bug.php?id=77726
      * @see https://github.com/php/php-src/pull/8114
      */
-    #[RequiresPhp('>=8.2')]
     public function testFunctionalParallelization(): void
     {
         $this->bareOptions['path']         = $this->fixture('function_parallelization_tests');
@@ -654,7 +652,6 @@ EOF;
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
-    #[RequiresPhp('>=8.2')]
     public function testSameBeginningOfName(): void
     {
         $this->bareOptions['path']         = $this->fixture('same_beginning_of_name');
@@ -676,7 +673,6 @@ EOF;
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
-    #[RequiresPhp('>=8.2')]
     public function testFunctionalParallelizationWithJunitLogging(): void
     {
         $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
