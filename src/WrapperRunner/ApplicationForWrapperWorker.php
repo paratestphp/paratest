@@ -95,6 +95,10 @@ final class ApplicationForWrapperWorker
             $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
         }
 
+        EventFacade::emitter()->testSuiteLoaded(
+            TestSuiteBuilder::from($testSuite),
+        );
+
         (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
 
         if ($filter !== null) {
