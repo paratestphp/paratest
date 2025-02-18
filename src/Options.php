@@ -60,6 +60,7 @@ final class Options
         'fail-on-risky' => true,
         'fail-on-skipped' => true,
         'fail-on-warning' => true,
+        'fail-on-deprecation' => true,
         'filter' => true,
         'group' => true,
         'no-configuration' => true,
@@ -420,6 +421,12 @@ final class Options
             ),
             new InputOption(
                 'fail-on-warning',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-deprecation',
                 null,
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
