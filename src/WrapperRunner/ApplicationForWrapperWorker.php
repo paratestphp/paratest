@@ -215,7 +215,7 @@ final class ApplicationForWrapperWorker
             try {
                 $baseline = (new Reader())->read($baselineFile);
             } catch (CannotLoadBaselineException $e) {
-                EventFacade::emitter()->testRunnerTriggeredWarning($e->getMessage());
+                EventFacade::emitter()->testRunnerTriggeredPhpunitWarning($e->getMessage());
             }
 
             if ($baseline !== null) {

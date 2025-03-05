@@ -9,11 +9,11 @@ use PHPUnit\TextUI\Output\Printer;
 use function preg_match;
 
 /** @internal */
-final class ProgressPrinterOutput implements Printer
+final readonly class ProgressPrinterOutput implements Printer
 {
     public function __construct(
-        private readonly Printer $progressPrinter,
-        private readonly Printer $outputPrinter,
+        private Printer $progressPrinter,
+        private Printer $outputPrinter,
     ) {
     }
 

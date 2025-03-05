@@ -44,7 +44,7 @@ use const PHP_BINARY;
  *
  * @immutable
  */
-final class Options
+final readonly class Options
 {
     public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
     public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
@@ -89,18 +89,18 @@ final class Options
      * @param non-empty-string                                                      $tmpDir
      */
     public function __construct(
-        public readonly Configuration $configuration,
-        public readonly string $phpunit,
-        public readonly string $cwd,
-        public readonly int $maxBatchSize,
-        public readonly bool $noTestTokens,
-        public readonly ?array $passthruPhp,
-        public readonly array $phpunitOptions,
-        public readonly int $processes,
-        public readonly string $runner,
-        public readonly string $tmpDir,
-        public readonly bool $verbose,
-        public readonly bool $functional,
+        public Configuration $configuration,
+        public string $phpunit,
+        public string $cwd,
+        public int $maxBatchSize,
+        public bool $noTestTokens,
+        public ?array $passthruPhp,
+        public array $phpunitOptions,
+        public int $processes,
+        public string $runner,
+        public string $tmpDir,
+        public bool $verbose,
+        public bool $functional,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
     }

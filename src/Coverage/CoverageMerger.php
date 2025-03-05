@@ -10,10 +10,10 @@ use SplFileInfo;
 use function assert;
 
 /** @internal */
-final class CoverageMerger
+final readonly class CoverageMerger
 {
     public function __construct(
-        private readonly CodeCoverage $coverage
+        private CodeCoverage $coverage
     ) {
     }
 

@@ -42,14 +42,14 @@ use function strlen;
 use function substr;
 
 /** @internal */
-final class SuiteLoader
+final readonly class SuiteLoader
 {
-    public readonly int $testCount;
+    public int $testCount;
     /** @var list<non-empty-string> */
-    public readonly array $tests;
+    public array $tests;
 
     public function __construct(
-        private readonly Options $options,
+        private Options $options,
         OutputInterface $output,
         CodeCoverageFilterRegistry $codeCoverageFilterRegistry,
     ) {

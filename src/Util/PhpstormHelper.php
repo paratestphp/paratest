@@ -12,7 +12,7 @@ use function in_array;
 use function str_ends_with;
 
 /** @internal */
-final class PhpstormHelper
+final readonly class PhpstormHelper
 {
     /** @param  array<int, string> $argv */
     public static function handleArgvFromPhpstorm(array &$argv, string $paratestBinary): string

@@ -16,23 +16,23 @@ use function file_get_contents;
  *
  * @immutable
  */
-final class TestSuite
+final readonly class TestSuite
 {
     /**
      * @param array<string, TestSuite> $suites
      * @param list<TestCase>           $cases
      */
     public function __construct(
-        public readonly string $name,
-        public readonly int $tests,
-        public readonly int $assertions,
-        public readonly int $failures,
-        public readonly int $errors,
-        public readonly int $skipped,
-        public readonly float $time,
-        public readonly string $file,
-        public readonly array $suites,
-        public readonly array $cases
+        public string $name,
+        public int $tests,
+        public int $assertions,
+        public int $failures,
+        public int $errors,
+        public int $skipped,
+        public float $time,
+        public string $file,
+        public array $suites,
+        public array $cases
     ) {
     }
 

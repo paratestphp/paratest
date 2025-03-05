@@ -7,7 +7,7 @@ namespace ParaTest\Tests\Unit;
 use ParaTest\RunnerInterface;
 
 /** @internal */
-final class CustomRunner implements RunnerInterface
+final readonly class CustomRunner implements RunnerInterface
 {
     public const EXIT_CODE = 99;
 

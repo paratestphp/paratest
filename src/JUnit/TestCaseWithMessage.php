@@ -9,7 +9,7 @@ namespace ParaTest\JUnit;
  *
  * @immutable
  */
-final class TestCaseWithMessage extends TestCase
+final readonly class TestCaseWithMessage extends TestCase
 {
     public function __construct(
         string $name,
@@ -18,9 +18,9 @@ final class TestCaseWithMessage extends TestCase
         int $line,
         int $assertions,
         float $time,
-        public readonly ?string $type,
-        public readonly string $text,
-        public readonly MessageType $xmlTagName
+        public ?string $type,
+        public string $text,
+        public MessageType $xmlTagName
     ) {
         parent::__construct($name, $class, $file, $line, $assertions, $time);
     }

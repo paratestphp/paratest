@@ -21,10 +21,10 @@ use function str_replace;
 use const ENT_XML1;
 
 /** @internal */
-final class Writer
+final readonly class Writer
 {
     private const TESTSUITES_NAME = 'PHPUnit tests';
-    private readonly DOMDocument $document;
+    private DOMDocument $document;
 
     public function __construct()
     {

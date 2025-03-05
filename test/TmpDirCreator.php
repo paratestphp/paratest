@@ -12,7 +12,7 @@ use function glob;
 
 use const DIRECTORY_SEPARATOR;
 
-final class TmpDirCreator
+final readonly class TmpDirCreator
 {
     /** @return non-empty-string */
     public function create(): string
