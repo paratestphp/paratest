@@ -257,6 +257,7 @@ final class ApplicationForWrapperWorker
             assert(isset($this->testdoxColumns));
 
             (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor, $this->testdoxColumns, false))->print(
+                $result,
                 $this->testdoxResultCollector->testMethodsGroupedByClass(),
             );
         }
