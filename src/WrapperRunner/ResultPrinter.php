@@ -197,9 +197,10 @@ final class ResultPrinter
 
         $defaultResultPrinter = new DefaultResultPrinter(
             $this->printer,
-            true,
-            true,
             $this->options->configuration->displayDetailsOnPhpunitDeprecations(),
+            true,
+            true,
+            true,
             true,
             true,
             true,
@@ -217,9 +218,10 @@ final class ResultPrinter
 
             $defaultResultPrinter = new DefaultResultPrinter(
                 $this->printer,
-                true,
-                true,
                 $this->options->configuration->displayDetailsOnPhpunitDeprecations(),
+                true,
+                true,
+                true,
                 false,
                 false,
                 false,
