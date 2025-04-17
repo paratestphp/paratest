@@ -181,12 +181,6 @@ parameters:
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Property ParaTest\\WrapperRunner\\WrapperRunner\:\:\$parameters \(array\<non\-empty\-string\>\) does not accept non\-empty\-array\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/WrapperRunner/WrapperRunner.php
-
-		-
 			message: '#^Access to an uninitialized readonly property ParaTest\\WrapperRunner\\WrapperWorker\:\:\$coverageFile\.$#'
 			identifier: property.uninitializedReadonly
 			count: 2
