@@ -586,6 +586,7 @@ final readonly class Options
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
+
         ]);
     }
 
