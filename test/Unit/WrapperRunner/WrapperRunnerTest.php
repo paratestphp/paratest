@@ -847,13 +847,13 @@ FAILURES!
         self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
     }
 
-        public function testTimeLimit(): void
+    public function testTimeLimit(): void
     {
         $this->bareOptions['path']                 = $this->fixture('time_limit' . DIRECTORY_SEPARATOR . 'SleepTest.php');
         $this->bareOptions['--enforce-time-limit'] = true;
         $this->bareOptions['--default-time-limit'] = 1;
 
-                $expectedOutput = <<<'EOF'
+        $expectedOutput = <<<'EOF'
 Processes:     %s
 Runtime:       PHP %s
 
