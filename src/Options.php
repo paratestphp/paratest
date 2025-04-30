@@ -584,7 +584,7 @@ final readonly class Options
                 null,
                 InputOption::VALUE_REQUIRED,
                 '@see PHPUnit guide, chapter: ' . $chapter,
-                0,
+                '0',
             ),
         ]);
     }
