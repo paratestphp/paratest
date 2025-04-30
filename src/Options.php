@@ -356,6 +356,19 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'enforce-time-limit',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'default-time-limit',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+                '0',
+            ),
+            new InputOption(
                 'dont-report-useless-tests',
                 null,
                 InputOption::VALUE_NONE,
@@ -573,19 +586,7 @@ final readonly class Options
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
-            new InputOption(
-                'enforce-time-limit',
-                null,
-                InputOption::VALUE_NONE,
-                '@see PHPUnit guide, chapter: ' . $chapter,
-            ),
-            new InputOption(
-                'default-time-limit',
-                null,
-                InputOption::VALUE_REQUIRED,
-                '@see PHPUnit guide, chapter: ' . $chapter,
-                '0',
-            ),
+
         ]);
     }
 
