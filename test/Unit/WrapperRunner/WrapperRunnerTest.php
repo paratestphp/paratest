@@ -847,6 +847,34 @@ FAILURES!
         self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
     }
 
+        public function testTimeLimit(): void
+    {
+        $this->bareOptions['path']                 = $this->fixture('time_limit' . DIRECTORY_SEPARATOR . 'SleepTest.php');
+        $this->bareOptions['--enforce-time-limit'] = true;
+        $this->bareOptions['--default-time-limit'] = 1;
+
+                $expectedOutput = <<<'EOF'
+Processes:     %s
+Runtime:       PHP %s
+
+R                                                                   1 / 1 (100%)
+
+Time: %s, Memory: %s MB
+
+There was 1 risky test:
+
+1) ParaTest\Tests\fixtures\time_limit\SleepTest::testsleep
+* This test was aborted after 1 second
+
+* This test did not perform any assertions%a
+EOF;
+
+        $runnerResult = $this->runRunner();
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+    }
+
     /**
      * ###   WARNING   ###
      *
