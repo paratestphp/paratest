@@ -40,7 +40,7 @@
         "ext-simplexml": "*",
         "fidry/cpu-core-counter": "^1.2.0",
         "jean85/pretty-package-versions": "^2.1.1",
-        "phpunit/php-code-coverage": "^12.2.0",
+        "phpunit/php-code-coverage": "^12.2.1",
         "phpunit/php-file-iterator": "^6",
         "phpunit/php-timer": "^8",
         "phpunit/phpunit": "^12.1.4",
