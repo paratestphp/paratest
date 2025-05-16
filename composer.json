@@ -53,7 +53,7 @@
         "ext-pcov": "*",
         "ext-posix": "*",
         "doctrine/coding-standard": "^13.0.1",
-        "phpstan/phpstan": "^2.1.15",
+        "phpstan/phpstan": "^2.1.16",
         "phpstan/phpstan-deprecation-rules": "^2.0.3",
         "phpstan/phpstan-phpunit": "^2.0.6",
         "phpstan/phpstan-strict-rules": "^2.0.4",
