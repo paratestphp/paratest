@@ -43,7 +43,7 @@
         "phpunit/php-code-coverage": "^12.2.1",
         "phpunit/php-file-iterator": "^6",
         "phpunit/php-timer": "^8",
-        "phpunit/phpunit": "^12.1.5",
+        "phpunit/phpunit": "^12.1.6",
         "sebastian/environment": "^8",
         "symfony/console": "^6.4.20 || ^7.2.6",
         "symfony/process": "^6.4.20 || ^7.2.5"
@@ -53,7 +53,7 @@
         "ext-pcov": "*",
         "ext-posix": "*",
         "doctrine/coding-standard": "^13.0.1",
-        "phpstan/phpstan": "^2.1.16",
+        "phpstan/phpstan": "^2.1.17",
         "phpstan/phpstan-deprecation-rules": "^2.0.3",
         "phpstan/phpstan-phpunit": "^2.0.6",
         "phpstan/phpstan-strict-rules": "^2.0.4",
