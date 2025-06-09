@@ -151,7 +151,7 @@ parameters:
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#5 \$testFailedEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\Test\\Failed\>, array given\.$#'
+			message: '#^Parameter \#5 \$testFailedEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\Test\\AfterLastTestMethodFailed\|PHPUnit\\Event\\Test\\BeforeFirstTestMethodFailed\|PHPUnit\\Event\\Test\\Failed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php

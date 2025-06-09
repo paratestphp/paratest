@@ -13,7 +13,6 @@ use ParaTest\WrapperRunner\WorkerCrashedException;
 use ParaTest\WrapperRunner\WrapperRunner;
 use ParaTest\WrapperRunner\WrapperWorker;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
@@ -122,7 +121,6 @@ final class WrapperRunnerTest extends TestBase
     }
 
     #[Group('github')]
-    #[CoversNothing]
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuite(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -181,7 +179,6 @@ final class WrapperRunnerTest extends TestBase
     }
 
     #[Group('github')]
-    #[CoversNothing]
     public function testErrorsInDataProviderAreHandled(): void
     {
         self::markTestSkipped('Test is correct, but PHPUnit singletons mess things up');
@@ -228,7 +225,6 @@ final class WrapperRunnerTest extends TestBase
     }
 
     #[Group('github')]
-    #[CoversNothing]
     public function testReadPhpunitConfigPhpSectionBeforeLoadingTheSuiteManualBootstrap(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH420bis' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -464,7 +460,6 @@ final class WrapperRunnerTest extends TestBase
     }
 
     #[Group('github')]
-    #[CoversNothing]
     public function testTokensAreAbsentWhenNoTestTokensIsSpecified(): void
     {
         $this->bareOptions['--no-test-tokens'] = true;
@@ -549,7 +544,6 @@ final class WrapperRunnerTest extends TestBase
     }
 
     #[Group('github')]
-    #[CoversNothing]
     #[RequiresPhpunit('10')]
     public function testIgnoreAttributes(): void
     {
@@ -612,7 +606,6 @@ EOF;
     }
 
     #[Group('github')]
-    #[CoversNothing]
     public function testGroupOptionWithDataProviderAndCodeCoverageEnabled(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH782' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -700,7 +693,6 @@ EOF;
     }
 
     #[Group('github')]
-    #[CoversNothing]
     public function testLongDataProviderShouldNotFillUnexpectedOutputFile(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH853' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -711,7 +703,6 @@ EOF;
     }
 
     #[Group('github')]
-    #[CoversNothing]
     public function testCliOptionsThatCouldBeUsedMultipleTimes(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH857' . DIRECTORY_SEPARATOR . 'phpunit.xml');
