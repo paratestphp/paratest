@@ -115,7 +115,7 @@ final class ApplicationForWrapperWorker
 
         $testSuite->run();
 
-        return TestResultFacade::result()->wasSuccessfulIgnoringPhpunitWarnings()
+        return TestResultFacade::result()->wasSuccessful()
             ? RunnerInterface::SUCCESS_EXIT
             : RunnerInterface::FAILURE_EXIT;
     }
@@ -257,6 +257,7 @@ final class ApplicationForWrapperWorker
             assert(isset($this->testdoxColumns));
 
             (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor, $this->testdoxColumns, false))->print(
+                $result,
                 $this->testdoxResultCollector->testMethodsGroupedByClass(),
             );
         }

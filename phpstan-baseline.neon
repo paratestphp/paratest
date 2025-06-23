@@ -115,6 +115,12 @@ parameters:
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
+			message: '#^Parameter \#3 \$parameters of class ParaTest\\WrapperRunner\\WrapperWorker constructor expects array\<non\-empty\-string\>, non\-empty\-list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
 			message: '#^Parameter \#4 \$testErroredEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\Test\\AfterLastTestMethodErrored\|PHPUnit\\Event\\Test\\BeforeFirstTestMethodErrored\|PHPUnit\\Event\\Test\\Errored\>, array given\.$#'
 			identifier: argument.type
 			count: 1
@@ -151,7 +157,7 @@ parameters:
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Property ParaTest\\WrapperRunner\\WrapperRunner\:\:\$parameters \(array\<non\-empty\-string\>\) does not accept non\-empty\-array\.$#'
+			message: '#^Property ParaTest\\WrapperRunner\\WrapperRunner\:\:\$parameters \(array\<non\-empty\-string\>\) does not accept non\-empty\-list\<string\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
