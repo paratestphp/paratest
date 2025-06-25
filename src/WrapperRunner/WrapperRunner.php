@@ -82,8 +82,11 @@ final class WrapperRunner implements RunnerInterface
         $phpFinder = new PhpExecutableFinder();
         $phpBin    = $phpFinder->find(false);
         assert($phpBin !== false);
+        assert($phpBin !== '');
         $parameters = [$phpBin];
-        $parameters = array_merge($parameters, $phpFinder->findArguments());
+        /** @var array<non-empty-string> $arguments */
+        $arguments  = $phpFinder->findArguments();
+        $parameters = array_merge($parameters, $arguments);
 
         if ($options->passthruPhp !== null) {
             $parameters = array_merge($parameters, $options->passthruPhp);
@@ -293,14 +296,7 @@ final class WrapperRunner implements RunnerInterface
         $this->generateLogs();
 
         $exitcode = (new ShellExitCodeCalculator())->calculate(
-            $this->options->configuration->failOnDeprecation(),
-            $this->options->configuration->failOnPhpunitDeprecation(),
-            $this->options->configuration->failOnEmptyTestSuite(),
-            $this->options->configuration->failOnIncomplete(),
-            $this->options->configuration->failOnNotice(),
-            $this->options->configuration->failOnRisky(),
-            $this->options->configuration->failOnSkipped(),
-            $this->options->configuration->failOnWarning(),
+            $this->options->configuration,
             $testResultSum,
         );
 

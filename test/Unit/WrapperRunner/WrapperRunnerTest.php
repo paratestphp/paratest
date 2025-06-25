@@ -599,7 +599,7 @@ Time: %s, Memory: %s MB
 There was 1 risky test:
 
 1) ParaTest\Tests\fixtures\unexpected_output\UnexpectedOutputTest::testInvalidLogic
-This test printed output: foobar
+Test code or tested code printed unexpected output: foobar
 
 %s/test/fixtures/unexpected_output/UnexpectedOutputTest.php:%d
 
