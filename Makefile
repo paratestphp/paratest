@@ -38,6 +38,7 @@ coverage/junit.xml: vendor $(SRCS)
 		--coverage-clover=coverage/clover.xml \
 		--coverage-xml=coverage/xml \
 		--coverage-html=coverage/html \
+		--coverage-openclover=coverage/openclover.xml \
 		--log-junit=$@ \
 		$(PHPUNIT_ARGS) \
 		|| (rm $@ && exit 1)
