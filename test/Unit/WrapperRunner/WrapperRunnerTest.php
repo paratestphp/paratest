@@ -8,6 +8,7 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\JUnit\TestSuite;
 use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
+use ParaTest\Tests\TmpDirCreator;
 use ParaTest\WrapperRunner\ResultPrinter;
 use ParaTest\WrapperRunner\WorkerCrashedException;
 use ParaTest\WrapperRunner\WrapperRunner;
@@ -864,6 +865,51 @@ EOF;
 
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+    }
+
+    public function testOpenCloverCodeCoverage(): void
+    {
+        $tmpDir         = (new TmpDirCreator())->create();
+        $opencloverFile = $tmpDir . DIRECTORY_SEPARATOR . 'openclover.xml';
+
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH976' . DIRECTORY_SEPARATOR . 'phpunit.xml'),
+            '--coverage-openclover' => $opencloverFile,
+        ];
+
+        $runnerResult = $this->runRunner();
+
+        self::assertStringContainsString('Generating code coverage report in OpenClover XML format ... done', $runnerResult->output);
+
+        $expectedXml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage clover="12.3.1" generated="%d">
+  <project timestamp="%d" name="OpenClover Coverage">
+    <metrics files="2" loc="30" ncloc="28" classes="2" complexity="2" elements="4" coveredelements="4" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="2" methods="2" coveredmethods="2"/>
+    <package name="ParaTest\Tests\fixtures\github\GH976">
+      <metrics complexity="2" elements="4" coveredelements="4" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="2" methods="2" coveredmethods="2"/>
+      <file name="SomethingOne.php" path="%s/test/fixtures/github/GH976/SomethingOne.php">
+        <metrics loc="15" ncloc="14" classes="1" complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        <class name="SomethingOne">
+          <metrics complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        </class>
+        <line num="10" type="method" complexity="1" count="1" signature="easy(): bool" visibility="public"/>
+        <line num="12" type="stmt" count="1"/>
+      </file>
+      <file name="SomethingTwo.php" path="%s/test/fixtures/github/GH976/SomethingTwo.php">
+        <metrics loc="15" ncloc="14" classes="1" complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        <class name="SomethingTwo">
+          <metrics complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        </class>
+        <line num="10" type="method" complexity="1" count="1" signature="easy(): bool" visibility="public"/>
+        <line num="12" type="stmt" count="1"/>
+      </file>
+    </package>
+  </project>
+</coverage>
+XML;
+
+        self::assertFileMatchesFormat($expectedXml, $opencloverFile);
     }
 
     /**

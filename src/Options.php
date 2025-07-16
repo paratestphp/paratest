@@ -538,6 +538,12 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter = 'Code Coverage',
             ),
             new InputOption(
+                'coverage-openclover',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter = 'Code Coverage',
+            ),
+            new InputOption(
                 'coverage-cobertura',
                 null,
                 InputOption::VALUE_REQUIRED,
