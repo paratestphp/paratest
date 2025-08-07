@@ -883,7 +883,7 @@ EOF;
 
         $expectedXml = <<<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage clover="12.3.1" generated="%d">
+<coverage clover="%s" generated="%d">
   <project timestamp="%d" name="OpenClover Coverage">
     <metrics files="2" loc="30" ncloc="28" classes="2" complexity="2" elements="4" coveredelements="4" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="2" methods="2" coveredmethods="2"/>
     <package name="ParaTest\Tests\fixtures\github\GH976">
