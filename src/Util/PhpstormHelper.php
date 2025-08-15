@@ -48,8 +48,11 @@ final readonly class PhpstormHelper
     /** @param  array<int, string> $argv */
     private static function getArgvKeyFor(array $argv, string $searchFor): int
     {
+        $searchForForwardSlash = str_replace('\\', '/', $searchFor);
+        $searchForBackwardSlash = str_replace('/', '\\', $searchFor);
+
         foreach ($argv as $key => $arg) {
-            if (str_ends_with($arg, $searchFor)) {
+            if (str_ends_with($arg, $searchForForwardSlash) || str_ends_with($arg, $searchForBackwardSlash)) {
                 return $key;
             }
         }
