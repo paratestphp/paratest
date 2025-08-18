@@ -75,8 +75,8 @@ final class JUnitTest extends TestCase
 
     public function testLoadTestSuiteContainingMultipleSuitesWithSameName(): void
     {
-        $junitProcessLog  = FIXTURES . '/github/GH997/worker_tmp_junit.xml';
-        $testSuite = TestSuite::fromFile(new SplFileInfo($junitProcessLog));
+        $junitProcessLog = FIXTURES . '/github/GH997/worker_tmp_junit.xml';
+        $testSuite       = TestSuite::fromFile(new SplFileInfo($junitProcessLog));
 
         self::assertCount(1, $testSuite->suites);
         self::assertArrayHasKey('ParaTest\Tests\fixtures\github\GH997\SuccessfulTests', $testSuite->suites);

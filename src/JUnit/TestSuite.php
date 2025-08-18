@@ -7,9 +7,11 @@ namespace ParaTest\JUnit;
 use SimpleXMLElement;
 use SplFileInfo;
 
+use function array_merge;
 use function assert;
 use function count;
 use function file_get_contents;
+use function ksort;
 
 /**
  * @internal
@@ -111,8 +113,9 @@ final readonly class TestSuite
             $cases,
         );
     }
-    
-    public function mergeWith(self $other): self {
+
+    public function mergeWith(self $other): self
+    {
         assert($this->name === $other->name);
 
         $suites = $this->suites;
@@ -139,5 +142,5 @@ final readonly class TestSuite
             $suites,
             array_merge($this->cases, $other->cases),
         );
-    } 
+    }
 }

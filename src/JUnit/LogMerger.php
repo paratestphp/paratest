@@ -6,10 +6,6 @@ namespace ParaTest\JUnit;
 
 use SplFileInfo;
 
-use function array_merge;
-use function assert;
-use function ksort;
-
 /**
  * @internal
  *
