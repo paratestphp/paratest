@@ -75,7 +75,11 @@ final readonly class TestSuite
                 return $testSuite;
             }
 
-            $suites[$testSuite->name] = $testSuite;
+            if (isset($suites[$testSuite->name])) {
+                $suites[$testSuite->name] = $suites[$testSuite->name]->mergeWith($testSuite);
+            } else {
+                $suites[$testSuite->name] = $testSuite;
+            }
 
             if (! $isRootSuite) {
                 continue;
@@ -107,4 +111,33 @@ final readonly class TestSuite
             $cases,
         );
     }
+    
+    public function mergeWith(self $other): self {
+        assert($this->name === $other->name);
+
+        $suites = $this->suites;
+        foreach ($other->suites as $otherSuiteName => $otherSuite) {
+            if (! isset($this->suites[$otherSuiteName])) {
+                $suites[$otherSuiteName] = $otherSuite;
+                continue;
+            }
+
+            $suites[$otherSuiteName]->mergeWith($otherSuite);
+        }
+
+        ksort($suites);
+
+        return new TestSuite(
+            $this->name,
+            $this->tests + $other->tests,
+            $this->assertions + $other->assertions,
+            $this->failures + $other->failures,
+            $this->errors + $other->errors,
+            $this->skipped + $other->skipped,
+            $this->time + $other->time,
+            $this->file,
+            $suites,
+            array_merge($this->cases, $other->cases),
+        );
+    } 
 }
