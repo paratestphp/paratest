@@ -72,4 +72,15 @@ final class JUnitTest extends TestCase
 
         self::assertXmlFileEqualsXmlFile($junitLog, $outputFile);
     }
+
+    public function testLoadTestSuiteContainingMultipleSuitesWithSameName(): void
+    {
+        $junitProcessLog = FIXTURES . '/github/GH997/worker_tmp_junit.xml';
+        $testSuite       = TestSuite::fromFile(new SplFileInfo($junitProcessLog));
+
+        self::assertCount(1, $testSuite->suites);
+        self::assertArrayHasKey('ParaTest\Tests\fixtures\github\GH997\SuccessfulTests', $testSuite->suites);
+        self::assertCount(2, $testSuite->suites['ParaTest\Tests\fixtures\github\GH997\SuccessfulTests']->cases);
+        self::assertEquals(2, $testSuite->suites['ParaTest\Tests\fixtures\github\GH997\SuccessfulTests']->tests);
+    }
 }
