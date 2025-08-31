@@ -575,6 +575,13 @@ final readonly class Options
                 false,
             ),
             new InputOption(
+                'only-summary-for-coverage-text',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+                null,
+            ),
+            new InputOption(
                 'coverage-xml',
                 null,
                 InputOption::VALUE_REQUIRED,
