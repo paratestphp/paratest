@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit;
 
+use InvalidArgumentException;
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -131,5 +132,84 @@ final class OptionsTest extends TestBase
         $options = $this->createOptionsFromArgv(['--log-teamcity' => 'LOG-TEAMCITY'], __DIR__);
 
         self::assertTrue($options->needsTeamcity);
+    }
+
+    public function testShardOptionsDefaultValues(): void
+    {
+        $options = $this->createOptionsFromArgv([], __DIR__);
+
+        self::assertSame(0, $options->currentShard);
+        self::assertSame(0, $options->totalShards);
+        self::assertFalse($options->hasShards());
+    }
+
+    public function testValidShardOption(): void
+    {
+        $options = $this->createOptionsFromArgv(['--shards' => '2/5'], __DIR__);
+
+        self::assertSame(2, $options->currentShard);
+        self::assertSame(5, $options->totalShards);
+        self::assertTrue($options->hasShards());
+    }
+
+    public function testValidShardOptionSingleDigit(): void
+    {
+        $options = $this->createOptionsFromArgv(['--shards' => '1/1'], __DIR__);
+
+        self::assertSame(1, $options->currentShard);
+        self::assertSame(1, $options->totalShards);
+        self::assertTrue($options->hasShards());
+    }
+
+    public function testValidShardOptionLargeNumbers(): void
+    {
+        $options = $this->createOptionsFromArgv(['--shards' => '42/100'], __DIR__);
+
+        self::assertSame(42, $options->currentShard);
+        self::assertSame(100, $options->totalShards);
+        self::assertTrue($options->hasShards());
+    }
+
+    public function testInvalidShardOptionFormats(): void
+    {
+        // Test various invalid formats that don't match the regex pattern - they should result in no sharding
+        $invalidFormatsNoException = [
+            'invalid',
+            '1',
+            '1/',
+            '/5',
+            '1/5/extra',
+            'a/b',
+        ];
+
+        foreach ($invalidFormatsNoException as $format) {
+            $options = $this->createOptionsFromArgv(['--shards' => $format], __DIR__);
+
+            self::assertSame(0, $options->currentShard, "Failed for format: $format");
+            self::assertSame(0, $options->totalShards, "Failed for format: $format");
+            self::assertFalse($options->hasShards(), "Failed for format: $format");
+        }
+
+        // Test formats that match regex but have invalid values - they should throw exceptions
+        $invalidFormatsWithException = [
+            '1/0',  // total shards cannot be 0
+            '0/5',  // current shard cannot be 0
+            '6/5',  // current shard cannot be greater than total
+        ];
+
+        foreach ($invalidFormatsWithException as $format) {
+            $this->expectException(InvalidArgumentException::class);
+            $this->expectExceptionMessage('Invalid shards parameter.');
+            $this->createOptionsFromArgv(['--shards' => $format], __DIR__);
+        }
+    }
+
+    public function testShardOptionNotProvided(): void
+    {
+        $options = $this->createOptionsFromArgv(['--verbose' => true], __DIR__);
+
+        self::assertSame(0, $options->currentShard);
+        self::assertSame(0, $options->totalShards);
+        self::assertFalse($options->hasShards());
     }
 }

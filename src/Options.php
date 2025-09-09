@@ -6,6 +6,7 @@ namespace ParaTest;
 
 use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
+use InvalidArgumentException;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
@@ -28,6 +29,7 @@ use function is_array;
 use function is_bool;
 use function is_numeric;
 use function is_string;
+use function preg_match;
 use function realpath;
 use function sprintf;
 use function str_starts_with;
@@ -103,6 +105,8 @@ final readonly class Options
         public string $tmpDir,
         public bool $verbose,
         public bool $functional,
+        public int $currentShard,
+        public int $totalShards,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
     }
@@ -157,6 +161,22 @@ final readonly class Options
             $options['coverage-text'] = 'php://stdout';
         }
 
+        assert(is_string($options['shards'] ?? ''));
+        $parts        = [];
+        $currentShard = $totalShards = 0;
+        $pregMatch    = preg_match('/^([0-9]+)\/([0-9]+)$/', $options['shards'] ?? '', $parts);
+        if ($pregMatch === 1) {
+            $currentShard = (int) $parts[1];
+            $totalShards  = (int) $parts[2];
+
+            // Validate shard parameters - if invalid, throw an exception
+            if ($totalShards < $currentShard || $totalShards <= 0 || $currentShard <= 0) {
+                throw new InvalidArgumentException('Invalid shards parameter.');
+            }
+        }
+
+        unset($options['shards']);
+
         // Must be a static non-customizable reference because ParaTest code
         // is strictly coupled with PHPUnit pinned version
         $phpunit = self::getPhpunitBinary();
@@ -208,6 +228,8 @@ final readonly class Options
             $tmpDir,
             $verbose,
             $functional,
+            $currentShard,
+            $totalShards,
         );
     }
 
@@ -274,6 +296,12 @@ final readonly class Options
                 'v',
                 InputOption::VALUE_NONE,
                 'Output more verbose information',
+            ),
+            new InputOption(
+                'shards',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                '<current>/<total> Run a specific part of the suite',
             ),
 
             // PHPUnit options
@@ -667,5 +695,10 @@ final readonly class Options
         }
 
         return $env;
+    }
+
+    public function hasShards(): bool
+    {
+        return $this->currentShard > 0 && $this->totalShards > 0;
     }
 }
