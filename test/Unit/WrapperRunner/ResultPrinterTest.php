@@ -121,12 +121,12 @@ final class ResultPrinterTest extends TestBase
     public function testStartPrintsShardInfo(): void
     {
         $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv([
-            '--shards' => '3/5',
+            '--shard' => '3/5',
             '--verbose' => true,
         ]));
         $contents      = $this->getStartOutput();
 
-        self::assertStringContainsString("Shards:        3/5\n", $contents);
+        self::assertStringContainsString("Shard:         3/5\n", $contents);
     }
 
     public function testStartDoesNotPrintShardInfoWhenNotConfigured(): void
@@ -134,18 +134,7 @@ final class ResultPrinterTest extends TestBase
         $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv(['--verbose' => true]));
         $contents      = $this->getStartOutput();
 
-        self::assertStringNotContainsString('Shards:', $contents);
-    }
-
-    public function testStartDoesNotPrintShardInfoForInvalidShards(): void
-    {
-        $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv([
-            '--shards' => 'invalid',
-            '--verbose' => true,
-        ]));
-        $contents      = $this->getStartOutput();
-
-        self::assertStringNotContainsString('Shards:', $contents);
+        self::assertStringNotContainsString('Shard:', $contents);
     }
 
     public function testGetHeader(): void

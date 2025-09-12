@@ -103,8 +103,8 @@ final class ResultPrinter
         // @see \PHPUnit\TextUI\Application::writeRuntimeInformation()
         $write('Processes', (string) $this->options->processes);
 
-        if ($this->options->hasShards()) {
-            $write('Shards', $this->options->currentShard . '/' . $this->options->totalShards);
+        if ($this->options->hasShard()) {
+            $write('Shard', $this->options->currentShard . '/' . $this->options->totalShards);
         }
 
         $runtime = 'PHP ' . PHP_VERSION;

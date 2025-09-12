@@ -82,7 +82,7 @@ final readonly class Options
         'default-time-limit' => true,
     ];
 
-    public readonly bool $needsTeamcity;
+    public bool $needsTeamcity;
 
     /**
      * @param non-empty-string                                                      $phpunit
@@ -161,21 +161,30 @@ final readonly class Options
             $options['coverage-text'] = 'php://stdout';
         }
 
-        assert(is_string($options['shards'] ?? ''));
-        $parts        = [];
+        $shard = $options['shard'];
+        unset($options['shard']);
         $currentShard = $totalShards = 0;
-        $pregMatch    = preg_match('/^([0-9]+)\/([0-9]+)$/', $options['shards'] ?? '', $parts);
-        if ($pregMatch === 1) {
-            $currentShard = (int) $parts[1];
-            $totalShards  = (int) $parts[2];
+        if (is_string($shard)) {
+            $parts     = [];
+            $pregMatch = preg_match('/^(?<current>\d+)\/(?<total>\d+)$/', $shard, $parts);
+            if ($pregMatch !== 1) {
+                throw new InvalidArgumentException('Invalid shard parameter format: ' . $shard);
+            }
 
-            // Validate shard parameters - if invalid, throw an exception
-            if ($totalShards < $currentShard || $totalShards <= 0 || $currentShard <= 0) {
-                throw new InvalidArgumentException('Invalid shards parameter.');
+            $currentShard = (int) $parts['current'];
+            $totalShards  = (int) $parts['total'];
+            if ($currentShard <= 0) {
+                throw new InvalidArgumentException('Current shard must be a positive integer: ' . $shard);
+            }
+
+            if ($totalShards <= 1) {
+                throw new InvalidArgumentException('Total shards must be an integer greater than 1: ' . $shard);
+            }
+
+            if ($currentShard > $totalShards) {
+                throw new InvalidArgumentException('Current shard must be less or equal to total shards: ' . $shard);
             }
         }
-
-        unset($options['shards']);
 
         // Must be a static non-customizable reference because ParaTest code
         // is strictly coupled with PHPUnit pinned version
@@ -298,7 +307,7 @@ final readonly class Options
                 'Output more verbose information',
             ),
             new InputOption(
-                'shards',
+                'shard',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 '<current>/<total> Run a specific part of the suite',
@@ -697,7 +706,7 @@ final readonly class Options
         return $env;
     }
 
-    public function hasShards(): bool
+    public function hasShard(): bool
     {
         return $this->currentShard > 0 && $this->totalShards > 0;
     }

@@ -921,7 +921,7 @@ XML;
         $junitOutputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'junit-shards.xml';
 
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-        $this->bareOptions['--shards']        = '1/2';
+        $this->bareOptions['--shard']         = '1/2';
         $this->bareOptions['--processes']     = '2';
         $this->bareOptions['--log-junit']     = $junitOutputFile;
         $this->bareOptions['--verbose']       = true;
@@ -933,7 +933,7 @@ XML;
         self::assertSame(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
 
         // Check that shard info is displayed in verbose output
-        self::assertStringContainsString('Shards:        1/2', $runnerResult->output);
+        self::assertStringContainsString('Shard:         1/2', $runnerResult->output);
         self::assertStringContainsString('Processes:     2', $runnerResult->output);
 
         // Verify that some tests were run (shard 1/2 should run approximately half the tests)
@@ -983,7 +983,7 @@ XML;
         // Now test shard 2/2 to ensure complementary behavior
         $junitOutputFile2 = $this->tmpDir . DIRECTORY_SEPARATOR . 'junit-shards2.xml';
 
-        $this->bareOptions['--shards']    = '2/2';
+        $this->bareOptions['--shard']     = '2/2';
         $this->bareOptions['--log-junit'] = $junitOutputFile2;
 
         $runnerResult2 = $this->runRunner();
@@ -991,7 +991,7 @@ XML;
         // Extended assertions for shard 2/2
         // Note: shard 2/2 gets the success/warning/skipped tests, so exit code is 0
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult2->exitCode);
-        self::assertStringContainsString('Shards:        2/2', $runnerResult2->output);
+        self::assertStringContainsString('Shard:         2/2', $runnerResult2->output);
 
         // Extended jUnit log assertions for shard 2/2
         self::assertFileExists($junitOutputFile2);

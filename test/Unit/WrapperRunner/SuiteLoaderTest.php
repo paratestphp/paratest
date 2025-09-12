@@ -70,7 +70,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testShardTestsWithValidShards(): void
     {
-        $this->bareOptions['--shards']        = '2/3';
+        $this->bareOptions['--shard']         = '2/3';
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
 
         $loader = $this->loadSuite();
@@ -84,21 +84,9 @@ final class SuiteLoaderTest extends TestBase
         self::assertCount($loader->testCount, $loader->tests);
     }
 
-    public function testShardTestsWithSingleShard(): void
-    {
-        $this->bareOptions['--shards']        = '1/1';
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-
-        $loader = $this->loadSuite();
-
-        // With 1 shard, all tests should be included
-        self::assertSame(7, $loader->testCount);
-        self::assertCount(7, $loader->tests);
-    }
-
     public function testShardTestsWithFirstShard(): void
     {
-        $this->bareOptions['--shards']        = '1/5';
+        $this->bareOptions['--shard']         = '1/5';
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
 
         $loader = $this->loadSuite();
@@ -112,7 +100,7 @@ final class SuiteLoaderTest extends TestBase
 
     public function testShardTestsWithLastShard(): void
     {
-        $this->bareOptions['--shards']        = '5/5';
+        $this->bareOptions['--shard']         = '5/5';
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
 
         $loader = $this->loadSuite();
@@ -133,18 +121,6 @@ final class SuiteLoaderTest extends TestBase
         $loader = $this->loadSuite();
 
         // Without shards, all tests should be loaded
-        self::assertSame(7, $loader->testCount);
-        self::assertCount(7, $loader->tests);
-    }
-
-    public function testShardTestsWithInvalidShard(): void
-    {
-        $this->bareOptions['--shards']        = 'invalid';
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-
-        $loader = $this->loadSuite();
-
-        // Invalid shard format should not apply sharding, load all tests
         self::assertSame(7, $loader->testCount);
         self::assertCount(7, $loader->tests);
     }

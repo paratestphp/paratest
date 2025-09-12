@@ -91,8 +91,8 @@ final readonly class SuiteLoader
 
         $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
 
-        if ($this->options->hasShards()) {
-            $testSuite = $this->shardTests($testSuite);
+        if ($this->options->hasShard()) {
+            $this->shardTests($testSuite);
         }
 
         if ($this->options->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
@@ -223,7 +223,7 @@ final readonly class SuiteLoader
         return $substr;
     }
 
-    private function shardTests(TestSuite $suite): TestSuite
+    private function shardTests(TestSuite $suite): void
     {
         $tests = $this->extractTestsInSuite($suite);
 
@@ -233,10 +233,7 @@ final readonly class SuiteLoader
         $testsPerShard = (int) ceil($total / $shards);
         $offset        = $testsPerShard * $current;
 
-        $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
-        $testSuite->setTests(array_slice($tests, $offset, $testsPerShard));
-
-        return $testSuite;
+        $suite->setTests(array_slice($tests, $offset, $testsPerShard));
     }
 
     /** @return list<Test> */
