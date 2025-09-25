@@ -10,19 +10,6 @@ Error (ParaTest\Tests\fixtures\common_results\Error)
    │ %s/test/fixtures/common_results/ErrorTest.php:15
    │
 
-Incomplete (ParaTest\Tests\fixtures\common_results\Incomplete)
- ∅ Incomplete
-   │
-   │
-   │ %s/test/fixtures/common_results/IncompleteTest.php:14
-   │
-
-Skipped (ParaTest\Tests\fixtures\common_results\Skipped)
- ↩ Skipped
-
-Warning (ParaTest\Tests\fixtures\common_results\Warning)
- ⚠ Warning
-
 Failure (ParaTest\Tests\fixtures\common_results\Failure)
  ✘ Failure
    │
@@ -31,11 +18,24 @@ Failure (ParaTest\Tests\fixtures\common_results\Failure)
    │ %s/test/fixtures/common_results/FailureTest.php:14
    │
 
+Incomplete (ParaTest\Tests\fixtures\common_results\Incomplete)
+ ∅ Incomplete
+   │
+   │
+   │ %s/test/fixtures/common_results/IncompleteTest.php:14
+   │
+
 Risky (ParaTest\Tests\fixtures\common_results\Risky)
  ⚠ Risky
 
+Skipped (ParaTest\Tests\fixtures\common_results\Skipped)
+ ↩ Skipped
+
 Success (ParaTest\Tests\fixtures\common_results\Success)
  ✔ Success
+
+Warning (ParaTest\Tests\fixtures\common_results\Warning)
+ ⚠ Warning
 
 ERRORS!
 Tests: %s

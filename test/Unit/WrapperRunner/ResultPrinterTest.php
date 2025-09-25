@@ -7,11 +7,19 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ResultPrinter;
+use PHPUnit\Event\Code\TestDox;
+use PHPUnit\Event\Code\TestMethod;
+use PHPUnit\Event\TestData\TestDataCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestStatus\TestStatus;
+use PHPUnit\Logging\TestDox\TestResult as TestDoxTestResult;
+use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
+use PHPUnit\Metadata\MetadataCollection;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Configuration\Configuration;
 use SebastianBergmann\Environment\Runtime;
 use SplFileInfo;
+use stdClass;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function file_get_contents;
@@ -234,9 +242,15 @@ final class ResultPrinterTest extends TestBase
 
     public function testTestdoxOutputWithProgress(): void
     {
-        $testdoxSource        = $this->tmpDir . DIRECTORY_SEPARATOR . 'source';
-        $testdoxSourceContent = uniqid('Success!');
-        file_put_contents($testdoxSource, $testdoxSourceContent);
+        $testdoxResults = [
+            'Std Class' => TestDoxTestResultCollection::fromArray([
+                new TestDoxTestResult(
+                    new TestMethod(stdClass::class, 'bar', 'foo.php', 42, new TestDox('Std Class', 'Bar', 'Bar'), MetadataCollection::fromArray([]), TestDataCollection::fromArray([])),
+                    TestStatus::success(),
+                    null,
+                ),
+            ]),
+        ];
 
         $this->options = $this->createOptionsFromArgv(['--testdox' => true]);
         $this->printer = new ResultPrinter($this->output, $this->options);
@@ -248,19 +262,25 @@ final class ResultPrinterTest extends TestBase
         touch($outputFile);
 
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), null);
-        $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
+        $this->printer->printResults($this->getEmptyTestResult(), [], $testdoxResults);
 
         self::assertStringMatchesFormat(
-            'EEE' . "\n" . 'Time: %a, Memory: %a' . "\n\n" . $testdoxSourceContent . 'No tests executed!',
+            'EEE' . "\n" . 'Time: %a, Memory: %a' . "\n\nStd Class\n ✔ Bar\n\n" . 'No tests executed!',
             $this->output->fetch(),
         );
     }
 
     public function testTestdoxOutputWithoutProgress(): void
     {
-        $testdoxSource        = $this->tmpDir . DIRECTORY_SEPARATOR . 'source';
-        $testdoxSourceContent = uniqid('Success!');
-        file_put_contents($testdoxSource, $testdoxSourceContent);
+        $testdoxResults = [
+            'Std Class' => TestDoxTestResultCollection::fromArray([
+                new TestDoxTestResult(
+                    new TestMethod(stdClass::class, 'bar', 'foo.php', 42, new TestDox('Std Class', 'Bar', 'Bar'), MetadataCollection::fromArray([]), TestDataCollection::fromArray([])),
+                    TestStatus::success(),
+                    null,
+                ),
+            ]),
+        ];
 
         $this->options = $this->createOptionsFromArgv(['--testdox' => true, '--no-progress' => true]);
         $this->printer = new ResultPrinter($this->output, $this->options);
@@ -272,10 +292,10 @@ final class ResultPrinterTest extends TestBase
         touch($outputFile);
 
         $this->printer->printFeedback(new SplFileInfo($feedbackFile), new SplFileInfo($outputFile), null);
-        $this->printer->printResults($this->getEmptyTestResult(), [], [new SplFileInfo($testdoxSource)]);
+        $this->printer->printResults($this->getEmptyTestResult(), [], $testdoxResults);
 
         self::assertStringMatchesFormat(
-            "\n" . 'Time: %a, Memory: %a' . "\n\n" . $testdoxSourceContent . 'No tests executed!',
+            "\n" . 'Time: %a, Memory: %a' . "\n\nStd Class\n ✔ Bar\n\n" . 'No tests executed!',
             $this->output->fetch(),
         );
     }

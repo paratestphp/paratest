@@ -83,6 +83,7 @@ final readonly class Options
     ];
 
     public bool $needsTeamcity;
+    public bool $needsTestdox;
 
     /**
      * @param non-empty-string                                                      $phpunit
@@ -109,6 +110,7 @@ final readonly class Options
         public int $totalShards,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
+        $this->needsTestdox  = $configuration->outputIsTestDox() || $configuration->hasLogfileTestdoxText() || $configuration->hasLogfileTestdoxHtml();
     }
 
     /** @param non-empty-string $cwd */
@@ -564,6 +566,18 @@ final readonly class Options
             ),
             new InputOption(
                 'log-teamcity',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'testdox-text',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'testdox-html',
                 null,
                 InputOption::VALUE_REQUIRED,
                 '@see PHPUnit guide, chapter: ' . $chapter,

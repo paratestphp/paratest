@@ -9,11 +9,16 @@ use ParaTest\JUnit\LogMerger;
 use ParaTest\JUnit\Writer;
 use ParaTest\Options;
 use ParaTest\RunnerInterface;
+use ParaTest\TestDox\TestDoxResultsMerger;
+use PHPUnit\Logging\TestDox\HtmlRenderer as TestDoxHtmlRenderer;
+use PHPUnit\Logging\TestDox\PlainTextRenderer as TestDoxPlainTextRenderer;
+use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
 use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\Runner\ResultCache\DefaultResultCache;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
+use PHPUnit\TextUI\Output\DefaultPrinter;
 use PHPUnit\TextUI\ShellExitCodeCalculator;
 use PHPUnit\Util\ExcludeList;
 use SplFileInfo;
@@ -305,13 +310,16 @@ final class WrapperRunner implements RunnerInterface
             $resultCacheSum->persist();
         }
 
+        $testdoxResults = (new TestDoxResultsMerger())->getResultsFromTestdoxFiles($this->testdoxFiles);
+
         $this->printer->printResults(
             $testResultSum,
             $this->teamcityFiles,
-            $this->testdoxFiles,
+            $testdoxResults,
         );
         $this->generateCodeCoverageReports();
-        $this->generateLogs();
+        $this->generateJunitLog();
+        $this->generateTestDoxLogs($testdoxResults);
 
         $exitcode = (new ShellExitCodeCalculator())->calculate(
             $this->options->configuration,
@@ -354,7 +362,7 @@ final class WrapperRunner implements RunnerInterface
         );
     }
 
-    private function generateLogs(): void
+    private function generateJunitLog(): void
     {
         if ($this->junitFiles === []) {
             return;
@@ -369,6 +377,22 @@ final class WrapperRunner implements RunnerInterface
             $testSuite,
             $this->options->configuration->logfileJunit(),
         );
+    }
+
+    /** @param array<string,TestDoxTestResultCollection> $testdoxResults */
+    private function generateTestDoxLogs(array $testdoxResults): void
+    {
+        if ($this->options->configuration->hasLogfileTestdoxText()) {
+            $testdoxTextContent = (new TestDoxPlainTextRenderer())->render($testdoxResults);
+            DefaultPrinter::from($this->options->configuration->logfileTestdoxText())->print($testdoxTextContent);
+        }
+
+        if (! $this->options->configuration->hasLogfileTestdoxHtml()) {
+            return;
+        }
+
+        $testdoxHtmlContent = (new TestDoxHtmlRenderer())->render($testdoxResults);
+        DefaultPrinter::from($this->options->configuration->logfileTestdoxHtml())->print($testdoxHtmlContent);
     }
 
     /** @param list<SplFileInfo> $files */

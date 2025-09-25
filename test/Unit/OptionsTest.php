@@ -135,6 +135,21 @@ final class OptionsTest extends TestBase
         self::assertTrue($options->needsTeamcity);
     }
 
+    public function testNeedsTestdoxGetsActivatedBothByTestdoxOutputOrATestdoxLogFile(): void
+    {
+        $options = $this->createOptionsFromArgv(['--testdox' => true], __DIR__);
+
+        self::assertTrue($options->needsTestdox);
+
+        $options = $this->createOptionsFromArgv(['--testdox-text' => 'LOG-TESTDOX-TEXT'], __DIR__);
+
+        self::assertTrue($options->needsTestdox);
+
+        $options = $this->createOptionsFromArgv(['--testdox-html' => 'LOG-TESTDOX-HTML'], __DIR__);
+
+        self::assertTrue($options->needsTestdox);
+    }
+
     public function testShardOptionsDefaultValues(): void
     {
         $options = $this->createOptionsFromArgv([], __DIR__);

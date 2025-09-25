@@ -34,7 +34,6 @@ use PHPUnit\TextUI\Output\Default\ProgressPrinter\ProgressPrinter;
 use PHPUnit\TextUI\Output\Default\UnexpectedOutputPrinter;
 use PHPUnit\TextUI\Output\DefaultPrinter;
 use PHPUnit\TextUI\Output\NullPrinter;
-use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
 use PHPUnit\Util\ExcludeList;
 
@@ -67,8 +66,6 @@ final class ApplicationForWrapperWorker
         private readonly ?string $resultCacheFile,
         private readonly ?string $teamcityFile,
         private readonly ?string $testdoxFile,
-        private readonly bool $testdoxColor,
-        private readonly ?int $testdoxColumns,
     ) {
     }
 
@@ -254,12 +251,8 @@ final class ApplicationForWrapperWorker
         $result = TestResultFacade::result();
         if (isset($this->testdoxResultCollector)) {
             assert(isset($this->testdoxFile));
-            assert(isset($this->testdoxColumns));
 
-            (new TestDoxResultPrinter(DefaultPrinter::from($this->testdoxFile), $this->testdoxColor, $this->testdoxColumns, false))->print(
-                $result,
-                $this->testdoxResultCollector->testMethodsGroupedByClass(),
-            );
+            file_put_contents($this->testdoxFile, serialize($this->testdoxResultCollector->testMethodsGroupedByClass()));
         }
 
         file_put_contents($this->testResultFile, serialize($result));

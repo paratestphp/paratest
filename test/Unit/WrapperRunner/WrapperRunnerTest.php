@@ -281,6 +281,44 @@ final class WrapperRunnerTest extends TestBase
         );
     }
 
+    public function testTestdoxTextLog(): void
+    {
+        $outputPath = $this->tmpDir . DIRECTORY_SEPARATOR . 'testdox-output.text';
+
+        $this->bareOptions['path']           = $this->fixture('common_results');
+        $this->bareOptions['--testdox-text'] = $outputPath;
+
+        $this->runRunner();
+
+        $expectedContent = file_get_contents(__DIR__ . '/fixtures/common_results_testdox_text_output');
+        self::assertNotFalse($expectedContent);
+
+        self::assertFileExists($outputPath);
+        $content = file_get_contents($outputPath);
+        self::assertNotFalse($content);
+
+        self::assertEquals($expectedContent, $content);
+    }
+
+    public function testTestdoxHtmlLog(): void
+    {
+        $outputPath = $this->tmpDir . DIRECTORY_SEPARATOR . 'testdox-output.html';
+
+        $this->bareOptions['path']           = $this->fixture('common_results');
+        $this->bareOptions['--testdox-html'] = $outputPath;
+
+        $this->runRunner();
+
+        $format = file_get_contents(__DIR__ . '/fixtures/common_results_testdox_html_output');
+        self::assertNotFalse($format);
+
+        self::assertFileExists($outputPath);
+        $content = file_get_contents($outputPath);
+        self::assertNotFalse($content);
+
+        self::assertStringMatchesFormat($format, $content);
+    }
+
     public function testJunitOutputWithoutTests(): void
     {
         $this->bareOptions['path']        = $this->fixture('no_tests');

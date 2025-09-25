@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace ParaTest\WrapperRunner;
 
 use ParaTest\Options;
+use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Output\Default\ResultPrinter as DefaultResultPrinter;
 use PHPUnit\TextUI\Output\Printer;
 use PHPUnit\TextUI\Output\SummaryPrinter;
+use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
 use PHPUnit\Util\Color;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
@@ -174,10 +176,10 @@ final class ResultPrinter
     }
 
     /**
-     * @param list<SplFileInfo> $teamcityFiles
-     * @param list<SplFileInfo> $testdoxFiles
+     * @param list<SplFileInfo>                         $teamcityFiles
+     * @param array<string,TestDoxTestResultCollection> $testdoxResults
      */
-    public function printResults(TestResult $testResult, array $teamcityFiles, array $testdoxFiles): void
+    public function printResults(TestResult $testResult, array $teamcityFiles, array $testdoxResults): void
     {
         if ($this->options->needsTeamcity) {
             $teamcityProgress = $this->tailMultiple($teamcityFiles);
@@ -218,7 +220,8 @@ final class ResultPrinter
         );
 
         if ($this->options->configuration->outputIsTestDox()) {
-            $this->output->write($this->tailMultiple($testdoxFiles));
+            $testdoxFilesResultPrinter = new TestDoxResultPrinter($this->printer, $this->options->configuration->colors(), $this->options->configuration->columns(), $this->options->configuration->testDoxOutputWithSummary());
+            $testdoxFilesResultPrinter->print($testResult, $testdoxResults);
 
             $defaultResultPrinter = new DefaultResultPrinter(
                 $this->printer,

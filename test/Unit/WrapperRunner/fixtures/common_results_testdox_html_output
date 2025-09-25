@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Test Documentation</title>
+        <style>
+            %a
+        </style>
+    </head>
+    <body>
+        <h2>Error (ParaTest\Tests\fixtures\common_results\Error)</h2>
+        <ul>
+            <li class="defect">Error</li>
+        </ul>
+        <h2>Failure (ParaTest\Tests\fixtures\common_results\Failure)</h2>
+        <ul>
+            <li class="defect">Failure</li>
+        </ul>
+        <h2>Incomplete (ParaTest\Tests\fixtures\common_results\Incomplete)</h2>
+        <ul>
+            <li class="defect">Incomplete</li>
+        </ul>
+        <h2>Risky (ParaTest\Tests\fixtures\common_results\Risky)</h2>
+        <ul>
+            <li class="defect">Risky</li>
+        </ul>
+        <h2>Skipped (ParaTest\Tests\fixtures\common_results\Skipped)</h2>
+        <ul>
+            <li class="defect">Skipped</li>
+        </ul>
+        <h2>Success (ParaTest\Tests\fixtures\common_results\Success)</h2>
+        <ul>
+            <li class="success">Success</li>
+        </ul>
+        <h2>Warning (ParaTest\Tests\fixtures\common_results\Warning)</h2>
+        <ul>
+            <li class="defect">Warning</li>
+        </ul>
+    </body>
+</html>
