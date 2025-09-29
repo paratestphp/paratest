@@ -33,6 +33,9 @@ final readonly class TestDoxResultsMerger
         /** @var array<string,TestdoxTestResultCollection> $testMethodsGroupedByClass */
         $testMethodsGroupedByClass = [];
         foreach ($testdoxFiles as $testdoxFile) {
+            if (! $testdoxFile->isFile()) {
+                continue;
+            }
             $testdoxFileContents = file_get_contents($testdoxFile->getPathname());
             assert($testdoxFileContents !== false);
 
