@@ -43,20 +43,20 @@
         "phpunit/php-code-coverage": "^12.4.0",
         "phpunit/php-file-iterator": "^6",
         "phpunit/php-timer": "^8",
-        "phpunit/phpunit": "^12.3.14",
+        "phpunit/phpunit": "^12.3.15",
         "sebastian/environment": "^8.0.3",
-        "symfony/console": "^6.4.20 || ^7.3.2",
-        "symfony/process": "^6.4.20 || ^7.3.0"
+        "symfony/console": "^6.4.20 || ^7.3.4",
+        "symfony/process": "^6.4.20 || ^7.3.4"
     },
     "require-dev": {
         "ext-pcntl": "*",
         "ext-pcov": "*",
         "ext-posix": "*",
         "doctrine/coding-standard": "^13.0.1",
-        "phpstan/phpstan": "^2.1.28",
+        "phpstan/phpstan": "^2.1.29",
         "phpstan/phpstan-deprecation-rules": "^2.0.3",
         "phpstan/phpstan-phpunit": "^2.0.7",
-        "phpstan/phpstan-strict-rules": "^2.0.6",
+        "phpstan/phpstan-strict-rules": "^2.0.7",
         "squizlabs/php_codesniffer": "^3.13.4",
         "symfony/filesystem": "^6.4.13 || ^7.3.2"
     },

@@ -220,8 +220,12 @@ final class ResultPrinter
         );
 
         if ($this->options->configuration->outputIsTestDox()) {
-            $testdoxFilesResultPrinter = new TestDoxResultPrinter($this->printer, $this->options->configuration->colors(), $this->options->configuration->columns(), $this->options->configuration->testDoxOutputWithSummary());
-            $testdoxFilesResultPrinter->print($testResult, $testdoxResults);
+            (new TestDoxResultPrinter(
+                $this->printer,
+                $this->options->configuration->colors(),
+                $this->options->configuration->columns(),
+                $this->options->configuration->testDoxOutputWithSummary(),
+            ))->print($testResult, $testdoxResults);
 
             $defaultResultPrinter = new DefaultResultPrinter(
                 $this->printer,

@@ -6,7 +6,6 @@ namespace ParaTest\TestDox;
 
 use PHPUnit\Logging\TestDox\TestResult as TestDoxTestMethod;
 use PHPUnit\Logging\TestDox\TestResultCollection;
-use PHPUnit\Logging\TestDox\TestResultCollection as TestdoxTestResultCollection;
 use ReflectionException;
 use ReflectionMethod;
 use SplFileInfo;
@@ -26,26 +25,27 @@ final readonly class TestDoxResultsMerger
     /**
      * @param list<SplFileInfo> $testdoxFiles
      *
-     * @return array<string,TestdoxTestResultCollection>
+     * @return array<string, TestResultCollection>
      */
     public function getResultsFromTestdoxFiles(array $testdoxFiles): array
     {
-        /** @var array<string,TestdoxTestResultCollection> $testMethodsGroupedByClass */
+        /** @var array<string, TestResultCollection> $testMethodsGroupedByClass */
         $testMethodsGroupedByClass = [];
         foreach ($testdoxFiles as $testdoxFile) {
             if (! $testdoxFile->isFile()) {
                 continue;
             }
+
             $testdoxFileContents = file_get_contents($testdoxFile->getPathname());
             assert($testdoxFileContents !== false);
 
-            /** @var array<string,TestdoxTestResultCollection> $testMethodsGroupedByClassInTestdoxFile */
+            /** @var array<string, TestResultCollection> $testMethodsGroupedByClassInTestdoxFile */
             $testMethodsGroupedByClassInTestdoxFile = unserialize($testdoxFileContents);
             foreach ($testMethodsGroupedByClassInTestdoxFile as $className => $testResultCollection) {
                 if (! isset($testMethodsGroupedByClass[$className])) {
                     $testMethodsGroupedByClass[$className] = $testResultCollection;
                 } else {
-                    $combinedTestResultCollection          = TestdoxTestResultCollection::fromArray([
+                    $combinedTestResultCollection          = TestResultCollection::fromArray([
                         ...$testMethodsGroupedByClass[$className]->asArray(),
                         ...$testResultCollection->asArray(),
                     ]);
@@ -58,9 +58,9 @@ final readonly class TestDoxResultsMerger
     }
 
     /**
-     * @param array<string,TestdoxTestResultCollection> $testdoxResults
+     * @param array<string, TestResultCollection> $testdoxResults
      *
-     * @return array<string,TestdoxTestResultCollection>
+     * @return array<string, TestResultCollection>
      */
     private function orderTestdoxResults(array $testdoxResults): array
     {
