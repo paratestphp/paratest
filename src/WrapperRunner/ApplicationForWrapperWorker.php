@@ -96,6 +96,12 @@ final class ApplicationForWrapperWorker
             TestSuiteBuilder::from($testSuite),
         );
 
+        EventFacade::emitter()->testRunnerStarted();
+
+        if ($this->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
+            mt_srand($this->configuration->randomOrderSeed());
+        }
+
         (new TestSuiteFilterProcessor())->process($this->configuration, $testSuite);
 
         if ($filter !== null) {
@@ -227,12 +233,6 @@ final class ApplicationForWrapperWorker
             CodeCoverageFilterRegistry::instance(),
             $extensionRequiresCodeCoverageCollection,
         );
-
-        EventFacade::emitter()->testRunnerStarted();
-
-        if ($this->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
-            mt_srand($this->configuration->randomOrderSeed());
-        }
 
         $this->hasBeenBootstrapped = true;
     }
