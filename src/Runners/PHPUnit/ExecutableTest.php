@@ -101,7 +101,7 @@ abstract class ExecutableTest
         $tempName = null;
     }
 
-  /**
+    /**
      * Returns the path to this test's JUnit temp file.
      * If the temp file does not exist, it will be
      * created.
@@ -121,7 +121,7 @@ abstract class ExecutableTest
         $this->unlinkTempFile($this->coverageFileName);
     }
 
-  /**
+    /**
      * Return the last process command.
      */
     final public function getLastCommand(): string
