@@ -88,7 +88,9 @@ final class LogInterpreter implements MetaProviderInterface
             $this->mergeSuites($mainSuite, $otherSuite);
         }
 
-        assert($mainSuite !== null);
+        if ($mainSuite === null) {
+            return new TestSuite('', 0, 0, 0, 0, 0, 0, 0, 0.0, '', [], []);
+        }
 
         return $mainSuite;
     }
