@@ -87,3 +87,4 @@ regenerate-fixture-results: vendor
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#$(PWD)#.#g'
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#time="........"#time="1.234567"#g'
 	sed -i 's#name="./test/fixtures/common_results"#name=""#g' test/fixtures/common_results/combined.xml
+	sed -i 's#name="CLI Arguments"#name=""#g' test/fixtures/common_results/combined.xml

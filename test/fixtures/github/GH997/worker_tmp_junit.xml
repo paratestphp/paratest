@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-    <testsuite name="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" file="test/fixtures/github/GH997/SuccessfulTests.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.003250">
-        <testcase name="testSuccessOne" file="test/fixtures/github/GH997/SuccessfulTests.php" line="12" class="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" classname="ParaTest.Tests.fixtures.github.GH997.SuccessfulTests" assertions="1" time="0.003250"/>
+    <testsuite name="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" file="test/fixtures/github/GH997/SuccessfulTests.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="1.234567">
+        <testcase name="testSuccessOne" file="test/fixtures/github/GH997/SuccessfulTests.php" line="12" class="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" classname="ParaTest.Tests.fixtures.github.GH997.SuccessfulTests" assertions="1" time="1.234567"/>
     </testsuite>
-    <testsuite name="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" file="test/fixtures/github/GH997/SuccessfulTests.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.001141">
-        <testcase name="testSuccessTwo" file="test/fixtures/github/GH997/SuccessfulTests.php" line="17" class="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" classname="ParaTest.Tests.fixtures.github.GH997.SuccessfulTests" assertions="1" time="0.001141"/>
+    <testsuite name="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" file="test/fixtures/github/GH997/SuccessfulTests.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="1.234567">
+        <testcase name="testSuccessTwo" file="test/fixtures/github/GH997/SuccessfulTests.php" line="17" class="ParaTest\Tests\fixtures\github\GH997\SuccessfulTests" classname="ParaTest.Tests.fixtures.github.GH997.SuccessfulTests" assertions="1" time="1.234567"/>
     </testsuite>
 </testsuites>
