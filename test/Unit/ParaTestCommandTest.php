@@ -16,6 +16,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use function assert;
 use function chdir;
 use function getcwd;
+use function method_exists;
 use function uniqid;
 
 /** @internal */
@@ -36,7 +37,13 @@ final class ParaTestCommandTest extends TestCase
         $this->tmpDir = (new TmpDirCreator())->create();
         chdir($this->tmpDir);
         $application = ParaTestCommand::applicationFactory($this->tmpDir);
-        $application->add(new HelpCommand());
+        // @phpstan-ignore function.alreadyNarrowedType (can be removed when dropping support for Symfony 7.3)
+        if (method_exists($application, 'addCommand')) {
+            $application->addCommand(new HelpCommand());
+        } else {
+            // @phpstan-ignore method.deprecated (can be removed when dropping support for Symfony 7.3)
+            $application->add(new HelpCommand());
+        }
 
         $this->commandTester = new CommandTester($application->find(ParaTestCommand::COMMAND_NAME));
     }
