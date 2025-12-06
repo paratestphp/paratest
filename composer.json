@@ -43,7 +43,7 @@
         "phpunit/php-code-coverage": "^12.5.0",
         "phpunit/php-file-iterator": "^6",
         "phpunit/php-timer": "^8",
-        "phpunit/phpunit": "^12.5.0",
+        "phpunit/phpunit": "^12.5.1",
         "sebastian/environment": "^8.0.3",
         "symfony/console": "^7.3.4 || ^8.0.0",
         "symfony/process": "^7.3.4 || ^8.0.0"
@@ -55,7 +55,7 @@
         "doctrine/coding-standard": "^14.0.0",
         "phpstan/phpstan": "^2.1.33",
         "phpstan/phpstan-deprecation-rules": "^2.0.3",
-        "phpstan/phpstan-phpunit": "^2.0.9",
+        "phpstan/phpstan-phpunit": "^2.0.10",
         "phpstan/phpstan-strict-rules": "^2.0.7",
         "symfony/filesystem": "^7.3.2 || ^8.0.0"
     },
