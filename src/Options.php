@@ -80,6 +80,8 @@ final readonly class Options
         'disallow-test-output' => true,
         'enforce-time-limit' => true,
         'default-time-limit' => true,
+        'exclude-source-from-xml-coverage' => true,
+        'only-summary-for-coverage-text' => true,
     ];
 
     public bool $needsTeamcity;
