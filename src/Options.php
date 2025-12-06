@@ -645,6 +645,12 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'exclude-source-from-xml-coverage',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
                 'coverage-filter',
                 null,
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
