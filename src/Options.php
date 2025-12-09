@@ -80,6 +80,8 @@ final readonly class Options
         'disallow-test-output' => true,
         'enforce-time-limit' => true,
         'default-time-limit' => true,
+        'exclude-source-from-xml-coverage' => true,
+        'only-summary-for-coverage-text' => true,
     ];
 
     public bool $needsTeamcity;
@@ -642,6 +644,12 @@ final readonly class Options
                 'coverage-xml',
                 null,
                 InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'exclude-source-from-xml-coverage',
+                null,
+                InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
