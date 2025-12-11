@@ -56,7 +56,7 @@ final readonly class Options
         'cache-directory' => true,
         'configuration' => true,
         'coverage-filter' => true,
-        'dont-report-useless-tests' => true,
+        'do-not-report-useless-tests' => true,
         'exclude-group' => true,
         'fail-on-incomplete' => true,
         'fail-on-risky' => true,
@@ -410,7 +410,7 @@ final readonly class Options
                 '0',
             ),
             new InputOption(
-                'dont-report-useless-tests',
+                'do-not-report-useless-tests',
                 null,
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
