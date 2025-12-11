@@ -7,6 +7,7 @@ namespace ParaTest\WrapperRunner;
 use Generator;
 use ParaTest\Options;
 use PHPUnit\Event\Facade as EventFacade;
+use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
@@ -28,7 +29,10 @@ use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_keys;
+use function array_merge;
+use function array_slice;
 use function assert;
+use function ceil;
 use function count;
 use function is_int;
 use function is_string;
@@ -86,6 +90,10 @@ final readonly class SuiteLoader
         EventFacade::instance()->seal();
 
         $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
+
+        if ($this->options->hasShard()) {
+            $this->shardTests($testSuite);
+        }
 
         if ($this->options->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
             mt_srand($this->options->configuration->randomOrderSeed());
@@ -213,5 +221,35 @@ final readonly class SuiteLoader
         assert($substr !== '');
 
         return $substr;
+    }
+
+    private function shardTests(TestSuite $suite): void
+    {
+        $tests = $this->extractTestsInSuite($suite);
+
+        $shards        = $this->options->totalShards;
+        $current       = $this->options->currentShard - 1; // 0 indexed. Shard 1 is in reality shard 0
+        $total         = count($tests);
+        $testsPerShard = (int) ceil($total / $shards);
+        $offset        = $testsPerShard * $current;
+
+        $suite->setTests(array_slice($tests, $offset, $testsPerShard));
+    }
+
+    /** @return list<Test> */
+    private function extractTestsInSuite(TestSuite $suite): array
+    {
+        $extractedTests = [];
+        $suiteItems     = $suite->tests();
+
+        foreach ($suiteItems as $item) {
+            if ($item instanceof TestSuite) {
+                $extractedTests = array_merge($extractedTests, $this->extractTestsInSuite($item));
+            } else {
+                $extractedTests[] = $item;
+            }
+        }
+
+        return $extractedTests;
     }
 }

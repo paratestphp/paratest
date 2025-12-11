@@ -20,7 +20,7 @@ jobs:
           - "8.3"
 
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "shivammathur/setup-php@v2"
         with:
           coverage: "pcov"
@@ -42,7 +42,7 @@ jobs:
           - "8.3"
 
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "shivammathur/setup-php@v2"
         with:
           coverage: "pcov"
@@ -64,12 +64,13 @@ jobs:
         php-version:
           - "8.3"
           - "8.4"
+          - "8.5"
         dependencies:
           - "lowest"
           - "highest"
 
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "shivammathur/setup-php@v2"
         with:
           coverage: "pcov"
@@ -129,7 +130,7 @@ jobs:
           - "8.3"
 
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "shivammathur/setup-php@v2"
         with:
           coverage: "pcov"
@@ -149,7 +150,7 @@ jobs:
           - "8.3"
 
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "shivammathur/setup-php@v2"
         with:
           coverage: "pcov"

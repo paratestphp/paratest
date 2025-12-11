@@ -1,0 +1,21 @@
+Error (ParaTest\Tests\fixtures\common_results\Error)
+ [ ] Error
+
+Failure (ParaTest\Tests\fixtures\common_results\Failure)
+ [ ] Failure
+
+Incomplete (ParaTest\Tests\fixtures\common_results\Incomplete)
+ [ ] Incomplete
+
+Risky (ParaTest\Tests\fixtures\common_results\Risky)
+ [x] Risky
+
+Skipped (ParaTest\Tests\fixtures\common_results\Skipped)
+ [ ] Skipped
+
+Success (ParaTest\Tests\fixtures\common_results\Success)
+ [x] Success
+
+Warning (ParaTest\Tests\fixtures\common_results\Warning)
+ [x] Warning
+

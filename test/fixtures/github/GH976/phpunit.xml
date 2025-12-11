@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../vendor/phpunit/phpunit/phpunit.xsd"
+        cacheDirectory="code_coverage_cache_dir"
+>
+    <testsuites>
+        <testsuite name="Github issue">
+            <file>IssueOneTest.php</file>
+            <file>IssueTwoTest.php</file>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <file>SomethingOne.php</file>
+            <file>SomethingTwo.php</file>
+        </include>
+    </source>
+</phpunit>

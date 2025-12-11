@@ -23,7 +23,6 @@ use const ENT_XML1;
 /** @internal */
 final readonly class Writer
 {
-    private const TESTSUITES_NAME = 'PHPUnit tests';
     private DOMDocument $document;
 
     public function __construct()
@@ -48,7 +47,6 @@ final readonly class Writer
     {
         $xmlTestsuites = $this->document->createElement('testsuites');
         $xmlTestsuites->appendChild($this->createSuiteNode($testSuite));
-        $xmlTestsuites->setAttribute('name', self::TESTSUITES_NAME);
         $this->document->appendChild($xmlTestsuites);
 
         $xml = $this->document->saveXML();
@@ -60,7 +58,7 @@ final readonly class Writer
     private function createSuiteNode(TestSuite $parentSuite): DOMElement
     {
         $suiteNode = $this->document->createElement('testsuite');
-        $suiteNode->setAttribute('name', $parentSuite->name !== self::TESTSUITES_NAME ? $parentSuite->name : '');
+        $suiteNode->setAttribute('name', $parentSuite->name);
         if ($parentSuite->file !== '') {
             $suiteNode->setAttribute('file', $parentSuite->file);
         }

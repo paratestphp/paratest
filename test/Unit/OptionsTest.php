@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit;
 
+use InvalidArgumentException;
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function mt_rand;
 use function uniqid;
@@ -131,5 +133,81 @@ final class OptionsTest extends TestBase
         $options = $this->createOptionsFromArgv(['--log-teamcity' => 'LOG-TEAMCITY'], __DIR__);
 
         self::assertTrue($options->needsTeamcity);
+    }
+
+    public function testNeedsTestdoxGetsActivatedBothByTestdoxOutputOrATestdoxLogFile(): void
+    {
+        $options = $this->createOptionsFromArgv(['--testdox' => true], __DIR__);
+
+        self::assertTrue($options->needsTestdox);
+
+        $options = $this->createOptionsFromArgv(['--testdox-text' => 'LOG-TESTDOX-TEXT'], __DIR__);
+
+        self::assertTrue($options->needsTestdox);
+
+        $options = $this->createOptionsFromArgv(['--testdox-html' => 'LOG-TESTDOX-HTML'], __DIR__);
+
+        self::assertTrue($options->needsTestdox);
+    }
+
+    public function testShardOptionsDefaultValues(): void
+    {
+        $options = $this->createOptionsFromArgv([], __DIR__);
+
+        self::assertSame(0, $options->currentShard);
+        self::assertSame(0, $options->totalShards);
+        self::assertFalse($options->hasShard());
+    }
+
+    public function testValidShardOption(): void
+    {
+        $options = $this->createOptionsFromArgv(['--shard' => '2/5'], __DIR__);
+
+        self::assertSame(2, $options->currentShard);
+        self::assertSame(5, $options->totalShards);
+        self::assertTrue($options->hasShard());
+    }
+
+    public function testValidShardOptionLargeNumbers(): void
+    {
+        $options = $this->createOptionsFromArgv(['--shard' => '42/100'], __DIR__);
+
+        self::assertSame(42, $options->currentShard);
+        self::assertSame(100, $options->totalShards);
+        self::assertTrue($options->hasShard());
+    }
+
+    #[DataProvider('provideInvalidShardOptionFormats')]
+    public function testInvalidShardOptionFormats(string $shard): void
+    {
+        self::assertNotEmpty($shard);
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->createOptionsFromArgv(['--shard' => $shard], __DIR__);
+    }
+
+    /** @return iterable<list<non-empty-string>> */
+    public static function provideInvalidShardOptionFormats(): iterable
+    {
+        yield ['invalid'];
+        yield ['1'];
+        yield ['1/'];
+        yield ['/5'];
+        yield ['1/5/extra'];
+        yield ['a/b'];
+        yield ['1/0'];
+        yield ['0/1'];
+        yield ['0/0'];
+        yield ['6/5'];
+        yield ['1/1'];
+    }
+
+    public function testShardOptionNotProvided(): void
+    {
+        $options = $this->createOptionsFromArgv(['--verbose' => true], __DIR__);
+
+        self::assertSame(0, $options->currentShard);
+        self::assertSame(0, $options->totalShards);
+        self::assertFalse($options->hasShard());
     }
 }

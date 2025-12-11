@@ -8,6 +8,7 @@ use ParaTest\Coverage\CoverageMerger;
 use ParaTest\JUnit\TestSuite;
 use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
+use ParaTest\Tests\TmpDirCreator;
 use ParaTest\WrapperRunner\ResultPrinter;
 use ParaTest\WrapperRunner\WorkerCrashedException;
 use ParaTest\WrapperRunner\WrapperRunner;
@@ -21,8 +22,11 @@ use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
 use function array_diff;
+use function array_intersect;
+use function array_merge;
 use function array_reverse;
 use function array_unique;
+use function count;
 use function explode;
 use function file_get_contents;
 use function file_put_contents;
@@ -35,6 +39,7 @@ use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function scandir;
+use function simplexml_load_string;
 use function sort;
 use function sprintf;
 use function str_replace;
@@ -274,6 +279,66 @@ final class WrapperRunnerTest extends TestBase
             $format,
             $output,
         );
+    }
+
+    public function testTestdoxOutputWithSummary(): void
+    {
+        $this->bareOptions['path']              = $this->fixture('common_results');
+        $this->bareOptions['--testdox']         = true;
+        $this->bareOptions['--testdox-summary'] = true;
+
+        $result = $this->runRunner();
+
+        $format = file_get_contents(__DIR__ . '/fixtures/common_results_testdox_with_summary_output');
+        self::assertNotFalse($format);
+
+        $output = $result->output;
+        $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+\\.\\d+\\.\\w+(-.+)?\n\n/", '', $output, 1, $count);
+        self::assertSame(1, $count);
+        self::assertNotNull($output);
+
+        self::assertStringMatchesFormat(
+            $format,
+            $output,
+        );
+    }
+
+    public function testTestdoxTextLog(): void
+    {
+        $outputPath = $this->tmpDir . DIRECTORY_SEPARATOR . 'testdox-output.text';
+
+        $this->bareOptions['path']           = $this->fixture('common_results');
+        $this->bareOptions['--testdox-text'] = $outputPath;
+
+        $this->runRunner();
+
+        $expectedContent = file_get_contents(__DIR__ . '/fixtures/common_results_testdox_text_output');
+        self::assertNotFalse($expectedContent);
+
+        self::assertFileExists($outputPath);
+        $content = file_get_contents($outputPath);
+        self::assertNotFalse($content);
+
+        self::assertEquals($expectedContent, $content);
+    }
+
+    public function testTestdoxHtmlLog(): void
+    {
+        $outputPath = $this->tmpDir . DIRECTORY_SEPARATOR . 'testdox-output.html';
+
+        $this->bareOptions['path']           = $this->fixture('common_results');
+        $this->bareOptions['--testdox-html'] = $outputPath;
+
+        $this->runRunner();
+
+        $format = file_get_contents(__DIR__ . '/fixtures/common_results_testdox_html_output');
+        self::assertNotFalse($format);
+
+        self::assertFileExists($outputPath);
+        $content = file_get_contents($outputPath);
+        self::assertNotFalse($content);
+
+        self::assertStringMatchesFormat($format, $content);
     }
 
     public function testJunitOutputWithoutTests(): void
@@ -864,6 +929,169 @@ EOF;
 
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+    }
+
+    public function testOpenCloverCodeCoverage(): void
+    {
+        $tmpDir         = (new TmpDirCreator())->create();
+        $opencloverFile = $tmpDir . DIRECTORY_SEPARATOR . 'openclover.xml';
+
+        $this->bareOptions = [
+            '--configuration' => $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH976' . DIRECTORY_SEPARATOR . 'phpunit.xml'),
+            '--coverage-openclover' => $opencloverFile,
+        ];
+
+        $runnerResult = $this->runRunner();
+
+        self::assertStringContainsString('Generating code coverage report in OpenClover XML format ... done', $runnerResult->output);
+
+        $expectedXml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage clover="%s" generated="%d">
+  <project timestamp="%d" name="OpenClover Coverage">
+    <metrics files="2" loc="30" ncloc="28" classes="2" complexity="2" elements="4" coveredelements="4" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="2" methods="2" coveredmethods="2"/>
+    <package name="ParaTest\Tests\fixtures\github\GH976">
+      <metrics complexity="2" elements="4" coveredelements="4" conditionals="0" coveredconditionals="0" statements="2" coveredstatements="2" methods="2" coveredmethods="2"/>
+      <file name="SomethingOne.php" path="%s/test/fixtures/github/GH976/SomethingOne.php">
+        <metrics loc="15" ncloc="14" classes="1" complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        <class name="SomethingOne">
+          <metrics complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        </class>
+        <line num="10" type="method" complexity="1" count="1" signature="easy(): bool" visibility="public"/>
+        <line num="12" type="stmt" count="1"/>
+      </file>
+      <file name="SomethingTwo.php" path="%s/test/fixtures/github/GH976/SomethingTwo.php">
+        <metrics loc="15" ncloc="14" classes="1" complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        <class name="SomethingTwo">
+          <metrics complexity="1" elements="2" coveredelements="2" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" methods="1" coveredmethods="1"/>
+        </class>
+        <line num="10" type="method" complexity="1" count="1" signature="easy(): bool" visibility="public"/>
+        <line num="12" type="stmt" count="1"/>
+      </file>
+    </package>
+  </project>
+</coverage>
+XML;
+
+        self::assertFileMatchesFormat($expectedXml, $opencloverFile);
+    }
+
+    public function testShardsWithExtendedAssertions(): void
+    {
+        $junitOutputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'junit-shards.xml';
+
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--shard']         = '1/2';
+        $this->bareOptions['--processes']     = '2';
+        $this->bareOptions['--log-junit']     = $junitOutputFile;
+        $this->bareOptions['--verbose']       = true;
+
+        $runnerResult = $this->runRunner();
+
+        // Extended output assertions
+        // Note: common_results fixture contains intentional errors/failures, so exit code will be 2
+        self::assertSame(RunnerInterface::EXCEPTION_EXIT, $runnerResult->exitCode);
+
+        // Check that shard info is displayed in verbose output
+        self::assertStringContainsString('Shard:         1/2', $runnerResult->output);
+        self::assertStringContainsString('Processes:     2', $runnerResult->output);
+
+        // Verify that some tests were run (shard 1/2 should run approximately half the tests)
+        self::assertStringContainsString('4 / 4 (100%)', $runnerResult->output);
+        self::assertStringContainsString('ERRORS!', $runnerResult->output); // Expected due to fixture content
+
+        // Verify final summary shows successful execution
+        self::assertStringContainsString('Time:', $runnerResult->output);
+        self::assertStringContainsString('Memory:', $runnerResult->output);
+
+        // Extended jUnit log assertions
+        self::assertFileExists($junitOutputFile);
+        $junitContent = file_get_contents($junitOutputFile);
+        self::assertNotFalse($junitContent, 'JUnit file should be readable');
+
+        // Parse XML and verify structure
+        $xml = simplexml_load_string($junitContent);
+        self::assertNotFalse($xml, 'JUnit XML should be valid');
+
+        // Access the actual testsuite element (not testsuites)
+        $testsuite = $xml->testsuite[0];
+
+        // Verify testsuite attributes
+        self::assertGreaterThan(0, (int) $testsuite['tests'], 'Should have executed some tests in shard 1/2');
+        self::assertLessThan(7, (int) $testsuite['tests'], 'Should not have executed all 7 tests (only shard 1/2)');
+        // Note: common_results fixture has intentional failures and errors, so we expect some
+        self::assertGreaterThanOrEqual(0, (int) $testsuite['failures'], 'May have failures due to fixture content');
+        self::assertGreaterThanOrEqual(0, (int) $testsuite['errors'], 'May have errors due to fixture content');
+
+        // Verify testcase elements exist (they're nested within testsuite elements)
+        $allTestcases = [];
+        foreach ($testsuite->testsuite as $subTestsuite) {
+            foreach ($subTestsuite->testcase as $testcase) {
+                $allTestcases[] = $testcase;
+            }
+        }
+
+        self::assertGreaterThan(0, count($allTestcases), 'Should have testcase elements in XML');
+
+        // Verify each testcase has required attributes
+        foreach ($allTestcases as $testcase) {
+            self::assertNotEmpty((string) $testcase['name'], 'Each testcase should have a name');
+            self::assertNotEmpty((string) $testcase['class'], 'Each testcase should have a class');
+            self::assertGreaterThanOrEqual(0, (float) $testcase['time'], 'Each testcase should have a valid time');
+        }
+
+        // Now test shard 2/2 to ensure complementary behavior
+        $junitOutputFile2 = $this->tmpDir . DIRECTORY_SEPARATOR . 'junit-shards2.xml';
+
+        $this->bareOptions['--shard']     = '2/2';
+        $this->bareOptions['--log-junit'] = $junitOutputFile2;
+
+        $runnerResult2 = $this->runRunner();
+
+        // Extended assertions for shard 2/2
+        // Note: shard 2/2 gets the success/warning/skipped tests, so exit code is 0
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult2->exitCode);
+        self::assertStringContainsString('Shard:         2/2', $runnerResult2->output);
+
+        // Extended jUnit log assertions for shard 2/2
+        self::assertFileExists($junitOutputFile2);
+        $junitContent2 = file_get_contents($junitOutputFile2);
+        self::assertNotFalse($junitContent2, 'Second JUnit file should be readable');
+
+        $xml2 = simplexml_load_string($junitContent2);
+        self::assertNotFalse($xml2, 'Second JUnit XML should be valid');
+
+        // Access the testsuite element for shard 2/2
+        $testsuite2 = $xml2->testsuite[0];
+
+        // Verify that both shards together cover all tests
+        $totalTestsFromShards = (int) $testsuite['tests'] + (int) $testsuite2['tests'];
+        self::assertSame(7, $totalTestsFromShards, 'Both shards together should run all 7 tests');
+
+        // Verify no overlap - collect test names from both shards
+        $shard1Tests = [];
+        $shard2Tests = [];
+
+        foreach ($testsuite->testsuite as $subTestsuite) {
+            foreach ($subTestsuite->testcase as $testcase) {
+                $testId        = (string) $testcase['class'] . '::' . (string) $testcase['name'];
+                $shard1Tests[] = $testId;
+            }
+        }
+
+        foreach ($testsuite2->testsuite as $subTestsuite) {
+            foreach ($subTestsuite->testcase as $testcase) {
+                $testId        = (string) $testcase['class'] . '::' . (string) $testcase['name'];
+                $shard2Tests[] = $testId;
+            }
+        }
+
+        $intersection = array_intersect($shard1Tests, $shard2Tests);
+        self::assertEmpty($intersection, 'Shards should not have overlapping tests');
+
+        // Verify all tests are covered between both shards
+        $allTests = array_merge($shard1Tests, $shard2Tests);
+        self::assertSame(7, count($allTests), 'All 7 tests should be distributed between the 2 shards');
     }
 
     /**

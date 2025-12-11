@@ -6,6 +6,7 @@ namespace ParaTest;
 
 use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
+use InvalidArgumentException;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
@@ -28,6 +29,7 @@ use function is_array;
 use function is_bool;
 use function is_numeric;
 use function is_string;
+use function preg_match;
 use function realpath;
 use function sprintf;
 use function str_starts_with;
@@ -78,9 +80,12 @@ final readonly class Options
         'disallow-test-output' => true,
         'enforce-time-limit' => true,
         'default-time-limit' => true,
+        'exclude-source-from-xml-coverage' => true,
+        'only-summary-for-coverage-text' => true,
     ];
 
-    public readonly bool $needsTeamcity;
+    public bool $needsTeamcity;
+    public bool $needsTestdox;
 
     /**
      * @param non-empty-string                                                      $phpunit
@@ -103,8 +108,11 @@ final readonly class Options
         public string $tmpDir,
         public bool $verbose,
         public bool $functional,
+        public int $currentShard,
+        public int $totalShards,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
+        $this->needsTestdox  = $configuration->outputIsTestDox() || $configuration->hasLogfileTestdoxText() || $configuration->hasLogfileTestdoxHtml();
     }
 
     /** @param non-empty-string $cwd */
@@ -155,6 +163,31 @@ final readonly class Options
         assert(array_key_exists('coverage-text', $options));
         if ($options['coverage-text'] === null) {
             $options['coverage-text'] = 'php://stdout';
+        }
+
+        $shard = $options['shard'];
+        unset($options['shard']);
+        $currentShard = $totalShards = 0;
+        if (is_string($shard)) {
+            $parts     = [];
+            $pregMatch = preg_match('/^(?<current>\d+)\/(?<total>\d+)$/', $shard, $parts);
+            if ($pregMatch !== 1) {
+                throw new InvalidArgumentException('Invalid shard parameter format: ' . $shard);
+            }
+
+            $currentShard = (int) $parts['current'];
+            $totalShards  = (int) $parts['total'];
+            if ($currentShard <= 0) {
+                throw new InvalidArgumentException('Current shard must be a positive integer: ' . $shard);
+            }
+
+            if ($totalShards <= 1) {
+                throw new InvalidArgumentException('Total shards must be an integer greater than 1: ' . $shard);
+            }
+
+            if ($currentShard > $totalShards) {
+                throw new InvalidArgumentException('Current shard must be less or equal to total shards: ' . $shard);
+            }
         }
 
         // Must be a static non-customizable reference because ParaTest code
@@ -208,6 +241,8 @@ final readonly class Options
             $tmpDir,
             $verbose,
             $functional,
+            $currentShard,
+            $totalShards,
         );
     }
 
@@ -274,6 +309,12 @@ final readonly class Options
                 'v',
                 InputOption::VALUE_NONE,
                 'Output more verbose information',
+            ),
+            new InputOption(
+                'shard',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                '<current>/<total> Run a specific part of the suite',
             ),
 
             // PHPUnit options
@@ -520,6 +561,12 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'testdox-summary',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
                 'log-junit',
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -532,7 +579,25 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'testdox-text',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'testdox-html',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
                 'coverage-clover',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter = 'Code Coverage',
+            ),
+            new InputOption(
+                'coverage-openclover',
                 null,
                 InputOption::VALUE_REQUIRED,
                 '@see PHPUnit guide, chapter: ' . $chapter = 'Code Coverage',
@@ -569,9 +634,22 @@ final readonly class Options
                 false,
             ),
             new InputOption(
+                'only-summary-for-coverage-text',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+                null,
+            ),
+            new InputOption(
                 'coverage-xml',
                 null,
                 InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'exclude-source-from-xml-coverage',
+                null,
+                InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
@@ -654,5 +732,10 @@ final readonly class Options
         }
 
         return $env;
+    }
+
+    public function hasShard(): bool
+    {
+        return $this->currentShard > 0 && $this->totalShards > 0;
     }
 }

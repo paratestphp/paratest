@@ -39,8 +39,8 @@ final class WrapperWorker
     public readonly SplFileInfo $junitFile;
     public readonly SplFileInfo $coverageFile;
     public readonly SplFileInfo $teamcityFile;
-
     public readonly SplFileInfo $testdoxFile;
+
     private ?string $currentlyExecuting = null;
     private Process $process;
     private int $inExecution = 0;
@@ -85,7 +85,7 @@ final class WrapperWorker
             $this->teamcityFile = new SplFileInfo($commonTmpFilePath . 'teamcity');
         }
 
-        if ($options->configuration->outputIsTestDox()) {
+        if ($options->needsTestdox) {
             $this->testdoxFile = new SplFileInfo($commonTmpFilePath . 'testdox');
         }
 
@@ -111,12 +111,6 @@ final class WrapperWorker
         if (isset($this->testdoxFile)) {
             $parameters[] = '--testdox-file';
             $parameters[] = $this->testdoxFile->getPathname();
-            if ($options->configuration->colors()) {
-                $parameters[] = '--testdox-color';
-            }
-
-            $parameters[] = '--testdox-columns';
-            $parameters[] = (string) $options->configuration->columns();
         }
 
         $phpunitArguments = [$options->phpunit];

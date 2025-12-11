@@ -38,6 +38,7 @@ coverage/junit.xml: vendor $(SRCS)
 		--coverage-clover=coverage/clover.xml \
 		--coverage-xml=coverage/xml \
 		--coverage-html=coverage/html \
+		--coverage-openclover=coverage/openclover.xml \
 		--log-junit=$@ \
 		$(PHPUNIT_ARGS) \
 		|| (rm $@ && exit 1)
@@ -86,3 +87,4 @@ regenerate-fixture-results: vendor
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#$(PWD)#.#g'
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#time="........"#time="1.234567"#g'
 	sed -i 's#name="./test/fixtures/common_results"#name=""#g' test/fixtures/common_results/combined.xml
+	sed -i 's#name="CLI Arguments"#name=""#g' test/fixtures/common_results/combined.xml
