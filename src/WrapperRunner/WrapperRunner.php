@@ -179,8 +179,12 @@ final class WrapperRunner implements RunnerInterface
     private function flushWorker(WrapperWorker $worker): void
     {
         if ($worker->hasExecutedTests()) {
-            $this->requiredTestResultFiles[$worker->testResultFile->getPathname()] = true;
-            if (isset($worker->coverageFile)) {
+            $testResultFile = $worker->testResultFile->getPathname();
+            if ($testResultFile !== '') {
+                $this->requiredTestResultFiles[$testResultFile] = true;
+            }
+
+            if (isset($worker->coverageFile) && $worker->coverageFile->getPathname() !== '') {
                 $this->requiredCoverageFiles[$worker->coverageFile->getPathname()] = true;
             }
         }

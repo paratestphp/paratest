@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 final class MissingResultsExceptionTest extends TestCase
 {
     /**
-     * @param non-empty-string                 $fileType
+     * @param 'coverage'|'test_result'         $fileType
      * @param non-empty-list<non-empty-string> $missingFiles
      * @param non-empty-string                 $expectedFileTypeLabel
      */
