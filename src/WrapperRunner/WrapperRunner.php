@@ -34,6 +34,7 @@ use function dirname;
 use function file_get_contents;
 use function max;
 use function realpath;
+use function spl_object_id;
 use function unlink;
 use function unserialize;
 use function usleep;
@@ -53,6 +54,8 @@ final class WrapperRunner implements RunnerInterface
     private array $workers = [];
     /** @var array<int,int> */
     private array $batches = [];
+    /** @var array<positive-int,WrapperWorker> */
+    private array $workersWithExecutedTests = [];
 
     /** @var list<SplFileInfo> */
     private array $statusFiles = [];
@@ -172,6 +175,10 @@ final class WrapperRunner implements RunnerInterface
 
     private function flushWorker(WrapperWorker $worker): void
     {
+        if ($worker->hasExecutedTests()) {
+            $this->workersWithExecutedTests[spl_object_id($worker)] = $worker;
+        }
+
         $this->exitcode = max($this->exitcode, $worker->getExitCode());
         $this->printer->printFeedback(
             $worker->progressFile,
@@ -260,6 +267,20 @@ final class WrapperRunner implements RunnerInterface
 
     private function complete(TestResult $testResultSum): int
     {
+        // Validate test result files for workers that executed tests
+        $missingTestResultFiles = [];
+        foreach ($this->workersWithExecutedTests as $worker) {
+            if ($worker->testResultFile->isFile()) {
+                continue;
+            }
+
+            $missingTestResultFiles[] = $worker->testResultFile->getPathname();
+        }
+
+        if ($missingTestResultFiles !== []) {
+            throw MissingResultsException::create($missingTestResultFiles, 'test_result');
+        }
+
         foreach ($this->testResultFiles as $testresultFile) {
             if (! $testresultFile->isFile()) {
                 continue;
@@ -343,6 +364,24 @@ final class WrapperRunner implements RunnerInterface
     {
         if ($this->coverageFiles === []) {
             return;
+        }
+
+        // Validate coverage files for workers that executed tests
+        $missingCoverageFiles = [];
+        foreach ($this->workersWithExecutedTests as $worker) {
+            if (! isset($worker->coverageFile)) {
+                continue;
+            }
+
+            if ($worker->coverageFile->isFile() && $worker->coverageFile->getSize() !== 0) {
+                continue;
+            }
+
+            $missingCoverageFiles[] = $worker->coverageFile->getPathname();
+        }
+
+        if ($missingCoverageFiles !== []) {
+            throw MissingResultsException::create($missingCoverageFiles, 'coverage');
         }
 
         $coverageManager = new CodeCoverage();

@@ -9,6 +9,7 @@ use ParaTest\JUnit\TestSuite;
 use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
 use ParaTest\Tests\TmpDirCreator;
+use ParaTest\WrapperRunner\MissingResultsException;
 use ParaTest\WrapperRunner\ResultPrinter;
 use ParaTest\WrapperRunner\WorkerCrashedException;
 use ParaTest\WrapperRunner\WrapperRunner;
@@ -54,6 +55,7 @@ use const PHP_EOL;
 #[CoversClass(WrapperRunner::class)]
 #[CoversClass(WrapperWorker::class)]
 #[CoversClass(WorkerCrashedException::class)]
+#[CoversClass(MissingResultsException::class)]
 #[CoversClass(ResultPrinter::class)]
 #[CoversClass(CoverageMerger::class)]
 #[CoversClass(TestSuite::class)]
