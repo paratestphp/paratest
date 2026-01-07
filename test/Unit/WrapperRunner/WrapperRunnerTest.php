@@ -457,6 +457,45 @@ final class WrapperRunnerTest extends TestBase
         $this->runRunner();
     }
 
+    public function testRaiseExceptionWhenResultFilesAreMissingAfterTestExecution(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('missing_results_tests' . DIRECTORY_SEPARATOR . 'TestThatDeletesResultFilesInShutdown.php');
+
+        $this->expectException(MissingResultsException::class);
+        $this->expectExceptionMessageMatches('/test result files/');
+        $this->expectExceptionMessageMatches('/unexpected process termination/');
+
+        $this->runRunner();
+    }
+
+    public function testRaiseExceptionWhenResultAndCoverageFilesAreMissingAfterTestExecution(): void
+    {
+        $this->bareOptions['path']              = $this->fixture('missing_results_tests' . DIRECTORY_SEPARATOR . 'TestThatDeletesResultFilesInShutdown.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('missing_results_tests');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir;
+
+        $this->expectException(MissingResultsException::class);
+        $this->expectExceptionMessageMatches('/test result files/');
+        $this->expectExceptionMessageMatches('/unexpected process termination/');
+
+        $this->runRunner();
+    }
+
+    public function testRaiseExceptionWhenOnlyCoverageFileIsMissingAfterTestExecution(): void
+    {
+        $this->bareOptions['path']              = $this->fixture('missing_results_tests' . DIRECTORY_SEPARATOR . 'TestThatDeletesOnlyCoverageFile.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('missing_results_tests');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir;
+
+        $this->expectException(MissingResultsException::class);
+        $this->expectExceptionMessageMatches('/coverage files/');
+        $this->expectExceptionMessageMatches('/unexpected process termination/');
+
+        $this->runRunner();
+    }
+
     public function testExitCodes(): void
     {
         $this->bareOptions['path'] = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'ErrorTest.php');
