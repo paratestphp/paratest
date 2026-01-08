@@ -230,4 +230,9 @@ final class WrapperWorker
     {
         return $this->process->isRunning();
     }
+
+    public function hasExecutedTests(): bool
+    {
+        return $this->inExecution > 0;
+    }
 }

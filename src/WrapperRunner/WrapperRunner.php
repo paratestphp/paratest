@@ -32,6 +32,8 @@ use function assert;
 use function count;
 use function dirname;
 use function file_get_contents;
+use function filesize;
+use function is_file;
 use function max;
 use function realpath;
 use function unlink;
@@ -53,6 +55,10 @@ final class WrapperRunner implements RunnerInterface
     private array $workers = [];
     /** @var array<int,int> */
     private array $batches = [];
+    /** @var array<non-empty-string,true> */
+    private array $requiredTestResultFiles = [];
+    /** @var array<non-empty-string,true> */
+    private array $requiredCoverageFiles = [];
 
     /** @var list<SplFileInfo> */
     private array $statusFiles = [];
@@ -172,6 +178,17 @@ final class WrapperRunner implements RunnerInterface
 
     private function flushWorker(WrapperWorker $worker): void
     {
+        if ($worker->hasExecutedTests()) {
+            $testResultFile = $worker->testResultFile->getPathname();
+            if ($testResultFile !== '') {
+                $this->requiredTestResultFiles[$testResultFile] = true;
+            }
+
+            if (isset($worker->coverageFile) && $worker->coverageFile->getPathname() !== '') {
+                $this->requiredCoverageFiles[$worker->coverageFile->getPathname()] = true;
+            }
+        }
+
         $this->exitcode = max($this->exitcode, $worker->getExitCode());
         $this->printer->printFeedback(
             $worker->progressFile,
@@ -260,6 +277,20 @@ final class WrapperRunner implements RunnerInterface
 
     private function complete(TestResult $testResultSum): int
     {
+        // Validate test result files for workers that executed tests
+        $missingTestResultFiles = [];
+        foreach ($this->requiredTestResultFiles as $filePath => $true) {
+            if (is_file($filePath)) {
+                continue;
+            }
+
+            $missingTestResultFiles[] = $filePath;
+        }
+
+        if ($missingTestResultFiles !== []) {
+            throw MissingResultsException::create($missingTestResultFiles, 'test_result');
+        }
+
         foreach ($this->testResultFiles as $testresultFile) {
             if (! $testresultFile->isFile()) {
                 continue;
@@ -343,6 +374,20 @@ final class WrapperRunner implements RunnerInterface
     {
         if ($this->coverageFiles === []) {
             return;
+        }
+
+        // Validate coverage files for workers that executed tests
+        $missingCoverageFiles = [];
+        foreach ($this->requiredCoverageFiles as $filePath => $true) {
+            if (is_file($filePath) && filesize($filePath) !== 0) {
+                continue;
+            }
+
+            $missingCoverageFiles[] = $filePath;
+        }
+
+        if ($missingCoverageFiles !== []) {
+            throw MissingResultsException::create($missingCoverageFiles, 'coverage');
         }
 
         $coverageManager = new CodeCoverage();

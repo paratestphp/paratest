@@ -9,6 +9,7 @@ use ParaTest\JUnit\TestSuite;
 use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
 use ParaTest\Tests\TmpDirCreator;
+use ParaTest\WrapperRunner\MissingResultsException;
 use ParaTest\WrapperRunner\ResultPrinter;
 use ParaTest\WrapperRunner\WorkerCrashedException;
 use ParaTest\WrapperRunner\WrapperRunner;
@@ -54,6 +55,7 @@ use const PHP_EOL;
 #[CoversClass(WrapperRunner::class)]
 #[CoversClass(WrapperWorker::class)]
 #[CoversClass(WorkerCrashedException::class)]
+#[CoversClass(MissingResultsException::class)]
 #[CoversClass(ResultPrinter::class)]
 #[CoversClass(CoverageMerger::class)]
 #[CoversClass(TestSuite::class)]
@@ -451,6 +453,45 @@ final class WrapperRunnerTest extends TestBase
 
         $this->expectException(WorkerCrashedException::class);
         $this->expectExceptionMessageMatches('/UnitTestThatExitsLoudlyTest/');
+
+        $this->runRunner();
+    }
+
+    public function testRaiseExceptionWhenResultFilesAreMissingAfterTestExecution(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('missing_results_tests' . DIRECTORY_SEPARATOR . 'TestThatDeletesResultFilesInShutdown.php');
+
+        $this->expectException(MissingResultsException::class);
+        $this->expectExceptionMessageMatches('/test result files/');
+        $this->expectExceptionMessageMatches('/unexpected process termination/');
+
+        $this->runRunner();
+    }
+
+    public function testRaiseExceptionWhenResultAndCoverageFilesAreMissingAfterTestExecution(): void
+    {
+        $this->bareOptions['path']              = $this->fixture('missing_results_tests' . DIRECTORY_SEPARATOR . 'TestThatDeletesResultFilesInShutdown.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('missing_results_tests');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir;
+
+        $this->expectException(MissingResultsException::class);
+        $this->expectExceptionMessageMatches('/test result files/');
+        $this->expectExceptionMessageMatches('/unexpected process termination/');
+
+        $this->runRunner();
+    }
+
+    public function testRaiseExceptionWhenOnlyCoverageFileIsMissingAfterTestExecution(): void
+    {
+        $this->bareOptions['path']              = $this->fixture('missing_results_tests' . DIRECTORY_SEPARATOR . 'TestThatDeletesOnlyCoverageFile.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('missing_results_tests');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir;
+
+        $this->expectException(MissingResultsException::class);
+        $this->expectExceptionMessageMatches('/coverage files/');
+        $this->expectExceptionMessageMatches('/unexpected process termination/');
 
         $this->runRunner();
     }
