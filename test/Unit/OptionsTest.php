@@ -49,6 +49,13 @@ final class OptionsTest extends TestBase
         self::assertEquals(Options::getNumberOfCPUCores(), $options->processes);
     }
 
+    public function testAutoProcessesModeWithMaxProcesses(): void
+    {
+        $options = $this->createOptionsFromArgv(['--processes' => 'auto', '--max-processes' => '0']);
+
+        self::assertSame(0, $options->processes);
+    }
+
     public function testPassthru(): void
     {
         $argv = ['--passthru-php' => "'-d' 'zend_extension=xdebug.so'"];

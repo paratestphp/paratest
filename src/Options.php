@@ -29,6 +29,7 @@ use function is_array;
 use function is_bool;
 use function is_numeric;
 use function is_string;
+use function min;
 use function preg_match;
 use function realpath;
 use function sprintf;
@@ -131,11 +132,22 @@ final readonly class Options
         $passthruPhp = self::parsePassthru($options['passthru-php']);
         unset($options['passthru-php']);
 
+        assert($options['max-processes'] === null || is_string($options['max-processes']));
+        $maxProcesses = is_numeric($options['max-processes'])
+            ? (int) $options['max-processes']
+            : null;
+        unset($options['max-processes']);
+
         assert(is_string($options['processes']));
         $processes = is_numeric($options['processes'])
             ? (int) $options['processes']
-            : self::getNumberOfCPUCores();
+            : null;
         unset($options['processes']);
+
+        if ($processes === null) {
+            $numberOfCPUCores = self::getNumberOfCPUCores();
+            $processes        = $maxProcesses === null ? $numberOfCPUCores : min($numberOfCPUCores, $maxProcesses);
+        }
 
         assert(is_string($options['runner']) && $options['runner'] !== '');
         $runner = $options['runner'];
@@ -289,6 +301,12 @@ final readonly class Options
                 InputOption::VALUE_REQUIRED,
                 'The number of test processes to run.',
                 'auto',
+            ),
+            new InputOption(
+                'max-processes',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The maximum number of test processes to run when "auto" is used for the number of processes.',
             ),
             new InputOption(
                 'runner',
