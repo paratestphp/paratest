@@ -650,7 +650,7 @@ final class WrapperRunnerTest extends TestBase
     }
 
     #[Group('github')]
-    #[RequiresPhpunit('10')]
+    #[RequiresPhpunit('>=10')]
     public function testIgnoreAttributes(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH756' . DIRECTORY_SEPARATOR . 'phpunit.xml');
@@ -659,9 +659,9 @@ final class WrapperRunnerTest extends TestBase
 
         $expectedContains = <<<'EOF'
         ParaTest\Tests\fixtures\github\GH756\CoveredOneClass
-          Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+          Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
         ParaTest\Tests\fixtures\github\GH756\CoveredTwoClass
-          Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+          Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
         EOF;
 
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
