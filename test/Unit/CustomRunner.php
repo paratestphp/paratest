@@ -9,7 +9,7 @@ use ParaTest\RunnerInterface;
 /** @internal */
 final readonly class CustomRunner implements RunnerInterface
 {
-    public const EXIT_CODE = 99;
+    public const int EXIT_CODE = 99;
 
     public function run(): int
     {

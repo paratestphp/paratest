@@ -45,7 +45,7 @@ use const DIRECTORY_SEPARATOR;
 /** @internal */
 final class WrapperRunner implements RunnerInterface
 {
-    private const CYCLE_SLEEP = 10000;
+    private const int CYCLE_SLEEP = 10000;
     private readonly ResultPrinter $printer;
 
     /** @var list<non-empty-string> */
