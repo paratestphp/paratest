@@ -16,7 +16,7 @@ use const DIRECTORY_SEPARATOR;
 
 abstract class WrapperBatchTestCase extends TestCase
 {
-    private const TMP_DIR_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'tmp';
+    private const string TMP_DIR_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'tmp';
 
     public function testToken(): void
     {

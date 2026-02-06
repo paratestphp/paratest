@@ -203,20 +203,20 @@ final class ResultPrinter
 
         $defaultResultPrinter = new DefaultResultPrinter(
             $this->printer,
-            $this->options->configuration->displayDetailsOnPhpunitDeprecations(),
+            $this->options->configuration->displayDetailsOnPhpunitDeprecations() || $this->options->configuration->displayDetailsOnAllIssues(),
+            true,
+            $this->options->configuration->displayDetailsOnPhpunitNotices() || $this->options->configuration->displayDetailsOnAllIssues(),
             true,
             true,
             true,
             true,
-            true,
-            true,
-            $this->options->configuration->displayDetailsOnIncompleteTests(),
-            $this->options->configuration->displayDetailsOnSkippedTests(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerErrors(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerNotices(),
-            $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings(),
-            false,
+            $this->options->configuration->displayDetailsOnIncompleteTests() || $this->options->configuration->displayDetailsOnAllIssues(),
+            $this->options->configuration->displayDetailsOnSkippedTests() || $this->options->configuration->displayDetailsOnAllIssues(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations() || $this->options->configuration->displayDetailsOnAllIssues(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerErrors() || $this->options->configuration->displayDetailsOnAllIssues(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerNotices() || $this->options->configuration->displayDetailsOnAllIssues(),
+            $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings() || $this->options->configuration->displayDetailsOnAllIssues(),
+            $this->options->configuration->reverseDefectList(),
         );
 
         if ($this->options->configuration->outputIsTestDox()) {
@@ -229,20 +229,20 @@ final class ResultPrinter
 
             $defaultResultPrinter = new DefaultResultPrinter(
                 $this->printer,
-                $this->options->configuration->displayDetailsOnPhpunitDeprecations(),
+                $this->options->configuration->displayDetailsOnPhpunitDeprecations() || $this->options->configuration->displayDetailsOnAllIssues(),
                 true,
+                $this->options->configuration->displayDetailsOnPhpunitNotices() || $this->options->configuration->displayDetailsOnAllIssues(),
                 true,
+                false,
+                false,
                 true,
                 false,
                 false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
+                $this->options->configuration->displayDetailsOnTestsThatTriggerDeprecations() || $this->options->configuration->displayDetailsOnAllIssues(),
+                $this->options->configuration->displayDetailsOnTestsThatTriggerErrors() || $this->options->configuration->displayDetailsOnAllIssues(),
+                $this->options->configuration->displayDetailsOnTestsThatTriggerNotices() || $this->options->configuration->displayDetailsOnAllIssues(),
+                $this->options->configuration->displayDetailsOnTestsThatTriggerWarnings() || $this->options->configuration->displayDetailsOnAllIssues(),
+                $this->options->configuration->reverseDefectList(),
             );
         }
 

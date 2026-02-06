@@ -71,5 +71,12 @@ Skipped (ParaTest\Tests\fixtures\common_results\Skipped)
 Warning (ParaTest\Tests\fixtures\common_results\Warning)
  ⚠ Warning
 
+There was 1 risky test:
+
+1) ParaTest\Tests\fixtures\common_results\RiskyTest::testRisky
+This test did not perform any assertions
+
+%s/test/fixtures/common_results/RiskyTest.php:12
+
 ERRORS!
 Tests: %s

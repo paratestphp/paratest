@@ -61,10 +61,10 @@ use const PHP_EOL;
 #[CoversClass(TestSuite::class)]
 final class WrapperRunnerTest extends TestBase
 {
-    protected const NUMBER_OF_CLASS_TESTS_FOR_BATCH_SIZE = 4;
-    protected const UNPROCESSABLE_FILENAMES              =  ['..', '.', '.gitignore'];
+    protected const int NUMBER_OF_CLASS_TESTS_FOR_BATCH_SIZE = 4;
+    protected const array UNPROCESSABLE_FILENAMES            =  ['..', '.', '.gitignore'];
 
-    public const PASSTHRU_PHP_CUSTOM = 'PASSTHRU_PHP_CUSTOM';
+    public const string PASSTHRU_PHP_CUSTOM = 'PASSTHRU_PHP_CUSTOM';
 
     #[DataProvider('provideForWrapperRunnerHandlesBatchSize')]
     public function testWrapperRunnerHandlesBatchSize(int $processes, ?int $batchSize, int $expectedPidCount): void

@@ -49,21 +49,27 @@ use const PHP_BINARY;
  */
 final readonly class Options
 {
-    public const ENV_KEY_TOKEN        = 'TEST_TOKEN';
-    public const ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
+    public const string ENV_KEY_TOKEN        = 'TEST_TOKEN';
+    public const string ENV_KEY_UNIQUE_TOKEN = 'UNIQUE_TEST_TOKEN';
 
-    private const OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER = [
+    private const array OPTIONS_TO_KEEP_FOR_PHPUNIT_IN_WORKER = [
         'bootstrap' => true,
         'cache-directory' => true,
         'configuration' => true,
         'coverage-filter' => true,
         'do-not-report-useless-tests' => true,
         'exclude-group' => true,
-        'fail-on-incomplete' => true,
-        'fail-on-risky' => true,
-        'fail-on-skipped' => true,
+        'fail-on-empty-test-suite' => true,
         'fail-on-warning' => true,
+        'fail-on-risky' => true,
         'fail-on-deprecation' => true,
+        'fail-on-phpunit-deprecation' => true,
+        'fail-on-phpunit-notice' => true,
+        'fail-on-phpunit-warning' => true,
+        'fail-on-notice' => true,
+        'fail-on-skipped' => true,
+        'fail-on-incomplete' => true,
+        'fail-on-all-issues' => true,
         'filter' => true,
         'group' => true,
         'no-configuration' => true,
@@ -72,8 +78,11 @@ final readonly class Options
         'random-order-seed' => true,
         'stop-on-defect' => true,
         'stop-on-error' => true,
+        'stop-on-failure' => true,
         'stop-on-warning' => true,
         'stop-on-risky' => true,
+        'stop-on-deprecation' => true,
+        'stop-on-notice' => true,
         'stop-on-skipped' => true,
         'stop-on-incomplete' => true,
         'strict-coverage' => true,
@@ -464,6 +473,18 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'stop-on-deprecation',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'stop-on-notice',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
                 'stop-on-skipped',
                 null,
                 InputOption::VALUE_NONE,
@@ -476,19 +497,7 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
-                'fail-on-incomplete',
-                null,
-                InputOption::VALUE_NONE,
-                '@see PHPUnit guide, chapter: ' . $chapter,
-            ),
-            new InputOption(
-                'fail-on-risky',
-                null,
-                InputOption::VALUE_NONE,
-                '@see PHPUnit guide, chapter: ' . $chapter,
-            ),
-            new InputOption(
-                'fail-on-skipped',
+                'fail-on-empty-test-suite',
                 null,
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
@@ -500,7 +509,55 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'fail-on-risky',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
                 'fail-on-deprecation',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-phpunit-deprecation',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-phpunit-notice',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-phpunit-warning',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-notice',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-skipped',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-incomplete',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'fail-on-all-issues',
                 null,
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
@@ -549,6 +606,18 @@ final readonly class Options
                 '@see PHPUnit guide, chapter: ' . $chapter,
             ),
             new InputOption(
+                'display-phpunit-deprecations',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'display-phpunit-notices',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
                 'display-errors',
                 null,
                 InputOption::VALUE_NONE,
@@ -562,6 +631,18 @@ final readonly class Options
             ),
             new InputOption(
                 'display-warnings',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'display-all-issues',
+                null,
+                InputOption::VALUE_NONE,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'reverse-list',
                 null,
                 InputOption::VALUE_NONE,
                 '@see PHPUnit guide, chapter: ' . $chapter,
