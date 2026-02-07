@@ -108,7 +108,7 @@ final class ApplicationForWrapperWorker
 
         $testSuite->run();
 
-        return TestResultFacade::result()->wasSuccessfulIgnoringPhpunitWarnings()
+        return TestResultFacade::result()->wasSuccessful()
             ? RunnerInterface::SUCCESS_EXIT
             : RunnerInterface::FAILURE_EXIT;
     }
