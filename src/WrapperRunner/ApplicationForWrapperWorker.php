@@ -108,7 +108,7 @@ final class ApplicationForWrapperWorker
 
         $testSuite->run();
 
-        return TestResultFacade::result()->wasSuccessfulIgnoringPhpunitWarnings()
+        return TestResultFacade::result()->wasSuccessful()
             ? RunnerInterface::SUCCESS_EXIT
             : RunnerInterface::FAILURE_EXIT;
     }
@@ -191,7 +191,10 @@ final class ApplicationForWrapperWorker
         }
 
         if (isset($this->testdoxFile)) {
-            $this->testdoxResultCollector = new TestResultCollector(EventFacade::instance());
+            $this->testdoxResultCollector = new TestResultCollector(
+                EventFacade::instance(),
+                $this->configuration->source(),
+            );
         }
 
         TestResultFacade::init();
