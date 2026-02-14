@@ -55,7 +55,7 @@
         "doctrine/coding-standard": "^14.0.0",
         "phpstan/phpstan": "^2.1.39",
         "phpstan/phpstan-deprecation-rules": "^2.0.4",
-        "phpstan/phpstan-phpunit": "^2.0.15",
+        "phpstan/phpstan-phpunit": "^2.0.16",
         "phpstan/phpstan-strict-rules": "^2.0.10",
         "symfony/filesystem": "^7.4.0 || ^8.0.1"
     },
