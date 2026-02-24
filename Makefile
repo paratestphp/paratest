@@ -87,5 +87,6 @@ regenerate-fixture-results: vendor
 	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/ 						--log-junit test/fixtures/common_results/junit-combined.xml 		--log-otr test/fixtures/common_results/otr-combined.xml			> /dev/null || true
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#$(PWD)#.#g'
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#time="........"#time="1.234567"#g'
-	sed -i 's#name="./test/fixtures/common_results"#name=""#g' test/fixtures/common_results/junit-combined.xml
-	sed -i 's#name="CLI Arguments"#name=""#g' test/fixtures/common_results/junit-combined.xml
+	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#time="..........................."#time="2026-02-01T12:13:14.567890Z"#g'
+	sed -i 's#name="./test/fixtures/common_results"#name=""#g' test/fixtures/common_results/junit-combined.xml test/fixtures/common_results/otr-combined.xml
+	sed -i 's#name="CLI Arguments"#name=""#g' test/fixtures/common_results/junit-combined.xml test/fixtures/common_results/otr-combined.xml
