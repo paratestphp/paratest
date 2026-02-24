@@ -1,0 +1,819 @@
+<?xml version="1.0"?>
+<e:events xmlns="https://schemas.opentest4j.org/reporting/core/0.2.0" xmlns:e="https://schemas.opentest4j.org/reporting/events/0.2.0" xmlns:php="https://schema.phpunit.de/otr/php/0.0.1" xmlns:phpunit="https://schema.phpunit.de/otr/phpunit/0.0.1">
+ <infrastructure>
+  <hostName>bd7ab86dcf4b</hostName>
+  <userName>code</userName>
+  <operatingSystem>Linux bd7ab86dcf4b 6.17.0-14-generic #14~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Jan 15 15:52:10 UTC 2 x86_64</operatingSystem>
+  <php:phpVersion>8.3.30</php:phpVersion>
+  <php:threadModel>NTS</php:threadModel>
+ </infrastructure>
+ <e:started id="1" name="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" time="2026-02-24T09:59:48.417113Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="14"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest"/>
+  </sources>
+ </e:started>
+ <e:started id="2" parentId="1" name="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest::testIsItFalse" time="2026-02-24T09:59:48.417295Z"/>
+ <e:started id="3" parentId="2" name="testIsItFalse with data set #0" time="2026-02-24T09:59:48.417454Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="3" time="2026-02-24T09:59:48.422411Z">
+  <result status="FAILED">
+   <reason>0
+Failed asserting that '' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[0
+Failed asserting that '' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="4" parentId="2" name="testIsItFalse with data set #1" time="2026-02-24T09:59:48.422692Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="4" time="2026-02-24T09:59:48.422881Z">
+  <result status="FAILED">
+   <reason>65
+Failed asserting that 'A' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[65
+Failed asserting that 'A' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="5" parentId="2" name="testIsItFalse with data set #2" time="2026-02-24T09:59:48.423081Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="5" time="2026-02-24T09:59:48.423280Z">
+  <result status="FAILED">
+   <reason>92
+Failed asserting that '\' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[92
+Failed asserting that '\' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="6" parentId="2" name="testIsItFalse with data set #3" time="2026-02-24T09:59:48.423491Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="6" time="2026-02-24T09:59:48.423679Z">
+  <result status="FAILED">
+   <reason>124
+Failed asserting that '|' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[124
+Failed asserting that '|' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="7" parentId="2" name="testIsItFalse with data set #4" time="2026-02-24T09:59:48.423891Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="7" time="2026-02-24T09:59:48.424072Z">
+  <result status="FAILED">
+   <reason>33
+Failed asserting that '!' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[33
+Failed asserting that '!' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="8" parentId="2" name="testIsItFalse with data set #5" time="2026-02-24T09:59:48.424289Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="8" time="2026-02-24T09:59:48.424471Z">
+  <result status="FAILED">
+   <reason>34
+Failed asserting that '&quot;' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[34
+Failed asserting that '"' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="9" parentId="2" name="testIsItFalse with data set #6" time="2026-02-24T09:59:48.424673Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="9" time="2026-02-24T09:59:48.424862Z">
+  <result status="FAILED">
+   <reason>194
+Failed asserting that '£' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[194
+Failed asserting that '£' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="10" parentId="2" name="testIsItFalse with data set #7" time="2026-02-24T09:59:48.425063Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="10" time="2026-02-24T09:59:48.425385Z">
+  <result status="FAILED">
+   <reason>36
+Failed asserting that '$' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[36
+Failed asserting that '$' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="11" parentId="2" name="testIsItFalse with data set #8" time="2026-02-24T09:59:48.425700Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="11" time="2026-02-24T09:59:48.426012Z">
+  <result status="FAILED">
+   <reason>37
+Failed asserting that '%' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[37
+Failed asserting that '%' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="12" parentId="2" name="testIsItFalse with data set #9" time="2026-02-24T09:59:48.426288Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="12" time="2026-02-24T09:59:48.426472Z">
+  <result status="FAILED">
+   <reason>38
+Failed asserting that '&amp;' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[38
+Failed asserting that '&' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="13" parentId="2" name="testIsItFalse with data set #10" time="2026-02-24T09:59:48.426683Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="13" time="2026-02-24T09:59:48.426866Z">
+  <result status="FAILED">
+   <reason>40
+Failed asserting that '(' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[40
+Failed asserting that '(' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="14" parentId="2" name="testIsItFalse with data set #11" time="2026-02-24T09:59:48.427081Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="14" time="2026-02-24T09:59:48.427270Z">
+  <result status="FAILED">
+   <reason>41
+Failed asserting that ')' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[41
+Failed asserting that ')' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="15" parentId="2" name="testIsItFalse with data set #12" time="2026-02-24T09:59:48.427476Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="15" time="2026-02-24T09:59:48.427664Z">
+  <result status="FAILED">
+   <reason>61
+Failed asserting that '=' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[61
+Failed asserting that '=' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="16" parentId="2" name="testIsItFalse with data set #13" time="2026-02-24T09:59:48.427870Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="16" time="2026-02-24T09:59:48.428057Z">
+  <result status="FAILED">
+   <reason>63
+Failed asserting that '?' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[63
+Failed asserting that '?' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="17" parentId="2" name="testIsItFalse with data set #14" time="2026-02-24T09:59:48.428273Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="17" time="2026-02-24T09:59:48.428456Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'à' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'à' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="18" parentId="2" name="testIsItFalse with data set #15" time="2026-02-24T09:59:48.428679Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="18" time="2026-02-24T09:59:48.428992Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'è' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'è' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="19" parentId="2" name="testIsItFalse with data set #16" time="2026-02-24T09:59:48.429313Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="19" time="2026-02-24T09:59:48.429626Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'ì' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'ì' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="20" parentId="2" name="testIsItFalse with data set #17" time="2026-02-24T09:59:48.429914Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="20" time="2026-02-24T09:59:48.430096Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'ò' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'ò' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="21" parentId="2" name="testIsItFalse with data set #18" time="2026-02-24T09:59:48.430309Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="21" time="2026-02-24T09:59:48.430497Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'ù' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'ù' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="22" parentId="2" name="testIsItFalse with data set #19" time="2026-02-24T09:59:48.430704Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="22" time="2026-02-24T09:59:48.430890Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'À' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'À' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="23" parentId="2" name="testIsItFalse with data set #20" time="2026-02-24T09:59:48.431096Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="23" time="2026-02-24T09:59:48.431287Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'È' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'È' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="24" parentId="2" name="testIsItFalse with data set #21" time="2026-02-24T09:59:48.431497Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="24" time="2026-02-24T09:59:48.431684Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'Ì' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'Ì' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="25" parentId="2" name="testIsItFalse with data set #22" time="2026-02-24T09:59:48.431895Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="25" time="2026-02-24T09:59:48.432077Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'Ò' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'Ò' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="26" parentId="2" name="testIsItFalse with data set #23" time="2026-02-24T09:59:48.432313Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="26" time="2026-02-24T09:59:48.432626Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'Ù' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'Ù' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="27" parentId="2" name="testIsItFalse with data set #24" time="2026-02-24T09:59:48.432930Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="27" time="2026-02-24T09:59:48.433253Z">
+  <result status="FAILED">
+   <reason>60
+Failed asserting that '&lt;' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[60
+Failed asserting that '<' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="28" parentId="2" name="testIsItFalse with data set #25" time="2026-02-24T09:59:48.433559Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="28" time="2026-02-24T09:59:48.433879Z">
+  <result status="FAILED">
+   <reason>62
+Failed asserting that '&gt;' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[62
+Failed asserting that '>' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="29" parentId="2" name="testIsItFalse with data set #26" time="2026-02-24T09:59:48.434157Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="29" time="2026-02-24T09:59:48.434344Z">
+  <result status="FAILED">
+   <reason>45
+Failed asserting that '-' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[45
+Failed asserting that '-' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="30" parentId="2" name="testIsItFalse with data set #27" time="2026-02-24T09:59:48.434553Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="30" time="2026-02-24T09:59:48.434735Z">
+  <result status="FAILED">
+   <reason>95
+Failed asserting that '_' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[95
+Failed asserting that '_' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="31" parentId="2" name="testIsItFalse with data set #28" time="2026-02-24T09:59:48.434944Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="31" time="2026-02-24T09:59:48.435124Z">
+  <result status="FAILED">
+   <reason>64
+Failed asserting that '@' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[64
+Failed asserting that '@' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="32" parentId="2" name="testIsItFalse with data set #29" time="2026-02-24T09:59:48.435346Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="32" time="2026-02-24T09:59:48.435528Z">
+  <result status="FAILED">
+   <reason>35
+Failed asserting that '#' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[35
+Failed asserting that '#' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="33" parentId="2" name="testIsItFalse with data set #30" time="2026-02-24T09:59:48.435736Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="33" time="2026-02-24T09:59:48.435922Z">
+  <result status="FAILED">
+   <reason>91
+Failed asserting that '[' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[91
+Failed asserting that '[' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="34" parentId="2" name="testIsItFalse with data set #31" time="2026-02-24T09:59:48.436134Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="34" time="2026-02-24T09:59:48.436334Z">
+  <result status="FAILED">
+   <reason>93
+Failed asserting that ']' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[93
+Failed asserting that ']' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="35" parentId="2" name="testIsItFalse with data set #32" time="2026-02-24T09:59:48.436544Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="35" time="2026-02-24T09:59:48.436727Z">
+  <result status="FAILED">
+   <reason>195
+Failed asserting that 'ß' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[195
+Failed asserting that 'ß' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="36" parentId="2" name="testIsItFalse with data set #33" time="2026-02-24T09:59:48.436964Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="36" time="2026-02-24T09:59:48.437221Z">
+  <result status="FAILED">
+   <reason>208
+Failed asserting that 'б' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[208
+Failed asserting that 'б' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="37" parentId="2" name="testIsItFalse with data set #34" time="2026-02-24T09:59:48.437432Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="37" time="2026-02-24T09:59:48.437618Z">
+  <result status="FAILED">
+   <reason>207
+Failed asserting that 'π' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[207
+Failed asserting that 'π' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="38" parentId="2" name="testIsItFalse with data set #35" time="2026-02-24T09:59:48.437827Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="38" time="2026-02-24T09:59:48.438010Z">
+  <result status="FAILED">
+   <reason>226
+Failed asserting that '€' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[226
+Failed asserting that '€' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="39" parentId="2" name="testIsItFalse with data set #36" time="2026-02-24T09:59:48.438223Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="39" time="2026-02-24T09:59:48.438412Z">
+  <result status="FAILED">
+   <reason>226
+Failed asserting that '✔' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[226
+Failed asserting that '✔' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="40" parentId="2" name="testIsItFalse with data set #37" time="2026-02-24T09:59:48.438618Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="40" time="2026-02-24T09:59:48.438804Z">
+  <result status="FAILED">
+   <reason>228
+Failed asserting that '你' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[228
+Failed asserting that '你' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="41" parentId="2" name="testIsItFalse with data set #38" time="2026-02-24T09:59:48.439040Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="41" time="2026-02-24T09:59:48.439261Z">
+  <result status="FAILED">
+   <reason>217
+Failed asserting that 'ي' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[217
+Failed asserting that 'ي' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="42" parentId="2" name="testIsItFalse with data set #39" time="2026-02-24T09:59:48.439479Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="42" time="2026-02-24T09:59:48.439659Z">
+  <result status="FAILED">
+   <reason>216
+Failed asserting that 'د' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[216
+Failed asserting that 'د' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="43" parentId="2" name="testIsItFalse with data set #40" time="2026-02-24T09:59:48.439873Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="43" time="2026-02-24T09:59:48.440053Z">
+  <result status="FAILED">
+   <reason>90
+Failed asserting that 'Z' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[90
+Failed asserting that 'Z' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:started id="44" parentId="2" name="testIsItFalse with data set #41" time="2026-02-24T09:59:48.440299Z">
+  <sources>
+   <fileSource path="./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php">
+    <filePosition line="17"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\special_chars\UnitTestWithDataProviderSpecialCharsTest" methodName="testIsItFalse"/>
+  </sources>
+ </e:started>
+ <e:finished id="44" time="2026-02-24T09:59:48.440612Z">
+  <result status="FAILED">
+   <reason>0
+Failed asserting that '' is false.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[0
+Failed asserting that '' is false.
+
+./test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php:19
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:finished id="2" time="2026-02-24T09:59:48.440831Z"/>
+ <e:finished id="1" time="2026-02-24T09:59:48.440874Z"/>
+</e:events>

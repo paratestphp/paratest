@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<e:events xmlns="https://schemas.opentest4j.org/reporting/core/0.2.0" xmlns:e="https://schemas.opentest4j.org/reporting/events/0.2.0" xmlns:php="https://schema.phpunit.de/otr/php/0.0.1" xmlns:phpunit="https://schema.phpunit.de/otr/phpunit/0.0.1">
+ <infrastructure>
+  <hostName>c04355cc6b2f</hostName>
+  <userName>code</userName>
+  <operatingSystem>Linux c04355cc6b2f 6.17.0-14-generic #14~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Jan 15 15:52:10 UTC 2 x86_64</operatingSystem>
+  <php:phpVersion>8.3.30</php:phpVersion>
+  <php:threadModel>NTS</php:threadModel>
+ </infrastructure>
+ <e:started id="1" name="ParaTest\Tests\fixtures\common_results\IncompleteTest" time="2026-02-24T09:59:50.230870Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/IncompleteTest.php">
+    <filePosition line="10"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\IncompleteTest"/>
+  </sources>
+ </e:started>
+ <e:started id="2" parentId="1" name="testIncomplete" time="2026-02-24T09:59:50.231101Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/IncompleteTest.php">
+    <filePosition line="12"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\IncompleteTest" methodName="testIncomplete"/>
+  </sources>
+ </e:started>
+ <e:finished id="2" time="2026-02-24T09:59:50.236147Z">
+  <result status="ABORTED">
+   <reason></reason>
+   <phpunit:throwable type="PHPUnit\Framework\IncompleteTestError" assertionError="false"><![CDATA[
+./test/fixtures/common_results/IncompleteTest.php:14
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:finished id="1" time="2026-02-24T09:59:50.236356Z"/>
+</e:events>

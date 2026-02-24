@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<e:events xmlns="https://schemas.opentest4j.org/reporting/core/0.2.0" xmlns:e="https://schemas.opentest4j.org/reporting/events/0.2.0" xmlns:php="https://schema.phpunit.de/otr/php/0.0.1" xmlns:phpunit="https://schema.phpunit.de/otr/phpunit/0.0.1">
+ <infrastructure>
+  <hostName>a04e43d8b907</hostName>
+  <userName>code</userName>
+  <operatingSystem>Linux a04e43d8b907 6.17.0-14-generic #14~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Jan 15 15:52:10 UTC 2 x86_64</operatingSystem>
+  <php:phpVersion>8.3.30</php:phpVersion>
+  <php:threadModel>NTS</php:threadModel>
+ </infrastructure>
+ <e:started id="1" name="CLI Arguments" time="2026-02-24T09:59:52.942526Z"/>
+ <e:started id="2" parentId="1" name="ParaTest\Tests\fixtures\common_results\ErrorTest" time="2026-02-24T09:59:52.942579Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/ErrorTest.php">
+    <filePosition line="11"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\ErrorTest"/>
+  </sources>
+ </e:started>
+ <e:started id="3" parentId="2" name="testError" time="2026-02-24T09:59:52.942789Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/ErrorTest.php">
+    <filePosition line="13"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\ErrorTest" methodName="testError"/>
+  </sources>
+ </e:started>
+ <e:finished id="3" time="2026-02-24T09:59:52.947526Z">
+  <result status="ERRORED">
+   <reason>Error here!</reason>
+   <phpunit:throwable type="RuntimeException" assertionError="false"><![CDATA[RuntimeException: Error here!
+
+./test/fixtures/common_results/ErrorTest.php:15
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:finished id="2" time="2026-02-24T09:59:52.947701Z"/>
+ <e:started id="4" parentId="1" name="ParaTest\Tests\fixtures\common_results\FailureTest" time="2026-02-24T09:59:52.947744Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/FailureTest.php">
+    <filePosition line="10"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\FailureTest"/>
+  </sources>
+ </e:started>
+ <e:started id="5" parentId="4" name="testFailure" time="2026-02-24T09:59:52.947904Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/FailureTest.php">
+    <filePosition line="12"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\FailureTest" methodName="testFailure"/>
+  </sources>
+ </e:started>
+ <e:finished id="5" time="2026-02-24T09:59:52.948097Z">
+  <result status="FAILED">
+   <reason>Failed asserting that false is true.</reason>
+   <phpunit:throwable type="PHPUnit\Framework\ExpectationFailedException" assertionError="true"><![CDATA[Failed asserting that false is true.
+
+./test/fixtures/common_results/FailureTest.php:14
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:finished id="4" time="2026-02-24T09:59:52.948219Z"/>
+ <e:started id="6" parentId="1" name="ParaTest\Tests\fixtures\common_results\IncompleteTest" time="2026-02-24T09:59:52.948259Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/IncompleteTest.php">
+    <filePosition line="10"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\IncompleteTest"/>
+  </sources>
+ </e:started>
+ <e:started id="7" parentId="6" name="testIncomplete" time="2026-02-24T09:59:52.948416Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/IncompleteTest.php">
+    <filePosition line="12"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\IncompleteTest" methodName="testIncomplete"/>
+  </sources>
+ </e:started>
+ <e:finished id="7" time="2026-02-24T09:59:52.948559Z">
+  <result status="ABORTED">
+   <reason></reason>
+   <phpunit:throwable type="PHPUnit\Framework\IncompleteTestError" assertionError="false"><![CDATA[
+./test/fixtures/common_results/IncompleteTest.php:14
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:finished id="6" time="2026-02-24T09:59:52.948673Z"/>
+ <e:started id="8" parentId="1" name="ParaTest\Tests\fixtures\common_results\RiskyTest" time="2026-02-24T09:59:52.948711Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/RiskyTest.php">
+    <filePosition line="10"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\RiskyTest"/>
+  </sources>
+ </e:started>
+ <e:started id="9" parentId="8" name="testRisky" time="2026-02-24T09:59:52.948866Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/RiskyTest.php">
+    <filePosition line="12"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\RiskyTest" methodName="testRisky"/>
+  </sources>
+ </e:started>
+ <e:finished id="9" time="2026-02-24T09:59:52.949040Z">
+  <result status="SUCCESSFUL"/>
+ </e:finished>
+ <e:finished id="8" time="2026-02-24T09:59:52.949072Z"/>
+ <e:started id="10" parentId="1" name="ParaTest\Tests\fixtures\common_results\SkippedTest" time="2026-02-24T09:59:52.949115Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/SkippedTest.php">
+    <filePosition line="10"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\SkippedTest"/>
+  </sources>
+ </e:started>
+ <e:started id="11" parentId="10" name="testSkipped" time="2026-02-24T09:59:52.949274Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/SkippedTest.php">
+    <filePosition line="12"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\SkippedTest" methodName="testSkipped"/>
+  </sources>
+ </e:started>
+ <e:finished id="11" time="2026-02-24T09:59:52.949373Z">
+  <result status="SKIPPED">
+   <reason></reason>
+  </result>
+ </e:finished>
+ <e:finished id="10" time="2026-02-24T09:59:52.949480Z"/>
+ <e:started id="12" parentId="1" name="ParaTest\Tests\fixtures\common_results\SuccessTest" time="2026-02-24T09:59:52.949517Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/SuccessTest.php">
+    <filePosition line="10"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\SuccessTest"/>
+  </sources>
+ </e:started>
+ <e:started id="13" parentId="12" name="testSuccess" time="2026-02-24T09:59:52.949671Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/SuccessTest.php">
+    <filePosition line="12"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\SuccessTest" methodName="testSuccess"/>
+  </sources>
+ </e:started>
+ <e:finished id="13" time="2026-02-24T09:59:52.949820Z">
+  <result status="SUCCESSFUL"/>
+ </e:finished>
+ <e:finished id="12" time="2026-02-24T09:59:52.949852Z"/>
+ <e:started id="14" parentId="1" name="ParaTest\Tests\fixtures\common_results\WarningTest" time="2026-02-24T09:59:52.949891Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/WarningTest.php">
+    <filePosition line="14"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\WarningTest"/>
+  </sources>
+ </e:started>
+ <e:started id="15" parentId="14" name="testWarning" time="2026-02-24T09:59:52.950040Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/WarningTest.php">
+    <filePosition line="16"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\WarningTest" methodName="testWarning"/>
+  </sources>
+ </e:started>
+ <e:finished id="15" time="2026-02-24T09:59:52.950238Z">
+  <result status="SUCCESSFUL"/>
+ </e:finished>
+ <e:finished id="14" time="2026-02-24T09:59:52.950270Z"/>
+ <e:finished id="1" time="2026-02-24T09:59:52.950301Z"/>
+</e:events>
