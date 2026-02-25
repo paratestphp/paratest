@@ -1135,6 +1135,38 @@ XML;
         self::assertSame(7, count($allTests), 'All 7 tests should be distributed between the 2 shards');
     }
 
+    #[Group('github')]
+    public function testDeprecationTriggerSpecsAreRespected(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH1081' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+
+        $runnerResult = $this->runRunner();
+
+        $expectedOutput = <<<'EOF'
+Processes:     %s
+Runtime:       PHP %s
+Configuration: %s
+
+D                                                                   1 / 1 (100%)
+
+Time: %s, Memory: %s MB
+
+1 test triggered 1 deprecation:
+
+1) %s/test/fixtures/github/GH1081/ClassWithDeprecation.php:14
+bar
+
+Triggered by:
+
+* ParaTest\Tests\fixtures\github\GH1081\TestCaseWithDeprecationTest::testWithDeprecation
+  %s/test/fixtures/github/GH1081/TestCaseWithDeprecationTest.php:12
+
+OK, but there were issues!%a
+EOF;
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+        self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+    }
+
     /**
      * ###   WARNING   ###
      *

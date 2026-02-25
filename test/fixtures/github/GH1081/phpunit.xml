@@ -1,0 +1,27 @@
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="custom_trigger.php"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+    failOnDeprecation="true"
+>
+    <testsuites>
+        <testsuite name="Github issue GH1081">
+            <file>TestCaseWithDeprecationTest.php</file>
+        </testsuite>
+    </testsuites>
+
+    <source
+        ignoreSuppressionOfDeprecations="true"
+        ignoreIndirectDeprecations="true"
+        ignoreDirectDeprecations="false"
+    >
+        <include>
+            <file>ClassWithDeprectation.php</file>
+        </include>
+
+        <deprecationTrigger>
+            <function>custom_trigger</function>
+        </deprecationTrigger>
+    </source>
+</phpunit>
