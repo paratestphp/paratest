@@ -1153,7 +1153,7 @@ Time: %s, Memory: %s MB
 
 1 test triggered 1 deprecation:
 
-1) %s/test/fixtures/github/GH1081/custom_trigger.php:7
+1) %s/test/fixtures/github/GH1081/ClassWithDeprecation.php:14
 bar
 
 Triggered by:
@@ -1161,8 +1161,7 @@ Triggered by:
 * ParaTest\Tests\fixtures\github\GH1081\TestCaseWithDeprecationTest::testWithDeprecation
   %s/test/fixtures/github/GH1081/TestCaseWithDeprecationTest.php:12
 
-OK, but there were issues!
-Tests: 1, Assertions: 1, Deprecations: 1.
+OK, but there were issues!%a
 EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
         self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
