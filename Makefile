@@ -1,4 +1,4 @@
-DOCKER_PHP_EXEC := docker compose run --rm php
+DOCKER_PHP_EXEC := docker compose run --remove-orphans --rm php
 
 SRCS := $(shell find ./src ./test -type f -not -path "*/tmp/*")
 
