@@ -17,7 +17,7 @@ use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\Runner\DeprecationCollector\Facade as DeprecationCollector;
 use PHPUnit\Runner\ErrorHandler;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
-use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
+use PHPUnit\Runner\Extension\ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Filter\Factory;
 use PHPUnit\Runner\ResultCache\DefaultResultCache;

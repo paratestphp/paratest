@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
-use ParaTest\Coverage\CoverageMerger;
 use ParaTest\JUnit\TestSuite;
 use ParaTest\RunnerInterface;
 use ParaTest\Tests\TestBase;
@@ -19,7 +18,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
 use PHPUnit\Framework\Attributes\RequiresPhpunit;
-use SebastianBergmann\CodeCoverage\CodeCoverage;
 use Symfony\Component\Process\Process;
 
 use function array_diff;
@@ -57,7 +55,6 @@ use const PHP_EOL;
 #[CoversClass(WorkerCrashedException::class)]
 #[CoversClass(MissingResultsException::class)]
 #[CoversClass(ResultPrinter::class)]
-#[CoversClass(CoverageMerger::class)]
 #[CoversClass(TestSuite::class)]
 final class WrapperRunnerTest extends TestBase
 {
@@ -638,7 +635,9 @@ final class WrapperRunnerTest extends TestBase
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
 
         $coveragePhp = include $this->bareOptions['--coverage-php'];
-        self::assertInstanceOf(CodeCoverage::class, $coveragePhp);
+        self::assertIsArray($coveragePhp);
+        self::assertArrayHasKey('codeCoverage', $coveragePhp);
+        self::assertArrayHasKey('testResults', $coveragePhp);
     }
 
     public function testHandleCollisionWithSymfonyOutput(): void

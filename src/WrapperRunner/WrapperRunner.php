@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ParaTest\WrapperRunner;
 
-use ParaTest\Coverage\CoverageMerger;
 use ParaTest\JUnit\LogMerger;
 use ParaTest\JUnit\Writer;
 use ParaTest\Options;
@@ -21,10 +20,17 @@ use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Output\DefaultPrinter;
 use PHPUnit\TextUI\ShellExitCodeCalculator;
 use PHPUnit\Util\ExcludeList;
+use ReflectionProperty;
+use SebastianBergmann\CodeCoverage\Node\Builder;
+use SebastianBergmann\CodeCoverage\Serialization\Merger;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\ParsingSourceAnalyser;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
+use function array_filter;
+use function array_map;
 use function array_merge;
 use function array_merge_recursive;
 use function array_shift;
@@ -396,10 +402,22 @@ final class WrapperRunner implements RunnerInterface
             $this->codeCoverageFilterRegistry,
             false,
         );
-        $coverageMerger = new CoverageMerger($coverageManager->codeCoverage());
-        foreach ($this->coverageFiles as $coverageFile) {
-            $coverageMerger->addCoverageFromFile($coverageFile);
-        }
+        $coverageFiles      = array_map(static function (SplFileInfo $fileInfo): false|string {
+            return $fileInfo->getRealPath();
+        }, $this->coverageFiles);
+        $coverageFiles      = array_filter($coverageFiles, static function (false|string $file): bool {
+            return $file !== false;
+        });
+        $serializedCoverage = (new Merger())->merge($coverageFiles);
+
+        $report       = (new Builder(new FileAnalyser(new ParsingSourceAnalyser(), false, false)))->build(
+            $serializedCoverage['codeCoverage'],
+            $serializedCoverage['testResults'],
+            $serializedCoverage['basePath'],
+        );
+        $codeCoverage = $coverageManager->codeCoverage();
+        $codeCoverage->setTests($serializedCoverage['testResults']);
+        (new ReflectionProperty(\SebastianBergmann\CodeCoverage\CodeCoverage::class, 'cachedReport'))->setValue($codeCoverage, $report);
 
         $coverageManager->generateReports(
             $this->printer->printer,

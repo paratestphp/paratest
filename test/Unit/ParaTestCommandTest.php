@@ -41,7 +41,6 @@ final class ParaTestCommandTest extends TestCase
         if (method_exists($application, 'addCommand')) {
             $application->addCommand(new HelpCommand());
         } else {
-            // @phpstan-ignore method.deprecated (can be removed when dropping support for Symfony 7.3)
             $application->add(new HelpCommand());
         }
 
