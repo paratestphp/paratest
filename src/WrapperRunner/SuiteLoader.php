@@ -28,9 +28,11 @@ use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function array_filter;
 use function array_keys;
 use function array_merge;
 use function array_slice;
+use function array_values;
 use function assert;
 use function ceil;
 use function count;
@@ -44,6 +46,8 @@ use function sprintf;
 use function str_starts_with;
 use function strlen;
 use function substr;
+
+use const ARRAY_FILTER_USE_KEY;
 
 /** @internal */
 final readonly class SuiteLoader
@@ -225,15 +229,16 @@ final readonly class SuiteLoader
 
     private function shardTests(TestSuite $suite): void
     {
-        $tests = $this->extractTestsInSuite($suite);
+        $tests   = $this->extractTestsInSuite($suite);
+        $shards  = $this->options->totalShards;
+        $current = $this->options->currentShard - 1; // 0 indexed. Shard 1 is in reality shard 0
 
-        $shards        = $this->options->totalShards;
-        $current       = $this->options->currentShard - 1; // 0 indexed. Shard 1 is in reality shard 0
-        $total         = count($tests);
-        $testsPerShard = (int) ceil($total / $shards);
-        $offset        = $testsPerShard * $current;
+        $shardedTests = match ($this->options->shardDistribution) {
+            ShardDistribution::Sequential => array_slice($tests, (int) ceil(count($tests) / $shards) * $current, (int) ceil(count($tests) / $shards)),
+            ShardDistribution::RoundRobin => array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
+        };
 
-        $suite->setTests(array_slice($tests, $offset, $testsPerShard));
+        $suite->setTests($shardedTests);
     }
 
     /** @return list<Test> */

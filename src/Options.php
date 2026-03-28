@@ -7,6 +7,7 @@ namespace ParaTest;
 use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
 use InvalidArgumentException;
+use ParaTest\WrapperRunner\ShardDistribution;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\Configuration;
 use RuntimeException;
@@ -130,6 +131,7 @@ final readonly class Options
         public bool $functional,
         public int $currentShard,
         public int $totalShards,
+        public ShardDistribution $shardDistribution,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
         $this->needsTestdox  = $configuration->outputIsTestDox() || $configuration->hasLogfileTestdoxText() || $configuration->hasLogfileTestdoxHtml();
@@ -221,6 +223,17 @@ final readonly class Options
             }
         }
 
+        $shardDistributionValue = $options['shard-test-distribution'];
+        unset($options['shard-test-distribution']);
+        assert(is_string($shardDistributionValue));
+        $shardDistribution = ShardDistribution::tryFrom($shardDistributionValue);
+        if ($shardDistribution === null) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid shard-test-distribution value: %s. Valid values are: sequential, round-robin',
+                $shardDistributionValue,
+            ));
+        }
+
         // Must be a static non-customizable reference because ParaTest code
         // is strictly coupled with PHPUnit pinned version
         $phpunit = self::getPhpunitBinary();
@@ -274,6 +287,7 @@ final readonly class Options
             $functional,
             $currentShard,
             $totalShards,
+            $shardDistribution,
         );
     }
 
@@ -352,6 +366,13 @@ final readonly class Options
                 null,
                 InputOption::VALUE_OPTIONAL,
                 '<current>/<total> Run a specific part of the suite',
+            ),
+            new InputOption(
+                'shard-test-distribution',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Distribution strategy for sharding: sequential (default) or round-robin',
+                'sequential',
             ),
 
             // PHPUnit options

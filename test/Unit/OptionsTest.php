@@ -7,6 +7,7 @@ namespace ParaTest\Tests\Unit;
 use InvalidArgumentException;
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
+use ParaTest\WrapperRunner\ShardDistribution;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -216,5 +217,34 @@ final class OptionsTest extends TestBase
         self::assertSame(0, $options->currentShard);
         self::assertSame(0, $options->totalShards);
         self::assertFalse($options->hasShard());
+    }
+
+    public function testShardTestDistributionDefaultsToSequential(): void
+    {
+        $options = $this->createOptionsFromArgv([], __DIR__);
+
+        self::assertSame(ShardDistribution::Sequential, $options->shardDistribution);
+    }
+
+    public function testShardTestDistributionSequentialExplicit(): void
+    {
+        $options = $this->createOptionsFromArgv(['--shard-test-distribution' => 'sequential'], __DIR__);
+
+        self::assertSame(ShardDistribution::Sequential, $options->shardDistribution);
+    }
+
+    public function testShardTestDistributionRoundRobin(): void
+    {
+        $options = $this->createOptionsFromArgv(['--shard-test-distribution' => 'round-robin'], __DIR__);
+
+        self::assertSame(ShardDistribution::RoundRobin, $options->shardDistribution);
+    }
+
+    public function testShardTestDistributionInvalidValue(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid shard-test-distribution value: invalid');
+
+        $this->createOptionsFromArgv(['--shard-test-distribution' => 'invalid'], __DIR__);
     }
 }
