@@ -135,6 +135,20 @@ final class ResultPrinterTest extends TestBase
         $contents      = $this->getStartOutput();
 
         self::assertStringContainsString("Shard:         3/5\n", $contents);
+        self::assertStringContainsString("Distribution:  sequential\n", $contents);
+    }
+
+    public function testStartPrintsShardInfoWithRoundRobin(): void
+    {
+        $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv([
+            '--shard' => '2/4',
+            '--shard-test-distribution' => 'round-robin',
+            '--verbose' => true,
+        ]));
+        $contents      = $this->getStartOutput();
+
+        self::assertStringContainsString("Shard:         2/4\n", $contents);
+        self::assertStringContainsString("Distribution:  round-robin\n", $contents);
     }
 
     public function testStartDoesNotPrintShardInfoWhenNotConfigured(): void
@@ -143,6 +157,7 @@ final class ResultPrinterTest extends TestBase
         $contents      = $this->getStartOutput();
 
         self::assertStringNotContainsString('Shard:', $contents);
+        self::assertStringNotContainsString('Distribution:', $contents);
     }
 
     public function testGetHeader(): void

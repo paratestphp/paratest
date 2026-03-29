@@ -107,6 +107,7 @@ final class ResultPrinter
 
         if ($this->options->hasShard()) {
             $write('Shard', $this->options->currentShard . '/' . $this->options->totalShards);
+            $write('Distribution', $this->options->shardDistribution->value);
         }
 
         $runtime = 'PHP ' . PHP_VERSION;

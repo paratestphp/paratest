@@ -7,10 +7,13 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\SuiteLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+use function array_map;
 use function array_shift;
+use function basename;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
@@ -68,52 +71,6 @@ final class SuiteLoaderTest extends TestBase
         self::assertStringContainsString('my_test.phpt', $file);
     }
 
-    public function testShardTestsWithValidShards(): void
-    {
-        $this->bareOptions['--shard']         = '2/3';
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-
-        $loader = $this->loadSuite();
-
-        // With 7 tests total and 3 shards, shard 2 should get tests at positions 3,4,5 (0-indexed: 2,3,4)
-        // Tests per shard: ceil(7/3) = 3
-        // Shard 1 (0-indexed): 0,1,2
-        // Shard 2 (1-indexed): 3,4,5 -> but only 2 tests shards there are only 7 total
-        self::assertLessThanOrEqual(3, $loader->testCount);
-        self::assertGreaterThan(0, $loader->testCount);
-        self::assertCount($loader->testCount, $loader->tests);
-    }
-
-    public function testShardTestsWithFirstShard(): void
-    {
-        $this->bareOptions['--shard']         = '1/5';
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-
-        $loader = $this->loadSuite();
-
-        // With 7 tests total and 5 shards, shard 1 should get tests at positions 0,1 (first 2 tests)
-        // Tests per shard: ceil(7/5) = 2
-        self::assertLessThanOrEqual(2, $loader->testCount);
-        self::assertGreaterThan(0, $loader->testCount);
-        self::assertCount($loader->testCount, $loader->tests);
-    }
-
-    public function testShardTestsWithLastShard(): void
-    {
-        $this->bareOptions['--shard']         = '5/5';
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-
-        $loader = $this->loadSuite();
-
-        // With 7 tests total and 5 shards, shard 5 should get the remaining test
-        // Tests per shard: ceil(7/5) = 2
-        // Shard 5 offset: 2 * 4 = 8, but only 7 tests total, so shard 5 gets 0 tests
-        // Actually, let's recalculate: shards 1-4 get 2 tests each (8 tests), shard 5 gets 0
-        // Wait, we only have 7 tests, so shard 5 should get 0 tests
-        self::assertGreaterThanOrEqual(0, $loader->testCount);
-        self::assertCount($loader->testCount, $loader->tests);
-    }
-
     public function testNoShardsAppliedByDefault(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
@@ -123,6 +80,95 @@ final class SuiteLoaderTest extends TestBase
         // Without shards, all tests should be loaded
         self::assertSame(7, $loader->testCount);
         self::assertCount(7, $loader->tests);
+    }
+
+    /** @return iterable<string, array{string, string, list<list<string>>}> */
+    public static function shardDistributionProvider(): iterable
+    {
+        yield 'sequential, 2 shards' => [
+            'sequential',
+            '2',
+            [
+                ['ErrorTest.php', 'FailureTest.php', 'IncompleteTest.php', 'RiskyTest.php'],
+                ['SkippedTest.php', 'SuccessTest.php', 'WarningTest.php'],
+            ],
+        ];
+
+        yield 'sequential, 3 shards' => [
+            'sequential',
+            '3',
+            [
+                ['ErrorTest.php', 'FailureTest.php', 'IncompleteTest.php'],
+                ['RiskyTest.php', 'SkippedTest.php', 'SuccessTest.php'],
+                ['WarningTest.php'],
+            ],
+        ];
+
+        yield 'sequential, 5 shards' => [
+            'sequential',
+            '5',
+            [
+                ['ErrorTest.php', 'FailureTest.php'],
+                ['IncompleteTest.php', 'RiskyTest.php'],
+                ['SkippedTest.php', 'SuccessTest.php'],
+                ['WarningTest.php'],
+                [],
+            ],
+        ];
+
+        yield 'round-robin, 2 shards' => [
+            'round-robin',
+            '2',
+            [
+                ['ErrorTest.php', 'IncompleteTest.php', 'SkippedTest.php', 'WarningTest.php'],
+                ['FailureTest.php', 'RiskyTest.php', 'SuccessTest.php'],
+            ],
+        ];
+
+        yield 'round-robin, 3 shards' => [
+            'round-robin',
+            '3',
+            [
+                ['ErrorTest.php', 'RiskyTest.php', 'WarningTest.php'],
+                ['FailureTest.php', 'SkippedTest.php'],
+                ['IncompleteTest.php', 'SuccessTest.php'],
+            ],
+        ];
+
+        yield 'round-robin, 5 shards' => [
+            'round-robin',
+            '5',
+            [
+                ['ErrorTest.php', 'SuccessTest.php'],
+                ['FailureTest.php', 'WarningTest.php'],
+                ['IncompleteTest.php'],
+                ['RiskyTest.php'],
+                ['SkippedTest.php'],
+            ],
+        ];
+    }
+
+    /**
+     * @param non-empty-string   $distribution
+     * @param non-empty-string   $totalShards
+     * @param list<list<string>> $expectedPerShard
+     */
+    #[DataProvider('shardDistributionProvider')]
+    public function testShardDistribution(string $distribution, string $totalShards, array $expectedPerShard): void
+    {
+        $this->bareOptions['--configuration']           = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--shard-test-distribution'] = $distribution;
+
+        foreach ($expectedPerShard as $index => $expected) {
+            $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
+            self::assertSame($expected, $this->loadSuiteFileNames());
+        }
+    }
+
+    /** @return list<string> */
+    private function loadSuiteFileNames(): array
+    {
+        return array_map(basename(...), $this->loadSuite()->tests);
     }
 
     private function loadSuite(): SuiteLoader
