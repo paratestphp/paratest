@@ -244,6 +244,33 @@ final class SuiteLoaderTest extends TestBase
         self::assertSame($firstRun, $secondRun);
     }
 
+    public function testShardWithoutFunctionalEmitsWarning(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--shard']         = '1/2';
+
+        $this->loadSuite();
+
+        self::assertStringContainsString(
+            'Warning: Sharding without --functional may cause test classes to run on multiple shards.',
+            $this->output->fetch(),
+        );
+    }
+
+    public function testShardWithFunctionalDoesNotEmitWarning(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--shard']         = '1/2';
+        $this->bareOptions['--functional']    = true;
+
+        $this->loadSuite();
+
+        self::assertStringNotContainsString(
+            'Warning: Sharding without --functional may cause test classes to run on multiple shards.',
+            $this->output->fetch(),
+        );
+    }
+
     /** @return list<string> */
     private function loadSuiteFileNames(): array
     {

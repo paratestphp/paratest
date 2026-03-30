@@ -97,6 +97,10 @@ final readonly class SuiteLoader
         $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
 
         if ($this->options->hasShard()) {
+            if (! $this->options->functional) {
+                $output->writeln('Warning: Sharding without --functional may cause test classes to run on multiple shards. Consider using --functional for accurate shard distribution.');
+            }
+
             $this->shardTests($testSuite);
         }
 
