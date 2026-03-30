@@ -228,14 +228,14 @@ final class OptionsTest extends TestBase
 
     public function testShardTestDistributionSequentialExplicit(): void
     {
-        $options = $this->createOptionsFromArgv(['--shard-test-distribution' => 'sequential'], __DIR__);
+        $options = $this->createOptionsFromArgv(['--shard-test-distribution' => ShardDistribution::Sequential->value], __DIR__);
 
         self::assertSame(ShardDistribution::Sequential, $options->shardDistribution);
     }
 
     public function testShardTestDistributionRoundRobin(): void
     {
-        $options = $this->createOptionsFromArgv(['--shard-test-distribution' => 'round-robin'], __DIR__);
+        $options = $this->createOptionsFromArgv(['--shard-test-distribution' => ShardDistribution::RoundRobin->value], __DIR__);
 
         self::assertSame(ShardDistribution::RoundRobin, $options->shardDistribution);
     }
@@ -246,5 +246,74 @@ final class OptionsTest extends TestBase
         $this->expectExceptionMessage('Invalid shard-test-distribution value: invalid');
 
         $this->createOptionsFromArgv(['--shard-test-distribution' => 'invalid'], __DIR__);
+    }
+
+    public function testShardTestDistributionRandom(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--shard-test-distribution' => ShardDistribution::Random->value,
+            '--shard-test-distribution-seed' => '42',
+        ], __DIR__);
+
+        self::assertSame(ShardDistribution::Random, $options->shardDistribution);
+        self::assertSame(42, $options->shardDistributionSeed);
+    }
+
+    public function testShardTestDistributionRandomDefaultsToZeroSeed(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--shard-test-distribution' => ShardDistribution::Random->value,
+        ], __DIR__);
+
+        self::assertSame(ShardDistribution::Random, $options->shardDistribution);
+        self::assertSame(0, $options->shardDistributionSeed);
+    }
+
+    public function testShardTestDistributionSeedOnlyWithRandom(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Shard test distribution seed can only be used with random distribution');
+
+        $this->createOptionsFromArgv([
+            '--shard-test-distribution' => ShardDistribution::Sequential->value,
+            '--shard-test-distribution-seed' => '42',
+        ], __DIR__);
+    }
+
+    /** @return iterable<list<non-empty-string>> */
+    public static function provideInvalidShardTestDistributionSeedValues(): iterable
+    {
+        yield ['abc'];
+        yield ['3.14'];
+    }
+
+    /** @param non-empty-string $seed */
+    #[DataProvider('provideInvalidShardTestDistributionSeedValues')]
+    public function testShardTestDistributionSeedMustBeInteger(string $seed): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Shard test distribution seed must be an integer: ' . $seed);
+
+        $this->createOptionsFromArgv([
+            '--shard-test-distribution' => ShardDistribution::Random->value,
+            '--shard-test-distribution-seed' => $seed,
+        ], __DIR__);
+    }
+
+    public function testShardTestDistributionSeedAcceptsNegativeValues(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--shard-test-distribution' => ShardDistribution::Random->value,
+            '--shard-test-distribution-seed' => '-42',
+        ], __DIR__);
+
+        self::assertSame(-42, $options->shardDistributionSeed);
+    }
+
+    public function testShardTestDistributionSeedDefaultsToZero(): void
+    {
+        $options = $this->createOptionsFromArgv([], __DIR__);
+
+        self::assertSame(0, $options->shardDistributionSeed);
     }
 }

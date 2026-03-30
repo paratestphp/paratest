@@ -42,6 +42,7 @@ use function mt_srand;
 use function ob_get_clean;
 use function ob_start;
 use function preg_quote;
+use function shuffle;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -236,9 +237,23 @@ final readonly class SuiteLoader
         $shardedTests = match ($this->options->shardDistribution) {
             ShardDistribution::Sequential => array_slice($tests, (int) ceil(count($tests) / $shards) * $current, (int) ceil(count($tests) / $shards)),
             ShardDistribution::RoundRobin => array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
+            ShardDistribution::Random => $this->randomShardTests($tests, $shards, $current),
         };
 
         $suite->setTests($shardedTests);
+    }
+
+    /**
+     * @param list<Test> $tests
+     *
+     * @return list<Test>
+     */
+    private function randomShardTests(array $tests, int $shards, int $current): array
+    {
+        mt_srand($this->options->shardDistributionSeed);
+        shuffle($tests);
+
+        return array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
     }
 
     /** @return list<Test> */

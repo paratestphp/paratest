@@ -132,6 +132,7 @@ final readonly class Options
         public int $currentShard,
         public int $totalShards,
         public ShardDistribution $shardDistribution,
+        public int $shardDistributionSeed,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
         $this->needsTestdox  = $configuration->outputIsTestDox() || $configuration->hasLogfileTestdoxText() || $configuration->hasLogfileTestdoxHtml();
@@ -229,9 +230,22 @@ final readonly class Options
         $shardDistribution = ShardDistribution::tryFrom($shardDistributionValue);
         if ($shardDistribution === null) {
             throw new InvalidArgumentException(sprintf(
-                'Invalid shard-test-distribution value: %s. Valid values are: sequential, round-robin',
+                'Invalid shard-test-distribution value: %s. Valid values are: sequential, round-robin, random',
                 $shardDistributionValue,
             ));
+        }
+
+        $shardDistributionSeedValue = $options['shard-test-distribution-seed'];
+        unset($options['shard-test-distribution-seed']);
+        assert(is_string($shardDistributionSeedValue));
+        if (preg_match('/^-?\d+$/', $shardDistributionSeedValue) !== 1) {
+            throw new InvalidArgumentException('Shard test distribution seed must be an integer: ' . $shardDistributionSeedValue);
+        }
+
+        $shardDistributionSeed = (int) $shardDistributionSeedValue;
+
+        if ($shardDistributionSeed !== 0 && $shardDistribution !== ShardDistribution::Random) {
+            throw new InvalidArgumentException('Shard test distribution seed can only be used with random distribution');
         }
 
         // Must be a static non-customizable reference because ParaTest code
@@ -288,6 +302,7 @@ final readonly class Options
             $currentShard,
             $totalShards,
             $shardDistribution,
+            $shardDistributionSeed,
         );
     }
 
@@ -371,8 +386,15 @@ final readonly class Options
                 'shard-test-distribution',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Distribution strategy for sharding: sequential (default) or round-robin',
-                'sequential',
+                'Distribution strategy for sharding: sequential (default), round-robin or random',
+                ShardDistribution::Sequential->value,
+            ),
+            new InputOption(
+                'shard-test-distribution-seed',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Seed for random shard test distribution. Defaults to 0, producing a deterministic order. Use different values to vary test distribution across runs',
+                '0',
             ),
 
             // PHPUnit options
