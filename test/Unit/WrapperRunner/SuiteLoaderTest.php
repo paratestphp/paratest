@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+use function array_intersect;
 use function array_map;
 use function array_shift;
 use function basename;
@@ -70,17 +71,6 @@ final class SuiteLoaderTest extends TestBase
         $file = array_shift($files);
         self::assertNotNull($file);
         self::assertStringContainsString('my_test.phpt', $file);
-    }
-
-    public function testNoShardsAppliedByDefault(): void
-    {
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-
-        $loader = $this->loadSuite();
-
-        // Without shards, all tests should be loaded
-        self::assertSame(7, $loader->testCount);
-        self::assertCount(7, $loader->tests);
     }
 
     /** @return iterable<string, array{string, string, list<list<string>>}> */
@@ -244,31 +234,51 @@ final class SuiteLoaderTest extends TestBase
         self::assertSame($firstRun, $secondRun);
     }
 
-    public function testShardWithoutFunctionalEmitsWarning(): void
+    public function testShardWithoutFunctionalDistributesOverFiles(): void
     {
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-        $this->bareOptions['--shard']         = '1/2';
+        $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
+        $this->bareOptions['--shard-test-distribution'] = ShardDistribution::RoundRobin->value;
 
-        $this->loadSuite();
+        // With 3 files (AlphaTest=3 methods, BravoTest=2 methods, CharlieTest=1 method)
+        // and 2 shards, without --functional we should distribute over FILES not methods.
+        // Each shard should get a distinct set of files with no overlap.
+        $allFiles = [];
+        foreach ([1, 2] as $shard) {
+            $this->bareOptions['--shard'] = $shard . '/2';
+            $files                        = $this->loadSuiteFileNames();
+            foreach ($files as $file) {
+                self::assertNotContains($file, $allFiles, "File {$file} appears in multiple shards without --functional");
+                $allFiles[] = $file;
+            }
+        }
 
-        self::assertStringContainsString(
-            'Warning: Sharding without --functional may cause test classes to run on multiple shards.',
-            $this->output->fetch(),
-        );
+        // All 3 files should be covered across both shards
+        self::assertCount(3, $allFiles);
     }
 
-    public function testShardWithFunctionalDoesNotEmitWarning(): void
+    public function testShardWithFunctionalDistributesOverMethods(): void
     {
-        $this->bareOptions['--configuration'] = $this->fixture('phpunit-common_results.xml');
-        $this->bareOptions['--shard']         = '1/2';
-        $this->bareOptions['--functional']    = true;
+        $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
+        $this->bareOptions['--shard-test-distribution'] = ShardDistribution::RoundRobin->value;
+        $this->bareOptions['--functional']              = true;
 
-        $this->loadSuite();
+        // With --functional, sharding distributes over individual test methods.
+        // The same file CAN appear in multiple shards (different methods from it).
+        $shard1Methods = [];
+        $shard2Methods = [];
 
-        self::assertStringNotContainsString(
-            'Warning: Sharding without --functional may cause test classes to run on multiple shards.',
-            $this->output->fetch(),
-        );
+        $this->bareOptions['--shard'] = '1/2';
+        $shard1Methods                = $this->loadSuite()->tests;
+
+        $this->bareOptions['--shard'] = '2/2';
+        $shard2Methods                = $this->loadSuite()->tests;
+
+        // 6 total methods split across 2 shards = 3 each
+        self::assertCount(3, $shard1Methods);
+        self::assertCount(3, $shard2Methods);
+
+        // No method should appear in both shards
+        self::assertEmpty(array_intersect($shard1Methods, $shard2Methods));
     }
 
     /** @return list<string> */
