@@ -7,6 +7,7 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 use ParaTest\Options;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ResultPrinter;
+use ParaTest\WrapperRunner\ShardDistribution;
 use PHPUnit\Event\Code\TestDox;
 use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\TestData\TestDataCollection;
@@ -142,13 +143,42 @@ final class ResultPrinterTest extends TestBase
     {
         $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv([
             '--shard' => '2/4',
-            '--shard-test-distribution' => 'round-robin',
+            '--shard-test-distribution' => ShardDistribution::RoundRobin->value,
             '--verbose' => true,
         ]));
         $contents      = $this->getStartOutput();
 
         self::assertStringContainsString("Shard:         2/4\n", $contents);
         self::assertStringContainsString("Distribution:  round-robin\n", $contents);
+    }
+
+    public function testStartPrintsShardInfoWithRandomAndSeed(): void
+    {
+        $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv([
+            '--shard' => '1/3',
+            '--shard-test-distribution' => ShardDistribution::Random->value,
+            '--shard-test-distribution-seed' => '12345',
+            '--verbose' => true,
+        ]));
+        $contents      = $this->getStartOutput();
+
+        self::assertStringContainsString("Shard:         1/3\n", $contents);
+        self::assertStringContainsString("Distribution:  random\n", $contents);
+        self::assertStringContainsString("Seed:          12345\n", $contents);
+    }
+
+    public function testStartPrintsShardInfoWithRandomAndDefaultSeed(): void
+    {
+        $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv([
+            '--shard' => '1/3',
+            '--shard-test-distribution' => ShardDistribution::Random->value,
+            '--verbose' => true,
+        ]));
+        $contents      = $this->getStartOutput();
+
+        self::assertStringContainsString("Shard:         1/3\n", $contents);
+        self::assertStringContainsString("Distribution:  random\n", $contents);
+        self::assertStringContainsString("Seed:          0\n", $contents);
     }
 
     public function testStartDoesNotPrintShardInfoWhenNotConfigured(): void

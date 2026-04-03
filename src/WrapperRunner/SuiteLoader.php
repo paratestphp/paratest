@@ -24,6 +24,8 @@ use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
+use Random\Engine\Mt19937;
+use Random\Randomizer;
 use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -96,6 +98,10 @@ final readonly class SuiteLoader
         $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
 
         if ($this->options->hasShard()) {
+            if (! $this->options->functional) {
+                $output->writeln('Warning: Sharding without --functional may cause test classes to run on multiple shards. Consider using --functional for accurate shard distribution.');
+            }
+
             $this->shardTests($testSuite);
         }
 
@@ -236,9 +242,24 @@ final readonly class SuiteLoader
         $shardedTests = match ($this->options->shardDistribution) {
             ShardDistribution::Sequential => array_slice($tests, (int) ceil(count($tests) / $shards) * $current, (int) ceil(count($tests) / $shards)),
             ShardDistribution::RoundRobin => array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
+            ShardDistribution::Random => $this->randomShardTests($tests, $shards, $current),
         };
 
         $suite->setTests($shardedTests);
+    }
+
+    /**
+     * @param list<Test> $tests
+     *
+     * @return list<Test>
+     */
+    private function randomShardTests(array $tests, int $shards, int $current): array
+    {
+        $randomizer = new Randomizer(new Mt19937($this->options->shardDistributionSeed));
+        /** @var list<Test> $tests */
+        $tests = $randomizer->shuffleArray($tests);
+
+        return array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
     }
 
     /** @return list<Test> */

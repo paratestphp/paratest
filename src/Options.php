@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
 
+use function array_column;
 use function array_filter;
 use function array_intersect_key;
 use function array_key_exists;
@@ -26,6 +27,7 @@ use function count;
 use function dirname;
 use function escapeshellarg;
 use function file_exists;
+use function implode;
 use function is_array;
 use function is_bool;
 use function is_numeric;
@@ -42,6 +44,8 @@ use function uniqid;
 use function unserialize;
 
 use const PHP_BINARY;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 /**
  * @internal
@@ -132,6 +136,7 @@ final readonly class Options
         public int $currentShard,
         public int $totalShards,
         public ShardDistribution $shardDistribution,
+        public int $shardDistributionSeed,
     ) {
         $this->needsTeamcity = $configuration->outputIsTeamCity() || $configuration->hasLogfileTeamcity();
         $this->needsTestdox  = $configuration->outputIsTestDox() || $configuration->hasLogfileTestdoxText() || $configuration->hasLogfileTestdoxHtml();
@@ -229,9 +234,23 @@ final readonly class Options
         $shardDistribution = ShardDistribution::tryFrom($shardDistributionValue);
         if ($shardDistribution === null) {
             throw new InvalidArgumentException(sprintf(
-                'Invalid shard-test-distribution value: %s. Valid values are: sequential, round-robin',
+                'Invalid shard-test-distribution value: %s. Valid values are: %s',
                 $shardDistributionValue,
+                implode(', ', array_column(ShardDistribution::cases(), 'value')),
             ));
+        }
+
+        $shardDistributionSeedValue = $options['shard-test-distribution-seed'];
+        unset($options['shard-test-distribution-seed']);
+        assert(is_string($shardDistributionSeedValue));
+        if ($shardDistributionSeedValue !== (string) (int) $shardDistributionSeedValue) {
+            throw new InvalidArgumentException(sprintf('Shard test distribution seed must be an integer between %s and %s, value %s provided', PHP_INT_MIN, PHP_INT_MAX, $shardDistributionSeedValue));
+        }
+
+        $shardDistributionSeed = (int) $shardDistributionSeedValue;
+
+        if ($shardDistributionSeed !== 0 && $shardDistribution !== ShardDistribution::Random) {
+            throw new InvalidArgumentException('Shard test distribution seed can only be used with random distribution');
         }
 
         // Must be a static non-customizable reference because ParaTest code
@@ -288,6 +307,7 @@ final readonly class Options
             $currentShard,
             $totalShards,
             $shardDistribution,
+            $shardDistributionSeed,
         );
     }
 
@@ -371,8 +391,15 @@ final readonly class Options
                 'shard-test-distribution',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Distribution strategy for sharding: sequential (default) or round-robin',
-                'sequential',
+                sprintf('Distribution strategy for sharding: %s', implode(', ', array_column(ShardDistribution::cases(), 'value'))),
+                ShardDistribution::Sequential->value,
+            ),
+            new InputOption(
+                'shard-test-distribution-seed',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Seed for random shard test distribution. Defaults to the fixed value 0 to ensure reproducibility across different runs. Use different values to vary test distribution across runs',
+                '0',
             ),
 
             // PHPUnit options

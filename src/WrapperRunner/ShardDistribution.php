@@ -9,4 +9,5 @@ enum ShardDistribution: string
 {
     case Sequential = 'sequential';
     case RoundRobin = 'round-robin';
+    case Random     = 'random';
 }
