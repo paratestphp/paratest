@@ -31,11 +31,8 @@ parameters:
 			path: src/Options.php
 
 		-
-			message: '''
-				#^Call to deprecated method add\(\) of class Symfony\\Component\\Console\\Application\:
-				since Symfony 7\.4, use Application\:\:addCommand\(\) instead$#
-			'''
-			identifier: method.deprecated
+			message: '#^Call to an undefined method Symfony\\Component\\Console\\Application\:\:add\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/ParaTestCommand.php
 
@@ -256,11 +253,8 @@ parameters:
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
-			message: '''
-				#^Call to deprecated method add\(\) of class Symfony\\Component\\Console\\Application\:
-				since Symfony 7\.4, use Application\:\:addCommand\(\) instead$#
-			'''
-			identifier: method.deprecated
+			message: '#^Call to an undefined method Symfony\\Component\\Console\\Application\:\:add\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: test/Unit/ParaTestCommandTest.php
 
