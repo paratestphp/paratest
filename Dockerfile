@@ -1,4 +1,4 @@
-FROM php:8.5
+FROM php:8.4
 
 # git needed for Infection
 RUN apt-get update \
