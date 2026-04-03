@@ -255,6 +255,7 @@ final class ResultPrinter
         ))->print($testResult);
     }
 
+    /** @param non-empty-string $item */
     private function printFeedbackItem(string $item): void
     {
         $this->printFeedbackItemColor($item);
@@ -276,6 +277,7 @@ final class ResultPrinter
         $this->column = 0;
     }
 
+    /** @param non-empty-string $item */
     private function printFeedbackItemColor(string $item): void
     {
         $buffer = match ($item) {
@@ -298,6 +300,10 @@ final class ResultPrinter
         );
     }
 
+    /**
+     * @param non-empty-string $color
+     * @param non-empty-string $buffer
+     */
     private function colorizeTextBox(string $color, string $buffer): string
     {
         if (! $this->options->configuration->colors()) {
