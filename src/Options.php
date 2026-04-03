@@ -244,7 +244,7 @@ final readonly class Options
         unset($options['shard-test-distribution-seed']);
         assert(is_string($shardDistributionSeedValue));
         if ($shardDistributionSeedValue !== (string) (int) $shardDistributionSeedValue) {
-            throw new InvalidArgumentException(sprintf('Shard test distribution seed must be an integer between %s and %s, value %s provided: ', PHP_INT_MIN, PHP_INT_MAX, $shardDistributionSeedValue));
+            throw new InvalidArgumentException(sprintf('Shard test distribution seed must be an integer between %s and %s, value %s provided', PHP_INT_MIN, PHP_INT_MAX, $shardDistributionSeedValue));
         }
 
         $shardDistributionSeed = (int) $shardDistributionSeedValue;

@@ -12,9 +12,12 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 use function mt_rand;
+use function sprintf;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 /** @internal */
 #[CoversClass(Options::class)]
@@ -292,7 +295,7 @@ final class OptionsTest extends TestBase
     public function testShardTestDistributionSeedMustBeInteger(string $seed): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Shard test distribution seed must be an integer: ' . $seed);
+        $this->expectExceptionMessage(sprintf('Shard test distribution seed must be an integer between %s and %s, value %s provided', PHP_INT_MIN, PHP_INT_MAX, $seed));
 
         $this->createOptionsFromArgv([
             '--shard-test-distribution' => ShardDistribution::Random->value,
