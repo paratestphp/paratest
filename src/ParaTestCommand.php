@@ -50,7 +50,6 @@ final class ParaTestCommand extends Command
         if (method_exists($application, 'addCommand')) {
             $application->addCommand($command);
         } else {
-            // @phpstan-ignore method.deprecated (can be removed when dropping support for Symfony 7.3)
             $application->add($command);
         }
 

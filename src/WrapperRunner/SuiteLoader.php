@@ -11,7 +11,7 @@ use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
-use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
+use PHPUnit\Runner\Extension\ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Phpt\TestCase as PhptTestCase;
 use PHPUnit\Runner\ResultCache\DefaultResultCache;

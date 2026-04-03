@@ -31,6 +31,12 @@ parameters:
 			path: src/Options.php
 
 		-
+			message: '#^Call to an undefined method Symfony\\Component\\Console\\Application\:\:add\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/ParaTestCommand.php
+
+		-
 			message: '#^Parameter \#1 \$filename of method PHPUnit\\Event\\Emitter\:\:testRunnerBootstrapFinished\(\) expects non\-empty\-string, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -43,7 +49,7 @@ parameters:
 			path: src/WrapperRunner/ApplicationForWrapperWorker.php
 
 		-
-			message: '#^Match expression does not handle remaining value\: string$#'
+			message: '#^Match expression does not handle remaining value\: non\-empty\-string$#'
 			identifier: match.unhandled
 			count: 1
 			path: src/WrapperRunner/ResultPrinter.php
@@ -59,6 +65,12 @@ parameters:
 			identifier: cast.string
 			count: 1
 			path: src/WrapperRunner/WorkerCrashedException.php
+
+		-
+			message: '#^Parameter \#1 \$paths of method SebastianBergmann\\CodeCoverage\\Serialization\\Merger\:\:merge\(\) expects list\<non\-empty\-string\>, array\<int\<0, max\>, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
 
 		-
 			message: '#^Parameter \#10 \$testTriggeredPhpunitDeprecationEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects array\<string, list\<PHPUnit\\Event\\Test\\PhpunitDeprecationTriggered\>\>, array given\.$#'
@@ -239,6 +251,12 @@ parameters:
 			identifier: property.uninitializedReadonly
 			count: 1
 			path: src/WrapperRunner/WrapperWorker.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Console\\Application\:\:add\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: test/Unit/ParaTestCommandTest.php
 
 		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
