@@ -24,6 +24,8 @@ use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Configuration\PhpHandler;
 use PHPUnit\TextUI\Configuration\TestSuiteBuilder;
 use PHPUnit\TextUI\TestSuiteFilterProcessor;
+use Random\Engine\Mt19937;
+use Random\Randomizer;
 use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,7 +44,6 @@ use function mt_srand;
 use function ob_get_clean;
 use function ob_start;
 use function preg_quote;
-use function shuffle;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -254,8 +255,9 @@ final readonly class SuiteLoader
      */
     private function randomShardTests(array $tests, int $shards, int $current): array
     {
-        mt_srand($this->options->shardDistributionSeed);
-        shuffle($tests);
+        $randomizer = new Randomizer(new Mt19937($this->options->shardDistributionSeed));
+        /** @var list<Test> $tests */
+        $tests = $randomizer->shuffleArray($tests);
 
         return array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
     }
