@@ -12,10 +12,10 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-use function array_intersect;
 use function array_map;
 use function array_shift;
 use function basename;
+use function preg_match;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
@@ -73,15 +73,16 @@ final class SuiteLoaderTest extends TestBase
         self::assertStringContainsString('my_test.phpt', $file);
     }
 
-    /** @return iterable<string, array{string, string, list<list<string>>}> */
+    /** @return iterable<string, array{string, string, list<array{list<string>, int}>}> */
     public static function shardDistributionProvider(): iterable
     {
+        // Method counts: Alpha=3, Bravo=2, Charlie=1, Delta=2, Echo=1, Foxtrot=3, Golf=2
         yield 'sequential, 2 shards' => [
             ShardDistribution::Sequential->value,
             '2',
             [
-                ['ErrorTest.php', 'FailureTest.php', 'IncompleteTest.php', 'RiskyTest.php'],
-                ['SkippedTest.php', 'SuccessTest.php', 'WarningTest.php'],
+                [['AlphaTest.php', 'BravoTest.php', 'CharlieTest.php', 'DeltaTest.php'], 8],
+                [['EchoTest.php', 'FoxtrotTest.php', 'GolfTest.php'], 6],
             ],
         ];
 
@@ -89,9 +90,9 @@ final class SuiteLoaderTest extends TestBase
             ShardDistribution::Sequential->value,
             '3',
             [
-                ['ErrorTest.php', 'FailureTest.php', 'IncompleteTest.php'],
-                ['RiskyTest.php', 'SkippedTest.php', 'SuccessTest.php'],
-                ['WarningTest.php'],
+                [['AlphaTest.php', 'BravoTest.php', 'CharlieTest.php'], 6],
+                [['DeltaTest.php', 'EchoTest.php', 'FoxtrotTest.php'], 6],
+                [['GolfTest.php'], 2],
             ],
         ];
 
@@ -99,11 +100,11 @@ final class SuiteLoaderTest extends TestBase
             ShardDistribution::Sequential->value,
             '5',
             [
-                ['ErrorTest.php', 'FailureTest.php'],
-                ['IncompleteTest.php', 'RiskyTest.php'],
-                ['SkippedTest.php', 'SuccessTest.php'],
-                ['WarningTest.php'],
-                [],
+                [['AlphaTest.php', 'BravoTest.php'], 5],
+                [['CharlieTest.php', 'DeltaTest.php'], 3],
+                [['EchoTest.php', 'FoxtrotTest.php'], 4],
+                [['GolfTest.php'], 2],
+                [[], 0],
             ],
         ];
 
@@ -111,8 +112,8 @@ final class SuiteLoaderTest extends TestBase
             ShardDistribution::RoundRobin->value,
             '2',
             [
-                ['ErrorTest.php', 'IncompleteTest.php', 'SkippedTest.php', 'WarningTest.php'],
-                ['FailureTest.php', 'RiskyTest.php', 'SuccessTest.php'],
+                [['AlphaTest.php', 'CharlieTest.php', 'EchoTest.php', 'GolfTest.php'], 7],
+                [['BravoTest.php', 'DeltaTest.php', 'FoxtrotTest.php'], 7],
             ],
         ];
 
@@ -120,9 +121,9 @@ final class SuiteLoaderTest extends TestBase
             ShardDistribution::RoundRobin->value,
             '3',
             [
-                ['ErrorTest.php', 'RiskyTest.php', 'WarningTest.php'],
-                ['FailureTest.php', 'SkippedTest.php'],
-                ['IncompleteTest.php', 'SuccessTest.php'],
+                [['AlphaTest.php', 'DeltaTest.php', 'GolfTest.php'], 7],
+                [['BravoTest.php', 'EchoTest.php'], 3],
+                [['CharlieTest.php', 'FoxtrotTest.php'], 4],
             ],
         ];
 
@@ -130,41 +131,44 @@ final class SuiteLoaderTest extends TestBase
             ShardDistribution::RoundRobin->value,
             '5',
             [
-                ['ErrorTest.php', 'SuccessTest.php'],
-                ['FailureTest.php', 'WarningTest.php'],
-                ['IncompleteTest.php'],
-                ['RiskyTest.php'],
-                ['SkippedTest.php'],
+                [['AlphaTest.php', 'FoxtrotTest.php'], 6],
+                [['BravoTest.php', 'GolfTest.php'], 4],
+                [['CharlieTest.php'], 1],
+                [['DeltaTest.php'], 2],
+                [['EchoTest.php'], 1],
             ],
         ];
     }
 
     /**
-     * @param non-empty-string   $distribution
-     * @param non-empty-string   $totalShards
-     * @param list<list<string>> $expectedPerShard
+     * @param non-empty-string               $distribution
+     * @param non-empty-string               $totalShards
+     * @param list<array{list<string>, int}> $expectedPerShard
      */
     #[DataProvider('shardDistributionProvider')]
     public function testShardDistribution(string $distribution, string $totalShards, array $expectedPerShard): void
     {
-        $this->bareOptions['--configuration']           = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
         $this->bareOptions['--shard-test-distribution'] = $distribution;
 
-        foreach ($expectedPerShard as $index => $expected) {
+        foreach ($expectedPerShard as $index => [$expectedFiles, $expectedTestCount]) {
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
-            self::assertSame($expected, $this->loadSuiteFileNames());
+            $loader                       = $this->loadSuite();
+            self::assertSame($expectedFiles, array_map(basename(...), $loader->tests));
+            self::assertSame($expectedTestCount, $loader->testCount);
         }
     }
 
-    /** @return iterable<string, array{non-empty-string, string, list<list<string>>}> */
+    /** @return iterable<string, array{non-empty-string, string, list<array{list<string>, int}>}> */
     public static function randomShardDistributionProvider(): iterable
     {
+        // Method counts: Alpha=3, Bravo=2, Charlie=1, Delta=2, Echo=1, Foxtrot=3, Golf=2
         yield '2 shards, seed 42' => [
             '42',
             '2',
             [
-                ['RiskyTest.php', 'ErrorTest.php', 'WarningTest.php', 'FailureTest.php'],
-                ['SkippedTest.php', 'IncompleteTest.php', 'SuccessTest.php'],
+                [['DeltaTest.php', 'AlphaTest.php', 'GolfTest.php', 'BravoTest.php'], 9],
+                [['EchoTest.php', 'CharlieTest.php', 'FoxtrotTest.php'], 5],
             ],
         ];
 
@@ -172,9 +176,9 @@ final class SuiteLoaderTest extends TestBase
             '42',
             '3',
             [
-                ['RiskyTest.php', 'IncompleteTest.php', 'FailureTest.php'],
-                ['SkippedTest.php', 'WarningTest.php'],
-                ['ErrorTest.php', 'SuccessTest.php'],
+                [['DeltaTest.php', 'CharlieTest.php', 'BravoTest.php'], 5],
+                [['EchoTest.php', 'GolfTest.php'], 3],
+                [['AlphaTest.php', 'FoxtrotTest.php'], 6],
             ],
         ];
 
@@ -182,48 +186,50 @@ final class SuiteLoaderTest extends TestBase
             '42',
             '5',
             [
-                ['RiskyTest.php', 'SuccessTest.php'],
-                ['SkippedTest.php', 'FailureTest.php'],
-                ['ErrorTest.php'],
-                ['IncompleteTest.php'],
-                ['WarningTest.php'],
+                [['DeltaTest.php', 'FoxtrotTest.php'], 5],
+                [['EchoTest.php', 'BravoTest.php'], 3],
+                [['AlphaTest.php'], 3],
+                [['CharlieTest.php'], 1],
+                [['GolfTest.php'], 2],
             ],
         ];
     }
 
     /**
-     * @param non-empty-string   $seed
-     * @param non-empty-string   $totalShards
-     * @param list<list<string>> $expectedPerShard
+     * @param non-empty-string               $seed
+     * @param non-empty-string               $totalShards
+     * @param list<array{list<string>, int}> $expectedPerShard
      */
     #[DataProvider('randomShardDistributionProvider')]
     public function testRandomShardDistribution(string $seed, string $totalShards, array $expectedPerShard): void
     {
-        $this->bareOptions['--configuration']                = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--configuration']                = $this->fixture('phpunit-multi_method_tests.xml');
         $this->bareOptions['--shard-test-distribution']      = ShardDistribution::Random->value;
         $this->bareOptions['--shard-test-distribution-seed'] = $seed;
 
-        foreach ($expectedPerShard as $index => $expected) {
+        foreach ($expectedPerShard as $index => [$expectedFiles, $expectedTestCount]) {
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
-            self::assertSame($expected, $this->loadSuiteFileNames());
+            $loader                       = $this->loadSuite();
+            self::assertSame($expectedFiles, array_map(basename(...), $loader->tests));
+            self::assertSame($expectedTestCount, $loader->testCount);
         }
     }
 
     public function testRandomShardDistributionWithDefaultSeed(): void
     {
-        $this->bareOptions['--configuration']           = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
         $this->bareOptions['--shard-test-distribution'] = ShardDistribution::Random->value;
         $this->bareOptions['--shard']                   = '1/2';
 
         self::assertSame(
-            ['WarningTest.php', 'FailureTest.php', 'SuccessTest.php', 'SkippedTest.php'],
+            ['GolfTest.php', 'BravoTest.php', 'FoxtrotTest.php', 'EchoTest.php'],
             $this->loadSuiteFileNames(),
         );
     }
 
     public function testRandomShardDistributionIsDeterministicWithSameSeed(): void
     {
-        $this->bareOptions['--configuration']                = $this->fixture('phpunit-common_results.xml');
+        $this->bareOptions['--configuration']                = $this->fixture('phpunit-multi_method_tests.xml');
         $this->bareOptions['--shard-test-distribution']      = ShardDistribution::Random->value;
         $this->bareOptions['--shard-test-distribution-seed'] = '99';
         $this->bareOptions['--shard']                        = '1/2';
@@ -234,57 +240,123 @@ final class SuiteLoaderTest extends TestBase
         self::assertSame($firstRun, $secondRun);
     }
 
-    public function testShardWithoutFunctionalDistributesOverFiles(): void
+    /** @return iterable<string, array{string, string, list<list<string>>}> */
+    public static function functionalShardDistributionProvider(): iterable
     {
-        $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
-        $this->bareOptions['--shard-test-distribution'] = ShardDistribution::RoundRobin->value;
+        yield 'sequential, 2 shards' => [
+            ShardDistribution::Sequential->value,
+            '2',
+            [
+                ['testOne', 'testTwo', 'testThree', 'testFour', 'testFive', 'testSix', 'testSeven'],
+                ['testEight', 'testNine', 'testTen', 'testEleven', 'testTwelve', 'testThirteen', 'testFourteen'],
+            ],
+        ];
 
-        // With 3 files (AlphaTest=3 methods, BravoTest=2 methods, CharlieTest=1 method)
-        // and 2 shards, without --functional we should distribute over FILES not methods.
-        // Each shard should get a distinct set of files with no overlap.
-        $allFiles = [];
-        foreach ([1, 2] as $shard) {
-            $this->bareOptions['--shard'] = $shard . '/2';
-            $files                        = $this->loadSuiteFileNames();
-            foreach ($files as $file) {
-                self::assertNotContains($file, $allFiles, "File {$file} appears in multiple shards without --functional");
-                $allFiles[] = $file;
-            }
-        }
+        yield 'sequential, 3 shards' => [
+            ShardDistribution::Sequential->value,
+            '3',
+            [
+                ['testOne', 'testTwo', 'testThree', 'testFour', 'testFive'],
+                ['testSix', 'testSeven', 'testEight', 'testNine', 'testTen'],
+                ['testEleven', 'testTwelve', 'testThirteen', 'testFourteen'],
+            ],
+        ];
 
-        // All 3 files should be covered across both shards
-        self::assertCount(3, $allFiles);
+        yield 'round-robin, 2 shards' => [
+            ShardDistribution::RoundRobin->value,
+            '2',
+            [
+                ['testOne', 'testThree', 'testFive', 'testSeven', 'testNine', 'testEleven', 'testThirteen'],
+                ['testTwo', 'testFour', 'testSix', 'testEight', 'testTen', 'testTwelve', 'testFourteen'],
+            ],
+        ];
+
+        yield 'round-robin, 3 shards' => [
+            ShardDistribution::RoundRobin->value,
+            '3',
+            [
+                ['testOne', 'testFour', 'testSeven', 'testTen', 'testThirteen'],
+                ['testTwo', 'testFive', 'testEight', 'testEleven', 'testFourteen'],
+                ['testThree', 'testSix', 'testNine', 'testTwelve'],
+            ],
+        ];
     }
 
-    public function testShardWithFunctionalDistributesOverMethods(): void
+    /**
+     * @param non-empty-string   $distribution
+     * @param non-empty-string   $totalShards
+     * @param list<list<string>> $expectedPerShard
+     */
+    #[DataProvider('functionalShardDistributionProvider')]
+    public function testFunctionalShardDistribution(string $distribution, string $totalShards, array $expectedPerShard): void
     {
         $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
-        $this->bareOptions['--shard-test-distribution'] = ShardDistribution::RoundRobin->value;
+        $this->bareOptions['--shard-test-distribution'] = $distribution;
         $this->bareOptions['--functional']              = true;
 
-        // With --functional, sharding distributes over individual test methods.
-        // The same file CAN appear in multiple shards (different methods from it).
-        $shard1Methods = [];
-        $shard2Methods = [];
+        foreach ($expectedPerShard as $index => $expected) {
+            $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
+            self::assertSame($expected, $this->loadSuiteMethodNames());
+        }
+    }
 
-        $this->bareOptions['--shard'] = '1/2';
-        $shard1Methods                = $this->loadSuite()->tests;
+    /** @return iterable<string, array{non-empty-string, string, list<list<string>>}> */
+    public static function functionalRandomShardDistributionProvider(): iterable
+    {
+        yield '2 shards, seed 42' => [
+            '42',
+            '2',
+            [
+                ['testTen', 'testTwo', 'testEleven', 'testSix', 'testThree', 'testFour', 'testFourteen'],
+                ['testOne', 'testThirteen', 'testEight', 'testTwelve', 'testSeven', 'testFive', 'testNine'],
+            ],
+        ];
 
-        $this->bareOptions['--shard'] = '2/2';
-        $shard2Methods                = $this->loadSuite()->tests;
+        yield '3 shards, seed 42' => [
+            '42',
+            '3',
+            [
+                ['testTen', 'testThirteen', 'testSix', 'testSeven', 'testFourteen'],
+                ['testOne', 'testEleven', 'testTwelve', 'testFour', 'testNine'],
+                ['testTwo', 'testEight', 'testThree', 'testFive'],
+            ],
+        ];
+    }
 
-        // 6 total methods split across 2 shards = 3 each
-        self::assertCount(3, $shard1Methods);
-        self::assertCount(3, $shard2Methods);
+    /**
+     * @param non-empty-string   $seed
+     * @param non-empty-string   $totalShards
+     * @param list<list<string>> $expectedPerShard
+     */
+    #[DataProvider('functionalRandomShardDistributionProvider')]
+    public function testFunctionalRandomShardDistribution(string $seed, string $totalShards, array $expectedPerShard): void
+    {
+        $this->bareOptions['--configuration']                = $this->fixture('phpunit-multi_method_tests.xml');
+        $this->bareOptions['--shard-test-distribution']      = ShardDistribution::Random->value;
+        $this->bareOptions['--shard-test-distribution-seed'] = $seed;
+        $this->bareOptions['--functional']                   = true;
 
-        // No method should appear in both shards
-        self::assertEmpty(array_intersect($shard1Methods, $shard2Methods));
+        foreach ($expectedPerShard as $index => $expected) {
+            $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
+            self::assertSame($expected, $this->loadSuiteMethodNames());
+        }
     }
 
     /** @return list<string> */
     private function loadSuiteFileNames(): array
     {
         return array_map(basename(...), $this->loadSuite()->tests);
+    }
+
+    /** @return list<string> */
+    private function loadSuiteMethodNames(): array
+    {
+        return array_map(static function (string $test): string {
+            $result = preg_match('/\/(\w+)\$/', $test, $matches);
+            self::assertSame(1, $result);
+
+            return $matches[1];
+        }, $this->loadSuite()->tests);
     }
 
     private function loadSuite(): SuiteLoader
