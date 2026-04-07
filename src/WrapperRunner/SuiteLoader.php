@@ -98,10 +98,6 @@ final readonly class SuiteLoader
         $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
 
         if ($this->options->hasShard()) {
-            if (! $this->options->functional) {
-                $output->writeln('Warning: Sharding without --functional may cause test classes to run on multiple shards. Consider using --functional for accurate shard distribution.');
-            }
-
             $this->shardTests($testSuite);
         }
 
@@ -235,17 +231,22 @@ final readonly class SuiteLoader
 
     private function shardTests(TestSuite $suite): void
     {
-        $tests   = $this->extractTestsInSuite($suite);
         $shards  = $this->options->totalShards;
         $current = $this->options->currentShard - 1; // 0 indexed. Shard 1 is in reality shard 0
 
-        $shardedTests = match ($this->options->shardDistribution) {
-            ShardDistribution::Sequential => array_slice($tests, (int) ceil(count($tests) / $shards) * $current, (int) ceil(count($tests) / $shards)),
-            ShardDistribution::RoundRobin => array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
-            ShardDistribution::Random => $this->randomShardTests($tests, $shards, $current),
+        // With --functional, shard over individual test methods (values).
+        // Without --functional, shard over class-level suites (keys) to keep whole files together.
+        $items = $this->options->functional
+            ? $this->extractTestsInSuite($suite)
+            : $this->extractClassSuites($suite);
+
+        $shardedItems = match ($this->options->shardDistribution) {
+            ShardDistribution::Sequential => array_slice($items, (int) ceil(count($items) / $shards) * $current, (int) ceil(count($items) / $shards)),
+            ShardDistribution::RoundRobin => array_values(array_filter($items, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
+            ShardDistribution::Random => $this->randomShardTests($items, $shards, $current),
         };
 
-        $suite->setTests($shardedTests);
+        $suite->setTests($shardedItems);
     }
 
     /**
@@ -260,6 +261,27 @@ final readonly class SuiteLoader
         $tests = $randomizer->shuffleArray($tests);
 
         return array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
+    }
+
+    /** @return list<TestSuite> */
+    private function extractClassSuites(TestSuite $suite): array
+    {
+        $classSuites = [];
+
+        foreach ($suite->tests() as $item) {
+            if (! ($item instanceof TestSuite)) {
+                continue;
+            }
+
+            $children = $item->tests();
+            if ($children !== [] && $children[0] instanceof TestSuite) {
+                $classSuites = array_merge($classSuites, $this->extractClassSuites($item));
+            } else {
+                $classSuites[] = $item;
+            }
+        }
+
+        return $classSuites;
     }
 
     /** @return list<Test> */
