@@ -627,6 +627,7 @@ final class WrapperRunnerTest extends TestBase
     public function testResultsAreCorrect(): void
     {
         $this->bareOptions['path']              = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
+        $this->bareOptions['--coverage-text']   = 'php://stdout';
         $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
         $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
         $this->bareOptions['--cache-directory'] = $this->tmpDir;
@@ -638,6 +639,36 @@ final class WrapperRunnerTest extends TestBase
         self::assertIsArray($coveragePhp);
         self::assertArrayHasKey('codeCoverage', $coveragePhp);
         self::assertArrayHasKey('testResults', $coveragePhp);
+
+        $expectedContains = <<<'EOF'
+        Warming cache for static analysis ... [%s]
+
+        7 files processed, 0 cache hits, 7 cache misses
+        Processes:     %s
+        Runtime:       PHP %s
+
+        .                                                                   1 / 1 (100%)
+
+        Time: %s, Memory: %s
+
+        OK%s
+        Tests: %s
+
+        Generating code coverage report in PHP format ... done [%s]
+
+
+        Code Coverage Report:
+          %s
+
+         Summary:
+          Classes: 14.29% (1/7)
+          Methods: 14.29% (1/7)
+          Lines:   12.50% (1/8)
+
+        ParaTest\Tests\fixtures\common_results\SuccessTest
+          Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
+        EOF;
+        self::assertStringMatchesFormat($expectedContains, $runnerResult->output);
     }
 
     public function testHandleCollisionWithSymfonyOutput(): void

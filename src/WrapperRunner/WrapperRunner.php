@@ -416,6 +416,7 @@ final class WrapperRunner implements RunnerInterface
             $serializedCoverage['basePath'],
         );
         $codeCoverage = $coverageManager->codeCoverage();
+        $codeCoverage->excludeUncoveredFiles();
         $codeCoverage->setTests($serializedCoverage['testResults']);
         (new ReflectionProperty(\SebastianBergmann\CodeCoverage\CodeCoverage::class, 'cachedReport'))->setValue($codeCoverage, $report);
 
