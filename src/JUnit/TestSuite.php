@@ -125,7 +125,7 @@ final readonly class TestSuite
                 continue;
             }
 
-            $suites[$otherSuiteName]->mergeWith($otherSuite);
+            $suites[$otherSuiteName] = $suites[$otherSuiteName]->mergeWith($otherSuite);
         }
 
         ksort($suites);

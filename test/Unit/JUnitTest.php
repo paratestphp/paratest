@@ -83,4 +83,31 @@ final class JUnitTest extends TestCase
         self::assertCount(2, $testSuite->suites['ParaTest\Tests\fixtures\github\GH997\SuccessfulTests']->cases);
         self::assertEquals(2, $testSuite->suites['ParaTest\Tests\fixtures\github\GH997\SuccessfulTests']->tests);
     }
+
+    public function testMergeSameSuiteAcrossWorkers(): void
+    {
+        $junitFiles = [
+            new SplFileInfo(FIXTURES . '/functional_merge/worker1.xml'),
+            new SplFileInfo(FIXTURES . '/functional_merge/worker2.xml'),
+        ];
+
+        $testSuite = (new LogMerger())->merge($junitFiles);
+        self::assertNotNull($testSuite);
+
+        // 3 distinct class suites: ExampleTest (in both), OtherTest, AnotherTest
+        self::assertCount(3, $testSuite->suites);
+        self::assertArrayHasKey('App\Tests\ExampleTest', $testSuite->suites);
+        self::assertArrayHasKey('App\Tests\OtherTest', $testSuite->suites);
+        self::assertArrayHasKey('App\Tests\AnotherTest', $testSuite->suites);
+
+        // ExampleTest appeared in both workers — all 4 cases must be present
+        $exampleSuite = $testSuite->suites['App\Tests\ExampleTest'];
+        self::assertSame(4, $exampleSuite->tests);
+        self::assertSame(4, $exampleSuite->assertions);
+        self::assertCount(4, $exampleSuite->cases);
+        self::assertSame('testOne', $exampleSuite->cases[0]->name);
+        self::assertSame('testTwo', $exampleSuite->cases[1]->name);
+        self::assertSame('testThree', $exampleSuite->cases[2]->name);
+        self::assertSame('testFour', $exampleSuite->cases[3]->name);
+    }
 }
