@@ -17,7 +17,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
-use PHPUnit\Framework\Attributes\RequiresPhpunit;
 use Symfony\Component\Process\Process;
 
 use function array_diff;
@@ -680,7 +679,6 @@ final class WrapperRunnerTest extends TestBase
     }
 
     #[Group('github')]
-    #[RequiresPhpunit('>=10')]
     public function testIgnoreAttributes(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH756' . DIRECTORY_SEPARATOR . 'phpunit.xml');
