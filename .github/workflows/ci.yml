@@ -27,7 +27,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: composer-normalize, composer-require-checker
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@4.0.0"
 
       - run: "composer validate --strict"
       - run: "composer-normalize --dry-run"
@@ -48,7 +48,7 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@4.0.0"
 
       - name: "Lint XMLs"
         uses: ./.github/lint-xml-configuration
@@ -75,7 +75,7 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@4.0.0"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
 
@@ -136,7 +136,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: cs2pr
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@4.0.0"
 
       - run: "vendor/bin/phpcs -q --report=checkstyle | cs2pr"
 
@@ -155,6 +155,6 @@ jobs:
           coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@4.0.0"
 
       - run: "vendor/bin/phpstan --memory-limit=512M --ansi --no-progress"
