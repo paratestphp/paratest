@@ -17,6 +17,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
+use SebastianBergmann\CodeCoverage\Report\Facade as CoverageReportFacade;
+use SebastianBergmann\CodeCoverage\Serialization\Unserializer;
 use Symfony\Component\Process\Process;
 
 use function array_diff;
@@ -24,6 +26,7 @@ use function array_intersect;
 use function array_merge;
 use function array_reverse;
 use function array_unique;
+use function assert;
 use function count;
 use function explode;
 use function file_get_contents;
@@ -31,6 +34,7 @@ use function file_put_contents;
 use function glob;
 use function implode;
 use function is_file;
+use function is_string;
 use function min;
 use function posix_mkfifo;
 use function preg_match;
@@ -668,6 +672,25 @@ final class WrapperRunnerTest extends TestBase
           Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
         EOF;
         self::assertStringMatchesFormat($expectedContains, $runnerResult->output);
+    }
+
+    public function testCoveragePhpReportContainsMergedCodeCoverageData(): void
+    {
+        $this->bareOptions['path']              = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir;
+
+        $runnerResult = $this->runRunner();
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+
+        $coveragePhpPath = $this->bareOptions['--coverage-php'];
+        assert(is_string($coveragePhpPath));
+
+        $coveragePhp     = (new Unserializer())->unserialize($coveragePhpPath);
+        $coverageSummary = CoverageReportFacade::fromSerializedData($coveragePhp)->summary();
+        self::assertSame(8, $coverageSummary->numberOfExecutableLines());
+        self::assertSame(1, $coverageSummary->numberOfExecutedLines());
     }
 
     public function testHandleCollisionWithSymfonyOutput(): void

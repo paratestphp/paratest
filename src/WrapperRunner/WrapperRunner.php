@@ -41,7 +41,9 @@ use function file_get_contents;
 use function filesize;
 use function is_file;
 use function max;
+use function preg_match;
 use function realpath;
+use function str_starts_with;
 use function unlink;
 use function unserialize;
 use function usleep;
@@ -417,6 +419,18 @@ final class WrapperRunner implements RunnerInterface
         );
         $codeCoverage = $coverageManager->codeCoverage();
         $codeCoverage->excludeUncoveredFiles();
+        $codeCoverageData = clone $serializedCoverage['codeCoverage'];
+        if ($serializedCoverage['basePath'] !== '') {
+            foreach ($codeCoverageData->coveredFiles() as $file) {
+                if (! self::isRelativePath($file)) {
+                    continue;
+                }
+
+                $codeCoverageData->renameFile($file, $serializedCoverage['basePath'] . DIRECTORY_SEPARATOR . $file);
+            }
+        }
+
+        $codeCoverage->setData($codeCoverageData);
         $codeCoverage->setTests($serializedCoverage['testResults']);
         (new ReflectionProperty(\SebastianBergmann\CodeCoverage\CodeCoverage::class, 'cachedReport'))->setValue($codeCoverage, $report);
 
@@ -424,6 +438,13 @@ final class WrapperRunner implements RunnerInterface
             $this->printer->printer,
             $this->options->configuration,
         );
+    }
+
+    private static function isRelativePath(string $path): bool
+    {
+        return ! str_starts_with($path, 'phar://')
+            && ! str_starts_with($path, DIRECTORY_SEPARATOR)
+            && preg_match('/^[A-Za-z]:[\\\\\\/]/', $path) !== 1;
     }
 
     private function generateJunitLog(): void
