@@ -288,7 +288,7 @@ final class ResultPrinterTest extends TestBase
     public function testTestdoxOutputWithProgress(): void
     {
         $testdoxResults = [
-            'Std Class' => TestDoxTestResultCollection::fromArray([
+            stdClass::class => TestDoxTestResultCollection::fromArray([
                 new TestDoxTestResult(
                     new TestMethod(stdClass::class, 'bar', 'foo.php', 42, new TestDox('Std Class', 'Bar', 'Bar'), MetadataCollection::fromArray([]), TestDataCollection::fromArray([])),
                     TestStatus::success(),
@@ -318,7 +318,7 @@ final class ResultPrinterTest extends TestBase
     public function testTestdoxOutputWithoutProgress(): void
     {
         $testdoxResults = [
-            'Std Class' => TestDoxTestResultCollection::fromArray([
+            stdClass::class => TestDoxTestResultCollection::fromArray([
                 new TestDoxTestResult(
                     new TestMethod(stdClass::class, 'bar', 'foo.php', 42, new TestDox('Std Class', 'Bar', 'Bar'), MetadataCollection::fromArray([]), TestDataCollection::fromArray([])),
                     TestStatus::success(),

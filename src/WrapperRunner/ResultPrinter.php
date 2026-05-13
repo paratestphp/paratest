@@ -180,8 +180,8 @@ final class ResultPrinter
     }
 
     /**
-     * @param list<SplFileInfo>                         $teamcityFiles
-     * @param array<string,TestDoxTestResultCollection> $testdoxResults
+     * @param list<SplFileInfo>                                $teamcityFiles
+     * @param array<class-string, TestDoxTestResultCollection> $testdoxResults
      */
     public function printResults(TestResult $testResult, array $teamcityFiles, array $testdoxResults): void
     {
