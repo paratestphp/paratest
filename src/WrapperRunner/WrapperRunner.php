@@ -32,7 +32,7 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use function array_filter;
 use function array_map;
 use function array_merge;
-use function array_merge_recursive;
+use function array_push;
 use function array_shift;
 use function assert;
 use function count;
@@ -299,6 +299,31 @@ final class WrapperRunner implements RunnerInterface
             throw MissingResultsException::create($missingTestResultFiles, 'test_result');
         }
 
+        $hasTests                                    = (int) $testResultSum->hasTests();
+        $numberOfTestsRun                            = $testResultSum->numberOfTestsRun();
+        $numberOfAssertions                          = $testResultSum->numberOfAssertions();
+        $testErroredEvents                           = $testResultSum->testErroredEvents();
+        $testFailedEvents                            = $testResultSum->testFailedEvents();
+        $testConsideredRiskyEvents                   = $testResultSum->testConsideredRiskyEvents();
+        $testSuiteSkippedEvents                      = $testResultSum->testSuiteSkippedEvents();
+        $testSkippedEvents                           = $testResultSum->testSkippedEvents();
+        $testMarkedIncompleteEvents                  = $testResultSum->testMarkedIncompleteEvents();
+        $testTriggeredPhpunitDeprecationEvents       = $testResultSum->testTriggeredPhpunitDeprecationEvents();
+        $testTriggeredPhpunitErrorEvents             = $testResultSum->testTriggeredPhpunitErrorEvents();
+        $testTriggeredPhpunitNoticeEvents            = $testResultSum->testTriggeredPhpunitNoticeEvents();
+        $testTriggeredPhpunitWarningEvents           = $testResultSum->testTriggeredPhpunitWarningEvents();
+        $testRunnerTriggeredDeprecationEvents        = $testResultSum->testRunnerTriggeredDeprecationEvents();
+        $testRunnerTriggeredNoticeEvents             = $testResultSum->testRunnerTriggeredNoticeEvents();
+        $testRunnerTriggeredWarningEvents            = $testResultSum->testRunnerTriggeredWarningEvents();
+        $errors                                      = $testResultSum->errors();
+        $deprecations                                = $testResultSum->deprecations();
+        $notices                                     = $testResultSum->notices();
+        $warnings                                    = $testResultSum->warnings();
+        $phpDeprecations                             = $testResultSum->phpDeprecations();
+        $phpNotices                                  = $testResultSum->phpNotices();
+        $phpWarnings                                 = $testResultSum->phpWarnings();
+        $numberOfIssuesIgnoredByBaseline             = $testResultSum->numberOfIssuesIgnoredByBaseline();
+
         foreach ($this->testResultFiles as $testresultFile) {
             if (! $testresultFile->isFile()) {
                 continue;
@@ -309,33 +334,58 @@ final class WrapperRunner implements RunnerInterface
             $testResult = unserialize($contents);
             assert($testResult instanceof TestResult);
 
-            $testResultSum = new TestResult(
-                (int) $testResultSum->hasTests() + (int) $testResult->hasTests(),
-                $testResultSum->numberOfTestsRun() + $testResult->numberOfTestsRun(),
-                $testResultSum->numberOfAssertions() + $testResult->numberOfAssertions(),
-                array_merge_recursive($testResultSum->testErroredEvents(), $testResult->testErroredEvents()),
-                array_merge_recursive($testResultSum->testFailedEvents(), $testResult->testFailedEvents()),
-                array_merge_recursive($testResultSum->testConsideredRiskyEvents(), $testResult->testConsideredRiskyEvents()),
-                array_merge_recursive($testResultSum->testSuiteSkippedEvents(), $testResult->testSuiteSkippedEvents()),
-                array_merge_recursive($testResultSum->testSkippedEvents(), $testResult->testSkippedEvents()),
-                array_merge_recursive($testResultSum->testMarkedIncompleteEvents(), $testResult->testMarkedIncompleteEvents()),
-                array_merge_recursive($testResultSum->testTriggeredPhpunitDeprecationEvents(), $testResult->testTriggeredPhpunitDeprecationEvents()),
-                array_merge_recursive($testResultSum->testTriggeredPhpunitErrorEvents(), $testResult->testTriggeredPhpunitErrorEvents()),
-                array_merge_recursive($testResultSum->testTriggeredPhpunitNoticeEvents(), $testResult->testTriggeredPhpunitNoticeEvents()),
-                array_merge_recursive($testResultSum->testTriggeredPhpunitWarningEvents(), $testResult->testTriggeredPhpunitWarningEvents()),
-                array_merge_recursive($testResultSum->testRunnerTriggeredDeprecationEvents(), $testResult->testRunnerTriggeredDeprecationEvents()),
-                array_merge_recursive($testResultSum->testRunnerTriggeredNoticeEvents(), $testResult->testRunnerTriggeredNoticeEvents()),
-                array_merge_recursive($testResultSum->testRunnerTriggeredWarningEvents(), $testResult->testRunnerTriggeredWarningEvents()),
-                array_merge_recursive($testResultSum->errors(), $testResult->errors()),
-                array_merge_recursive($testResultSum->deprecations(), $testResult->deprecations()),
-                array_merge_recursive($testResultSum->notices(), $testResult->notices()),
-                array_merge_recursive($testResultSum->warnings(), $testResult->warnings()),
-                array_merge_recursive($testResultSum->phpDeprecations(), $testResult->phpDeprecations()),
-                array_merge_recursive($testResultSum->phpNotices(), $testResult->phpNotices()),
-                array_merge_recursive($testResultSum->phpWarnings(), $testResult->phpWarnings()),
-                $testResultSum->numberOfIssuesIgnoredByBaseline() + $testResult->numberOfIssuesIgnoredByBaseline(),
-            );
+            $hasTests                            += (int) $testResult->hasTests();
+            $numberOfTestsRun                    += $testResult->numberOfTestsRun();
+            $numberOfAssertions                  += $testResult->numberOfAssertions();
+            array_push($testErroredEvents,                    ...$testResult->testErroredEvents());
+            array_push($testFailedEvents,                     ...$testResult->testFailedEvents());
+            array_push($testConsideredRiskyEvents,            ...$testResult->testConsideredRiskyEvents());
+            array_push($testSuiteSkippedEvents,               ...$testResult->testSuiteSkippedEvents());
+            array_push($testSkippedEvents,                    ...$testResult->testSkippedEvents());
+            array_push($testMarkedIncompleteEvents,           ...$testResult->testMarkedIncompleteEvents());
+            array_push($testTriggeredPhpunitDeprecationEvents,...$testResult->testTriggeredPhpunitDeprecationEvents());
+            array_push($testTriggeredPhpunitErrorEvents,      ...$testResult->testTriggeredPhpunitErrorEvents());
+            array_push($testTriggeredPhpunitNoticeEvents,     ...$testResult->testTriggeredPhpunitNoticeEvents());
+            array_push($testTriggeredPhpunitWarningEvents,    ...$testResult->testTriggeredPhpunitWarningEvents());
+            array_push($testRunnerTriggeredDeprecationEvents, ...$testResult->testRunnerTriggeredDeprecationEvents());
+            array_push($testRunnerTriggeredNoticeEvents,      ...$testResult->testRunnerTriggeredNoticeEvents());
+            array_push($testRunnerTriggeredWarningEvents,     ...$testResult->testRunnerTriggeredWarningEvents());
+            array_push($errors,                               ...$testResult->errors());
+            array_push($deprecations,                         ...$testResult->deprecations());
+            array_push($notices,                              ...$testResult->notices());
+            array_push($warnings,                             ...$testResult->warnings());
+            array_push($phpDeprecations,                      ...$testResult->phpDeprecations());
+            array_push($phpNotices,                           ...$testResult->phpNotices());
+            array_push($phpWarnings,                          ...$testResult->phpWarnings());
+            $numberOfIssuesIgnoredByBaseline     += $testResult->numberOfIssuesIgnoredByBaseline();
         }
+
+        $testResultSum = new TestResult(
+            $hasTests,
+            $numberOfTestsRun,
+            $numberOfAssertions,
+            $testErroredEvents,
+            $testFailedEvents,
+            $testConsideredRiskyEvents,
+            $testSuiteSkippedEvents,
+            $testSkippedEvents,
+            $testMarkedIncompleteEvents,
+            $testTriggeredPhpunitDeprecationEvents,
+            $testTriggeredPhpunitErrorEvents,
+            $testTriggeredPhpunitNoticeEvents,
+            $testTriggeredPhpunitWarningEvents,
+            $testRunnerTriggeredDeprecationEvents,
+            $testRunnerTriggeredNoticeEvents,
+            $testRunnerTriggeredWarningEvents,
+            $errors,
+            $deprecations,
+            $notices,
+            $warnings,
+            $phpDeprecations,
+            $phpNotices,
+            $phpWarnings,
+            $numberOfIssuesIgnoredByBaseline,
+        );
 
         if ($this->options->configuration->cacheResult()) {
             $resultCacheSum = new DefaultResultCache($this->options->configuration->testResultCacheFile());
