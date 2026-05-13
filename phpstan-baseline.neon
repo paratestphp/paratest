@@ -37,6 +37,12 @@ parameters:
 			path: src/ParaTestCommand.php
 
 		-
+			message: '#^Parameter \#1 \$testdoxResults of method ParaTest\\TestDox\\TestDoxResultsMerger\:\:orderTestdoxResults\(\) expects array\<class\-string, PHPUnit\\Logging\\TestDox\\TestResultCollection\>, array\<string, PHPUnit\\Logging\\TestDox\\TestResultCollection\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/TestDox/TestDoxResultsMerger.php
+
+		-
 			message: '#^Parameter \#1 \$filename of method PHPUnit\\Event\\Emitter\:\:testRunnerBootstrapFinished\(\) expects non\-empty\-string, string given\.$#'
 			identifier: argument.type
 			count: 1

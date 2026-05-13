@@ -25,7 +25,7 @@ final readonly class TestDoxResultsMerger
     /**
      * @param list<SplFileInfo> $testdoxFiles
      *
-     * @return array<string, TestResultCollection>
+     * @return array<class-string, TestResultCollection>
      */
     public function getResultsFromTestdoxFiles(array $testdoxFiles): array
     {
@@ -39,7 +39,7 @@ final readonly class TestDoxResultsMerger
             $testdoxFileContents = file_get_contents($testdoxFile->getPathname());
             assert($testdoxFileContents !== false);
 
-            /** @var array<string, TestResultCollection> $testMethodsGroupedByClassInTestdoxFile */
+            /** @var array<class-string, TestResultCollection> $testMethodsGroupedByClassInTestdoxFile */
             $testMethodsGroupedByClassInTestdoxFile = unserialize($testdoxFileContents);
             foreach ($testMethodsGroupedByClassInTestdoxFile as $className => $testResultCollection) {
                 if (! isset($testMethodsGroupedByClass[$className])) {
@@ -58,9 +58,9 @@ final readonly class TestDoxResultsMerger
     }
 
     /**
-     * @param array<string, TestResultCollection> $testdoxResults
+     * @param array<class-string, TestResultCollection> $testdoxResults
      *
-     * @return array<string, TestResultCollection>
+     * @return array<class-string, TestResultCollection>
      */
     private function orderTestdoxResults(array $testdoxResults): array
     {
