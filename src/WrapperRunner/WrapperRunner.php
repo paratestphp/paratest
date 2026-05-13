@@ -464,7 +464,7 @@ final class WrapperRunner implements RunnerInterface
         );
     }
 
-    /** @param array<string,TestDoxTestResultCollection> $testdoxResults */
+    /** @param array<class-string,TestDoxTestResultCollection> $testdoxResults */
     private function generateTestDoxLogs(array $testdoxResults): void
     {
         if ($this->options->configuration->hasLogfileTestdoxText()) {
