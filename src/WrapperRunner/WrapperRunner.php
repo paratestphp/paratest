@@ -121,9 +121,7 @@ final class WrapperRunner implements RunnerInterface
 
     public function run(): int
     {
-        $directory = dirname(__DIR__);
-        assert($directory !== '');
-        ExcludeList::addDirectory($directory);
+        ExcludeList::addDirectory(dirname(__DIR__));
         $suiteLoader = new SuiteLoader(
             $this->options,
             $this->output,
