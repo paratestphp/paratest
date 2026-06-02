@@ -67,12 +67,6 @@ parameters:
 			path: src/WrapperRunner/SuiteLoader.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: src/WrapperRunner/WorkerCrashedException.php
-
-		-
 			message: '#^Parameter \#1 \$paths of method SebastianBergmann\\CodeCoverage\\Serialization\\Merger\:\:merge\(\) expects list\<non\-empty\-string\>, array\<int\<0, max\>, string\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -255,6 +249,12 @@ parameters:
 		-
 			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$testdoxFile\. Assign it in the constructor\.$#'
 			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/WrapperRunner/WrapperWorker.php
+
+		-
+			message: '#^Parameter \#3 \$env of class Symfony\\Component\\Process\\Process constructor expects array\<string, string\|Stringable\|false\>\|null, array\{PARATEST\: int, TEST_TOKEN\?\: int, UNIQUE_TEST_TOKEN\?\: non\-empty\-string\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperWorker.php
 
