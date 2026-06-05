@@ -169,7 +169,7 @@ final class WrapperRunner implements RunnerInterface
 
                 if (
                     $this->exitcode > 0
-                    && $this->options->configuration->stopOnFailure()
+                    && $this->options->configuration->stopOnFailureThreshold() > 0
                 ) {
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {
@@ -324,6 +324,13 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->testRunnerTriggeredDeprecationEvents(), $testResult->testRunnerTriggeredDeprecationEvents()),
                 array_merge_recursive($testResultSum->testRunnerTriggeredNoticeEvents(), $testResult->testRunnerTriggeredNoticeEvents()),
                 array_merge_recursive($testResultSum->testRunnerTriggeredWarningEvents(), $testResult->testRunnerTriggeredWarningEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredIssueDeprecationEvents(), $testResult->testRunnerTriggeredIssueDeprecationEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredIssueErrorEvents(), $testResult->testRunnerTriggeredIssueErrorEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredIssueNoticeEvents(), $testResult->testRunnerTriggeredIssueNoticeEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredIssuePhpDeprecationEvents(), $testResult->testRunnerTriggeredIssuePhpDeprecationEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredIssuePhpNoticeEvents(), $testResult->testRunnerTriggeredIssuePhpNoticeEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredIssuePhpWarningEvents(), $testResult->testRunnerTriggeredIssuePhpWarningEvents()),
+                array_merge_recursive($testResultSum->testRunnerTriggeredIssueWarningEvents(), $testResult->testRunnerTriggeredIssueWarningEvents()),
                 array_merge_recursive($testResultSum->errors(), $testResult->errors()),
                 array_merge_recursive($testResultSum->deprecations(), $testResult->deprecations()),
                 array_merge_recursive($testResultSum->notices(), $testResult->notices()),

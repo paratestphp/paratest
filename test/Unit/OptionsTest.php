@@ -246,7 +246,7 @@ final class OptionsTest extends TestBase
     public function testShardTestDistributionInvalidValue(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid shard-test-distribution value: invalid');
+        $this->expectExceptionMessageIsOrContains('Invalid shard-test-distribution value: invalid');
 
         $this->createOptionsFromArgv(['--shard-test-distribution' => 'invalid'], __DIR__);
     }
@@ -275,7 +275,7 @@ final class OptionsTest extends TestBase
     public function testShardTestDistributionSeedOnlyWithRandom(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Shard test distribution seed can only be used with random distribution');
+        $this->expectExceptionMessageIsOrContains('Shard test distribution seed can only be used with random distribution');
 
         $this->createOptionsFromArgv([
             '--shard-test-distribution' => ShardDistribution::Sequential->value,
@@ -295,7 +295,7 @@ final class OptionsTest extends TestBase
     public function testShardTestDistributionSeedMustBeInteger(string $seed): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('Shard test distribution seed must be an integer between %s and %s, value %s provided', PHP_INT_MIN, PHP_INT_MAX, $seed));
+        $this->expectExceptionMessageIsOrContains(sprintf('Shard test distribution seed must be an integer between %s and %s, value %s provided', PHP_INT_MIN, PHP_INT_MAX, $seed));
 
         $this->createOptionsFromArgv([
             '--shard-test-distribution' => ShardDistribution::Random->value,
