@@ -169,7 +169,7 @@ final class WrapperRunner implements RunnerInterface
 
                 if (
                     $this->exitcode > 0
-                    && $this->options->configuration->stopOnFailure()
+                    && $this->options->configuration->stopOnFailureThreshold() > 0
                 ) {
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {

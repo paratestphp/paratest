@@ -43,12 +43,6 @@ parameters:
 			path: src/TestDox/TestDoxResultsMerger.php
 
 		-
-			message: '#^Parameter \#1 \$filename of method PHPUnit\\Event\\Emitter\:\:testRunnerBootstrapFinished\(\) expects non\-empty\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/WrapperRunner/ApplicationForWrapperWorker.php
-
-		-
 			message: '#^Parameter \#1 \$message of method PHPUnit\\Event\\Emitter\:\:testRunnerTriggeredPhpunitWarning\(\) expects non\-empty\-string, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -61,13 +55,7 @@ parameters:
 			path: src/WrapperRunner/ResultPrinter.php
 
 		-
-			message: '#^Parameter \#1 \$filename of method PHPUnit\\Event\\Emitter\:\:testRunnerBootstrapFinished\(\) expects non\-empty\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/WrapperRunner/SuiteLoader.php
-
-		-
-			message: '#^Parameter \#1 \$paths of method SebastianBergmann\\CodeCoverage\\Serialization\\Merger\:\:merge\(\) expects list\<non\-empty\-string\>, array\<int\<0, max\>, string\> given\.$#'
+			message: '#^Parameter \#1 \$paths of method SebastianBergmann\\CodeCoverage\\Serialization\\Merger\:\:merge\(\) expects iterable\<non\-empty\-string\>, array\<int\<0, max\>, string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
@@ -115,43 +103,85 @@ parameters:
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#17 \$errors of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			message: '#^Parameter \#17 \$testRunnerTriggeredIssueDeprecationEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\Issue\\DeprecationTriggered\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#18 \$deprecations of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			message: '#^Parameter \#18 \$testRunnerTriggeredIssueErrorEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\ErrorTriggered\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#19 \$notices of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			message: '#^Parameter \#19 \$testRunnerTriggeredIssueNoticeEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\Issue\\NoticeTriggered\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#20 \$warnings of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			message: '#^Parameter \#20 \$testRunnerTriggeredIssuePhpDeprecationEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\PhpDeprecationTriggered\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#21 \$phpDeprecations of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			message: '#^Parameter \#21 \$testRunnerTriggeredIssuePhpNoticeEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\PhpNoticeTriggered\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#22 \$phpNotices of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			message: '#^Parameter \#22 \$testRunnerTriggeredIssuePhpWarningEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\PhpWarningTriggered\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php
 
 		-
-			message: '#^Parameter \#23 \$phpWarnings of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			message: '#^Parameter \#23 \$testRunnerTriggeredIssueWarningEvents of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\Event\\TestRunner\\Issue\\WarningTriggered\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#24 \$errors of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#25 \$deprecations of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#26 \$notices of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#27 \$warnings of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#28 \$phpDeprecations of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#29 \$phpNotices of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/WrapperRunner/WrapperRunner.php
+
+		-
+			message: '#^Parameter \#30 \$phpWarnings of class PHPUnit\\TestRunner\\TestResult\\TestResult constructor expects list\<PHPUnit\\TestRunner\\TestResult\\Issues\\Issue\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/WrapperRunner/WrapperRunner.php

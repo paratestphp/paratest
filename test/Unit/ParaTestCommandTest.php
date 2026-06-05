@@ -76,7 +76,7 @@ final class ParaTestCommandTest extends TestCase
     {
         $className = uniqid('invalid_class_name_');
         static::expectException(InvalidArgumentException::class);
-        static::expectExceptionMessage($className);
+        static::expectExceptionMessageIsOrContains($className);
 
         $this->commandTester->execute([
             '--runner' => $className,

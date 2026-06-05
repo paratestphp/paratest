@@ -24,7 +24,7 @@ final class PhpstormHelperTest extends TestCase
         $argv = [];
 
         self::expectException(RuntimeException::class);
-        self::expectExceptionMessage('Missing path');
+        self::expectExceptionMessageIsOrContains('Missing path');
 
         PhpstormHelper::handleArgvFromPhpstorm($argv, 'some-paratest-binary');
     }

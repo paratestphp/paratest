@@ -13,6 +13,7 @@ use PHPUnit\TextUI\Output\Printer;
 use PHPUnit\TextUI\Output\SummaryPrinter;
 use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
 use PHPUnit\Util\Color;
+use SebastianBergmann\CodeCoverage\Driver\Granularity;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
 use SebastianBergmann\Timer\ResourceUsageFormatter;
@@ -118,9 +119,9 @@ final class ResultPrinter
         if ($this->options->configuration->hasCoverageReport()) {
             $filter = new Filter();
             if ($this->options->configuration->pathCoverage()) {
-                $codeCoverageDriver = (new Selector())->forLineAndPathCoverage($filter); // @codeCoverageIgnore
+                $codeCoverageDriver = (new Selector())->select($filter, Granularity::LineBranchAndPath); // @codeCoverageIgnore
             } else {
-                $codeCoverageDriver = (new Selector())->forLineCoverage($filter);
+                $codeCoverageDriver = (new Selector())->select($filter, Granularity::Line);
             }
 
             $runtime .= ' with ' . $codeCoverageDriver->nameAndVersion();
