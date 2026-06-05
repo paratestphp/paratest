@@ -460,6 +460,13 @@ final class ResultPrinterTest extends TestBase
             [],
             [],
             [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
             0,
         );
     }
