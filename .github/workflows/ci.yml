@@ -7,6 +7,9 @@ on:
       - "*.x"
       - "renovate/*"
 
+permissions:
+  contents: read
+
 env:
   INI_VALUES: zend.assertions=1,error_reporting=-1,date.timezone="Europe/Rome"
 
