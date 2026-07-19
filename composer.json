@@ -56,7 +56,7 @@
         "phpstan/phpstan": "^2.2.5",
         "phpstan/phpstan-deprecation-rules": "^2.0.4",
         "phpstan/phpstan-phpunit": "^2.0.18",
-        "phpstan/phpstan-strict-rules": "^2.0.11",
+        "phpstan/phpstan-strict-rules": "^2.0.12",
         "symfony/filesystem": "^7.4.8 || ^8.1.0"
     },
     "autoload": {
