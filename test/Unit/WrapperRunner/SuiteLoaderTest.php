@@ -6,6 +6,7 @@ namespace ParaTest\Tests\Unit\WrapperRunner;
 
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ShardDistribution;
+use ParaTest\WrapperRunner\Suite;
 use ParaTest\WrapperRunner\SuiteLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -37,15 +38,15 @@ final class SuiteLoaderTest extends TestBase
 
         $loader = $this->loadSuite();
 
-        self::assertSame(7, $loader->testCount);
-        self::assertCount(7, $loader->tests);
+        self::assertSame(7, $loader->getTestCount());
+        self::assertCount(7, $loader->getTests());
     }
 
     public function testLoadFileGetsPathOfFile(): void
     {
         $path                      = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $this->bareOptions['path'] = $path;
-        $files                     = $this->loadSuite()->tests;
+        $files                     = $this->loadSuite()->getTests();
 
         $file = array_shift($files);
         self::assertNotNull($file);
@@ -66,7 +67,7 @@ final class SuiteLoaderTest extends TestBase
     public function testLoadsPhptFiles(): void
     {
         $this->bareOptions['path'] = $this->fixture('phpt');
-        $files                     = $this->loadSuite()->tests;
+        $files                     = $this->loadSuite()->getTests();
 
         $file = array_shift($files);
         self::assertNotNull($file);
@@ -154,8 +155,8 @@ final class SuiteLoaderTest extends TestBase
         foreach ($expectedPerShard as $index => [$expectedFiles, $expectedTestCount]) {
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
             $loader                       = $this->loadSuite();
-            self::assertSame($expectedFiles, array_map(basename(...), $loader->tests));
-            self::assertSame($expectedTestCount, $loader->testCount);
+            self::assertSame($expectedFiles, array_map(basename(...), $loader->getTests()));
+            self::assertSame($expectedTestCount, $loader->getTestCount());
         }
     }
 
@@ -210,8 +211,8 @@ final class SuiteLoaderTest extends TestBase
         foreach ($expectedPerShard as $index => [$expectedFiles, $expectedTestCount]) {
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
             $loader                       = $this->loadSuite();
-            self::assertSame($expectedFiles, array_map(basename(...), $loader->tests));
-            self::assertSame($expectedTestCount, $loader->testCount);
+            self::assertSame($expectedFiles, array_map(basename(...), $loader->getTests()));
+            self::assertSame($expectedTestCount, $loader->getTestCount());
         }
     }
 
@@ -345,7 +346,7 @@ final class SuiteLoaderTest extends TestBase
     /** @return list<string> */
     private function loadSuiteFileNames(): array
     {
-        return array_map(basename(...), $this->loadSuite()->tests);
+        return array_map(basename(...), $this->loadSuite()->getTests());
     }
 
     /** @return list<string> */
@@ -356,13 +357,13 @@ final class SuiteLoaderTest extends TestBase
             self::assertSame(1, $result);
 
             return $matches[1];
-        }, $this->loadSuite()->tests);
+        }, $this->loadSuite()->getTests());
     }
 
-    private function loadSuite(): SuiteLoader
+    private function loadSuite(): Suite
     {
         $options = $this->createOptionsFromArgv($this->bareOptions);
 
-        return new SuiteLoader($options, $this->output, new CodeCoverageFilterRegistry());
+        return new SuiteLoader($options, new CodeCoverageFilterRegistry())->load($this->output);
     }
 }

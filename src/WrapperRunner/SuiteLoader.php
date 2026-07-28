@@ -53,15 +53,14 @@ use const ARRAY_FILTER_USE_KEY;
 /** @internal */
 final readonly class SuiteLoader
 {
-    public int $testCount;
-    /** @var list<non-empty-string> */
-    public array $tests;
-
     public function __construct(
         private Options $options,
-        OutputInterface $output,
-        CodeCoverageFilterRegistry $codeCoverageFilterRegistry,
+        private CodeCoverageFilterRegistry $codeCoverageFilterRegistry,
     ) {
+    }
+
+    public function load(OutputInterface $output): Suite
+    {
         (new PhpHandler())->handle($this->options->configuration->php());
 
         if ($this->options->configuration->hasBootstrap()) {
@@ -125,7 +124,7 @@ final readonly class SuiteLoader
 
         (new TestSuiteFilterProcessor())->process($this->options->configuration, $testSuite);
 
-        $this->testCount = count($testSuite);
+        $testCount = count($testSuite);
 
         if ($this->options->functional) {
             // Functional: The unit of work is an individual test method.
@@ -154,24 +153,24 @@ final readonly class SuiteLoader
             $tests = array_keys($files);
         }
 
-        $this->tests = $tests;
+        $suite = new Suite($testCount, $tests);
 
-        if (! $this->options->configuration->hasCoverageReport()) {
-            return;
+        if ($this->options->configuration->hasCoverageReport()) {
+            ob_start();
+            $result       = (new WarmCodeCoverageCacheCommand(
+                $this->options->configuration,
+                $this->codeCoverageFilterRegistry,
+            ))->execute();
+            $ob_get_clean = ob_get_clean();
+            assert($ob_get_clean !== false);
+            $output->write($ob_get_clean);
+            $output->write($result->output());
+            if ($result->shellExitCode() !== Result::SUCCESS) {
+                exit($result->shellExitCode());
+            }
         }
 
-        ob_start();
-        $result       = (new WarmCodeCoverageCacheCommand(
-            $this->options->configuration,
-            $codeCoverageFilterRegistry,
-        ))->execute();
-        $ob_get_clean = ob_get_clean();
-        assert($ob_get_clean !== false);
-        $output->write($ob_get_clean);
-        $output->write($result->output());
-        if ($result->shellExitCode() !== Result::SUCCESS) {
-            exit($result->shellExitCode());
-        }
+        return $suite;
     }
 
     /** @return Generator<non-empty-string, (PhptTestCase|TestCase)> */

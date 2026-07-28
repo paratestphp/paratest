@@ -33,7 +33,6 @@ use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_merge_recursive;
-use function array_shift;
 use function assert;
 use function count;
 use function dirname;
@@ -56,9 +55,8 @@ final class WrapperRunner implements RunnerInterface
     private const int CYCLE_SLEEP = 10000;
     private readonly ResultPrinter $printer;
 
-    /** @var list<non-empty-string> */
-    private array $pending = [];
-    private int $exitcode  = -1;
+    private PendingTestQueue $pending;
+    private int $exitcode = -1;
     /** @var array<positive-int,WrapperWorker> */
     private array $workers = [];
     /** @var array<int,int> */
@@ -124,13 +122,13 @@ final class WrapperRunner implements RunnerInterface
         ExcludeList::addDirectory(dirname(__DIR__));
         $suiteLoader = new SuiteLoader(
             $this->options,
-            $this->output,
             $this->codeCoverageFilterRegistry,
         );
+        $suite       = $suiteLoader->load($this->output);
         $result      = TestResultFacade::result();
 
-        $this->pending = $suiteLoader->tests;
-        $this->printer->setTestCount($suiteLoader->testCount);
+        $this->pending = PendingTestQueue::fromSuite($suite);
+        $this->printer->setTestCount($suite->getTestCount());
         $this->printer->start();
         $this->startWorkers();
         $this->assignAllPendingTests();
@@ -150,7 +148,7 @@ final class WrapperRunner implements RunnerInterface
     {
         $batchSize = $this->options->maxBatchSize;
 
-        while (count($this->pending) > 0 && count($this->workers) > 0) {
+        while (!$this->pending->empty() && count($this->workers) > 0) {
             foreach ($this->workers as $token => $worker) {
                 if (! $worker->isRunning()) {
                     throw $worker->getWorkerCrashedException();
@@ -171,8 +169,8 @@ final class WrapperRunner implements RunnerInterface
                     $this->exitcode > 0
                     && $this->options->configuration->stopOnFailureThreshold() > 0
                 ) {
-                    $this->pending = [];
-                } elseif (($pending = array_shift($this->pending)) !== null) {
+                    $this->pending->clear();
+                } elseif (($pending = $this->pending->dequeue()) !== null) {
                     $worker->assign($pending);
                     $this->batches[$token]++;
                 }
