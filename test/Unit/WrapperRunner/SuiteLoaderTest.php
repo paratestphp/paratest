@@ -13,6 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+use function array_key_first;
 use function array_map;
 use function array_shift;
 use function basename;
@@ -341,6 +342,29 @@ final class SuiteLoaderTest extends TestBase
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
             self::assertSame($expected, $this->loadSuiteMethodNames());
         }
+    }
+
+    public function testLoadsAffinityTests(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('affinity');
+
+        $suite       = $this->loadSuite();
+        $perAffinity = $suite->getTestsPerAffinity();
+        self::assertCount(3, $perAffinity);
+        self::assertSame('A', array_key_first($perAffinity));
+        self::assertCount(2, $perAffinity['A']);
+    }
+
+    public function testLoadsAffinityTestsFunctional(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('affinity');
+        $this->bareOptions['--functional'] = true;
+
+        $suite       = $this->loadSuite();
+        $perAffinity = $suite->getTestsPerAffinity();
+        self::assertCount(3, $perAffinity);
+        self::assertSame('A', array_key_first($perAffinity));
+        self::assertCount(3, $perAffinity['A']);
     }
 
     /** @return list<string> */

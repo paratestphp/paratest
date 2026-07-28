@@ -148,7 +148,7 @@ final class WrapperRunner implements RunnerInterface
     {
         $batchSize = $this->options->maxBatchSize;
 
-        while (!$this->pending->empty() && count($this->workers) > 0) {
+        while (! $this->pending->empty() && count($this->workers) > 0) {
             foreach ($this->workers as $token => $worker) {
                 if (! $worker->isRunning()) {
                     throw $worker->getWorkerCrashedException();
@@ -170,7 +170,7 @@ final class WrapperRunner implements RunnerInterface
                     && $this->options->configuration->stopOnFailureThreshold() > 0
                 ) {
                     $this->pending->clear();
-                } elseif (($pending = $this->pending->dequeue()) !== null) {
+                } elseif (($pending = $this->pending->dequeue($token)) !== null) {
                     $worker->assign($pending);
                     $this->batches[$token]++;
                 }

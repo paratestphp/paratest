@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace ParaTest\WrapperRunner;
 
+use function array_merge;
+use function array_values;
+
 /** @internal */
 final readonly class Suite
 {
-    /** @param list<non-empty-string> $tests */
+    /** @param array<list<non-empty-string>> $testsPerAffinity */
     public function __construct(
-        private int   $testCount,
-        private array $tests,
+        private int $testCount,
+        private array $testsPerAffinity,
     ) {
     }
 
@@ -19,9 +22,15 @@ final readonly class Suite
         return $this->testCount;
     }
 
+    /** @return array<list<non-empty-string>> */
+    public function getTestsPerAffinity(): array
+    {
+        return $this->testsPerAffinity;
+    }
+
     /** @return list<non-empty-string> */
     public function getTests(): array
     {
-        return $this->tests;
+        return array_merge(...array_values($this->testsPerAffinity));
     }
 }

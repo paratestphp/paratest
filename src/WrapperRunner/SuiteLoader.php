@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ParaTest\WrapperRunner;
 
 use Generator;
+use ParaTest\AffinityAware;
 use ParaTest\Options;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\Test;
@@ -31,7 +32,6 @@ use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_filter;
-use function array_keys;
 use function array_merge;
 use function array_slice;
 use function array_values;
@@ -47,12 +47,15 @@ use function sprintf;
 use function str_starts_with;
 use function strlen;
 use function substr;
+use function uasort;
 
 use const ARRAY_FILTER_USE_KEY;
 
 /** @internal */
 final readonly class SuiteLoader
 {
+    private const string DEFAULT_AFFINITY = '';
+
     public function __construct(
         private Options $options,
         private CodeCoverageFilterRegistry $codeCoverageFilterRegistry,
@@ -128,10 +131,24 @@ final readonly class SuiteLoader
 
         if ($this->options->functional) {
             // Functional: The unit of work is an individual test method.
+
+            // Keep a map of files to their affinity to avoid both recalculation and issues when the calculated affinity changes between calls.
+            $fileToAffinity = [];
+
             $tests = [];
             foreach ($this->loadFiles($testSuite) as $file => $test) {
+                $affinity = self::DEFAULT_AFFINITY;
+                if ($test instanceof AffinityAware) {
+                    if (! isset($fileToAffinity[$file])) {
+                        $fileToAffinity[$file] = $test->getAffinity() ?? self::DEFAULT_AFFINITY;
+                    }
+
+                    $affinity = $fileToAffinity[$file];
+                }
+
+                $tests[$affinity] ??= [];
                 if ($test instanceof PhptTestCase) {
-                    $tests[] = $file;
+                    $tests[$affinity][] = $file;
                 } else {
                     $name = $test->name();
                     if ($test->providedData() !== []) {
@@ -140,18 +157,34 @@ final readonly class SuiteLoader
                         $name = sprintf('/%s$/', $name);
                     }
 
-                    $tests[] = "$file\0$name";
+                    $tests[$affinity][] = "$file\0$name";
                 }
             }
         } else {
             // Not functional: The unit of work is a test class consisting of multiple test methods.
             $files = [];
-            foreach ($this->loadFiles($testSuite) as $file => $_) {
-                $files[$file] = null;
+            foreach ($this->loadFiles($testSuite) as $file => $test) {
+                if (isset($files[$file]) === true) {
+                    continue;
+                }
+
+                $affinity     = $test instanceof AffinityAware
+                    ? ($test->getAffinity() ?? self::DEFAULT_AFFINITY)
+                    : self::DEFAULT_AFFINITY;
+                $files[$file] = $affinity;
             }
 
-            $tests = array_keys($files);
+            $tests = [];
+            foreach ($files as $file => $affinity) {
+                $tests[$affinity] ??= [];
+                $tests[$affinity][] = $file;
+            }
         }
+
+        // Sort the tests grouped by affinity. Largest buckets first.
+        uasort($tests, static function (array $a, array $b) {
+            return count($b) <=> count($a);
+        });
 
         $suite = new Suite($testCount, $tests);
 

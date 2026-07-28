@@ -119,6 +119,52 @@ public function setUp(): void
 }
 ```
 
+## Test setup caching between tests
+
+Similar to the problem with single initialization in tests. Reusing (cached) data between tests using static
+variables will be less effective when tests are run on different worker processes.
+
+This has two solutions:
+* Share data using the file system. See a comparable solution using single initialization above.
+* Assign affinities to tests to hint that tests should run in the same worker. This is only a hint and not a guarantee.
+
+By default paratest will (without the `--functional` option) assign whole phpunit test cases to a worker.
+Assigning affinities will therefore only be useful if your state can be shared by multiple phpunit test cases.
+
+Assigning an affinity can be done by implementing the AffinityAware interface in your tests.
+
+```php
+final class ExpensiveSingleton
+{
+    private static self $instance;
+    
+    public static function get(): self
+    {
+        self::$instance ??= expensive_setup_logic();
+        return self::$instance;
+    }
+}
+
+//...
+
+use ParaTest\AffinityAware;
+
+final class MyTest extends TestCase implements AffinityAware
+{
+    private ExpensiveSingleton $singleton;
+    
+    protected function setUp(): void
+    {
+        $this->singleton = ExpensiveSingleton::get();
+    }
+
+    public function getAffinity(): string|null
+    {
+        return ExpensiveSingleton::class;
+    }
+}
+```
+
 ## Troubleshooting
 
 If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via
