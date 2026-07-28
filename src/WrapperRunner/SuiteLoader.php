@@ -38,7 +38,6 @@ use function array_values;
 use function assert;
 use function ceil;
 use function count;
-use function is_int;
 use function is_string;
 use function mt_srand;
 use function ob_get_clean;
@@ -128,37 +127,34 @@ final readonly class SuiteLoader
 
         $this->testCount = count($testSuite);
 
-        $files = [];
-        $tests = [];
-        foreach ($this->loadFiles($testSuite) as $file => $test) {
-            $files[$file] = null;
-
-            if ($test instanceof PhptTestCase) {
-                $tests[] = $file;
-            } else {
-                $name = $test->name();
-                if ($test->providedData() !== []) {
-                    $dataName = $test->dataName();
-                    if ($this->options->functional) {
+        if ($this->options->functional) {
+            // Functional: The unit of work is an individual test method.
+            $tests = [];
+            foreach ($this->loadFiles($testSuite) as $file => $test) {
+                if ($test instanceof PhptTestCase) {
+                    $tests[] = $file;
+                } else {
+                    $name = $test->name();
+                    if ($test->providedData() !== []) {
                         $name = sprintf('/%s%s$/', preg_quote($name, '/'), preg_quote($test->dataSetAsString(), '/'));
                     } else {
-                        if (is_int($dataName)) {
-                            $name .= '#' . $dataName;
-                        } else {
-                            $name .= '@' . $dataName;
-                        }
+                        $name = sprintf('/%s$/', $name);
                     }
-                } else {
-                    $name = sprintf('/%s$/', $name);
-                }
 
-                $tests[] = "$file\0$name";
+                    $tests[] = "$file\0$name";
+                }
             }
+        } else {
+            // Not functional: The unit of work is a test class consisting of multiple test methods.
+            $files = [];
+            foreach ($this->loadFiles($testSuite) as $file => $_) {
+                $files[$file] = null;
+            }
+
+            $tests = array_keys($files);
         }
 
-        $this->tests = $this->options->functional
-            ? $tests
-            : array_keys($files);
+        $this->tests = $tests;
 
         if (! $this->options->configuration->hasCoverageReport()) {
             return;
