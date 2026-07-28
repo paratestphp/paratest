@@ -1187,6 +1187,31 @@ XML;
     }
 
     #[Group('github')]
+    public function testShardOnDataProviderShouldReturnCorrectSum(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH1120' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--shard']         = '2/2';
+        $this->bareOptions['--processes']     = '2';
+
+        $expectedOutput = <<<'EOF'
+Processes:     %s
+Shard:         2/2
+Distribution:  sequential
+Runtime:       PHP %s
+Configuration: %s/test/fixtures/github/GH1120/phpunit.xml
+
+....                                                                4 / 4 (100%)
+
+Time: %s, Memory: %s MB%a
+EOF;
+
+        $runnerResult = $this->runRunner();
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+    }
+
+    #[Group('github')]
     public function testDeprecationTriggerSpecsAreRespected(): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH1081' . DIRECTORY_SEPARATOR . 'phpunit.xml');

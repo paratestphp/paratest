@@ -7,6 +7,7 @@ namespace ParaTest\WrapperRunner;
 use Generator;
 use ParaTest\Options;
 use PHPUnit\Event\Facade as EventFacade;
+use PHPUnit\Framework\DataProviderTestSuite;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
@@ -274,7 +275,11 @@ final readonly class SuiteLoader
             }
 
             $children = $item->tests();
-            if ($children !== [] && $children[0] instanceof TestSuite) {
+            if (
+                $children !== []
+                && $children[0] instanceof TestSuite
+                && ! ($children[0] instanceof DataProviderTestSuite)
+            ) {
                 $classSuites = array_merge($classSuites, $this->extractClassSuites($item));
             } else {
                 $classSuites[] = $item;
