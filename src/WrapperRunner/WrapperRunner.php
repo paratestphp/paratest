@@ -13,7 +13,7 @@ use PHPUnit\Logging\TestDox\HtmlRenderer as TestDoxHtmlRenderer;
 use PHPUnit\Logging\TestDox\PlainTextRenderer as TestDoxPlainTextRenderer;
 use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
 use PHPUnit\Runner\CodeCoverage;
-use PHPUnit\Runner\ResultCache\DefaultResultCache;
+use PHPUnit\Runner\TestRunHistory\DefaultTestRunHistory;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
@@ -339,13 +339,20 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->phpNotices(), $testResult->phpNotices()),
                 array_merge_recursive($testResultSum->phpWarnings(), $testResult->phpWarnings()),
                 $testResultSum->numberOfIssuesIgnoredByBaseline() + $testResult->numberOfIssuesIgnoredByBaseline(),
+                [
+                    'self' => $testResultSum->numberOfSelfDeprecations() + $testResult->numberOfSelfDeprecations(),
+                    'direct' => $testResultSum->numberOfDirectDeprecations() + $testResult->numberOfDirectDeprecations(),
+                    'indirect' => $testResultSum->numberOfIndirectDeprecations() + $testResult->numberOfIndirectDeprecations(),
+                    'unknown' => $testResultSum->numberOfDeprecationsWithUnknownTrigger() + $testResult->numberOfDeprecationsWithUnknownTrigger(),
+                ],
+                array_merge_recursive($testResultSum->retriedTests(), $testResult->retriedTests()),
             );
         }
 
-        if ($this->options->configuration->cacheResult()) {
-            $resultCacheSum = new DefaultResultCache($this->options->configuration->testResultCacheFile());
+        if ($this->options->configuration->recordTestRunHistory()) {
+            $resultCacheSum = new DefaultTestRunHistory($this->options->configuration->testRunHistoryFile());
             foreach ($this->resultCacheFiles as $resultCacheFile) {
-                $resultCache = new DefaultResultCache($resultCacheFile->getPathname());
+                $resultCache = new DefaultTestRunHistory($resultCacheFile->getPathname());
                 $resultCache->load();
 
                 $resultCacheSum->mergeWith($resultCache);

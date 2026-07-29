@@ -664,8 +664,8 @@ final class WrapperRunnerTest extends TestBase
           %s
 
          Summary:
-          Classes: 14.29% (1/7)
-          Methods: 14.29% (1/7)
+          Classes: 14.28% (1/7)
+          Methods: 14.28% (1/7)
           Lines:   12.50% (1/8)
 
         ParaTest\Tests\fixtures\common_results\SuccessTest

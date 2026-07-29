@@ -20,8 +20,8 @@ use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Filter\Factory;
-use PHPUnit\Runner\ResultCache\DefaultResultCache;
-use PHPUnit\Runner\ResultCache\ResultCacheHandler;
+use PHPUnit\Runner\TestRunHistory\DefaultTestRunHistory;
+use PHPUnit\Runner\TestRunHistory\TestRunHistoryHandler;
 use PHPUnit\Runner\TestSuiteLoader;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\IssueFilter;
@@ -210,9 +210,10 @@ final class ApplicationForWrapperWorker
         DeprecationCollector::init();
 
         if (isset($this->resultCacheFile)) {
-            new ResultCacheHandler(
-                new DefaultResultCache($this->resultCacheFile),
+            new TestRunHistoryHandler(
+                new DefaultTestRunHistory($this->resultCacheFile),
                 EventFacade::instance(),
+                false,
             );
         }
 

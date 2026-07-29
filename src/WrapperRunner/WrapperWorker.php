@@ -69,7 +69,7 @@ final class WrapperWorker
         touch($this->unexpectedOutputFile->getPathname());
         $this->testResultFile = new SplFileInfo($commonTmpFilePath . 'test_result');
 
-        if ($this->options->configuration->cacheResult()) {
+        if ($this->options->configuration->recordTestRunHistory()) {
             $this->resultCacheFile = new SplFileInfo($commonTmpFilePath . 'result_cache');
         }
 

@@ -468,6 +468,13 @@ final class ResultPrinterTest extends TestBase
             [],
             [],
             0,
+            [
+                'self'     => 0,
+                'direct'   => 0,
+                'indirect' => 0,
+                'unknown'  => 0,
+            ],
+            [],
         );
     }
 }
