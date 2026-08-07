@@ -45,7 +45,7 @@
         "phpunit/php-timer": "^9",
         "phpunit/phpunit": "^13.3.0",
         "sebastian/environment": "^9.3.2",
-        "symfony/console": "^7.4.8 || ^8.1.1",
+        "symfony/console": "^7.4.8 || ^8.1.2",
         "symfony/process": "^7.4.8 || ^8.1.0"
     },
     "require-dev": {
@@ -57,7 +57,7 @@
         "phpstan/phpstan-deprecation-rules": "^2.0.5",
         "phpstan/phpstan-phpunit": "^2.0.18",
         "phpstan/phpstan-strict-rules": "^2.0.12",
-        "symfony/filesystem": "^7.4.8 || ^8.1.0"
+        "symfony/filesystem": "^7.4.8 || ^8.1.2"
     },
     "autoload": {
         "psr-4": {

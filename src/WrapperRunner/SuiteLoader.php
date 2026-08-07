@@ -15,8 +15,8 @@ use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Phpt\TestCase as PhptTestCase;
-use PHPUnit\Runner\ResultCache\DefaultResultCache;
-use PHPUnit\Runner\ResultCache\NullResultCache;
+use PHPUnit\Runner\TestRunHistory\DefaultTestRunHistory;
+use PHPUnit\Runner\TestRunHistory\NullTestRunHistory;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TextUI\Command\Result;
@@ -111,9 +111,9 @@ final readonly class SuiteLoader
             $this->options->configuration->executionOrderDefects() !== TestSuiteSorter::ORDER_DEFAULT ||
             $this->options->configuration->resolveDependencies()
         ) {
-            $resultCache = new NullResultCache();
-            if ($this->options->configuration->cacheResult()) {
-                $resultCache = new DefaultResultCache($this->options->configuration->testResultCacheFile());
+            $resultCache = new NullTestRunHistory();
+            if ($this->options->configuration->recordTestRunHistory()) {
+                $resultCache = new DefaultTestRunHistory($this->options->configuration->testRunHistoryFile());
                 $resultCache->load();
             }
 
