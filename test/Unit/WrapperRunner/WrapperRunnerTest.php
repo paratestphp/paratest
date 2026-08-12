@@ -1243,12 +1243,6 @@ EOF;
         self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
     }
 
-    /**
-     * ###   WARNING   ###
-     *
-     * This test MUST be the last of this file,
-     * otherwise the next one will always fail
-     */
     public function testProcessIsolation(): void
     {
         $this->bareOptions['path']                = $this->fixture('process_isolation' . DIRECTORY_SEPARATOR . 'FooTest.php');
