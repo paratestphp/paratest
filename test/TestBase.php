@@ -10,6 +10,7 @@ use ParaTest\RunnerInterface;
 use ParaTest\WrapperRunner\WrapperRunner;
 use PHPUnit\Event\Facade;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\TextUI\Configuration\Registry;
 use ReflectionProperty;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -68,7 +69,16 @@ abstract class TestBase extends TestCase
 
         $input = new ArrayInput($argv, $inputDefinition);
 
-        return Options::fromConsoleInput($input, $cwd ?? __DIR__);
+        // Backup the global PHPUnit registry instance and restore after building the Options object,
+        // or options set by tests will leak into all following tests.
+        $configurationRegistry = new ReflectionProperty(Registry::class, 'instance');
+        $registryBackup        = $configurationRegistry->getValue();
+
+        try {
+            return Options::fromConsoleInput($input, $cwd ?? __DIR__);
+        } finally {
+            $configurationRegistry->setValue(null, $registryBackup);
+        }
     }
 
     final protected function runRunner(): RunnerResult

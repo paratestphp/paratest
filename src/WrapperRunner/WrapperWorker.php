@@ -134,7 +134,7 @@ final class WrapperWorker
             }
         }
 
-        $phpunitArguments[] = '--do-not-cache-result';
+        $phpunitArguments[] = '--do-not-record-test-run-history';
         $phpunitArguments[] = '--no-logging';
         $phpunitArguments[] = '--no-coverage';
         $phpunitArguments[] = '--no-output';
