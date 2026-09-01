@@ -45,6 +45,7 @@ use function simplexml_load_string;
 use function sort;
 use function sprintf;
 use function str_replace;
+use function substr;
 use function uniqid;
 use function unlink;
 
@@ -273,9 +274,12 @@ final class WrapperRunnerTest extends TestBase
         self::assertNotFalse($format);
 
         $output = $result->output;
+        // Strip EFIRS.W that is ordered randomly
+        // The correctness of the test is still checked with the rest of the content
         $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+\\.\\d+\\.\\w+(-.+)?\n\n/", '', $output, 1, $count);
         self::assertSame(1, $count);
         self::assertNotNull($output);
+        $output = substr($output, 7);
 
         self::assertStringMatchesFormat(
             $format,
@@ -295,9 +299,12 @@ final class WrapperRunnerTest extends TestBase
         self::assertNotFalse($format);
 
         $output = $result->output;
+        // Strip EFIRS.W that is ordered randomly
+        // The correctness of the test is still checked with the rest of the content
         $output = preg_replace("/^Processes:     \\d+\nRuntime:       PHP \\d+\\.\\d+\\.\\w+(-.+)?\n\n/", '', $output, 1, $count);
         self::assertSame(1, $count);
         self::assertNotNull($output);
+        $output = substr($output, 7);
 
         self::assertStringMatchesFormat(
             $format,
