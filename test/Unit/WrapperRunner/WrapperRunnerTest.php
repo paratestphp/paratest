@@ -549,7 +549,7 @@ final class WrapperRunnerTest extends TestBase
         $xml = preg_replace('/time="[^"]+"/', 'time="1.234567"', $xml);
         file_put_contents($outputFile, $xml);
 
-        self::assertXmlFileEqualsXmlFile(FIXTURES . '/common_results/combined.xml', $outputFile);
+        self::assertXmlFileEqualsXmlFile(FIXTURES . '/common_results/junit-combined.xml', $outputFile);
     }
 
     public function testRunnerReversed(): void
