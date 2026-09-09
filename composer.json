@@ -43,7 +43,7 @@
         "phpunit/php-code-coverage": "^14.3.2",
         "phpunit/php-file-iterator": "^7.0.2",
         "phpunit/php-timer": "^9",
-        "phpunit/phpunit": "^13.3.2",
+        "phpunit/phpunit": "^13.3.3",
         "sebastian/environment": "^9.3.2",
         "symfony/console": "^7.4.8 || ^8.1.6",
         "symfony/process": "^7.4.8 || ^8.1.6"
