@@ -18,6 +18,6 @@ final class MtRandTest extends TestCase
      */
     public function testMtRandIsDeterministic(): void
     {
-        self::assertSame(1495656191, mt_rand());
+        self::assertSame(1_495_656_191, mt_rand());
     }
 }

@@ -52,6 +52,7 @@
         "ext-pcntl": "*",
         "ext-pcov": "*",
         "ext-posix": "*",
+        "boundwize/structarmed": "^0.17",
         "doctrine/coding-standard": "^14.0.0",
         "phpstan/phpstan": "^2.2.14",
         "phpstan/phpstan-deprecation-rules": "^2.0.5",
