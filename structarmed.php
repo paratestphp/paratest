@@ -26,6 +26,6 @@ return Architecture::define()
         'JUnit'             => [],
         'TestDox'           => [],
         'Util'              => [],
-        'WrapperRunner'     => ['+Options', 'RunnerInterface', 'JUnit', 'TestDox'],
+        'WrapperRunner'     => ['+Options', 'JUnit', 'TestDox'],
         'Command'           => ['+WrapperRunner'],
     ]);
