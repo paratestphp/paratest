@@ -29,6 +29,7 @@ use function array_reverse;
 use function array_unique;
 use function assert;
 use function count;
+use function dirname;
 use function explode;
 use function file_get_contents;
 use function file_put_contents;
@@ -52,6 +53,7 @@ use function unlink;
 
 use const DIRECTORY_SEPARATOR;
 use const FIXTURES;
+use const PHP_BINARY;
 use const PHP_EOL;
 
 /** @internal */
@@ -887,6 +889,44 @@ EOF;
         $junit = TestSuite::fromFile(new SplFileInfo($outputFile));
         self::assertSame(1, $junit->tests);
         self::assertSame(1, $junit->failures);
+    }
+
+    public function testRepeatTakesPrecedenceOverRetry(): void
+    {
+        $process = $this->runParatestProcess('--repeat=2', '--retry=2');
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $process->getExitCode());
+        self::assertStringContainsString('Options --repeat and --retry cannot be used together', $process->getOutput());
+        self::assertStringContainsString('Failures: 1', $process->getOutput());
+    }
+
+    public function testInvalidRetryValueIsIgnored(): void
+    {
+        $process = $this->runParatestProcess('--retry=abc');
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $process->getExitCode());
+        self::assertStringContainsString('Option "--retry abc" ignored because "abc" is not a positive integer', $process->getOutput());
+        self::assertStringContainsString('Failures: 1', $process->getOutput());
+    }
+
+    /**
+     * Invalid or conflicting --retry/--repeat values trigger PHPUnit warnings: run ParaTest in its own
+     * process on the flaky fixture so that those warnings do not leak into this test run
+     *
+     * @param non-empty-string ...$options
+     */
+    private function runParatestProcess(string ...$options): Process
+    {
+        $process = new Process([
+            PHP_BINARY,
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'paratest',
+            '--no-configuration',
+            ...$options,
+            $this->fixture('retry_repeat_cli' . DIRECTORY_SEPARATOR . 'FlakyTest.php'),
+        ]);
+        $process->run();
+
+        return $process;
     }
 
     /** @return iterable<string, array{non-empty-string, bool, int}> */
