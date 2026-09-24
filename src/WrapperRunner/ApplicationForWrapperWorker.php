@@ -89,12 +89,16 @@ final class ApplicationForWrapperWorker
 
         $this->bootstrap();
 
+        $numberOfRuns = $this->configuration->repeat();
+        // the --repeat CLI option takes precedence over the --retry CLI option
+        $maxAttempts = $numberOfRuns > 1 ? 1 : $this->configuration->retry();
+
         if (is_file($testPath) && str_ends_with($testPath, '.phpt')) {
             $testSuite = TestSuite::empty($testPath);
-            $testSuite->addTestFile($testPath);
+            $testSuite->addTestFile($testPath, [], $numberOfRuns, $maxAttempts);
         } else {
             $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
-            $testSuite     = TestSuite::fromClassReflector($testSuiteRefl);
+            $testSuite     = TestSuite::fromClassReflector($testSuiteRefl, [], $numberOfRuns, $maxAttempts);
         }
 
         EventFacade::emitter()->testSuiteLoaded(

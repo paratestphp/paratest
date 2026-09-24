@@ -119,6 +119,22 @@ public function setUp(): void
 }
 ```
 
+## Retrying and repeating tests
+
+PHPUnit's `--retry` and `--repeat` options work the same way with ParaTest:
+
+```
+vendor/bin/paratest --retry 3   # attempt each test up to 3 times, stopping at the first success
+vendor/bin/paratest --repeat 5  # run each test 5 times, stopping at the first failure
+```
+
+When both are given, `--repeat` takes precedence, as in PHPUnit.
+
+Note that a test that fails and then passes under `--retry` is logged to JUnit as a single passing
+`<testcase>` named `... (attempt 2 of 3)`, with no `<failure>` element and the failed attempts'
+durations included in its `time`. This is PHPUnit's behaviour: CI tools reading the JUnit report
+will see such a test as a plain success.
+
 ## Troubleshooting
 
 If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via
