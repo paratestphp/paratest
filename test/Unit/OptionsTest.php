@@ -87,6 +87,20 @@ final class OptionsTest extends TestBase
         self::assertFalse($options->verbose);
     }
 
+    public function testRetryAndRepeatAreForwardedToWorkersOnlyWhenGiven(): void
+    {
+        self::assertArrayNotHasKey('retry', $this->options->phpunitOptions);
+        self::assertArrayNotHasKey('repeat', $this->options->phpunitOptions);
+
+        $options = $this->createOptionsFromArgv(['--retry' => '3']);
+        self::assertSame('3', $options->phpunitOptions['retry']);
+        self::assertSame(3, $options->configuration->retry());
+
+        $options = $this->createOptionsFromArgv(['--repeat' => '2']);
+        self::assertSame('2', $options->phpunitOptions['repeat']);
+        self::assertSame(2, $options->configuration->repeat());
+    }
+
     public function testProvidedOptions(): void
     {
         $argv = [
