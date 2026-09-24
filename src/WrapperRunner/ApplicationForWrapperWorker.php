@@ -93,12 +93,15 @@ final class ApplicationForWrapperWorker
         $this->bootstrap();
         $emitter = EventFacade::emitter();
 
+        $numberOfRuns = $this->configuration->repeat();
+        $maxAttempts  = $this->configuration->retry();
+
         if (is_file($testPath) && str_ends_with($testPath, '.phpt')) {
             $testSuite = TestSuite::empty($testPath, $emitter);
-            $testSuite->addTestFile($testPath);
+            $testSuite->addTestFile($testPath, [], $numberOfRuns, $maxAttempts);
         } else {
             $testSuiteRefl = (new TestSuiteLoader())->load($testPath);
-            $testSuite     = TestSuite::fromClassReflector($testSuiteRefl, $emitter);
+            $testSuite     = TestSuite::fromClassReflector($testSuiteRefl, $emitter, [], $numberOfRuns, $maxAttempts);
         }
 
         $emitter->testSuiteLoaded(
