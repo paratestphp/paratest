@@ -193,6 +193,12 @@ parameters:
 			path: src/WrapperRunner/WrapperWorker.php
 
 		-
+			message: '#^Casting to string something that''s already string\.$#'
+			identifier: cast.useless
+			count: 1
+			path: src/WrapperRunner/WrapperWorker.php
+
+		-
 			message: '#^Class ParaTest\\WrapperRunner\\WrapperWorker has an uninitialized readonly property \$coverageFile\. Assign it in the constructor\.$#'
 			identifier: property.uninitializedReadonly
 			count: 1
