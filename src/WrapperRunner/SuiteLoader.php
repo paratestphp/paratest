@@ -170,10 +170,15 @@ final readonly class SuiteLoader
     private function workItems(Test $test): Generator
     {
         if ($test instanceof IterativeTestSuite) {
-            // The repetitions or attempts of a test run as one unit: queue it once
-            $tests = $test->tests();
-            assert($tests !== []);
-            $test = $tests[0];
+            // The repetitions or attempts of a test run as one unit: queue it once,
+            // unless the suite's filter excludes it
+            $iterator = $test->getIterator();
+            $iterator->rewind();
+            if (! $iterator->valid()) {
+                return;
+            }
+
+            $test = $iterator->current();
         } elseif ($test instanceof TestSuite) {
             foreach ($test as $childTest) {
                 yield from $this->workItems($childTest);
