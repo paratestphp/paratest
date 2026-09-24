@@ -33,7 +33,7 @@
         }
     ],
     "require": {
-        "php": "~8.4.0 || ~8.5.0",
+        "php": "~8.4.0 || ~8.5.0 || ~8.6.0",
         "ext-dom": "*",
         "ext-pcre": "*",
         "ext-reflection": "*",
@@ -45,15 +45,15 @@
         "phpunit/php-timer": "^9",
         "phpunit/phpunit": "^13.3.4",
         "sebastian/environment": "^9.3.2",
-        "symfony/console": "^7.4.8 || ^8.1.6",
-        "symfony/process": "^7.4.8 || ^8.1.6"
+        "symfony/console": "^7.4.8 || ^8.1.7",
+        "symfony/process": "^7.4.8 || ^8.1.7"
     },
     "require-dev": {
         "ext-pcntl": "*",
         "ext-pcov": "*",
         "ext-posix": "*",
         "doctrine/coding-standard": "^14.0.0",
-        "phpstan/phpstan": "^2.2.14",
+        "phpstan/phpstan": "^2.2.15",
         "phpstan/phpstan-deprecation-rules": "^2.0.5",
         "phpstan/phpstan-phpunit": "^2.0.18",
         "phpstan/phpstan-strict-rules": "^2.0.12",

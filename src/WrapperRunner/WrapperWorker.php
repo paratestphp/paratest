@@ -130,7 +130,7 @@ final class WrapperWorker
 
             foreach ($value as $innerValue) {
                 $phpunitArguments[] = "--{$key}";
-                $phpunitArguments[] = $innerValue;
+                $phpunitArguments[] = (string) $innerValue;
             }
         }
 
