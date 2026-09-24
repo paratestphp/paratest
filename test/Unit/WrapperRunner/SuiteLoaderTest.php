@@ -358,6 +358,18 @@ final class SuiteLoaderTest extends TestBase
         self::assertSame(array_values(array_unique($loader->tests)), $loader->tests);
     }
 
+    public function testFunctionalAppliesFilterToRepeatedOrRetriedTests(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+        $this->bareOptions['--filter']     = 'testPlain';
+
+        $loader = $this->loadSuite();
+
+        self::assertSame(1, $loader->testCount);
+        self::assertCount(1, $loader->tests);
+    }
+
     public function testShardingKeepsClassesWithRepeatedOrRetriedTestsTogether(): void
     {
         $this->bareOptions['path'] = $this->fixture('repeat_retry');

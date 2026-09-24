@@ -185,10 +185,15 @@ final readonly class SuiteLoader
     {
         foreach ($testSuite as $test) {
             if ($test instanceof IterativeTestSuite) {
-                // The repetitions or attempts of a test run as one unit: queue it once
-                $tests = $test->tests();
-                assert($tests !== []);
-                $test = $tests[0];
+                // The repetitions or attempts of a test run as one unit: queue it once,
+                // unless the suite's filter excludes it
+                $iterator = $test->getIterator();
+                $iterator->rewind();
+                if (! $iterator->valid()) {
+                    continue;
+                }
+
+                $test = $iterator->current();
             } elseif ($test instanceof TestSuite) {
                 yield from $this->loadFiles($test);
 
