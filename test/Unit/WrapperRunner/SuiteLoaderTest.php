@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function array_map;
 use function array_merge;
 use function array_shift;
+use function array_unique;
+use function array_values;
 use function basename;
 use function explode;
 use function preg_match;
@@ -438,6 +440,19 @@ final class SuiteLoaderTest extends TestBase
                 yield "functional, {$distribution->value}, $totalShards shards" => [$distribution->value, $totalShards, true];
             }
         }
+    }
+
+    public function testFunctionalQueuesEachRepeatedOrRetriedTestOnce(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+
+        $loader = $this->loadSuite();
+        $tests  = array_merge(...$loader->tests);
+
+        self::assertSame(11, $loader->testCount);
+        self::assertCount(6, $tests);
+        self::assertSame(array_values(array_unique($tests)), $tests);
     }
 
     /**

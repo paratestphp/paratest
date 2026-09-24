@@ -24,6 +24,7 @@ use SebastianBergmann\CodeCoverage\Serialization\Unserializer;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\CachingSourceAnalyser;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\Registry as StaticAnalysisRegistry;
+use SplFileInfo;
 use Symfony\Component\Process\Process;
 
 use function array_diff;
@@ -889,6 +890,21 @@ OK%a
 EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
+    public function testFunctionalRunsRepeatedAndRetriedTestsAsOftenAsPhpunit(): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+        $this->bareOptions['--log-junit']  = $outputFile;
+
+        $runnerResult = $this->runRunner();
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        // The printed summary also counts the outer PHPUnit run; the JUnit log holds only this run
+        self::assertSame(11, TestSuite::fromFile(new SplFileInfo($outputFile))->tests);
     }
 
     public function testFunctionalParallelizationWithJunitLogging(): void

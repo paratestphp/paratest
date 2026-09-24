@@ -8,6 +8,7 @@ use Generator;
 use ParaTest\Options;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\DataProviderTestSuite;
+use PHPUnit\Framework\IterativeTestSuite;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
@@ -168,7 +169,12 @@ final readonly class SuiteLoader
      */
     private function workItems(Test $test): Generator
     {
-        if ($test instanceof TestSuite) {
+        if ($test instanceof IterativeTestSuite) {
+            // The repetitions or attempts of a test run as one unit: queue it once
+            $tests = $test->tests();
+            assert($tests !== []);
+            $test = $tests[0];
+        } elseif ($test instanceof TestSuite) {
             foreach ($test as $childTest) {
                 yield from $this->workItems($childTest);
             }
