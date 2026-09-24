@@ -14,6 +14,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 use function array_map;
 use function array_shift;
+use function array_unique;
+use function array_values;
 use function basename;
 use function preg_match;
 use function uniqid;
@@ -340,6 +342,18 @@ final class SuiteLoaderTest extends TestBase
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
             self::assertSame($expected, $this->loadSuiteMethodNames());
         }
+    }
+
+    public function testFunctionalQueuesEachRepeatedOrRetriedTestOnce(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+
+        $loader = $this->loadSuite();
+
+        self::assertSame(11, $loader->testCount);
+        self::assertCount(6, $loader->tests);
+        self::assertSame(array_values(array_unique($loader->tests)), $loader->tests);
     }
 
     /** @return list<string> */
