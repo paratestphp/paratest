@@ -94,7 +94,8 @@ final class ApplicationForWrapperWorker
         $emitter = EventFacade::emitter();
 
         $numberOfRuns = $this->configuration->repeat();
-        $maxAttempts  = $this->configuration->retry();
+        // the --repeat CLI option takes precedence over the --retry CLI option
+        $maxAttempts = $numberOfRuns > 1 ? 1 : $this->configuration->retry();
 
         if (is_file($testPath) && str_ends_with($testPath, '.phpt')) {
             $testSuite = TestSuite::empty($testPath, $emitter);
