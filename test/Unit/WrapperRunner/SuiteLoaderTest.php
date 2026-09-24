@@ -474,6 +474,43 @@ final class SuiteLoaderTest extends TestBase
         }, $group), $this->loadSuite()->tests);
     }
 
+    public function testShardingKeepsClassesWithRepeatedOrRetriedTestsTogether(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('repeat_retry');
+
+        $files     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $files                        = array_merge($files, array_map(basename(...), array_merge(...$loader->tests)));
+            $testCount                   += $loader->testCount;
+        }
+
+        sort($files);
+        self::assertSame(['RepeatRetryAttributesTest.php', 'RepeatedCompanionTest.php'], $files);
+        self::assertSame(11, $testCount);
+    }
+
+    public function testFunctionalShardingKeepsRepetitionsAndAttemptsTogether(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+
+        $tests     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $tests                        = array_merge($tests, ...$loader->tests);
+            $testCount                   += $loader->testCount;
+        }
+
+        self::assertCount(6, $tests);
+        self::assertSame(array_values(array_unique($tests)), $tests);
+        self::assertSame(11, $testCount);
+    }
+
     /** @return list<string> */
     private function loadSuiteFileNames(): array
     {
