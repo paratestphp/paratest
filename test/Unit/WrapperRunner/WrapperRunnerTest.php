@@ -846,6 +846,100 @@ EOF;
         self::assertSame(11, TestSuite::fromFile(new SplFileInfo($outputFile))->tests);
     }
 
+    public function testRetryMakesAFlakyTestPass(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('retry_repeat_cli' . DIRECTORY_SEPARATOR . 'FlakyTest.php');
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $this->runRunner()->exitCode);
+
+        $this->bareOptions['--retry'] = '2';
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+
+        $this->bareOptions['--functional'] = true;
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+    }
+
+    public function testRetryIsRecordedAsASinglePassingTestInJunit(): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']        = $this->fixture('retry_repeat_cli' . DIRECTORY_SEPARATOR . 'FlakyTest.php');
+        $this->bareOptions['--retry']     = '2';
+        $this->bareOptions['--log-junit'] = $outputFile;
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+
+        $junit = TestSuite::fromFile(new SplFileInfo($outputFile));
+        self::assertSame(1, $junit->tests);
+        self::assertSame(0, $junit->failures);
+    }
+
+    public function testRetryStillReportsATestThatAlwaysFails(): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']        = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'FailureTest.php');
+        $this->bareOptions['--retry']     = '3';
+        $this->bareOptions['--log-junit'] = $outputFile;
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $this->runRunner()->exitCode);
+
+        $junit = TestSuite::fromFile(new SplFileInfo($outputFile));
+        self::assertSame(1, $junit->tests);
+        self::assertSame(1, $junit->failures);
+    }
+
+    /** @return iterable<string, array{non-empty-string, bool, int}> */
+    public static function provideRepeat(): iterable
+    {
+        yield 'test file' => ['retry_repeat_cli' . DIRECTORY_SEPARATOR . 'PlainTest.php', false, 6];
+        yield 'test file, functional' => ['retry_repeat_cli' . DIRECTORY_SEPARATOR . 'PlainTest.php', true, 6];
+        yield 'phpt file' => ['phpt', false, 3];
+        yield 'data providers, functional' => ['function_parallelization_tests', true, 60];
+    }
+
+    /** @param non-empty-string $path */
+    #[DataProvider('provideRepeat')]
+    public function testRepeatRunsEachTestNTimes(string $path, bool $functional, int $expectedTests): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']         = $this->fixture($path);
+        $this->bareOptions['--functional'] = $functional;
+        $this->bareOptions['--repeat']     = '3';
+        $this->bareOptions['--log-junit']  = $outputFile;
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+        self::assertSame($expectedTests, TestSuite::fromFile(new SplFileInfo($outputFile))->tests);
+    }
+
+    /** @return iterable<string, array{bool}> */
+    public static function provideFunctional(): iterable
+    {
+        yield 'per file' => [false];
+        yield 'functional' => [true];
+    }
+
+    #[DataProvider('provideFunctional')]
+    public function testRepeatWithShardsRunsEachTestNTimesAcrossShards(bool $functional): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']         = $this->fixture('multi_method_tests');
+        $this->bareOptions['--functional'] = $functional;
+        $this->bareOptions['--repeat']     = '2';
+        $this->bareOptions['--log-junit']  = $outputFile;
+
+        $tests = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+            $tests += TestSuite::fromFile(new SplFileInfo($outputFile))->tests;
+        }
+
+        self::assertSame(28, $tests);
+    }
+
     public function testFunctionalParallelizationWithJunitLogging(): void
     {
         $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
