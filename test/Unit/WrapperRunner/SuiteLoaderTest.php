@@ -13,11 +13,13 @@ use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function array_map;
+use function array_merge;
 use function array_shift;
 use function array_unique;
 use function array_values;
 use function basename;
 use function preg_match;
+use function sort;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
@@ -354,6 +356,43 @@ final class SuiteLoaderTest extends TestBase
         self::assertSame(11, $loader->testCount);
         self::assertCount(6, $loader->tests);
         self::assertSame(array_values(array_unique($loader->tests)), $loader->tests);
+    }
+
+    public function testShardingKeepsClassesWithRepeatedOrRetriedTestsTogether(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('repeat_retry');
+
+        $files     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $files                        = array_merge($files, array_map(basename(...), $loader->tests));
+            $testCount                   += $loader->testCount;
+        }
+
+        sort($files);
+        self::assertSame(['RepeatRetryAttributesTest.php', 'RepeatedCompanionTest.php'], $files);
+        self::assertSame(11, $testCount);
+    }
+
+    public function testFunctionalShardingKeepsRepetitionsAndAttemptsTogether(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+
+        $tests     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $tests                        = array_merge($tests, $loader->tests);
+            $testCount                   += $loader->testCount;
+        }
+
+        self::assertCount(6, $tests);
+        self::assertSame(array_values(array_unique($tests)), $tests);
+        self::assertSame(11, $testCount);
     }
 
     /** @return list<string> */

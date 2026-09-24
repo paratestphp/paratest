@@ -285,6 +285,7 @@ final readonly class SuiteLoader
                 $children !== []
                 && $children[0] instanceof TestSuite
                 && ! ($children[0] instanceof DataProviderTestSuite)
+                && ! ($children[0] instanceof IterativeTestSuite)
             ) {
                 $classSuites = array_merge($classSuites, $this->extractClassSuites($item));
             } else {
@@ -302,7 +303,7 @@ final readonly class SuiteLoader
         $suiteItems     = $suite->tests();
 
         foreach ($suiteItems as $item) {
-            if ($item instanceof TestSuite) {
+            if ($item instanceof TestSuite && ! ($item instanceof IterativeTestSuite)) {
                 $extractedTests = array_merge($extractedTests, $this->extractTestsInSuite($item));
             } else {
                 $extractedTests[] = $item;
