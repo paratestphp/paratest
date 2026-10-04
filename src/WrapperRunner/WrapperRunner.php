@@ -9,6 +9,7 @@ use ParaTest\JUnit\Writer;
 use ParaTest\Options;
 use ParaTest\RunnerInterface;
 use ParaTest\TestDox\TestDoxResultsMerger;
+use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Logging\TestDox\HtmlRenderer as TestDoxHtmlRenderer;
 use PHPUnit\Logging\TestDox\PlainTextRenderer as TestDoxPlainTextRenderer;
 use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
@@ -410,7 +411,7 @@ final class WrapperRunner implements RunnerInterface
             throw MissingResultsException::create($missingCoverageFiles, 'coverage');
         }
 
-        $coverageManager = new CodeCoverage();
+        $coverageManager = new CodeCoverage(EventFacade::emitter());
         $coverageManager->init(
             $this->options->configuration,
             $this->codeCoverageFilterRegistry,
