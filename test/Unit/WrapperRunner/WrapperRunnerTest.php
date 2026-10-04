@@ -19,6 +19,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
 use SebastianBergmann\CodeCoverage\Report\Facade as CoverageReportFacade;
 use SebastianBergmann\CodeCoverage\Serialization\Unserializer;
+use SplFileInfo;
 use Symfony\Component\Process\Process;
 
 use function array_diff;
@@ -28,6 +29,7 @@ use function array_reverse;
 use function array_unique;
 use function assert;
 use function count;
+use function dirname;
 use function explode;
 use function file_get_contents;
 use function file_put_contents;
@@ -51,6 +53,7 @@ use function unlink;
 
 use const DIRECTORY_SEPARATOR;
 use const FIXTURES;
+use const PHP_BINARY;
 use const PHP_EOL;
 
 /** @internal */
@@ -828,6 +831,153 @@ OK%a
 EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
+    public function testFunctionalRunsRepeatedAndRetriedTestsAsOftenAsPhpunit(): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+        $this->bareOptions['--log-junit']  = $outputFile;
+
+        $runnerResult = $this->runRunner();
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        // The printed summary also counts the outer PHPUnit run; the JUnit log holds only this run
+        self::assertSame(11, TestSuite::fromFile(new SplFileInfo($outputFile))->tests);
+    }
+
+    public function testRetryMakesAFlakyTestPass(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('retry_repeat_cli' . DIRECTORY_SEPARATOR . 'FlakyTest.php');
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $this->runRunner()->exitCode);
+
+        $this->bareOptions['--retry'] = '2';
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+
+        $this->bareOptions['--functional'] = true;
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+    }
+
+    public function testRetryIsRecordedAsASinglePassingTestInJunit(): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']        = $this->fixture('retry_repeat_cli' . DIRECTORY_SEPARATOR . 'FlakyTest.php');
+        $this->bareOptions['--retry']     = '2';
+        $this->bareOptions['--log-junit'] = $outputFile;
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+
+        $junit = TestSuite::fromFile(new SplFileInfo($outputFile));
+        self::assertSame(1, $junit->tests);
+        self::assertSame(0, $junit->failures);
+    }
+
+    public function testRetryStillReportsATestThatAlwaysFails(): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']        = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'FailureTest.php');
+        $this->bareOptions['--retry']     = '3';
+        $this->bareOptions['--log-junit'] = $outputFile;
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $this->runRunner()->exitCode);
+
+        $junit = TestSuite::fromFile(new SplFileInfo($outputFile));
+        self::assertSame(1, $junit->tests);
+        self::assertSame(1, $junit->failures);
+    }
+
+    public function testRepeatTakesPrecedenceOverRetry(): void
+    {
+        $process = $this->runParatestProcess('--repeat=2', '--retry=2');
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $process->getExitCode());
+        self::assertStringContainsString('Options --repeat and --retry cannot be used together', $process->getOutput());
+        self::assertStringContainsString('Failures: 1', $process->getOutput());
+    }
+
+    public function testInvalidRetryValueIsIgnored(): void
+    {
+        $process = $this->runParatestProcess('--retry=abc');
+
+        self::assertSame(RunnerInterface::FAILURE_EXIT, $process->getExitCode());
+        self::assertStringContainsString('Option "--retry abc" ignored because "abc" is not a positive integer', $process->getOutput());
+        self::assertStringContainsString('Failures: 1', $process->getOutput());
+    }
+
+    /**
+     * Invalid or conflicting --retry/--repeat values trigger PHPUnit warnings: run ParaTest in its own
+     * process on the flaky fixture so that those warnings do not leak into this test run
+     *
+     * @param non-empty-string ...$options
+     */
+    private function runParatestProcess(string ...$options): Process
+    {
+        $process = new Process([
+            PHP_BINARY,
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'paratest',
+            '--no-configuration',
+            ...$options,
+            $this->fixture('retry_repeat_cli' . DIRECTORY_SEPARATOR . 'FlakyTest.php'),
+        ]);
+        $process->run();
+
+        return $process;
+    }
+
+    /** @return iterable<string, array{non-empty-string, bool, int}> */
+    public static function provideRepeat(): iterable
+    {
+        yield 'test file' => ['retry_repeat_cli' . DIRECTORY_SEPARATOR . 'PlainTest.php', false, 6];
+        yield 'test file, functional' => ['retry_repeat_cli' . DIRECTORY_SEPARATOR . 'PlainTest.php', true, 6];
+        yield 'phpt file' => ['phpt', false, 3];
+        yield 'data providers, functional' => ['function_parallelization_tests', true, 60];
+    }
+
+    /** @param non-empty-string $path */
+    #[DataProvider('provideRepeat')]
+    public function testRepeatRunsEachTestNTimes(string $path, bool $functional, int $expectedTests): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']         = $this->fixture($path);
+        $this->bareOptions['--functional'] = $functional;
+        $this->bareOptions['--repeat']     = '3';
+        $this->bareOptions['--log-junit']  = $outputFile;
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+        self::assertSame($expectedTests, TestSuite::fromFile(new SplFileInfo($outputFile))->tests);
+    }
+
+    /** @return iterable<string, array{bool}> */
+    public static function provideFunctional(): iterable
+    {
+        yield 'per file' => [false];
+        yield 'functional' => [true];
+    }
+
+    #[DataProvider('provideFunctional')]
+    public function testRepeatWithShardsRunsEachTestNTimesAcrossShards(bool $functional): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']         = $this->fixture('multi_method_tests');
+        $this->bareOptions['--functional'] = $functional;
+        $this->bareOptions['--repeat']     = '2';
+        $this->bareOptions['--log-junit']  = $outputFile;
+
+        $tests = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+            $tests += TestSuite::fromFile(new SplFileInfo($outputFile))->tests;
+        }
+
+        self::assertSame(28, $tests);
     }
 
     public function testFunctionalParallelizationWithJunitLogging(): void

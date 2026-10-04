@@ -91,6 +91,8 @@ final readonly class Options
         'order-by' => true,
         'process-isolation' => true,
         'random-order-seed' => true,
+        'repeat' => true,
+        'retry' => true,
         'stop-on-defect' => true,
         'stop-on-error' => true,
         'stop-on-failure' => true,
@@ -688,6 +690,18 @@ final readonly class Options
             ),
             new InputOption(
                 'random-order-seed',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'repeat',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'retry',
                 null,
                 InputOption::VALUE_REQUIRED,
                 '@see PHPUnit guide, chapter: ' . $chapter,
