@@ -11,6 +11,7 @@ use PHPUnit\Framework\DataProviderTestSuite;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
+use PHPUnit\Runner\ExecutionOrder\ReorderPipeline;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
@@ -64,17 +65,18 @@ final readonly class SuiteLoader
         OutputInterface $output,
         CodeCoverageFilterRegistry $codeCoverageFilterRegistry,
     ) {
-        (new PhpHandler())->handle($this->options->configuration->php());
+        $emitter = EventFacade::emitter();
+        (new PhpHandler($emitter))->handle($this->options->configuration->php());
 
         if ($this->options->configuration->hasBootstrap()) {
             $bootstrapFilename = $this->options->configuration->bootstrap();
             include_once $bootstrapFilename;
-            EventFacade::emitter()->testRunnerBootstrapFinished($bootstrapFilename);
+            $emitter->testRunnerBootstrapFinished($bootstrapFilename);
         }
 
         if (! $this->options->configuration->noExtensions()) {
             if ($this->options->configuration->hasPharExtensionDirectory()) {
-                (new PharLoader())->loadPharExtensionsInDirectory(
+                (new PharLoader($emitter))->loadPharExtensionsInDirectory(
                     $this->options->configuration->pharExtensionDirectory(),
                 );
             }
@@ -83,6 +85,7 @@ final readonly class SuiteLoader
             $extensionBootstrapper = new ExtensionBootstrapper(
                 $this->options->configuration,
                 $extensionFacade,
+                $emitter,
             );
 
             foreach ($this->options->configuration->extensionBootstrappers() as $bootstrapper) {
@@ -96,7 +99,7 @@ final readonly class SuiteLoader
         TestResultFacade::init();
         EventFacade::instance()->seal();
 
-        $testSuite = (new TestSuiteBuilder())->build($this->options->configuration);
+        $testSuite = (new TestSuiteBuilder($emitter))->build($this->options->configuration);
 
         if ($this->options->hasShard()) {
             $this->shardTests($testSuite);
@@ -117,15 +120,17 @@ final readonly class SuiteLoader
                 $resultCache->load();
             }
 
-            (new TestSuiteSorter($resultCache))->reorderTestsInSuite(
-                $testSuite,
+            $pipeline = ReorderPipeline::fromConfiguration(
                 $this->options->configuration->executionOrder(),
-                $this->options->configuration->resolveDependencies(),
                 $this->options->configuration->executionOrderDefects(),
+                $this->options->configuration->resolveDependencies(),
             );
+            if (! $pipeline->isEmpty()) {
+                (new TestSuiteSorter($resultCache))->apply($testSuite, $pipeline);
+            }
         }
 
-        (new TestSuiteFilterProcessor())->process($this->options->configuration, $testSuite);
+        (new TestSuiteFilterProcessor($emitter))->process($this->options->configuration, $testSuite);
 
         $this->testCount = count($testSuite);
 
