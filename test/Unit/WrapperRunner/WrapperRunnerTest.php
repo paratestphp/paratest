@@ -26,7 +26,6 @@ use function array_intersect;
 use function array_merge;
 use function array_reverse;
 use function array_unique;
-use function assert;
 use function count;
 use function explode;
 use function file_get_contents;
@@ -34,7 +33,6 @@ use function file_put_contents;
 use function glob;
 use function implode;
 use function is_file;
-use function is_string;
 use function min;
 use function posix_mkfifo;
 use function preg_match;
@@ -691,10 +689,7 @@ final class WrapperRunnerTest extends TestBase
         $runnerResult = $this->runRunner();
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
 
-        $coveragePhpPath = $this->bareOptions['--coverage-php'];
-        assert(is_string($coveragePhpPath));
-
-        $coveragePhp     = (new Unserializer())->unserialize($coveragePhpPath);
+        $coveragePhp     = (new Unserializer())->unserialize($this->bareOptions['--coverage-php']);
         $coverageSummary = CoverageReportFacade::fromSerializedData($coveragePhp)->summary();
         self::assertSame(8, $coverageSummary->numberOfExecutableLines());
         self::assertSame(1, $coverageSummary->numberOfExecutedLines());
