@@ -22,6 +22,7 @@ use PHPUnit\TextUI\Output\DefaultPrinter;
 use PHPUnit\TextUI\ShellExitCodeCalculator;
 use PHPUnit\Util\ExcludeList;
 use ReflectionProperty;
+use RuntimeException;
 use SebastianBergmann\CodeCoverage\Node\Builder;
 use SebastianBergmann\CodeCoverage\Serialization\Merger;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
@@ -36,14 +37,19 @@ use function array_merge;
 use function array_merge_recursive;
 use function array_shift;
 use function assert;
+use function bin2hex;
 use function count;
 use function dirname;
 use function file_get_contents;
 use function filesize;
 use function is_file;
 use function max;
+use function mkdir;
 use function preg_match;
+use function random_bytes;
 use function realpath;
+use function rmdir;
+use function sprintf;
 use function str_starts_with;
 use function unlink;
 use function unserialize;
@@ -90,6 +96,8 @@ final class WrapperRunner implements RunnerInterface
     /** @var array<non-empty-string> */
     private readonly array $parameters;
     private CodeCoverageFilterRegistry $codeCoverageFilterRegistry;
+    /** @var non-empty-string */
+    private string $runTmpDir;
 
     public function __construct(
         private readonly Options $options,
@@ -133,11 +141,35 @@ final class WrapperRunner implements RunnerInterface
         $this->pending = $suiteLoader->tests;
         $this->printer->setTestCount($suiteLoader->testCount);
         $this->printer->start();
+        $this->runTmpDir = $this->createRunTmpDir();
         $this->startWorkers();
         $this->assignAllPendingTests();
         $this->waitForAllToFinish();
 
         return $this->complete($result);
+    }
+
+    /**
+     * Worker files are deserialized and even included by the main process: they must live in a directory
+     * no other user can write into, otherwise a local attacker could plant them in a shared tmp-dir
+     *
+     * @return non-empty-string
+     */
+    private function createRunTmpDir(): string
+    {
+        $runTmpDir = sprintf(
+            '%s%sparatest_%s',
+            $this->options->tmpDir,
+            DIRECTORY_SEPARATOR,
+            bin2hex(random_bytes(16)),
+        );
+
+        // mkdir fails if the path already exists, symlinks included
+        if (! @mkdir($runTmpDir, 0700)) {
+            throw new RuntimeException(sprintf('Unable to create private temporary directory "%s"', $runTmpDir));
+        }
+
+        return $runTmpDir;
     }
 
     private function startWorkers(): void
@@ -239,6 +271,7 @@ final class WrapperRunner implements RunnerInterface
             $this->options,
             $this->parameters,
             $token,
+            $this->runTmpDir,
         );
         $worker->start();
         $this->batches[$token] = 0;
@@ -387,6 +420,7 @@ final class WrapperRunner implements RunnerInterface
         $this->clearFiles($this->junitFiles);
         $this->clearFiles($this->teamcityFiles);
         $this->clearFiles($this->testdoxFiles);
+        rmdir($this->runTmpDir);
 
         return $exitcode;
     }
