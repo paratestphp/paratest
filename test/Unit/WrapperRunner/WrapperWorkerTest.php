@@ -20,7 +20,7 @@ final class WrapperWorkerTest extends TestBase
             '--verbose' => true,
         ]);
 
-        new WrapperWorker($output, $options, ['phpunit-wrapper'], 1);
+        new WrapperWorker($output, $options, ['phpunit-wrapper'], 1, $this->tmpDir);
 
         $command = $output->fetch();
         self::assertStringContainsString('--do-not-record-test-run-history', $command);

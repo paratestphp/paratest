@@ -17,6 +17,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
+use RuntimeException;
 use SebastianBergmann\CodeCoverage\Report\Facade as CoverageReportFacade;
 use SebastianBergmann\CodeCoverage\Serialization\Unserializer;
 use Symfony\Component\Process\Process;
@@ -618,6 +619,28 @@ final class WrapperRunnerTest extends TestBase
             self::sorted($format),
             self::sorted($content),
         );
+    }
+
+    public function testWorkerFilesAreInAPrivateDirectoryRemovedAtTheEnd(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('private_tmp_dir');
+
+        $runnerResult = $this->runRunner();
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+        $glob = glob($this->tmpDir . '/*');
+        self::assertNotFalse($glob);
+        self::assertCount(0, $glob);
+    }
+
+    public function testErrorIsRaisedIfPrivateDirectoryCannotBeCreated(): void
+    {
+        $this->bareOptions['path']      = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
+        $this->bareOptions['--tmp-dir'] = $this->tmpDir . DIRECTORY_SEPARATOR . 'non_existent';
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Unable to create private temporary directory/');
+
+        $this->runRunner();
     }
 
     public function testRunningFewerTestsThanTheWorkersIsPossible(): void

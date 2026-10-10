@@ -47,16 +47,20 @@ final class WrapperWorker
     private InputStream $input;
     private int $exitCode = -1;
 
-    /** @param non-empty-string[] $parameters */
+    /**
+     * @param non-empty-string[] $parameters
+     * @param non-empty-string   $tmpDir     Private directory, owned by the current run, holding worker files
+     */
     public function __construct(
         private readonly OutputInterface $output,
         private readonly Options $options,
         array $parameters,
-        private readonly int $token
+        private readonly int $token,
+        string $tmpDir,
     ) {
         $commonTmpFilePath = sprintf(
             '%s%sworker_%02s_stdout_%s_',
-            $options->tmpDir,
+            $tmpDir,
             DIRECTORY_SEPARATOR,
             $token,
             uniqid(),
