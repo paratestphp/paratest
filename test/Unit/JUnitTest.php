@@ -53,14 +53,14 @@ final class JUnitTest extends TestCase
         $xml = str_replace('time="8.641969"', 'time="1.234567"', $xml);
         file_put_contents($outputFile, $xml);
 
-        self::assertXmlFileEqualsXmlFile(FIXTURES . '/common_results/combined.xml', $outputFile);
+        self::assertXmlFileEqualsXmlFile(FIXTURES . '/common_results/junit-combined.xml', $outputFile);
     }
 
     public function testHandleSpecialChars(): void
     {
         $tmpDir = (new TmpDirCreator())->create();
 
-        $junitLog  = FIXTURES . '/special_chars/data-provider-with-special-chars.xml';
+        $junitLog  = FIXTURES . '/special_chars/junit-data-provider-with-special-chars.xml';
         $testSuite = (new LogMerger())->merge([new SplFileInfo($junitLog)]);
         self::assertNotNull($testSuite);
 
