@@ -195,7 +195,6 @@ final class WrapperWorker
         }
 
         $this->input->write($test . "\n");
-        $this->flushInput();
         $this->currentlyExecuting = $test;
         ++$this->inExecution;
     }
@@ -208,19 +207,6 @@ final class WrapperWorker
     public function stop(): void
     {
         $this->input->write(self::COMMAND_EXIT);
-        $this->flushInput();
-    }
-
-    /**
-     * InputStream::write() only buffers: data reaches the worker's STDIN when Symfony pumps
-     * the pipes, which otherwise happens only at the next status poll, one cycle later.
-     * Moreover, the first pump just consumes the empty string the idle InputStream generator
-     * was suspended on, and only the second one actually writes the data to the pipe.
-     */
-    private function flushInput(): void
-    {
-        $this->process->isRunning();
-        $this->process->isRunning();
     }
 
     public function isFree(): bool
