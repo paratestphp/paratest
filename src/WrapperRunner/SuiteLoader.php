@@ -8,6 +8,7 @@ use Generator;
 use ParaTest\Options;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\DataProviderTestSuite;
+use PHPUnit\Framework\IterativeTestSuite;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
@@ -188,7 +189,17 @@ final readonly class SuiteLoader
     private function loadFiles(TestSuite $testSuite): Generator
     {
         foreach ($testSuite as $test) {
-            if ($test instanceof TestSuite) {
+            if ($test instanceof IterativeTestSuite) {
+                // The repetitions or attempts of a test run as one unit: queue it once,
+                // unless the suite's filter excludes it
+                $iterator = $test->getIterator();
+                $iterator->rewind();
+                if (! $iterator->valid()) {
+                    continue;
+                }
+
+                $test = $iterator->current();
+            } elseif ($test instanceof TestSuite) {
                 yield from $this->loadFiles($test);
 
                 continue;
@@ -284,6 +295,7 @@ final readonly class SuiteLoader
                 $children !== []
                 && $children[0] instanceof TestSuite
                 && ! ($children[0] instanceof DataProviderTestSuite)
+                && ! ($children[0] instanceof IterativeTestSuite)
             ) {
                 $classSuites = array_merge($classSuites, $this->extractClassSuites($item));
             } else {
@@ -301,7 +313,7 @@ final readonly class SuiteLoader
         $suiteItems     = $suite->tests();
 
         foreach ($suiteItems as $item) {
-            if ($item instanceof TestSuite) {
+            if ($item instanceof TestSuite && ! ($item instanceof IterativeTestSuite)) {
                 $extractedTests = array_merge($extractedTests, $this->extractTestsInSuite($item));
             } else {
                 $extractedTests[] = $item;
