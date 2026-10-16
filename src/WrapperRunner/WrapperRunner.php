@@ -25,8 +25,7 @@ use ReflectionProperty;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\Node\Builder;
 use SebastianBergmann\CodeCoverage\Serialization\Merger;
-use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
-use SebastianBergmann\CodeCoverage\StaticAnalysis\ParsingSourceAnalyser;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\Registry as StaticAnalysisRegistry;
 use SplFileInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
@@ -459,12 +458,17 @@ final class WrapperRunner implements RunnerInterface
         });
         $serializedCoverage = (new Merger())->merge($coverageFiles);
 
-        $report       = (new Builder(new FileAnalyser(new ParsingSourceAnalyser(), false, false)))->build(
+        $codeCoverage = $coverageManager->codeCoverage();
+        $analyser     = StaticAnalysisRegistry::analyser(
+            $codeCoverage->cachesStaticAnalysis() ? $codeCoverage->cacheDirectory() : null,
+            ! $this->options->configuration->disableCodeCoverageIgnore(),
+            $this->options->configuration->ignoreDeprecatedCodeUnitsFromCodeCoverage(),
+        );
+        $report       = (new Builder($analyser))->build(
             $serializedCoverage['codeCoverage'],
             $serializedCoverage['testResults'],
             $serializedCoverage['basePath'],
         );
-        $codeCoverage = $coverageManager->codeCoverage();
         $codeCoverage->excludeUncoveredFiles();
         $codeCoverageData = clone $serializedCoverage['codeCoverage'];
         if ($serializedCoverage['basePath'] !== '') {

@@ -17,9 +17,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
+use ReflectionProperty;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\Report\Facade as CoverageReportFacade;
 use SebastianBergmann\CodeCoverage\Serialization\Unserializer;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\CachingSourceAnalyser;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\Registry as StaticAnalysisRegistry;
 use Symfony\Component\Process\Process;
 
 use function array_diff;
@@ -716,6 +720,22 @@ final class WrapperRunnerTest extends TestBase
         $coverageSummary = CoverageReportFacade::fromSerializedData($coveragePhp)->summary();
         self::assertSame(8, $coverageSummary->numberOfExecutableLines());
         self::assertSame(1, $coverageSummary->numberOfExecutedLines());
+    }
+
+    public function testCoverageReportUsesStaticAnalysisCache(): void
+    {
+        $this->bareOptions['path']              = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
+        $this->bareOptions['--coverage-filter'] = $this->fixture('common_results');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir;
+
+        $runnerResult = $this->runRunner();
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+
+        $fileAnalyser   = StaticAnalysisRegistry::analyser($this->tmpDir . DIRECTORY_SEPARATOR . 'code-coverage', true, false);
+        $sourceAnalyser = (new ReflectionProperty(FileAnalyser::class, 'sourceAnalyser'))->getValue($fileAnalyser);
+        self::assertInstanceOf(CachingSourceAnalyser::class, $sourceAnalyser);
+        self::assertSame(7, $sourceAnalyser->cacheHits());
     }
 
     public function testHandleCollisionWithSymfonyOutput(): void
