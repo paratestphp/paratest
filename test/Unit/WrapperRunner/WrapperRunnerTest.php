@@ -975,6 +975,15 @@ EOF;
         self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
+    public function testControlGarbageCollector(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('garbage_collection' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+
+        $runnerResult = $this->runRunner();
+
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+    }
+
     public function testOrderByCache(): void
     {
         $resultCacheFile = $this->fixture('order_by') . DIRECTORY_SEPARATOR . '.phpunit.result.cache';

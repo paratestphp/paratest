@@ -20,6 +20,7 @@ use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Filter\Factory;
+use PHPUnit\Runner\GarbageCollection\GarbageCollectionHandler;
 use PHPUnit\Runner\TestRunHistory\DefaultTestRunHistory;
 use PHPUnit\Runner\TestRunHistory\TestRunHistoryHandler;
 use PHPUnit\Runner\TestSuiteLoader;
@@ -217,6 +218,13 @@ final class ApplicationForWrapperWorker
                 new DefaultTestRunHistory($this->resultCacheFile),
                 EventFacade::instance(),
                 false,
+            );
+        }
+
+        if ($this->configuration->controlGarbageCollector()) {
+            new GarbageCollectionHandler(
+                EventFacade::instance(),
+                $this->configuration->numberOfTestsBeforeGarbageCollection(),
             );
         }
 

@@ -1,0 +1,7 @@
+<phpunit controlGarbageCollector="true" numberOfTestsBeforeGarbageCollection="1">
+    <testsuites>
+        <testsuite name="GarbageCollectionTest">
+            <file>GarbageCollectionTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
