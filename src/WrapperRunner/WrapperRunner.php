@@ -16,6 +16,7 @@ use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
 use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\Runner\TestRunHistory\DefaultTestRunHistory;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
+use PHPUnit\TestRunner\TestResult\Issues\Issue;
 use PHPUnit\TestRunner\TestResult\TestResult;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use PHPUnit\TextUI\Output\DefaultPrinter;
@@ -36,12 +37,14 @@ use function array_map;
 use function array_merge;
 use function array_merge_recursive;
 use function array_shift;
+use function array_values;
 use function assert;
 use function bin2hex;
 use function count;
 use function dirname;
 use function file_get_contents;
 use function filesize;
+use function implode;
 use function is_file;
 use function max;
 use function mkdir;
@@ -365,13 +368,13 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->testRunnerTriggeredIssuePhpNoticeEvents(), $testResult->testRunnerTriggeredIssuePhpNoticeEvents()),
                 array_merge_recursive($testResultSum->testRunnerTriggeredIssuePhpWarningEvents(), $testResult->testRunnerTriggeredIssuePhpWarningEvents()),
                 array_merge_recursive($testResultSum->testRunnerTriggeredIssueWarningEvents(), $testResult->testRunnerTriggeredIssueWarningEvents()),
-                array_merge_recursive($testResultSum->errors(), $testResult->errors()),
-                array_merge_recursive($testResultSum->deprecations(), $testResult->deprecations()),
-                array_merge_recursive($testResultSum->notices(), $testResult->notices()),
-                array_merge_recursive($testResultSum->warnings(), $testResult->warnings()),
-                array_merge_recursive($testResultSum->phpDeprecations(), $testResult->phpDeprecations()),
-                array_merge_recursive($testResultSum->phpNotices(), $testResult->phpNotices()),
-                array_merge_recursive($testResultSum->phpWarnings(), $testResult->phpWarnings()),
+                self::mergeIssues($testResultSum->errors(), $testResult->errors()),
+                self::mergeIssues($testResultSum->deprecations(), $testResult->deprecations()),
+                self::mergeIssues($testResultSum->notices(), $testResult->notices()),
+                self::mergeIssues($testResultSum->warnings(), $testResult->warnings()),
+                self::mergeIssues($testResultSum->phpDeprecations(), $testResult->phpDeprecations()),
+                self::mergeIssues($testResultSum->phpNotices(), $testResult->phpNotices()),
+                self::mergeIssues($testResultSum->phpWarnings(), $testResult->phpWarnings()),
                 $testResultSum->numberOfIssuesIgnoredByBaseline() + $testResult->numberOfIssuesIgnoredByBaseline(),
                 [
                     'self' => $testResultSum->numberOfSelfDeprecations() + $testResult->numberOfSelfDeprecations(),
@@ -423,6 +426,36 @@ final class WrapperRunner implements RunnerInterface
         rmdir($this->runTmpDir);
 
         return $exitcode;
+    }
+
+    /**
+     * PHPUnit reports an issue once, with all the tests that triggered it:
+     * the same issue triggered in different workers must be merged the same way
+     *
+     * @param list<Issue> $issues
+     * @param list<Issue> $newIssues
+     *
+     * @return list<Issue>
+     */
+    private static function mergeIssues(array $issues, array $newIssues): array
+    {
+        $mergedIssues = [];
+        foreach ([...$issues, ...$newIssues] as $issue) {
+            $id = implode(':', [$issue->file(), $issue->line(), $issue->description()]);
+            if (! isset($mergedIssues[$id])) {
+                $mergedIssues[$id] = clone $issue;
+
+                continue;
+            }
+
+            foreach ($issue->triggeringTests() as $triggeringTest) {
+                for ($count = 0; $count < $triggeringTest['count']; ++$count) {
+                    $mergedIssues[$id]->triggeredBy($triggeringTest['test']);
+                }
+            }
+        }
+
+        return array_values($mergedIssues);
     }
 
     protected function generateCodeCoverageReports(): void
