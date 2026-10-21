@@ -146,7 +146,7 @@ final readonly class SuiteLoader
                 if ($test->providedData() !== []) {
                     $dataName = $test->dataName();
                     if ($this->options->functional) {
-                        $name = sprintf('/%s%s$/', preg_quote($name, '/'), preg_quote($test->dataSetAsString(), '/'));
+                        $name = sprintf('/::%s%s$/', preg_quote($name, '/'), preg_quote($test->dataSetAsString(), '/'));
                     } else {
                         if (is_int($dataName)) {
                             $name .= '#' . $dataName;
@@ -155,7 +155,7 @@ final readonly class SuiteLoader
                         }
                     }
                 } else {
-                    $name = sprintf('/%s$/', $name);
+                    $name = sprintf('/::%s$/', $name);
                 }
 
                 $tests[] = "$file\0$name";
