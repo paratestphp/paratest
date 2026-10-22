@@ -73,6 +73,20 @@ final class SuiteLoaderTest extends TestBase
         self::assertStringContainsString('my_test.phpt', $file);
     }
 
+    public function testFunctionalTestsHaveNoLineBreaks(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('line_feed_in_data_set_name');
+        $this->bareOptions['--functional'] = true;
+
+        $tests = $this->loadSuite()->tests;
+
+        self::assertCount(3, $tests);
+        foreach ($tests as $test) {
+            self::assertStringNotContainsString("\n", $test);
+            self::assertStringNotContainsString("\r", $test);
+        }
+    }
+
     /** @return iterable<string, array{string, string, list<array{list<string>, int}>}> */
     public static function shardDistributionProvider(): iterable
     {
