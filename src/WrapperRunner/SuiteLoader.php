@@ -47,6 +47,7 @@ use function ob_get_clean;
 use function ob_start;
 use function preg_quote;
 use function sprintf;
+use function str_replace;
 use function str_starts_with;
 use function strlen;
 use function substr;
@@ -146,7 +147,12 @@ final readonly class SuiteLoader
                 if ($test->providedData() !== []) {
                     $dataName = $test->dataName();
                     if ($this->options->functional) {
-                        $name = sprintf('/::%s%s$/', preg_quote($name, '/'), preg_quote($test->dataSetAsString(), '/'));
+                        // Workers read one test per line: line breaks in the data set name are written as regex escapes
+                        $name = sprintf(
+                            '/::%s%s$/',
+                            preg_quote($name, '/'),
+                            str_replace(["\r", "\n"], ['\r', '\n'], preg_quote($test->dataSetAsString(), '/')),
+                        );
                     } else {
                         if (is_int($dataName)) {
                             $name .= '#' . $dataName;
