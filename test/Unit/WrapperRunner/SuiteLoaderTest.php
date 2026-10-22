@@ -18,6 +18,7 @@ use function array_shift;
 use function array_unique;
 use function array_values;
 use function basename;
+use function count;
 use function explode;
 use function preg_match;
 use function sort;
@@ -76,6 +77,34 @@ final class SuiteLoaderTest extends TestBase
         $file = array_shift($files);
         self::assertNotNull($file);
         self::assertStringContainsString('my_test.phpt', $file);
+    }
+
+    public function testFunctionalTestsHaveNoLineBreaks(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('line_feed_in_data_set_name');
+        $this->bareOptions['--functional'] = true;
+
+        $tests = array_merge(...$this->loadSuite()->tests);
+
+        $testNames = [
+            'testDataSetName with data set "line"',
+            "testDataSetName with data set \"line\nfeed\"",
+            "testDataSetName with data set \"carriage\r\nreturn\"",
+        ];
+        self::assertCount(count($testNames), $tests);
+        foreach ($tests as $index => $test) {
+            self::assertStringNotContainsString("\n", $test);
+            self::assertStringNotContainsString("\r", $test);
+
+            // The filter still selects the very test it was built for
+            $filter = explode("\0", $test)[1];
+            foreach ($testNames as $nameIndex => $testName) {
+                self::assertSame(
+                    $index === $nameIndex ? 1 : 0,
+                    preg_match($filter, 'LineFeedInDataSetNameTest::' . $testName),
+                );
+            }
+        }
     }
 
     /** @return iterable<string, array{string, string, list<array{list<string>, int}>}> */
