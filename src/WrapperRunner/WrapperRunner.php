@@ -26,6 +26,7 @@ use ReflectionProperty;
 use RuntimeException;
 use SebastianBergmann\CodeCoverage\Node\Builder;
 use SebastianBergmann\CodeCoverage\Serialization\Merger;
+use SebastianBergmann\CodeCoverage\StaticAnalysis\CachingSourceAnalyser;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\ParsingSourceAnalyser;
 use SplFileInfo;
@@ -492,7 +493,20 @@ final class WrapperRunner implements RunnerInterface
         });
         $serializedCoverage = (new Merger())->merge($coverageFiles);
 
-        $report       = (new Builder(new FileAnalyser(new ParsingSourceAnalyser(), false, false)))->build(
+        // Reuse the static analysis cache warmed by SuiteLoader instead of parsing every source file again
+        $sourceAnalyser = new ParsingSourceAnalyser();
+        if ($this->options->configuration->hasCoverageCacheDirectory()) {
+            $sourceAnalyser = new CachingSourceAnalyser(
+                $this->options->configuration->coverageCacheDirectory(),
+                $sourceAnalyser,
+            );
+        }
+
+        $report       = (new Builder(new FileAnalyser(
+            $sourceAnalyser,
+            ! $this->options->configuration->disableCodeCoverageIgnore(),
+            $this->options->configuration->ignoreDeprecatedCodeUnitsFromCodeCoverage(),
+        )))->build(
             $serializedCoverage['codeCoverage'],
             $serializedCoverage['testResults'],
             $serializedCoverage['basePath'],
