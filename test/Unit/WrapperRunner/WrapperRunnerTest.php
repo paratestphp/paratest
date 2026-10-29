@@ -868,6 +868,27 @@ EOF;
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
+    public function testSameEndOfName(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('same_end_of_name');
+        $this->bareOptions['--functional'] = true;
+
+        $runnerResult = $this->runRunner();
+
+        $expectedOutput = <<<'EOF'
+Processes:     2
+Runtime:       PHP %s
+
+......                                                              6 / 6 (100%)
+
+Time: %s, Memory: %s MB
+
+OK%a
+EOF;
+        self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
     public function testFunctionalParallelizationWithJunitLogging(): void
     {
         $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
@@ -1295,6 +1316,23 @@ OK, but there were issues!%a
 EOF;
         self::assertStringMatchesFormat($expectedOutput, $runnerResult->output);
         self::assertEquals(RunnerInterface::FAILURE_EXIT, $runnerResult->exitCode);
+    }
+
+    public function testSameIssueTriggeredInMultipleProcessesIsReportedOnce(): void
+    {
+        $this->bareOptions['path']                   = $this->fixture('same_issue_in_multiple_processes');
+        $this->bareOptions['--display-deprecations'] = true;
+        $this->bareOptions['--display-notices']      = true;
+        $this->bareOptions['--display-warnings']     = true;
+
+        $runnerResult = $this->runRunner();
+
+        self::assertStringContainsString('2 tests triggered 1 deprecation:', $runnerResult->output);
+        self::assertStringContainsString('2 tests triggered 1 notice:', $runnerResult->output);
+        self::assertStringContainsString('2 tests triggered 1 warning:', $runnerResult->output);
+        self::assertStringContainsString('SecondTest::testIssues (2 times)', $runnerResult->output);
+        self::assertStringContainsString('Warnings: 1, Deprecations: 1, Notices: 1', $runnerResult->output);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
     }
 
     public function testProcessIsolation(): void

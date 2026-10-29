@@ -352,7 +352,7 @@ final class SuiteLoaderTest extends TestBase
     private function loadSuiteMethodNames(): array
     {
         return array_map(static function (string $test): string {
-            $result = preg_match('/\/(\w+)\$/', $test, $matches);
+            $result = preg_match('/::(\w+)\$/', $test, $matches);
             self::assertSame(1, $result);
 
             return $matches[1];
