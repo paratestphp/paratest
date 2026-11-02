@@ -72,19 +72,21 @@ clean:
 .PHONY: regenerate-fixture-results
 regenerate-fixture-results: vendor
 	$(DOCKER_PHP_EXEC) vendor/bin/phpunit \
-		--log-junit test/fixtures/special_chars/data-provider-with-special-chars.xml \
+		--log-junit test/fixtures/special_chars/junit-data-provider-with-special-chars.xml \
+		--log-otr test/fixtures/special_chars/otr-data-provider-with-special-chars.xml \
 		--no-configuration \
 		test/fixtures/special_chars/UnitTestWithDataProviderSpecialCharsTest.php \
 		> /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/ErrorTest.php --log-junit test/fixtures/common_results/junit/ErrorTest.xml > /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/FailureTest.php --log-junit test/fixtures/common_results/junit/FailureTest.xml > /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/IncompleteTest.php --log-junit test/fixtures/common_results/junit/IncompleteTest.xml > /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/RiskyTest.php --log-junit test/fixtures/common_results/junit/RiskyTest.xml > /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/SkippedTest.php --log-junit test/fixtures/common_results/junit/SkippedTest.xml > /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/SuccessTest.php --log-junit test/fixtures/common_results/junit/SuccessTest.xml > /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/WarningTest.php --log-junit test/fixtures/common_results/junit/WarningTest.xml > /dev/null || true
-	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/ --log-junit test/fixtures/common_results/combined.xml > /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/ErrorTest.php 		--log-junit test/fixtures/common_results/junit/ErrorTest.xml 		--log-otr test/fixtures/common_results/otr/ErrorTest.xml		> /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/FailureTest.php 		--log-junit test/fixtures/common_results/junit/FailureTest.xml		--log-otr test/fixtures/common_results/otr/FailureTest.xml		> /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/IncompleteTest.php 	--log-junit test/fixtures/common_results/junit/IncompleteTest.xml 	--log-otr test/fixtures/common_results/otr/IncompleteTest.xml	> /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/RiskyTest.php 		--log-junit test/fixtures/common_results/junit/RiskyTest.xml 		--log-otr test/fixtures/common_results/otr/RiskyTest.xml		> /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/SkippedTest.php 		--log-junit test/fixtures/common_results/junit/SkippedTest.xml 		--log-otr test/fixtures/common_results/otr/SkippedTest.xml		> /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/SuccessTest.php 		--log-junit test/fixtures/common_results/junit/SuccessTest.xml 		--log-otr test/fixtures/common_results/otr/SuccessTest.xml		> /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/WarningTest.php 		--log-junit test/fixtures/common_results/junit/WarningTest.xml 		--log-otr test/fixtures/common_results/otr/WarningTest.xml		> /dev/null || true
+	$(DOCKER_PHP_EXEC) vendor/bin/phpunit --no-configuration test/fixtures/common_results/ 						--log-junit test/fixtures/common_results/junit-combined.xml 		--log-otr test/fixtures/common_results/otr-combined.xml			> /dev/null || true
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#$(PWD)#.#g'
 	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#time="........"#time="1.234567"#g'
-	sed -i 's#name="./test/fixtures/common_results"#name=""#g' test/fixtures/common_results/combined.xml
-	sed -i 's#name="CLI Arguments"#name=""#g' test/fixtures/common_results/combined.xml
+	find test/fixtures/ -type f -name "*.xml" -print0 | xargs -0 sed -i 's#time="..........................."#time="2026-02-01T12:13:14.567890Z"#g'
+	sed -i 's#name="./test/fixtures/common_results"#name=""#g' test/fixtures/common_results/junit-combined.xml test/fixtures/common_results/otr-combined.xml
+	sed -i 's#name="CLI Arguments"#name=""#g' test/fixtures/common_results/junit-combined.xml test/fixtures/common_results/otr-combined.xml
