@@ -42,7 +42,9 @@ use function bin2hex;
 use function count;
 use function dirname;
 use function file_get_contents;
+use function filemtime;
 use function filesize;
+use function getenv;
 use function implode;
 use function is_file;
 use function max;
@@ -53,6 +55,7 @@ use function realpath;
 use function rmdir;
 use function sprintf;
 use function str_starts_with;
+use function time;
 use function unlink;
 use function unserialize;
 use function usleep;
@@ -62,7 +65,9 @@ use const DIRECTORY_SEPARATOR;
 /** @internal */
 final class WrapperRunner implements RunnerInterface
 {
-    private const int CYCLE_SLEEP = 1000;
+    private const int CYCLE_SLEEP                     = 1000;
+    private const int DESYNC_RECOVERY_SECONDS_DEFAULT = 120;
+    private const int EXIT_AFTER_STOP_SECONDS_DEFAULT = 180;
     private readonly ResultPrinter $printer;
 
     /** @var list<non-empty-string> */
@@ -185,15 +190,62 @@ final class WrapperRunner implements RunnerInterface
     {
         $batchSize = $this->options->maxBatchSize;
 
+        /** @var array<positive-int,int> $desyncSince */
+        $desyncSince = [];
+        /** @var array<positive-int,true> $recovered */
+        $recovered = [];
+        /** @var array<positive-int,int> $recoveredSince */
+        $recoveredSince = [];
+
         while (count($this->pending) > 0 && count($this->workers) > 0) {
+            $respawn = [];
+
             foreach ($this->workers as $token => $worker) {
                 if (! $worker->isRunning()) {
-                    throw $worker->getWorkerCrashedException();
+                    if (! isset($recovered[$token])) {
+                        throw $worker->getWorkerCrashedException();
+                    }
+
+                    // A worker recovered from the lost-status-byte desync
+                    // still reports !isFree() after exiting; its results were
+                    // serialized by ApplicationForWrapperWorker::end() before
+                    // it died, so flush them and respawn a live worker for
+                    // the remaining pending tests.
+                    $this->flushWorker($worker);
+                    $respawn[] = $token;
+
+                    continue;
                 }
 
                 if (! $worker->isFree()) {
+                    if (! isset($recovered[$token])) {
+                        if (! isset($desyncSince[$token])) {
+                            $desyncSince[$token] = time();
+                        } elseif ($this->isWorkerDesynced($worker, $desyncSince[$token])) {
+                            $this->output->writeln(sprintf(
+                                '[paratest] worker %d stalled: status file desync — recovering via controlled exit to preserve results',
+                                $token,
+                            ));
+                            $worker->stop();
+                            $recovered[$token]      = true;
+                            $recoveredSince[$token] = time();
+                        }
+                    } elseif (
+                        isset($recoveredSince[$token])
+                        && $worker->isRunning()
+                        && time() - $recoveredSince[$token] > self::exitAfterStopSeconds()
+                    ) {
+                        $this->output->writeln(sprintf(
+                            '[paratest] worker %d stopped but did not exit — killing; serialized results are already on disk',
+                            $token,
+                        ));
+                        $worker->kill();
+                    }
+
                     continue;
                 }
+
+                unset($desyncSince[$token]);
 
                 $this->flushWorker($worker);
 
@@ -213,8 +265,22 @@ final class WrapperRunner implements RunnerInterface
                 }
             }
 
+            foreach ($respawn as $token) {
+                unset($this->workers[$token], $desyncSince[$token], $recovered[$token], $recoveredSince[$token]);
+                $this->startWorker($token);
+            }
+
             usleep(self::CYCLE_SLEEP);
         }
+
+        if ($this->pending === []) {
+            return;
+        }
+
+        $this->output->writeln(sprintf(
+            '[paratest] %d test file(s) left unassigned after worker recovery',
+            count($this->pending),
+        ));
     }
 
     private function flushWorker(WrapperWorker $worker): void
@@ -242,18 +308,60 @@ final class WrapperRunner implements RunnerInterface
     private function waitForAllToFinish(): void
     {
         $stopped = [];
+        /** @var array<positive-int,int> $stoppedSince */
+        $stoppedSince = [];
+        /** @var array<positive-int,int> $desyncSince */
+        $desyncSince = [];
+        /** @var array<positive-int,true> $recovered */
+        $recovered = [];
+        /** @var array<positive-int,true> $killed */
+        $killed = [];
+
         while (count($this->workers) > 0) {
             foreach ($this->workers as $index => $worker) {
                 if ($worker->isRunning()) {
-                    if (! isset($stopped[$index]) && $worker->isFree()) {
-                        $worker->stop();
-                        $stopped[$index] = true;
+                    if (! isset($stopped[$index])) {
+                        if ($worker->isFree()) {
+                            $worker->stop();
+                            $stopped[$index]      = true;
+                            $stoppedSince[$index] = time();
+                        } elseif (! isset($recovered[$index])) {
+                            // A worker whose status byte was lost parks on
+                            // fgets(STDIN) while its inExecution count keeps
+                            // it un-free forever. Recover only when the
+                            // progress file is also stale: a slow batch keeps
+                            // appending progress, a parked worker does not.
+                            if (! isset($desyncSince[$index])) {
+                                $desyncSince[$index] = time();
+                            } elseif ($this->isWorkerDesynced($worker, $desyncSince[$index])) {
+                                $this->output->writeln(sprintf(
+                                    '[paratest] worker %d stalled: status file desync — recovering via controlled exit to preserve results',
+                                    $index,
+                                ));
+                                $worker->stop();
+                                $stopped[$index]      = true;
+                                $stoppedSince[$index] = time();
+                                $recovered[$index]    = true;
+                            }
+                        }
+                    } elseif (time() - $stoppedSince[$index] > self::exitAfterStopSeconds()) {
+                        // A stopped worker serialises its results in end()
+                        // then exits; a worker still running past the bound
+                        // is hung after its result file was written (or in
+                        // PHP shutdown). Killing it loses nothing: flushWorker
+                        // merges the on-disk testResultFile as usual.
+                        $this->output->writeln(sprintf(
+                            '[paratest] worker %d stopped but did not exit — killing; serialized results are already on disk',
+                            $index,
+                        ));
+                        $worker->kill();
+                        $killed[$index] = true;
                     }
 
                     continue;
                 }
 
-                if (! $worker->isFree()) {
+                if (! $worker->isFree() && ! isset($recovered[$index]) && ! isset($killed[$index])) {
                     throw $worker->getWorkerCrashedException();
                 }
 
@@ -263,6 +371,42 @@ final class WrapperRunner implements RunnerInterface
 
             usleep(self::CYCLE_SLEEP);
         }
+    }
+
+    /**
+     * Double-stale desync check: the worker has reported !isFree() since
+     * $desyncSince AND its progress file stopped growing in the same window.
+     */
+    private function isWorkerDesynced(WrapperWorker $worker, int $desyncSince): bool
+    {
+        $threshold = self::desyncRecoverySeconds();
+
+        if (time() - $desyncSince <= $threshold) {
+            return false;
+        }
+
+        $progressPath = $worker->progressFile->getPathname();
+        $mtime        = is_file($progressPath) ? filemtime($progressPath) : 0;
+
+        return time() - $mtime > $threshold;
+    }
+
+    private static function desyncRecoverySeconds(): int
+    {
+        $env = getenv('PARATEST_DESYNC_RECOVERY_SECONDS');
+
+        return $env !== false && (int) $env > 0
+            ? (int) $env
+            : self::DESYNC_RECOVERY_SECONDS_DEFAULT;
+    }
+
+    private static function exitAfterStopSeconds(): int
+    {
+        $env = getenv('PARATEST_EXIT_AFTER_STOP_SECONDS');
+
+        return $env !== false && (int) $env > 0
+            ? (int) $env
+            : self::EXIT_AFTER_STOP_SECONDS_DEFAULT;
     }
 
     /** @param positive-int $token */

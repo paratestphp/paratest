@@ -209,6 +209,20 @@ final class WrapperWorker
         $this->input->write(self::COMMAND_EXIT);
     }
 
+    /**
+     * SIGKILL a worker that was already asked to stop() but never exited:
+     * the controlled exit ran end() and serialised its results, so the
+     * runner only needs the process gone to merge them.
+     */
+    public function kill(): void
+    {
+        if (! $this->process->isRunning()) {
+            return;
+        }
+
+        $this->process->stop(0);
+    }
+
     public function isFree(): bool
     {
         $statusFilepath = $this->statusFile->getPathname();
