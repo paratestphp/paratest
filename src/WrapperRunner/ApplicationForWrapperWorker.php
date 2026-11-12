@@ -16,6 +16,8 @@ use PHPUnit\Runner\Baseline\Reader;
 use PHPUnit\Runner\CodeCoverage;
 use PHPUnit\Runner\DeprecationCollector\Facade as DeprecationCollector;
 use PHPUnit\Runner\ErrorHandler;
+use PHPUnit\Runner\ExecutionOrder\ReorderPipeline;
+use PHPUnit\Runner\ExecutionOrder\Stage\ResolveDependencies;
 use PHPUnit\Runner\Extension\ExtensionBootstrapper;
 use PHPUnit\Runner\Extension\ExtensionFacade;
 use PHPUnit\Runner\Extension\PharLoader;
@@ -107,6 +109,12 @@ final class ApplicationForWrapperWorker
 
         if ($this->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
             mt_srand($this->configuration->randomOrderSeed());
+        }
+
+        // The tests of a class must run after the ones they depend on, as PHPUnit does:
+        // the order across classes is already decided by the SuiteLoader
+        if ($this->configuration->resolveDependencies()) {
+            (new TestSuiteSorter())->apply($testSuite, new ReorderPipeline([new ResolveDependencies()]));
         }
 
         (new TestSuiteFilterProcessor($emitter))->process($this->configuration, $testSuite);

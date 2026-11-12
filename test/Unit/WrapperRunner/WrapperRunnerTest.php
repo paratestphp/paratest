@@ -1025,6 +1025,37 @@ EOF;
         self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
     }
 
+    /** @param non-empty-string $processes */
+    #[DataProvider('provideProcesses')]
+    public function testDependenciesWithinAClassAreResolved(string $processes): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('depends_intra_class' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--processes']     = $processes;
+
+        $runnerResult = $this->runRunner();
+
+        self::assertMatchesRegularExpression('/^\.{4} +4 \/ 4 \(100%\)$/m', $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+    }
+
+    public function testDependenciesWithinAClassAreNotResolvedWhenDisabled(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('depends_intra_class' . DIRECTORY_SEPARATOR . 'phpunit-ignore-dependencies.xml');
+        $this->bareOptions['--processes']     = '1';
+
+        $runnerResult = $this->runRunner();
+
+        self::assertMatchesRegularExpression('/^S\.S\. +4 \/ 4 \(100%\)$/m', $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+    }
+
+    /** @return iterable<string, array{non-empty-string}> */
+    public static function provideProcesses(): iterable
+    {
+        yield 'one process' => ['1'];
+        yield 'two processes' => ['2'];
+    }
+
     public function testOrderByCache(): void
     {
         $resultCacheFile = $this->fixture('order_by') . DIRECTORY_SEPARATOR . '.phpunit.result.cache';
