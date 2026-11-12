@@ -119,6 +119,13 @@ public function setUp(): void
 }
 ```
 
+## Test dependencies
+
+Tests depending on each other, through `#[Depends]`, `#[DependsExternal]`, `#[DependsOnClass]` and their variants,
+run in the same process and in dependency order, as PHPUnit does: this applies to tests in different files, with
+`--functional`, and with `--shard` too. Every test linked by dependencies, directly or not, runs in the same process:
+large groups of dependent tests reduce the parallelism.
+
 ## Troubleshooting
 
 If you run into problems with `paratest`, try to get more information about the issue by enabling debug output via

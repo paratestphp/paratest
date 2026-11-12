@@ -33,19 +33,19 @@ use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_filter;
-use function array_keys;
+use function array_map;
 use function array_merge;
 use function array_slice;
 use function array_values;
 use function assert;
 use function ceil;
 use function count;
-use function is_int;
 use function is_string;
 use function mt_srand;
 use function ob_get_clean;
 use function ob_start;
 use function preg_quote;
+use function spl_object_id;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -57,7 +57,7 @@ use const ARRAY_FILTER_USE_KEY;
 final readonly class SuiteLoader
 {
     public int $testCount;
-    /** @var list<non-empty-string> */
+    /** @var list<non-empty-list<non-empty-string>> Work items, grouped by the worker that must run them together */
     public array $tests;
 
     public function __construct(
@@ -101,8 +101,10 @@ final readonly class SuiteLoader
 
         $testSuite = (new TestSuiteBuilder($emitter))->build($this->options->configuration);
 
+        $groups = DependencyGrouper::group($this->workItems($testSuite));
+
         if ($this->options->hasShard()) {
-            $this->shardTests($testSuite);
+            $this->shardTests($testSuite, $groups);
         }
 
         if ($this->options->configuration->executionOrder() === TestSuiteSorter::ORDER_RANDOMIZED) {
@@ -134,37 +136,12 @@ final readonly class SuiteLoader
 
         $this->testCount = count($testSuite);
 
-        $files = [];
         $tests = [];
-        foreach ($this->loadFiles($testSuite) as $file => $test) {
-            $files[$file] = null;
-
-            if ($test instanceof PhptTestCase) {
-                $tests[] = $file;
-            } else {
-                $name = $test->name();
-                if ($test->providedData() !== []) {
-                    $dataName = $test->dataName();
-                    if ($this->options->functional) {
-                        $name = sprintf('/::%s%s$/', preg_quote($name, '/'), preg_quote($test->dataSetAsString(), '/'));
-                    } else {
-                        if (is_int($dataName)) {
-                            $name .= '#' . $dataName;
-                        } else {
-                            $name .= '@' . $dataName;
-                        }
-                    }
-                } else {
-                    $name = sprintf('/::%s$/', $name);
-                }
-
-                $tests[] = "$file\0$name";
-            }
+        foreach ($this->workItems($testSuite) as $workItem => $test) {
+            $tests[$groups[$workItem]][$workItem] = $workItem;
         }
 
-        $this->tests = $this->options->functional
-            ? $tests
-            : array_keys($files);
+        $this->tests = array_values(array_map(array_values(...), $tests));
 
         if (! $this->options->configuration->hasCoverageReport()) {
             return;
@@ -184,38 +161,51 @@ final readonly class SuiteLoader
         }
     }
 
-    /** @return Generator<non-empty-string, (PhptTestCase|TestCase)> */
-    private function loadFiles(TestSuite $testSuite): Generator
+    /**
+     * A work item is what a worker gets to run: a file, or a single test with --functional
+     *
+     * @return Generator<non-empty-string, (PhptTestCase|TestCase)>
+     */
+    private function workItems(Test $test): Generator
     {
-        foreach ($testSuite as $test) {
-            if ($test instanceof TestSuite) {
-                yield from $this->loadFiles($test);
-
-                continue;
+        if ($test instanceof TestSuite) {
+            foreach ($test as $childTest) {
+                yield from $this->workItems($childTest);
             }
 
-            if ($test instanceof PhptTestCase) {
-                $refProperty = new ReflectionProperty(PhptTestCase::class, 'filename');
-                $filename    = $refProperty->getValue($test);
-                assert(is_string($filename) && $filename !== '');
-                $filename = $this->stripCwd($filename);
-
-                yield $filename => $test;
-
-                continue;
-            }
-
-            if ($test instanceof TestCase) {
-                $refClass = new ReflectionClass($test);
-                $filename = $refClass->getFileName();
-                assert(is_string($filename));
-                $filename = $this->stripCwd($filename);
-
-                yield $filename => $test;
-
-                continue;
-            }
+            return;
         }
+
+        if ($test instanceof PhptTestCase) {
+            $refProperty = new ReflectionProperty(PhptTestCase::class, 'filename');
+            $filename    = $refProperty->getValue($test);
+            assert(is_string($filename) && $filename !== '');
+
+            yield $this->stripCwd($filename) => $test;
+
+            return;
+        }
+
+        if (! $test instanceof TestCase) {
+            return;
+        }
+
+        $refClass = new ReflectionClass($test);
+        $filename = $refClass->getFileName();
+        assert(is_string($filename));
+        $filename = $this->stripCwd($filename);
+
+        if (! $this->options->functional) {
+            yield $filename => $test;
+
+            return;
+        }
+
+        $name = $test->providedData() !== []
+            ? sprintf('/::%s%s$/', preg_quote($test->name(), '/'), preg_quote($test->dataSetAsString(), '/'))
+            : sprintf('/::%s$/', $test->name());
+
+        yield "$filename\0$name" => $test;
     }
 
     /**
@@ -235,7 +225,12 @@ final readonly class SuiteLoader
         return $substr;
     }
 
-    private function shardTests(TestSuite $suite): void
+    /**
+     * Shards over groups of items, so that tests depending on each other end up in the same shard
+     *
+     * @param array<non-empty-string, non-empty-string> $groups
+     */
+    private function shardTests(TestSuite $suite, array $groups): void
     {
         $shards  = $this->options->totalShards;
         $current = $this->options->currentShard - 1; // 0 indexed. Shard 1 is in reality shard 0
@@ -246,27 +241,37 @@ final readonly class SuiteLoader
             ? $this->extractTestsInSuite($suite)
             : $this->extractClassSuites($suite);
 
-        $shardedItems = match ($this->options->shardDistribution) {
-            ShardDistribution::Sequential => array_slice($items, (int) ceil(count($items) / $shards) * $current, (int) ceil(count($items) / $shards)),
-            ShardDistribution::RoundRobin => array_values(array_filter($items, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
-            ShardDistribution::Random => $this->randomShardTests($items, $shards, $current),
+        // Items without tests, as test classes without test methods, belong to no group and are dropped
+        $itemGroups = [];
+        foreach ($items as $item) {
+            foreach ($this->workItems($item) as $workItem => $test) {
+                $itemGroups[$groups[$workItem]][spl_object_id($item)] = $item;
+            }
+        }
+
+        $itemGroups = array_values($itemGroups);
+
+        $shardedItemGroups = match ($this->options->shardDistribution) {
+            ShardDistribution::Sequential => array_slice($itemGroups, (int) ceil(count($itemGroups) / $shards) * $current, (int) ceil(count($itemGroups) / $shards)),
+            ShardDistribution::RoundRobin => array_values(array_filter($itemGroups, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
+            ShardDistribution::Random => $this->randomShardTests($itemGroups, $shards, $current),
         };
 
-        $suite->setTests($shardedItems);
+        $suite->setTests(array_merge(...$shardedItemGroups));
     }
 
     /**
-     * @param list<Test> $tests
+     * @param list<array<int, Test>> $itemGroups
      *
-     * @return list<Test>
+     * @return list<array<int, Test>>
      */
-    private function randomShardTests(array $tests, int $shards, int $current): array
+    private function randomShardTests(array $itemGroups, int $shards, int $current): array
     {
         $randomizer = new Randomizer(new Mt19937($this->options->shardDistributionSeed));
-        /** @var list<Test> $tests */
-        $tests = $randomizer->shuffleArray($tests);
+        /** @var list<array<int, Test>> $itemGroups */
+        $itemGroups = $randomizer->shuffleArray($itemGroups);
 
-        return array_values(array_filter($tests, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
+        return array_values(array_filter($itemGroups, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
     }
 
     /** @return list<TestSuite> */
