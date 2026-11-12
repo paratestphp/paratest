@@ -10,6 +10,9 @@ use ParaTest\Options;
 use ParaTest\RunnerInterface;
 use ParaTest\TestDox\TestDoxResultsMerger;
 use PHPUnit\Event\Facade as EventFacade;
+use PHPUnit\Event\TestRunner\DeprecationTriggered as TestRunnerDeprecationTriggered;
+use PHPUnit\Event\TestRunner\NoticeTriggered as TestRunnerNoticeTriggered;
+use PHPUnit\Event\TestRunner\WarningTriggered as TestRunnerWarningTriggered;
 use PHPUnit\Logging\TestDox\HtmlRenderer as TestDoxHtmlRenderer;
 use PHPUnit\Logging\TestDox\PlainTextRenderer as TestDoxPlainTextRenderer;
 use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
@@ -359,9 +362,9 @@ final class WrapperRunner implements RunnerInterface
                 array_merge_recursive($testResultSum->testTriggeredPhpunitErrorEvents(), $testResult->testTriggeredPhpunitErrorEvents()),
                 array_merge_recursive($testResultSum->testTriggeredPhpunitNoticeEvents(), $testResult->testTriggeredPhpunitNoticeEvents()),
                 array_merge_recursive($testResultSum->testTriggeredPhpunitWarningEvents(), $testResult->testTriggeredPhpunitWarningEvents()),
-                array_merge_recursive($testResultSum->testRunnerTriggeredDeprecationEvents(), $testResult->testRunnerTriggeredDeprecationEvents()),
-                array_merge_recursive($testResultSum->testRunnerTriggeredNoticeEvents(), $testResult->testRunnerTriggeredNoticeEvents()),
-                array_merge_recursive($testResultSum->testRunnerTriggeredWarningEvents(), $testResult->testRunnerTriggeredWarningEvents()),
+                self::mergeTestRunnerEvents($testResultSum->testRunnerTriggeredDeprecationEvents(), $testResult->testRunnerTriggeredDeprecationEvents()),
+                self::mergeTestRunnerEvents($testResultSum->testRunnerTriggeredNoticeEvents(), $testResult->testRunnerTriggeredNoticeEvents()),
+                self::mergeTestRunnerEvents($testResultSum->testRunnerTriggeredWarningEvents(), $testResult->testRunnerTriggeredWarningEvents()),
                 array_merge_recursive($testResultSum->testRunnerTriggeredIssueDeprecationEvents(), $testResult->testRunnerTriggeredIssueDeprecationEvents()),
                 array_merge_recursive($testResultSum->testRunnerTriggeredIssueErrorEvents(), $testResult->testRunnerTriggeredIssueErrorEvents()),
                 array_merge_recursive($testResultSum->testRunnerTriggeredIssueNoticeEvents(), $testResult->testRunnerTriggeredIssueNoticeEvents()),
@@ -427,6 +430,35 @@ final class WrapperRunner implements RunnerInterface
         rmdir($this->runTmpDir);
 
         return $exitcode;
+    }
+
+    /**
+     * The main process and every worker trigger the same test runner issues, as the ones about the configuration:
+     * an issue already triggered by another process is not repeated
+     *
+     * @param list<T> $events
+     * @param list<T> $newEvents
+     *
+     * @return list<T>
+     *
+     * @template T of TestRunnerDeprecationTriggered|TestRunnerNoticeTriggered|TestRunnerWarningTriggered
+     */
+    private static function mergeTestRunnerEvents(array $events, array $newEvents): array
+    {
+        $messages = [];
+        foreach ($events as $event) {
+            $messages[$event->message()] = true;
+        }
+
+        foreach ($newEvents as $newEvent) {
+            if (isset($messages[$newEvent->message()])) {
+                continue;
+            }
+
+            $events[] = $newEvent;
+        }
+
+        return $events;
     }
 
     /**

@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use function array_map;
 use function array_merge;
 use function array_shift;
+use function array_unique;
+use function array_values;
 use function basename;
 use function explode;
 use function preg_match;
@@ -440,6 +442,19 @@ final class SuiteLoaderTest extends TestBase
         }
     }
 
+    public function testFunctionalQueuesEachRepeatedOrRetriedTestOnce(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+
+        $loader = $this->loadSuite();
+        $tests  = array_merge(...$loader->tests);
+
+        self::assertSame(11, $loader->testCount);
+        self::assertCount(6, $tests);
+        self::assertSame(array_values(array_unique($tests)), $tests);
+    }
+
     /**
      * Groups as test file names, or as test names with --functional
      *
@@ -457,6 +472,98 @@ final class SuiteLoaderTest extends TestBase
 
             return $name;
         }, $group), $this->loadSuite()->tests);
+    }
+
+    public function testFunctionalAppliesFilterToRepeatedOrRetriedTests(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+        $this->bareOptions['--filter']     = 'testPlain';
+
+        $loader = $this->loadSuite();
+
+        self::assertSame(1, $loader->testCount);
+        self::assertCount(1, $loader->tests);
+    }
+
+    public function testShardingKeepsClassesWithRepeatedOrRetriedTestsTogether(): void
+    {
+        $this->bareOptions['path'] = $this->fixture('repeat_retry');
+
+        $files     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $files                        = array_merge($files, array_map(basename(...), array_merge(...$loader->tests)));
+            $testCount                   += $loader->testCount;
+        }
+
+        sort($files);
+        self::assertSame(['RepeatRetryAttributesTest.php', 'RepeatedCompanionTest.php'], $files);
+        self::assertSame(11, $testCount);
+    }
+
+    public function testFunctionalShardingKeepsRepetitionsAndAttemptsTogether(): void
+    {
+        $this->bareOptions['path']         = $this->fixture('repeat_retry');
+        $this->bareOptions['--functional'] = true;
+
+        $tests     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $tests                        = array_merge($tests, ...$loader->tests);
+            $testCount                   += $loader->testCount;
+        }
+
+        self::assertCount(6, $tests);
+        self::assertSame(array_values(array_unique($tests)), $tests);
+        self::assertSame(11, $testCount);
+    }
+
+    /** @return iterable<string, array{non-empty-string, non-empty-string, ?non-empty-string}> */
+    public static function provideShardsWithPhptFiles(): iterable
+    {
+        foreach (['phpt' => 'my_test.phpt', 'function_parallelization_tests' => 'Regression.phpt'] as $path => $phptFile) {
+            yield $path => [$path, $phptFile, null];
+            yield "$path, repeat" => [$path, $phptFile, '--repeat'];
+            yield "$path, retry" => [$path, $phptFile, '--retry'];
+        }
+    }
+
+    /**
+     * @param non-empty-string  $path
+     * @param non-empty-string  $phptFile
+     * @param ?non-empty-string $option
+     */
+    #[DataProvider('provideShardsWithPhptFiles')]
+    public function testShardingKeepsPhptFiles(string $path, string $phptFile, ?string $option): void
+    {
+        $this->bareOptions['path'] = $this->fixture($path);
+        if ($option !== null) {
+            $this->bareOptions[$option] = '2';
+        }
+
+        $loader            = $this->loadSuite();
+        $expectedFiles     = array_map(basename(...), array_merge(...$loader->tests));
+        $expectedTestCount = $loader->testCount;
+
+        $files     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $files                        = array_merge($files, array_map(basename(...), array_merge(...$loader->tests)));
+            $testCount                   += $loader->testCount;
+        }
+
+        sort($expectedFiles);
+        sort($files);
+        self::assertContains($phptFile, $expectedFiles);
+        self::assertSame($expectedFiles, $files);
+        self::assertSame($expectedTestCount, $testCount);
     }
 
     /** @return list<string> */
