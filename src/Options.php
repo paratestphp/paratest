@@ -194,9 +194,7 @@ final readonly class Options
         unset($options['functional']);
 
         assert(array_key_exists('colors', $options));
-        if ($options['colors'] === Configuration::COLOR_DEFAULT) {
-            unset($options['colors']);
-        } elseif ($options['colors'] === null) {
+        if ($options['colors'] === null) {
             $options['colors'] = Configuration::COLOR_AUTO;
         }
 
@@ -711,7 +709,7 @@ final readonly class Options
                 null,
                 InputOption::VALUE_OPTIONAL,
                 '@see PHPUnit guide, chapter: ' . $chapter = 'Reporting',
-                Configuration::COLOR_DEFAULT,
+                false,
             ),
             new InputOption(
                 'no-progress',
