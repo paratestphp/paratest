@@ -960,7 +960,8 @@ EOF;
 
         self::assertSame(RunnerInterface::FAILURE_EXIT, $process->getExitCode());
         self::assertStringContainsString('Options --repeat and --retry cannot be used together', $process->getOutput());
-        self::assertStringContainsString('Failures: 1', $process->getOutput());
+        // The main process and the worker trigger the same warning: it is reported once, as by PHPUnit
+        self::assertStringContainsString('Tests: 2, Assertions: 1, Failures: 1, PHPUnit Warnings: 1, Skipped: 1.', $process->getOutput());
     }
 
     public function testInvalidRetryValueIsIgnored(): void
@@ -969,7 +970,7 @@ EOF;
 
         self::assertSame(RunnerInterface::FAILURE_EXIT, $process->getExitCode());
         self::assertStringContainsString('Option "--retry abc" ignored because "abc" is not a positive integer', $process->getOutput());
-        self::assertStringContainsString('Failures: 1', $process->getOutput());
+        self::assertStringContainsString('Tests: 1, Assertions: 1, Failures: 1, PHPUnit Warnings: 1.', $process->getOutput());
     }
 
     /**
