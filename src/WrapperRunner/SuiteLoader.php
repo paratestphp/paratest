@@ -47,6 +47,7 @@ use function ob_start;
 use function preg_quote;
 use function spl_object_id;
 use function sprintf;
+use function str_replace;
 use function str_starts_with;
 use function strlen;
 use function substr;
@@ -211,8 +212,13 @@ final readonly class SuiteLoader
             return;
         }
 
+        // Workers read one work item per line: line breaks in the data set name are written as regex escapes
         $name = $test->providedData() !== []
-            ? sprintf('/::%s%s$/', preg_quote($test->name(), '/'), preg_quote($test->dataSetAsString(), '/'))
+            ? sprintf(
+                '/::%s%s$/',
+                preg_quote($test->name(), '/'),
+                str_replace(["\r", "\n"], ['\r', '\n'], preg_quote($test->dataSetAsString(), '/')),
+            )
             : sprintf('/::%s$/', $test->name());
 
         yield "$filename\0$name" => $test;
