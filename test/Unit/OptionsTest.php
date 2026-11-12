@@ -10,6 +10,8 @@ use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ShardDistribution;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\TextUI\Configuration\Configuration;
+use SebastianBergmann\Environment\Console;
 
 use function mt_rand;
 use function sprintf;
@@ -99,6 +101,42 @@ final class OptionsTest extends TestBase
         $options = $this->createOptionsFromArgv(['--repeat' => '2']);
         self::assertSame('2', $options->phpunitOptions['repeat']);
         self::assertSame(2, $options->configuration->repeat());
+    }
+
+    public function testColorsDefaultsToConfigurationFile(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH1101' . DIRECTORY_SEPARATOR . 'phpunit.xml'),
+        ]);
+
+        self::assertTrue($options->configuration->colors());
+    }
+
+    public function testColorsNeverOverridesConfigurationFile(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH1101' . DIRECTORY_SEPARATOR . 'phpunit.xml'),
+            '--colors' => Configuration::COLOR_NEVER,
+        ]);
+
+        self::assertFalse($options->configuration->colors());
+    }
+
+    public function testColorsAlways(): void
+    {
+        $options = $this->createOptionsFromArgv(['--colors' => Configuration::COLOR_ALWAYS]);
+
+        self::assertTrue($options->configuration->colors());
+    }
+
+    public function testColorsWithoutValueMeansAuto(): void
+    {
+        $options = $this->createOptionsFromArgv([
+            '--configuration' => $this->fixture('github' . DIRECTORY_SEPARATOR . 'GH1101' . DIRECTORY_SEPARATOR . 'phpunit.xml'),
+            '--colors' => null,
+        ]);
+
+        self::assertSame((new Console())->hasColorSupport(), $options->configuration->colors());
     }
 
     public function testProvidedOptions(): void
