@@ -523,6 +523,49 @@ final class SuiteLoaderTest extends TestBase
         self::assertSame(11, $testCount);
     }
 
+    /** @return iterable<string, array{non-empty-string, non-empty-string, ?non-empty-string}> */
+    public static function provideShardsWithPhptFiles(): iterable
+    {
+        foreach (['phpt' => 'my_test.phpt', 'function_parallelization_tests' => 'Regression.phpt'] as $path => $phptFile) {
+            yield $path => [$path, $phptFile, null];
+            yield "$path, repeat" => [$path, $phptFile, '--repeat'];
+            yield "$path, retry" => [$path, $phptFile, '--retry'];
+        }
+    }
+
+    /**
+     * @param non-empty-string  $path
+     * @param non-empty-string  $phptFile
+     * @param ?non-empty-string $option
+     */
+    #[DataProvider('provideShardsWithPhptFiles')]
+    public function testShardingKeepsPhptFiles(string $path, string $phptFile, ?string $option): void
+    {
+        $this->bareOptions['path'] = $this->fixture($path);
+        if ($option !== null) {
+            $this->bareOptions[$option] = '2';
+        }
+
+        $loader            = $this->loadSuite();
+        $expectedFiles     = array_map(basename(...), array_merge(...$loader->tests));
+        $expectedTestCount = $loader->testCount;
+
+        $files     = [];
+        $testCount = 0;
+        foreach (['1/2', '2/2'] as $shard) {
+            $this->bareOptions['--shard'] = $shard;
+            $loader                       = $this->loadSuite();
+            $files                        = array_merge($files, array_map(basename(...), array_merge(...$loader->tests)));
+            $testCount                   += $loader->testCount;
+        }
+
+        sort($expectedFiles);
+        sort($files);
+        self::assertContains($phptFile, $expectedFiles);
+        self::assertSame($expectedFiles, $files);
+        self::assertSame($expectedTestCount, $testCount);
+    }
+
     /** @return list<string> */
     private function loadSuiteFileNames(): array
     {

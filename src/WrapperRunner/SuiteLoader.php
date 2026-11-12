@@ -7,7 +7,6 @@ namespace ParaTest\WrapperRunner;
 use Generator;
 use ParaTest\Options;
 use PHPUnit\Event\Facade as EventFacade;
-use PHPUnit\Framework\DataProviderTestSuite;
 use PHPUnit\Framework\IterativeTestSuite;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
@@ -246,11 +245,10 @@ final readonly class SuiteLoader
         $shards  = $this->options->totalShards;
         $current = $this->options->currentShard - 1; // 0 indexed. Shard 1 is in reality shard 0
 
-        // With --functional, shard over individual test methods (values).
-        // Without --functional, shard over class-level suites (keys) to keep whole files together.
+        // With --functional, shard over individual tests, otherwise over whole files
         $items = $this->options->functional
             ? $this->extractTestsInSuite($suite)
-            : $this->extractClassSuites($suite);
+            : $this->extractFiles($suite);
 
         // Items without tests, as test classes without test methods, belong to no group and are dropped
         $itemGroups = [];
@@ -285,30 +283,24 @@ final readonly class SuiteLoader
         return array_values(array_filter($itemGroups, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
     }
 
-    /** @return list<TestSuite> */
-    private function extractClassSuites(TestSuite $suite): array
+    /**
+     * Files are test classes and PHPT tests, the latter wrapped in a suite when repeated or retried
+     *
+     * @return list<Test>
+     */
+    private function extractFiles(TestSuite $suite): array
     {
-        $classSuites = [];
+        $files = [];
 
         foreach ($suite->tests() as $item) {
-            if (! ($item instanceof TestSuite)) {
-                continue;
-            }
-
-            $children = $item->tests();
-            if (
-                $children !== []
-                && $children[0] instanceof TestSuite
-                && ! ($children[0] instanceof DataProviderTestSuite)
-                && ! ($children[0] instanceof IterativeTestSuite)
-            ) {
-                $classSuites = array_merge($classSuites, $this->extractClassSuites($item));
+            if ($item instanceof TestSuite && ! $item->isForTestClass() && ! ($item instanceof IterativeTestSuite)) {
+                $files = array_merge($files, $this->extractFiles($item));
             } else {
-                $classSuites[] = $item;
+                $files[] = $item;
             }
         }
 
-        return $classSuites;
+        return $files;
     }
 
     /** @return list<Test> */

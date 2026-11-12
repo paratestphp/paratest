@@ -9,11 +9,7 @@ use PHPUnit\Framework\Attributes\Repeat;
 use PHPUnit\Framework\Attributes\Retry;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Keep testRepeated first: class-level sharding inspects the first test of each class.
- *
- * @internal
- */
+/** @internal */
 final class RepeatRetryAttributesTest extends TestCase
 {
     #[Repeat(3)]
