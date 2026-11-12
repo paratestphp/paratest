@@ -13,9 +13,12 @@ use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 use function array_map;
+use function array_merge;
 use function array_shift;
 use function basename;
+use function explode;
 use function preg_match;
+use function sort;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
@@ -45,7 +48,7 @@ final class SuiteLoaderTest extends TestBase
     {
         $path                      = $this->fixture('common_results' . DIRECTORY_SEPARATOR . 'SuccessTest.php');
         $this->bareOptions['path'] = $path;
-        $files                     = $this->loadSuite()->tests;
+        $files                     = array_merge(...$this->loadSuite()->tests);
 
         $file = array_shift($files);
         self::assertNotNull($file);
@@ -66,7 +69,7 @@ final class SuiteLoaderTest extends TestBase
     public function testLoadsPhptFiles(): void
     {
         $this->bareOptions['path'] = $this->fixture('phpt');
-        $files                     = $this->loadSuite()->tests;
+        $files                     = array_merge(...$this->loadSuite()->tests);
 
         $file = array_shift($files);
         self::assertNotNull($file);
@@ -154,7 +157,7 @@ final class SuiteLoaderTest extends TestBase
         foreach ($expectedPerShard as $index => [$expectedFiles, $expectedTestCount]) {
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
             $loader                       = $this->loadSuite();
-            self::assertSame($expectedFiles, array_map(basename(...), $loader->tests));
+            self::assertSame($expectedFiles, array_map(basename(...), array_merge(...$loader->tests)));
             self::assertSame($expectedTestCount, $loader->testCount);
         }
     }
@@ -210,7 +213,7 @@ final class SuiteLoaderTest extends TestBase
         foreach ($expectedPerShard as $index => [$expectedFiles, $expectedTestCount]) {
             $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
             $loader                       = $this->loadSuite();
-            self::assertSame($expectedFiles, array_map(basename(...), $loader->tests));
+            self::assertSame($expectedFiles, array_map(basename(...), array_merge(...$loader->tests)));
             self::assertSame($expectedTestCount, $loader->testCount);
         }
     }
@@ -342,10 +345,124 @@ final class SuiteLoaderTest extends TestBase
         }
     }
 
+    public function testGroupsFilesDependingOnEachOtherInDependencyOrder(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+
+        self::assertSame([
+            ['BProducerTest', 'AConsumerTest'],
+            ['DClassProducerTest', 'CClassConsumerTest'],
+            ['GChainFirstTest', 'FChainSecondTest', 'EChainThirdTest'],
+            ['IDataProviderProducerTest', 'HDataProviderConsumerTest'],
+            ['JIndependentTest'],
+            ['KProducerTest', 'LConsumerTest'],
+        ], $this->loadSuiteGroups());
+    }
+
+    public function testGroupsTestsDependingOnEachOtherInDependencyOrder(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--functional']    = true;
+
+        self::assertSame([
+            ['BProducerTest::testProduce', 'AConsumerTest::testConsume'],
+            ['DClassProducerTest::testOne', 'DClassProducerTest::testTwo', 'CClassConsumerTest::testConsume'],
+            ['GChainFirstTest::testFirst', 'FChainSecondTest::testSecond', 'EChainThirdTest::testThird'],
+            ['IDataProviderProducerTest::testProduce with data set "first"', 'IDataProviderProducerTest::testProduce with data set "second"', 'HDataProviderConsumerTest::testConsume'],
+            ['JIndependentTest::testOne'],
+            ['JIndependentTest::testTwo'],
+            ['KProducerTest::testProduce', 'LConsumerTest::testConsume'],
+        ], $this->loadSuiteGroups());
+    }
+
+    public function testDependencyExcludedByFilterIsNotGrouped(): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--filter']        = 'AConsumerTest';
+
+        self::assertSame([['AConsumerTest']], $this->loadSuiteGroups());
+    }
+
+    /**
+     * @param non-empty-string $distribution
+     * @param non-empty-string $totalShards
+     */
+    #[DataProvider('provideShardsOfGroups')]
+    public function testShardsKeepGroupsTogether(string $distribution, string $totalShards, bool $functional): void
+    {
+        $this->bareOptions['--configuration']           = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--shard-test-distribution'] = $distribution;
+        if ($functional) {
+            $this->bareOptions['--functional'] = true;
+        }
+
+        $expectedGroups = $this->loadSuiteGroups();
+
+        $shardedGroups = [];
+        for ($shard = 1; $shard <= (int) $totalShards; ++$shard) {
+            $this->bareOptions['--shard'] = $shard . '/' . $totalShards;
+            $groups                       = $this->loadSuiteGroups();
+            self::assertNotSame([], $groups);
+
+            $shardedGroups = array_merge($shardedGroups, $groups);
+        }
+
+        // Sharding with --functional flattens the suite: within a group, the order of the data sets
+        // of a test can then differ, see the ResolveDependencies stage of PHPUnit
+        self::assertSame(self::canonicalize($expectedGroups), self::canonicalize($shardedGroups));
+    }
+
+    /**
+     * @param list<list<string>> $groups
+     *
+     * @return list<list<string>>
+     */
+    private static function canonicalize(array $groups): array
+    {
+        foreach ($groups as $index => $group) {
+            sort($group);
+            $groups[$index] = $group;
+        }
+
+        sort($groups);
+
+        return $groups;
+    }
+
+    /** @return iterable<string, array{non-empty-string, non-empty-string, bool}> */
+    public static function provideShardsOfGroups(): iterable
+    {
+        foreach (ShardDistribution::cases() as $distribution) {
+            foreach (['2', '3'] as $totalShards) {
+                yield "{$distribution->value}, $totalShards shards" => [$distribution->value, $totalShards, false];
+                yield "functional, {$distribution->value}, $totalShards shards" => [$distribution->value, $totalShards, true];
+            }
+        }
+    }
+
+    /**
+     * Groups as test file names, or as test names with --functional
+     *
+     * @return list<list<string>>
+     */
+    private function loadSuiteGroups(): array
+    {
+        return array_map(static fn (array $group): array => array_map(static function (string $workItem): string {
+            $parts = explode("\0", $workItem);
+            $name  = basename($parts[0], '.php');
+            if (isset($parts[1])) {
+                self::assertSame(1, preg_match('/^\/::(.+)\$\/$/', $parts[1], $matches));
+                $name .= '::' . $matches[1];
+            }
+
+            return $name;
+        }, $group), $this->loadSuite()->tests);
+    }
+
     /** @return list<string> */
     private function loadSuiteFileNames(): array
     {
-        return array_map(basename(...), $this->loadSuite()->tests);
+        return array_map(basename(...), array_merge(...$this->loadSuite()->tests));
     }
 
     /** @return list<string> */
@@ -356,7 +473,7 @@ final class SuiteLoaderTest extends TestBase
             self::assertSame(1, $result);
 
             return $matches[1];
-        }, $this->loadSuite()->tests);
+        }, array_merge(...$this->loadSuite()->tests));
     }
 
     private function loadSuite(): SuiteLoader

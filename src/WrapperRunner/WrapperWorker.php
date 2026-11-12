@@ -14,6 +14,7 @@ use Throwable;
 use function array_map;
 use function assert;
 use function clearstatcache;
+use function count;
 use function file_get_contents;
 use function filesize;
 use function implode;
@@ -41,7 +42,8 @@ final class WrapperWorker
     public readonly SplFileInfo $teamcityFile;
     public readonly SplFileInfo $testdoxFile;
 
-    private ?string $currentlyExecuting = null;
+    /** @var list<non-empty-string> */
+    private array $currentlyExecuting = [];
     private Process $process;
     private int $inExecution = 0;
     private InputStream $input;
@@ -181,27 +183,31 @@ final class WrapperWorker
     {
         return WorkerCrashedException::fromProcess(
             $this->process,
-            $this->currentlyExecuting ?? 'N.A.',
+            $this->currentlyExecuting !== [] ? implode(', ', $this->currentlyExecuting) : 'N.A.',
             $previousException,
         );
     }
 
-    public function assign(string $test): void
+    /** @param non-empty-list<non-empty-string> $tests Run in this order, by this same process */
+    public function assign(array $tests): void
     {
-        assert($this->currentlyExecuting === null);
+        assert($this->currentlyExecuting === []);
 
-        if ($this->options->verbose) {
-            $this->output->write("Process {$this->token} executing: {$test}\n");
+        foreach ($tests as $test) {
+            if ($this->options->verbose) {
+                $this->output->write("Process {$this->token} executing: {$test}\n");
+            }
+
+            $this->input->write($test . "\n");
         }
 
-        $this->input->write($test . "\n");
-        $this->currentlyExecuting = $test;
-        ++$this->inExecution;
+        $this->currentlyExecuting = $tests;
+        $this->inExecution       += count($tests);
     }
 
     public function reset(): void
     {
-        $this->currentlyExecuting = null;
+        $this->currentlyExecuting = [];
     }
 
     public function stop(): void

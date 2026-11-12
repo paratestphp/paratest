@@ -65,7 +65,7 @@ final class WrapperRunner implements RunnerInterface
     private const int CYCLE_SLEEP = 1000;
     private readonly ResultPrinter $printer;
 
-    /** @var list<non-empty-string> */
+    /** @var list<non-empty-list<non-empty-string>> */
     private array $pending = [];
     private int $exitcode  = -1;
     /** @var array<positive-int,WrapperWorker> */
@@ -197,7 +197,9 @@ final class WrapperRunner implements RunnerInterface
 
                 $this->flushWorker($worker);
 
-                if ($batchSize !== 0 && $this->batches[$token] === $batchSize) {
+                // A group of tests depending on each other is never split across worker restarts:
+                // the worker may exceed the batch size by the tests of the last group it was assigned
+                if ($batchSize !== 0 && $this->batches[$token] >= $batchSize) {
                     $this->destroyWorker($token);
                     $worker = $this->startWorker($token);
                 }
@@ -209,7 +211,7 @@ final class WrapperRunner implements RunnerInterface
                     $this->pending = [];
                 } elseif (($pending = array_shift($this->pending)) !== null) {
                     $worker->assign($pending);
-                    $this->batches[$token]++;
+                    $this->batches[$token] += count($pending);
                 }
             }
 

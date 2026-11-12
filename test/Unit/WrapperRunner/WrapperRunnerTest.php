@@ -48,7 +48,9 @@ use function simplexml_load_string;
 use function sort;
 use function sprintf;
 use function str_replace;
+use function strlen;
 use function substr;
+use function substr_count;
 use function uniqid;
 use function unlink;
 
@@ -1026,11 +1028,14 @@ EOF;
     }
 
     /** @param non-empty-string $processes */
-    #[DataProvider('provideProcesses')]
-    public function testDependenciesWithinAClassAreResolved(string $processes): void
+    #[DataProvider('provideProcessesAndFunctional')]
+    public function testDependenciesWithinAClassAreResolved(string $processes, bool $functional): void
     {
         $this->bareOptions['--configuration'] = $this->fixture('depends_intra_class' . DIRECTORY_SEPARATOR . 'phpunit.xml');
         $this->bareOptions['--processes']     = $processes;
+        if ($functional) {
+            $this->bareOptions['--functional'] = true;
+        }
 
         $runnerResult = $this->runRunner();
 
@@ -1049,11 +1054,116 @@ EOF;
         self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
     }
 
-    /** @return iterable<string, array{non-empty-string}> */
-    public static function provideProcesses(): iterable
+    /** @return iterable<string, array{non-empty-string, bool}> */
+    public static function provideProcessesAndFunctional(): iterable
     {
-        yield 'one process' => ['1'];
-        yield 'two processes' => ['2'];
+        yield 'one process' => ['1', false];
+        yield 'two processes' => ['2', false];
+        yield 'functional, one process' => ['1', true];
+        yield 'functional, a process per test' => ['4', true];
+    }
+
+    /**
+     * The fixture has 12 files and 15 tests: a process per work item spreads them all over different workers
+     *
+     * @param non-empty-string      $processes
+     * @param non-empty-string|null $maxBatchSize
+     */
+    #[DataProvider('provideDependenciesAcrossWorkItems')]
+    public function testDependenciesAcrossWorkItemsAreResolved(string $processes, bool $functional, ?string $maxBatchSize): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--processes']     = $processes;
+        if ($maxBatchSize !== null) {
+            $this->bareOptions['--max-batch-size'] = $maxBatchSize;
+        }
+
+        if ($functional) {
+            $this->bareOptions['--functional'] = true;
+        }
+
+        $runnerResult = $this->runRunner();
+
+        self::assertMatchesRegularExpression('/^\.{15} +15 \/ 15 \(100%\)$/m', $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+    }
+
+    /** @return iterable<string, array{non-empty-string, bool, non-empty-string|null}> */
+    public static function provideDependenciesAcrossWorkItems(): iterable
+    {
+        yield 'a process per file' => ['12', false, null];
+        yield 'a process per test' => ['15', true, null];
+        yield 'a process per file, max batch size 1' => ['12', false, '1'];
+        yield 'a process per test, max batch size 1' => ['15', true, '1'];
+        yield 'one process, max batch size 1' => ['1', false, '1'];
+        yield 'functional, one process, max batch size 1' => ['1', true, '1'];
+    }
+
+    /**
+     * As in a single PHPUnit process, a dependency running earlier in the natural order passes: only
+     * the 5 tests declared before their dependencies are skipped
+     *
+     * @param non-empty-string $processes
+     */
+    #[DataProvider('provideDependenciesAcrossWorkItemsWhenNotResolved')]
+    public function testDependenciesAcrossWorkItemsShareAWorkerWhenNotResolved(string $processes, bool $functional): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit-ignore-dependencies.xml');
+        $this->bareOptions['--processes']     = $processes;
+        if ($functional) {
+            $this->bareOptions['--functional'] = true;
+        }
+
+        $runnerResult = $this->runRunner();
+
+        self::assertSame(1, preg_match('/^([.S]{15}) +15 \/ 15 \(100%\)$/m', $runnerResult->output, $matches), $runnerResult->output);
+        self::assertSame(5, substr_count($matches[1], 'S'), $runnerResult->output);
+        self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+    }
+
+    /** @return iterable<string, array{non-empty-string, bool}> */
+    public static function provideDependenciesAcrossWorkItemsWhenNotResolved(): iterable
+    {
+        yield 'a process per file' => ['12', false];
+        yield 'a process per test' => ['15', true];
+    }
+
+    /** @param non-empty-string $distribution */
+    #[DataProvider('provideShardsWithDependencies')]
+    public function testDependenciesAcrossWorkItemsAreResolvedInEachShard(string $distribution, int $totalShards, bool $functional): void
+    {
+        $this->bareOptions['--configuration']           = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--processes']               = '15';
+        $this->bareOptions['--shard-test-distribution'] = $distribution;
+        if ($functional) {
+            $this->bareOptions['--functional'] = true;
+        }
+
+        $executedTests = 0;
+        for ($shard = 1; $shard <= $totalShards; ++$shard) {
+            $this->bareOptions['--shard'] = $shard . '/' . $totalShards;
+
+            $runnerResult = $this->runRunner();
+
+            self::assertSame(1, preg_match('/^(\.*) +(\d+) \/ \2 \(100%\)$/m', $runnerResult->output, $matches), $runnerResult->output);
+            self::assertSame((int) $matches[2], strlen($matches[1]), $runnerResult->output);
+            self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+
+            $executedTests += (int) $matches[2];
+        }
+
+        self::assertSame(15, $executedTests);
+    }
+
+    /** @return iterable<string, array{non-empty-string, int, bool}> */
+    public static function provideShardsWithDependencies(): iterable
+    {
+        foreach (['sequential', 'round-robin', 'random'] as $distribution) {
+            foreach ([2, 3] as $totalShards) {
+                yield "$distribution, $totalShards shards" => [$distribution, $totalShards, false];
+                yield "functional, $distribution, $totalShards shards" => [$distribution, $totalShards, true];
+            }
+        }
     }
 
     public function testOrderByCache(): void
