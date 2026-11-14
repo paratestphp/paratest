@@ -8,6 +8,7 @@ use Generator;
 use ParaTest\Options;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\IterativeTestSuite;
+use PHPUnit\Framework\Reorderable;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
@@ -18,6 +19,8 @@ use PHPUnit\Runner\Extension\PharLoader;
 use PHPUnit\Runner\Phpt\TestCase as PhptTestCase;
 use PHPUnit\Runner\TestRunHistory\DefaultTestRunHistory;
 use PHPUnit\Runner\TestRunHistory\NullTestRunHistory;
+use PHPUnit\Runner\TestRunHistory\TestRunHistory;
+use PHPUnit\Runner\TestRunHistory\TestRunHistoryId;
 use PHPUnit\Runner\TestSuiteSorter;
 use PHPUnit\TestRunner\TestResult\Facade as TestResultFacade;
 use PHPUnit\TextUI\Command\Result;
@@ -32,15 +35,22 @@ use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function array_fill;
 use function array_filter;
+use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_search;
 use function array_slice;
+use function array_sum;
 use function array_values;
 use function assert;
 use function ceil;
 use function count;
+use function is_int;
 use function is_string;
+use function ksort;
+use function min;
 use function mt_srand;
 use function ob_get_clean;
 use function ob_start;
@@ -51,6 +61,7 @@ use function str_replace;
 use function str_starts_with;
 use function strlen;
 use function substr;
+use function usort;
 
 use const ARRAY_FILTER_USE_KEY;
 
@@ -117,19 +128,13 @@ final readonly class SuiteLoader
             $this->options->configuration->executionOrderDefects() !== TestSuiteSorter::ORDER_DEFAULT ||
             $this->options->configuration->resolveDependencies()
         ) {
-            $resultCache = new NullTestRunHistory();
-            if ($this->options->configuration->recordTestRunHistory()) {
-                $resultCache = new DefaultTestRunHistory($this->options->configuration->testRunHistoryFile());
-                $resultCache->load();
-            }
-
             $pipeline = ReorderPipeline::fromConfiguration(
                 $this->options->configuration->executionOrder(),
                 $this->options->configuration->executionOrderDefects(),
                 $this->options->configuration->resolveDependencies(),
             );
             if (! $pipeline->isEmpty()) {
-                (new TestSuiteSorter($resultCache))->apply($testSuite, $pipeline);
+                (new TestSuiteSorter($this->testRunHistory()))->apply($testSuite, $pipeline);
             }
         }
 
@@ -270,6 +275,7 @@ final readonly class SuiteLoader
             ShardDistribution::Sequential => array_slice($itemGroups, (int) ceil(count($itemGroups) / $shards) * $current, (int) ceil(count($itemGroups) / $shards)),
             ShardDistribution::RoundRobin => array_values(array_filter($itemGroups, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY)),
             ShardDistribution::Random => $this->randomShardTests($itemGroups, $shards, $current),
+            ShardDistribution::Duration => $this->durationShardTests($itemGroups, $shards, $current),
         };
 
         $suite->setTests(array_merge(...$shardedItemGroups));
@@ -287,6 +293,100 @@ final readonly class SuiteLoader
         $itemGroups = $randomizer->shuffleArray($itemGroups);
 
         return array_values(array_filter($itemGroups, static fn (int $i): bool => $i % $shards === $current, ARRAY_FILTER_USE_KEY));
+    }
+
+    /**
+     * Longest processing time first: each group, slowest first, goes to the shard with the least total duration so far.
+     * Durations come from the test run history; a test missing from it weighs the mean known duration, or 1 when no
+     * duration is known, which balances the shards by test count. Every shard computes the same assignment only as long
+     * as all of them read the same test run history.
+     *
+     * @param list<array<int, Test>> $itemGroups
+     *
+     * @return list<array<int, Test>>
+     */
+    private function durationShardTests(array $itemGroups, int $shards, int $current): array
+    {
+        $testRunHistory = $this->testRunHistory();
+
+        $knownDurations    = [];
+        $groupDurations    = [];
+        $groupUnknownTests = [];
+        foreach ($itemGroups as $index => $itemGroup) {
+            $groupDurations[$index]    = 0.0;
+            $groupUnknownTests[$index] = 0;
+            foreach ($itemGroup as $item) {
+                foreach ($this->durations($item, $testRunHistory) as $duration) {
+                    // The history gives no duration as 0
+                    if ($duration > 0.0) {
+                        $knownDurations[]        = $duration;
+                        $groupDurations[$index] += $duration;
+                    } else {
+                        ++$groupUnknownTests[$index];
+                    }
+                }
+            }
+        }
+
+        $unknownDuration = $knownDurations === [] ? 1.0 : array_sum($knownDurations) / count($knownDurations);
+        foreach ($groupUnknownTests as $index => $unknownTests) {
+            $groupDurations[$index] += $unknownTests * $unknownDuration;
+        }
+
+        $slowestFirst = array_keys($groupDurations);
+        usort(
+            $slowestFirst,
+            static fn (int $left, int $right): int => [$groupDurations[$right], $left] <=> [$groupDurations[$left], $right],
+        );
+
+        $shardDurations = array_fill(0, $shards, 0.0);
+        assert($shardDurations !== []);
+        $currentGroups = [];
+        foreach ($slowestFirst as $index) {
+            $shard = array_search(min($shardDurations), $shardDurations, true);
+            assert(is_int($shard));
+            $shardDurations[$shard] += $groupDurations[$index];
+            if ($shard !== $current) {
+                continue;
+            }
+
+            $currentGroups[$index] = $itemGroups[$index];
+        }
+
+        ksort($currentGroups);
+
+        return array_values($currentGroups);
+    }
+
+    /** @return list<float> */
+    private function durations(Test $test, TestRunHistory $testRunHistory): array
+    {
+        if ($test instanceof TestSuite) {
+            $durations = [];
+            foreach ($test->tests() as $childTest) {
+                $durations = array_merge($durations, $this->durations($childTest, $testRunHistory));
+            }
+
+            return $durations;
+        }
+
+        if ($test instanceof Reorderable) {
+            return [$testRunHistory->time(TestRunHistoryId::fromReorderable($test))];
+        }
+
+        return [];
+    }
+
+    private function testRunHistory(): TestRunHistory
+    {
+        if (! $this->options->configuration->recordTestRunHistory()) {
+            return new NullTestRunHistory();
+        }
+
+        $testRunHistory = new DefaultTestRunHistory($this->options->configuration->testRunHistoryFile());
+        $testRunHistory->load();
+
+        return $testRunHistory;
     }
 
     /**

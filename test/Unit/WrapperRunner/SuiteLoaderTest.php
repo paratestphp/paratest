@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
+use ParaTest\Tests\fixtures\multi_method_tests\AlphaTest;
+use ParaTest\Tests\fixtures\multi_method_tests\BravoTest;
+use ParaTest\Tests\fixtures\multi_method_tests\CharlieTest;
+use ParaTest\Tests\fixtures\multi_method_tests\DeltaTest;
+use ParaTest\Tests\fixtures\multi_method_tests\EchoTest;
+use ParaTest\Tests\fixtures\multi_method_tests\FoxtrotTest;
+use ParaTest\Tests\fixtures\multi_method_tests\GolfTest;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ShardDistribution;
 use ParaTest\WrapperRunner\SuiteLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Runner\TestRunHistory\DefaultTestRunHistory;
+use PHPUnit\Runner\TestRunHistory\TestRunHistoryId;
 use PHPUnit\TextUI\Configuration\CodeCoverageFilterRegistry;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -20,6 +30,8 @@ use function array_values;
 use function basename;
 use function count;
 use function explode;
+use function file_put_contents;
+use function is_subclass_of;
 use function preg_match;
 use function sort;
 use function uniqid;
@@ -272,6 +284,168 @@ final class SuiteLoaderTest extends TestBase
         $secondRun = $this->loadSuiteFileNames();
 
         self::assertSame($firstRun, $secondRun);
+    }
+
+    /**
+     * Durations in seconds, as binary fractions so that sums tie exactly: per file, Alpha=0.375, Bravo=6,
+     * Charlie=2, Delta=1, Echo=3, Foxtrot=0.75, Golf=2
+     *
+     * @return array<non-empty-string, float>
+     */
+    private static function multiMethodTestsDurations(): array
+    {
+        return [
+            AlphaTest::class . '::testOne' => 0.125,
+            AlphaTest::class . '::testTwo' => 0.125,
+            AlphaTest::class . '::testThree' => 0.125,
+            BravoTest::class . '::testFour' => 5.0,
+            BravoTest::class . '::testFive' => 1.0,
+            CharlieTest::class . '::testSix' => 2.0,
+            DeltaTest::class . '::testSeven' => 0.5,
+            DeltaTest::class . '::testEight' => 0.5,
+            EchoTest::class . '::testNine' => 3.0,
+            FoxtrotTest::class . '::testTen' => 0.25,
+            FoxtrotTest::class . '::testEleven' => 0.25,
+            FoxtrotTest::class . '::testTwelve' => 0.25,
+            GolfTest::class . '::testThirteen' => 1.0,
+            GolfTest::class . '::testFourteen' => 1.0,
+        ];
+    }
+
+    /** @return iterable<string, array{array<non-empty-string, float>, string, list<array{list<string>, int}>}> */
+    public static function durationShardDistributionProvider(): iterable
+    {
+        yield 'full history, 2 shards' => [
+            self::multiMethodTestsDurations(),
+            '2',
+            [
+                [['BravoTest.php', 'DeltaTest.php', 'FoxtrotTest.php'], 7],
+                [['AlphaTest.php', 'CharlieTest.php', 'EchoTest.php', 'GolfTest.php'], 7],
+            ],
+        ];
+
+        yield 'full history, 3 shards' => [
+            self::multiMethodTestsDurations(),
+            '3',
+            [
+                [['BravoTest.php'], 2],
+                [['DeltaTest.php', 'EchoTest.php', 'FoxtrotTest.php'], 6],
+                [['AlphaTest.php', 'CharlieTest.php', 'GolfTest.php'], 6],
+            ],
+        ];
+
+        yield 'full history, more shards than files' => [
+            self::multiMethodTestsDurations(),
+            '8',
+            [
+                [['BravoTest.php'], 2],
+                [['EchoTest.php'], 1],
+                [['CharlieTest.php'], 1],
+                [['GolfTest.php'], 2],
+                [['DeltaTest.php'], 2],
+                [['FoxtrotTest.php'], 3],
+                [['AlphaTest.php'], 3],
+                [[], 0],
+            ],
+        ];
+
+        // Without history every test weighs the same: shards are balanced by test count
+        yield 'no history, 2 shards' => [
+            [],
+            '2',
+            [
+                [['AlphaTest.php', 'BravoTest.php', 'GolfTest.php'], 7],
+                [['CharlieTest.php', 'DeltaTest.php', 'EchoTest.php', 'FoxtrotTest.php'], 7],
+            ],
+        ];
+
+        // Tests missing from the history weigh the mean known duration, 3 seconds here:
+        // Alpha=9, Bravo=5+3, Charlie=3, Delta=6, Echo=1, Foxtrot=9, Golf=6
+        yield 'partial history, 2 shards' => [
+            [
+                BravoTest::class . '::testFour' => 5.0,
+                EchoTest::class . '::testNine' => 1.0,
+            ],
+            '2',
+            [
+                [['AlphaTest.php', 'BravoTest.php', 'CharlieTest.php', 'EchoTest.php'], 7],
+                [['DeltaTest.php', 'FoxtrotTest.php', 'GolfTest.php'], 7],
+            ],
+        ];
+    }
+
+    /**
+     * @param array<non-empty-string, float> $durations
+     * @param non-empty-string               $totalShards
+     * @param list<array{list<string>, int}> $expectedPerShard
+     */
+    #[DataProvider('durationShardDistributionProvider')]
+    public function testDurationShardDistribution(array $durations, string $totalShards, array $expectedPerShard): void
+    {
+        $this->writeTestRunHistory($durations);
+        $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
+        $this->bareOptions['--cache-directory']         = $this->tmpDir;
+        $this->bareOptions['--shard-test-distribution'] = ShardDistribution::Duration->value;
+
+        foreach ($expectedPerShard as $index => [$expectedFiles, $expectedTestCount]) {
+            $this->bareOptions['--shard'] = ($index + 1) . '/' . $totalShards;
+            $loader                       = $this->loadSuite();
+            self::assertSame($expectedFiles, array_map(basename(...), array_merge(...$loader->tests)));
+            self::assertSame($expectedTestCount, $loader->testCount);
+        }
+    }
+
+    public function testFunctionalDurationShardDistribution(): void
+    {
+        $this->writeTestRunHistory(self::multiMethodTestsDurations());
+        $this->bareOptions['--configuration']           = $this->fixture('phpunit-multi_method_tests.xml');
+        $this->bareOptions['--cache-directory']         = $this->tmpDir;
+        $this->bareOptions['--shard-test-distribution'] = ShardDistribution::Duration->value;
+        $this->bareOptions['--functional']              = true;
+
+        // 7.625 and 7.5 seconds
+        $this->bareOptions['--shard'] = '1/2';
+        self::assertSame(['testThree', 'testFour', 'testFive', 'testTen', 'testTwelve', 'testFourteen'], $this->loadSuiteMethodNames());
+        $this->bareOptions['--shard'] = '2/2';
+        self::assertSame(['testOne', 'testTwo', 'testSix', 'testSeven', 'testEight', 'testNine', 'testEleven', 'testThirteen'], $this->loadSuiteMethodNames());
+    }
+
+    public function testDurationShardDistributionIgnoresHistoryWhenNotRecordingIt(): void
+    {
+        $this->writeTestRunHistory(self::multiMethodTestsDurations());
+
+        $configurationFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'phpunit.xml';
+        file_put_contents($configurationFile, <<<XML
+            <?xml version="1.0" encoding="UTF-8"?>
+            <phpunit recordTestRunHistory="false">
+                <testsuites>
+                    <testsuite name="Multi method">
+                        <directory>{$this->fixture('multi_method_tests')}</directory>
+                    </testsuite>
+                </testsuites>
+            </phpunit>
+            XML);
+
+        $this->bareOptions['--configuration']           = $configurationFile;
+        $this->bareOptions['--cache-directory']         = $this->tmpDir;
+        $this->bareOptions['--shard-test-distribution'] = ShardDistribution::Duration->value;
+        $this->bareOptions['--shard']                   = '1/2';
+
+        // Balanced by test count, as without history
+        self::assertSame(['AlphaTest.php', 'BravoTest.php', 'GolfTest.php'], $this->loadSuiteFileNames());
+    }
+
+    /** @param array<non-empty-string, float> $durations */
+    private function writeTestRunHistory(array $durations): void
+    {
+        $history = new DefaultTestRunHistory($this->tmpDir . DIRECTORY_SEPARATOR . 'test-run-history');
+        foreach ($durations as $test => $duration) {
+            [$class, $method] = explode('::', $test);
+            self::assertTrue(is_subclass_of($class, TestCase::class));
+            $history->setTime(TestRunHistoryId::fromTestClassAndMethodName($class, $method), $duration);
+        }
+
+        $history->persist();
     }
 
     /** @return iterable<string, array{string, string, list<list<string>>}> */

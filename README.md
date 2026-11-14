@@ -126,6 +126,32 @@ run in the same process and in dependency order, as PHPUnit does: this applies t
 `--functional`, and with `--shard` too. Every test linked by dependencies, directly or not, runs in the same process:
 large groups of dependent tests reduce the parallelism.
 
+## Sharding
+
+To split a test suite across several machines, e.g. CI jobs, run each one with `--shard=<current>/<total>`:
+
+```
+vendor/bin/paratest --shard=1/3   # on the first machine
+vendor/bin/paratest --shard=2/3   # on the second machine
+vendor/bin/paratest --shard=3/3   # on the third machine
+```
+
+How tests are split depends on `--shard-test-distribution`:
+
+* `sequential` (default): consecutive files, or tests with `--functional`, go to the same shard
+* `round-robin`: files, or tests, are dealt to the shards in turn
+* `random`: as `round-robin` after shuffling them with `--shard-test-distribution-seed`, `0` by default
+* `duration`: shards take about the same time, based on how long each test took in previous runs
+
+The `duration` distribution reads the durations PHPUnit records in its test run history, which is the
+`test-run-history` file in the `--cache-directory`, or `.phpunit.result.cache` next to the configuration file
+when no cache directory is set. Tests missing from the history count as taking the mean recorded duration;
+without any history, the shards get the same number of tests.
+
+**Every shard must read the same history file**: each shard computes the whole distribution on its own, so shards
+reading different histories may skip or run twice some tests. On CI, restore the same history in all shard jobs,
+for example from a single cache entry, and do not let the shards of the same run save their updated history over it.
+
 ## Retrying and repeating tests
 
 PHPUnit's `--retry` and `--repeat` options work the same way with ParaTest:

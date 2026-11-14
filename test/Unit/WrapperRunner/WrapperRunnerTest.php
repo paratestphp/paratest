@@ -32,6 +32,7 @@ use function array_intersect;
 use function array_merge;
 use function array_reverse;
 use function array_unique;
+use function copy;
 use function count;
 use function dirname;
 use function explode;
@@ -1322,6 +1323,41 @@ EOF;
             self::assertSame(1, preg_match('/^(\.*) +(\d+) \/ \2 \(100%\)$/m', $runnerResult->output, $matches), $runnerResult->output);
             self::assertSame((int) $matches[2], strlen($matches[1]), $runnerResult->output);
             self::assertEquals(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+
+            $executedTests += (int) $matches[2];
+        }
+
+        self::assertSame(15, $executedTests);
+    }
+
+    /**
+     * As on CI: a full run records the history, then every shard starts from that same history
+     */
+    #[DataProvider('provideFunctional')]
+    public function testDurationShardsRunEveryTestOnce(bool $functional): void
+    {
+        $cacheDirectory = $this->tmpDir . DIRECTORY_SEPARATOR . 'cache';
+        $historyFile    = $cacheDirectory . DIRECTORY_SEPARATOR . 'test-run-history';
+        $historyBackup  = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-run-history.backup';
+
+        $this->bareOptions['--configuration']   = $this->fixture('depends_across_items' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--cache-directory'] = $cacheDirectory;
+        $this->bareOptions['--functional']      = $functional;
+
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $this->runRunner()->exitCode);
+        self::assertTrue(copy($historyFile, $historyBackup));
+
+        $this->bareOptions['--shard-test-distribution'] = 'duration';
+
+        $executedTests = 0;
+        foreach (['1/3', '2/3', '3/3'] as $shard) {
+            self::assertTrue(copy($historyBackup, $historyFile));
+            $this->bareOptions['--shard'] = $shard;
+
+            $runnerResult = $this->runRunner();
+
+            self::assertSame(1, preg_match('/^(\.*) +(\d+) \/ \2 \(100%\)$/m', $runnerResult->output, $matches), $runnerResult->output);
+            self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
 
             $executedTests += (int) $matches[2];
         }
