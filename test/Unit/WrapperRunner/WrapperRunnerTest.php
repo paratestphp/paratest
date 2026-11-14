@@ -54,6 +54,7 @@ use function str_replace;
 use function strlen;
 use function substr;
 use function substr_count;
+use function ucfirst;
 use function uniqid;
 use function unlink;
 
@@ -1693,6 +1694,59 @@ EOF;
 
         $runnerResult = $this->runRunner();
         self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+    }
+
+    /** @return iterable<string, array{list<non-empty-string>, ?non-empty-string, int}> */
+    public static function provideFailOnDeprecationByTrigger(): iterable
+    {
+        $triggers = ['self', 'direct', 'indirect'];
+
+        foreach ($triggers as $failOn) {
+            foreach ($triggers as $test) {
+                $exitCode = $failOn === $test ? RunnerInterface::FAILURE_EXIT : RunnerInterface::SUCCESS_EXIT;
+
+                yield "fail on $failOn, $test deprecation" => [["--fail-on-$failOn-deprecation"], $test, $exitCode];
+            }
+
+            // All the tests run, each kind of deprecation in a different process
+            yield "fail on $failOn, all deprecations" => [["--fail-on-$failOn-deprecation"], null, RunnerInterface::FAILURE_EXIT];
+        }
+
+        foreach ($triggers as $doNotFailOn) {
+            foreach ($triggers as $test) {
+                $exitCode = $doNotFailOn === $test ? RunnerInterface::SUCCESS_EXIT : RunnerInterface::FAILURE_EXIT;
+
+                yield "do not fail on $doNotFailOn, $test deprecation" => [['--fail-on-deprecation', "--do-not-fail-on-$doNotFailOn-deprecation"], $test, $exitCode];
+            }
+        }
+
+        yield 'no option, all deprecations' => [[], null, RunnerInterface::SUCCESS_EXIT];
+        yield 'do not fail on any, all deprecations' => [
+            ['--fail-on-deprecation', '--do-not-fail-on-self-deprecation', '--do-not-fail-on-direct-deprecation', '--do-not-fail-on-indirect-deprecation'],
+            null,
+            RunnerInterface::SUCCESS_EXIT,
+        ];
+    }
+
+    /**
+     * @param list<non-empty-string> $options
+     * @param ?non-empty-string      $test
+     */
+    #[DataProvider('provideFailOnDeprecationByTrigger')]
+    public function testFailOnDeprecationByTrigger(array $options, ?string $test, int $expectedExitCode): void
+    {
+        $this->bareOptions['--configuration'] = $this->fixture('deprecation_triggers' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        if ($test !== null) {
+            $this->bareOptions['path'] = $this->fixture('deprecation_triggers' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . ucfirst($test) . 'DeprecationTest.php');
+        }
+
+        foreach ($options as $option) {
+            $this->bareOptions[$option] = true;
+        }
+
+        $runnerResult = $this->runRunner();
+
+        self::assertSame($expectedExitCode, $runnerResult->exitCode, $runnerResult->output);
     }
 
     private static function sorted(string $from): string
