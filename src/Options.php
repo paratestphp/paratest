@@ -63,6 +63,7 @@ final readonly class Options
         'configuration' => true,
         'coverage-filter' => true,
         'do-not-report-useless-tests' => true,
+        'exclude-filter' => true,
         'exclude-group' => true,
         'fail-on-empty-test-suite' => true,
         'fail-on-warning' => true,
@@ -459,6 +460,12 @@ final readonly class Options
             ),
             new InputOption(
                 'filter',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '@see PHPUnit guide, chapter: ' . $chapter,
+            ),
+            new InputOption(
+                'exclude-filter',
                 null,
                 InputOption::VALUE_REQUIRED,
                 '@see PHPUnit guide, chapter: ' . $chapter,
