@@ -1749,6 +1749,42 @@ EOF;
         self::assertSame($expectedExitCode, $runnerResult->exitCode, $runnerResult->output);
     }
 
+    /** @return iterable<string, array{bool, ?non-empty-string, non-empty-string, int}> */
+    public static function provideExcludeFilter(): iterable
+    {
+        foreach (['per file' => false, 'functional' => true] as $mode => $functional) {
+            // testTwo, testThree, testTen, testTwelve and testThirteen are excluded
+            yield "$mode, exclude filter only" => [$functional, null, 'testT', 9];
+            yield "$mode, with filter" => [$functional, 'AlphaTest', 'testTwo', 2];
+            yield "$mode, excluding whole classes" => [$functional, null, 'AlphaTest|BravoTest', 9];
+        }
+    }
+
+    /**
+     * @param ?non-empty-string $filter
+     * @param non-empty-string  $excludeFilter
+     */
+    #[DataProvider('provideExcludeFilter')]
+    public function testExcludeFilter(bool $functional, ?string $filter, string $excludeFilter, int $expectedTests): void
+    {
+        $outputFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'test-output.xml';
+
+        $this->bareOptions['path']             = $this->fixture('multi_method_tests');
+        $this->bareOptions['--functional']     = $functional;
+        $this->bareOptions['--exclude-filter'] = $excludeFilter;
+        $this->bareOptions['--log-junit']      = $outputFile;
+        if ($filter !== null) {
+            $this->bareOptions['--filter'] = $filter;
+        }
+
+        $runnerResult = $this->runRunner();
+
+        self::assertStringContainsString(sprintf('%1$s / %1$s (100%%)', $expectedTests), $runnerResult->output);
+        // The workers must exclude the same tests the progress counts, or they run more of them
+        self::assertSame($expectedTests, TestSuite::fromFile(new SplFileInfo($outputFile))->tests);
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode, $runnerResult->output);
+    }
+
     private static function sorted(string $from): string
     {
         $from = explode(PHP_EOL, $from);
