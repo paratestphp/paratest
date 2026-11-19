@@ -9,16 +9,26 @@ use RuntimeException;
 use function array_search;
 use function array_unshift;
 use function in_array;
+use function preg_match;
 use function str_ends_with;
 use function str_replace;
+use function substr;
 
 /** @internal */
 final readonly class PhpstormHelper
 {
-    /** @param  array<int, string> $argv */
-    public static function handleArgvFromPhpstorm(array &$argv, string $paratestBinary): string
-    {
-        $phpunitKey = self::getArgvKeyFor($argv, '/phpunit');
+    /**
+     * @param array<int, string> $argv
+     *
+     * @param-out string $phpunitBinary
+     */
+    public static function handleArgvFromPhpstorm(
+        array &$argv,
+        string $paratestBinary,
+        ?string &$phpunitBinary = null
+    ): string {
+        $phpunitKey    = self::getArgvKeyFor($argv, '/phpunit');
+        $phpunitBinary = $argv[$phpunitKey];
 
         if (! in_array('--filter', $argv, true)) {
             $coverageArgKey = self::getCoverageArgvKey($argv);
@@ -32,9 +42,8 @@ final readonly class PhpstormHelper
         }
 
         unset($argv[self::getArgvKeyFor($argv, '/paratest_for_phpstorm')]);
-        $phpunitBinary = $argv[$phpunitKey];
         foreach ($argv as $index => $value) {
-            if ($value === '--configuration' || $value === '--bootstrap') {
+            if ($value === '--configuration' || $value === '--no-configuration' || $value === '--bootstrap') {
                 break;
             }
 
@@ -49,11 +58,18 @@ final readonly class PhpstormHelper
     /** @param  array<int, string> $argv */
     private static function getArgvKeyFor(array $argv, string $searchFor): int
     {
-        $searchForForwardSlash  = str_replace('\\', '/', $searchFor);
-        $searchForBackwardSlash = str_replace('/', '\\', $searchFor);
+        $searchFor = str_replace('\\', '/', $searchFor);
+        $searchFor = substr($searchFor, 1);
 
         foreach ($argv as $key => $arg) {
-            if (str_ends_with($arg, $searchForForwardSlash) || str_ends_with($arg, $searchForBackwardSlash)) {
+            $arg = str_replace('\\', '/', $arg);
+            if (
+                $arg === $searchFor
+                || $arg === $searchFor . '.phar'
+                || str_ends_with($arg, '/' . $searchFor)
+                || str_ends_with($arg, '/' . $searchFor . '.phar')
+                || ($searchFor === 'phpunit' && preg_match('~(?:^|/)phpunit-[0-9][^/]*\\.phar$~D', $arg) === 1)
+            ) {
                 return $key;
             }
         }

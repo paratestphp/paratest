@@ -7,6 +7,8 @@ use ParaTest\WrapperRunner\WrapperWorker;
 
 (static function (): void {
     $getopt = getopt('', [
+        'composer-autoload:',
+        'phpunit-phar:',
         'status-file:',
         'progress-file:',
         'unexpected-output-file:',
@@ -17,13 +19,22 @@ use ParaTest\WrapperRunner\WrapperWorker;
         'phpunit-argv:',
     ]);
 
+    $inPhar = str_starts_with(__DIR__, 'phar://');
+    if ($inPhar) {
+        $autoload = $getopt['composer-autoload'] ?? null;
+        $phpunitPhar = $getopt['phpunit-phar'] ?? null;
+        assert($autoload === null || is_string($autoload));
+        assert($phpunitPhar === null || is_string($phpunitPhar));
+        require __DIR__ . DIRECTORY_SEPARATOR . 'phar-autoload.php';
+    }
+
     $composerAutoloadFiles = [
         dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
         dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
         dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
     ];
 
-    foreach ($composerAutoloadFiles as $file) {
+    foreach ($inPhar ? [] : $composerAutoloadFiles as $file) {
         if (file_exists($file)) {
             define('PHPUNIT_COMPOSER_INSTALL', $file);
             require_once $file;

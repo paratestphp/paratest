@@ -9,6 +9,7 @@ use ParaTest\JUnit\Writer;
 use ParaTest\Options;
 use ParaTest\RunnerInterface;
 use ParaTest\TestDox\TestDoxResultsMerger;
+use Phar;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Event\TestRunner\DeprecationTriggered as TestRunnerDeprecationTriggered;
 use PHPUnit\Event\TestRunner\NoticeTriggered as TestRunnerNoticeTriggered;
@@ -42,12 +43,15 @@ use function array_shift;
 use function array_values;
 use function assert;
 use function bin2hex;
+use function constant;
 use function count;
+use function defined;
 use function dirname;
 use function file_get_contents;
 use function filesize;
 use function implode;
 use function is_file;
+use function is_string;
 use function max;
 use function mkdir;
 use function preg_match;
@@ -110,10 +114,6 @@ final class WrapperRunner implements RunnerInterface
     ) {
         $this->printer = new ResultPrinter($output, $options);
 
-        $wrapper = realpath(
-            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php',
-        );
-        assert($wrapper !== false);
         $phpFinder = new PhpExecutableFinder();
         $phpBin    = $phpFinder->find(false);
         assert($phpBin !== false);
@@ -127,7 +127,30 @@ final class WrapperRunner implements RunnerInterface
             $parameters = array_merge($parameters, $options->passthruPhp);
         }
 
-        $parameters[] = $wrapper;
+        if (str_starts_with(__DIR__, 'phar://')) {
+            $phar = Phar::running(false);
+            assert($phar !== '');
+            $parameters[] = $phar;
+            $parameters[] = '--phpunit-wrapper';
+            $autoload     = defined('PARATEST_PHAR_AUTOLOAD') ? constant('PARATEST_PHAR_AUTOLOAD') : null;
+            if (is_string($autoload) && $autoload !== '') {
+                $parameters[] = '--composer-autoload';
+                $parameters[] = $autoload;
+            }
+
+            if (defined('__PHPUNIT_PHAR__')) {
+                $phpunitPhar = constant('__PHPUNIT_PHAR__');
+                assert(is_string($phpunitPhar) && $phpunitPhar !== '');
+                $parameters[] = '--phpunit-phar';
+                $parameters[] = $phpunitPhar;
+            }
+        } else {
+            $wrapper = realpath(
+                dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'phpunit-wrapper.php',
+            );
+            assert($wrapper !== false);
+            $parameters[] = $wrapper;
+        }
 
         $this->parameters                 = $parameters;
         $this->codeCoverageFilterRegistry = new CodeCoverageFilterRegistry();
@@ -135,7 +158,10 @@ final class WrapperRunner implements RunnerInterface
 
     public function run(): int
     {
-        ExcludeList::addDirectory(dirname(__DIR__));
+        if (! str_starts_with(__DIR__, 'phar://')) {
+            ExcludeList::addDirectory(dirname(__DIR__));
+        }
+
         $suiteLoader = new SuiteLoader(
             $this->options,
             $this->output,
@@ -523,7 +549,24 @@ final class WrapperRunner implements RunnerInterface
         $coverageFiles      = array_filter($coverageFiles, static function (false|string $file): bool {
             return $file !== false;
         });
-        $serializedCoverage = (new Merger())->merge($coverageFiles);
+        $serializedCoverage = defined('__PHPUNIT_PHAR__') ? null : (new Merger())->merge($coverageFiles);
+
+        if ($serializedCoverage === null) {
+            $coverage = $coverageManager->codeCoverage();
+            foreach ($coverageFiles as $file) {
+                $data           = file_get_contents($file);
+                $workerCoverage = $data !== false ? unserialize($data) : null;
+                if (! $workerCoverage instanceof $coverage) {
+                    throw new RuntimeException(sprintf('Invalid worker coverage data in "%s".', $file));
+                }
+
+                $coverage->merge($workerCoverage);
+            }
+
+            $coverageManager->generateReports($this->printer->printer, $this->options->configuration);
+
+            return;
+        }
 
         $codeCoverage = $coverageManager->codeCoverage();
         $analyser     = StaticAnalysisRegistry::analyser(

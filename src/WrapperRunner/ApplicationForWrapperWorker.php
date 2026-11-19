@@ -42,6 +42,7 @@ use PHPUnit\Util\ExcludeList;
 
 use function assert;
 use function class_exists;
+use function defined;
 use function explode;
 use function file_put_contents;
 use function function_exists;
@@ -51,6 +52,7 @@ use function mt_srand;
 use function serialize;
 use function str_contains;
 use function str_ends_with;
+use function str_starts_with;
 use function strpos;
 use function substr;
 
@@ -148,7 +150,10 @@ final class ApplicationForWrapperWorker
             return;
         }
 
-        ExcludeList::addDirectory(__DIR__);
+        if (! str_starts_with(__DIR__, 'phar://')) {
+            ExcludeList::addDirectory(__DIR__);
+        }
+
         $emitter = EventFacade::emitter();
         $emitter->applicationStarted();
 
@@ -277,7 +282,13 @@ final class ApplicationForWrapperWorker
         EventFacade::emitter()->testRunnerExecutionFinished();
         EventFacade::emitter()->testRunnerFinished();
 
-        CodeCoverage::instance()->generateReports(new NullPrinter(), $this->configuration);
+        $coverage = CodeCoverage::instance();
+        if (defined('__PHPUNIT_PHAR__') && $this->configuration->hasCoveragePhp() && $coverage->isActive()) {
+            // The PHPUnit PHAR serializer removes the namespace the parent needs to merge coverage.
+            file_put_contents($this->configuration->coveragePhp(), serialize($coverage->codeCoverage()));
+        } else {
+            $coverage->generateReports(new NullPrinter(), $this->configuration);
+        }
 
         $result = TestResultFacade::result();
         if (isset($this->testdoxResultCollector)) {

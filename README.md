@@ -34,6 +34,41 @@ This is because of the following reasons:
 After installation, the binary can be found at `vendor/bin/paratest`. Run it
 with `--help` option to see a complete list of the available options.
 
+## PHAR
+
+From a ParaTest checkout with Composer dependencies installed, use [Box](https://github.com/box-project/box) to build the archives:
+
+```bash
+box compile --config=box.json.dist
+box compile --config=box-phpstorm.json.dist
+```
+
+The archives are written to `build/`. Run the desired archive from the project directory.
+
+```bash
+php paratest.phar --help
+php paratest.phar
+```
+
+The PHAR bundles ParaTest and its own runtime dependencies, but leaves PHPUnit to the project. Run `paratest.phar`
+from a project with Composer dependencies installed so it can use that project's PHPUnit version and autoloader. PHP
+and the required extensions must be available locally.
+
+For PHPStorm, set `paratest_for_phpstorm.phar` as the interpreter option. The IDE supplies the PHPUnit executable and
+configuration.
+
+```bash
+php paratest_for_phpstorm.phar phpunit.phar --configuration phpunit.xml
+```
+
+Parallel runs use the project's Composer PHPUnit when available. If the project has no Composer PHPUnit, the
+PHPStorm PHAR uses the standalone `phpunit.phar` supplied on the command line. Filtered reruns use the PHPUnit
+executable supplied by PHPStorm. Both archives leave PHPUnit outside the ParaTest distribution.
+
+The compressed archives require PHP's `zlib` extension.
+
+Pass PHP settings to workers through `--passthru-php`, as in the coverage examples below.
+
 ## Test token
 
 The `TEST_TOKEN` environment variable is guaranteed to have a value that is different
@@ -190,7 +225,8 @@ ParaTest provides a dedicated binary to work with PHPStorm; follow these steps t
 1. Be sure you have PHPUnit already configured in PHPStorm: https://www.jetbrains.com/help/phpstorm/using-phpunit-framework.html#php_test_frameworks_phpunit_integrate
 2. Go to `Run` -> `Edit configurations...`
 3. Select `Add new Configuration`, select the `PHPUnit` type and name it `ParaTest`
-4. In the `Command Line` -> `Interpreter options` add `./vendor/bin/paratest_for_phpstorm`
+4. In the `Command Line` -> `Interpreter options` add `./vendor/bin/paratest_for_phpstorm` or the path to
+   `paratest_for_phpstorm.phar`
 5. Any additional ParaTest options you want to pass to ParaTest should go within the `Test runner` -> `Test runner options` section
 
 You should now have a `ParaTest` run within your configurations list.

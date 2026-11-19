@@ -1,5 +1,6 @@
 /.idea
 /.build-cache
+/build
 /coverage
 /test/fixtures/wrapper_batchsize_suite/tmp
 /vendor

@@ -29,6 +29,36 @@ final class PhpstormHelperTest extends TestCase
         PhpstormHelper::handleArgvFromPhpstorm($argv, 'some-paratest-binary');
     }
 
+    public function testParatestForPhpstormPharIsRecognized(): void
+    {
+        $argv = ['/tmp/paratest_for_phpstorm.phar', '/tmp/phpunit', '--configuration', '/tmp/phpunit.xml'];
+
+        $binary = PhpstormHelper::handleArgvFromPhpstorm($argv, '/tmp/paratest.phar');
+
+        self::assertSame('/tmp/paratest.phar', $binary);
+        self::assertSame(['/tmp/paratest_for_phpstorm.phar', '--configuration', '/tmp/phpunit.xml'], array_values($argv));
+    }
+
+    public function testPhpunitPharWithoutDirectoryIsRecognized(): void
+    {
+        $argv = ['paratest_for_phpstorm.phar', 'phpunit.phar', '--configuration', 'phpunit.xml'];
+
+        $binary = PhpstormHelper::handleArgvFromPhpstorm($argv, 'paratest.phar');
+
+        self::assertSame('paratest.phar', $binary);
+        self::assertSame(['paratest_for_phpstorm.phar', '--configuration', 'phpunit.xml'], array_values($argv));
+    }
+
+    public function testPhpunitPharRerunWithoutConfigurationPreservesFilter(): void
+    {
+        $argv = ['paratest_for_phpstorm.phar', 'phpunit-13.4.7.phar', '--no-configuration', '--filter', 'testOne', 'ExampleTest.php'];
+
+        $binary = PhpstormHelper::handleArgvFromPhpstorm($argv, 'paratest.phar');
+
+        self::assertSame('phpunit-13.4.7.phar', $binary);
+        self::assertSame(['phpunit-13.4.7.phar', '--no-configuration', '--filter', 'testOne', 'ExampleTest.php'], $argv);
+    }
+
     /**
      * @param array<int, string> $argv
      * @param array<int, string> $expectedArgv

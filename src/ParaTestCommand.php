@@ -20,6 +20,7 @@ use function is_string;
 use function is_subclass_of;
 use function method_exists;
 use function sprintf;
+use function str_starts_with;
 
 /** @internal */
 final class ParaTestCommand extends Command
@@ -39,13 +40,13 @@ final class ParaTestCommand extends Command
     }
 
     /** @param non-empty-string $cwd */
-    public static function applicationFactory(string $cwd): Application
+    public static function applicationFactory(string $cwd, ?string $version = null): Application
     {
         $application = new Application();
         $command     = new self($cwd, self::COMMAND_NAME);
 
         $application->setName('ParaTest');
-        $application->setVersion(PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion());
+        $application->setVersion($version ?? PrettyVersions::getVersion('brianium/paratest')->getPrettyVersion());
         // @phpstan-ignore function.alreadyNarrowedType (can be removed when dropping support for Symfony 7.3)
         if (method_exists($application, 'addCommand')) {
             $application->addCommand($command);
@@ -76,6 +77,12 @@ final class ParaTestCommand extends Command
     {
         $application = $this->getApplication();
         assert($application !== null);
+
+        if (str_starts_with(__DIR__, 'phar://') && ! class_exists(Version::class)) {
+            $output->writeln('<error>PHPUnit is not available. Install PHPUnit in the project.</error>');
+
+            return self::FAILURE;
+        }
 
         $output->write(sprintf(
             "%s upon %s\n\n",

@@ -8,8 +8,10 @@ use Fidry\CpuCoreCounter\CpuCoreCounter;
 use Fidry\CpuCoreCounter\NumberOfCpuCoreNotFound;
 use InvalidArgumentException;
 use ParaTest\WrapperRunner\ShardDistribution;
+use PHPUnit\Runner\Version;
 use PHPUnit\TextUI\Configuration\Builder;
 use PHPUnit\TextUI\Configuration\Configuration;
+use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -23,7 +25,9 @@ use function array_intersect_key;
 use function array_key_exists;
 use function array_shift;
 use function assert;
+use function constant;
 use function count;
+use function defined;
 use function dirname;
 use function escapeshellarg;
 use function file_exists;
@@ -43,6 +47,7 @@ use function sys_get_temp_dir;
 use function uniqid;
 use function unserialize;
 
+use const DIRECTORY_SEPARATOR;
 use const PHP_BINARY;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -948,6 +953,20 @@ final readonly class Options
     /** @return non-empty-string $phpunit the path to phpunit */
     private static function getPhpunitBinary(): string
     {
+        if (str_starts_with(__DIR__, 'phar://')) {
+            if (defined('__PHPUNIT_PHAR__')) {
+                $phpunitPhar = constant('__PHPUNIT_PHAR__');
+                assert(is_string($phpunitPhar) && $phpunitPhar !== '');
+
+                return $phpunitPhar;
+            }
+
+            $versionFile = (new ReflectionClass(Version::class))->getFileName();
+            assert($versionFile !== false);
+
+            return dirname($versionFile, 3) . DIRECTORY_SEPARATOR . 'phpunit';
+        }
+
         $tryPaths = [
             dirname(__DIR__, 3) . '/bin/phpunit',
             dirname(__DIR__, 3) . '/phpunit/phpunit/phpunit',

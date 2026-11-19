@@ -1,0 +1,38 @@
+{
+    "compression": "GZ",
+    "git-version": "git_version",
+    "directories": [
+        "src",
+        "vendor/fidry/cpu-core-counter",
+        "vendor/jean85/pretty-package-versions",
+        "vendor/nikic/php-parser",
+        "vendor/psr/container",
+        "vendor/phpunit/php-code-coverage",
+        "vendor/phpunit/php-file-iterator",
+        "vendor/phpunit/php-text-template",
+        "vendor/phpunit/php-timer",
+        "vendor/sebastian/complexity",
+        "vendor/sebastian/environment",
+        "vendor/sebastian/git-state",
+        "vendor/sebastian/lines-of-code",
+        "vendor/sebastian/version",
+        "vendor/symfony/console",
+        "vendor/symfony/deprecation-contracts",
+        "vendor/symfony/polyfill-ctype",
+        "vendor/symfony/polyfill-intl-grapheme",
+        "vendor/symfony/polyfill-intl-normalizer",
+        "vendor/symfony/polyfill-mbstring",
+        "vendor/symfony/polyfill-php85",
+        "vendor/symfony/process",
+        "vendor/symfony/service-contracts",
+        "vendor/symfony/string"
+    ],
+    "files": [
+        "bin/paratest-phar.php",
+        "bin/phar-autoload.php",
+        "bin/phpunit-wrapper.php",
+        "LICENSE"
+    ],
+    "main": "bin/paratest-phar.php",
+    "output": "build/paratest.phar"
+}
