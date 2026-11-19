@@ -36,38 +36,16 @@ with `--help` option to see a complete list of the available options.
 
 ## PHAR
 
-From a ParaTest checkout with Composer dependencies installed, use [Box](https://github.com/box-project/box) to build the archives:
+Download the archives from [GitHub Releases](https://github.com/paratestphp/paratest/releases) and run them from your project directory.
 
 ```bash
-box compile --config=box.json.dist
-box compile --config=box-phpstorm.json.dist
-```
-
-The archives are written to `build/`. Run the desired archive from the project directory.
-
-```bash
-php paratest.phar --help
 php paratest.phar
-```
-
-The PHAR bundles ParaTest and its own runtime dependencies, but leaves PHPUnit to the project. Run `paratest.phar`
-from a project with Composer dependencies installed so it can use that project's PHPUnit version and autoloader. PHP
-and the required extensions must be available locally.
-
-For PHPStorm, set `paratest_for_phpstorm.phar` as the interpreter option. The IDE supplies the PHPUnit executable and
-configuration.
-
-```bash
 php paratest_for_phpstorm.phar phpunit.phar --configuration phpunit.xml
 ```
 
-Parallel runs use the project's Composer PHPUnit when available. If the project has no Composer PHPUnit, the
-PHPStorm PHAR uses the standalone `phpunit.phar` supplied on the command line. Filtered reruns use the PHPUnit
-executable supplied by PHPStorm. Both archives leave PHPUnit outside the ParaTest distribution.
+Both archives require `zlib`. The CLI uses the project's Composer PHPUnit. The PHPStorm adapter also accepts a standalone PHPUnit PHAR.
 
-The compressed archives require PHP's `zlib` extension.
-
-Pass PHP settings to workers through `--passthru-php`, as in the coverage examples below.
+To build locally, install the Composer dependencies and run `box compile` and `box compile --config=box-phpstorm.json.dist`.
 
 ## Test token
 

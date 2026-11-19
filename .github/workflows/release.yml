@@ -1,0 +1,41 @@
+name: "Build release PHARs"
+
+on:
+  push:
+    tags:
+      - "v[0-9]*"
+
+permissions:
+  contents: write
+
+jobs:
+  draft-release:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v7"
+        with:
+          persist-credentials: false
+
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.4"
+          extensions: "pcntl, posix"
+          coverage: "pcov"
+
+      - name: "Install dependencies"
+        run: composer install --no-dev --no-interaction --prefer-dist
+
+      - name: "Build and check both PHARs"
+        run: |
+          curl --fail --silent --show-error --location --output box.phar https://github.com/box-project/box/releases/download/4.7.1/box.phar
+          echo 'aedabb38bad96a90868603f118956c3faa662b545c06be66df1b145aba703c0a  box.phar' | sha256sum --check
+          php box.phar compile --config=box.json.dist
+          php box.phar compile --config=box-phpstorm.json.dist
+          test "$(php build/paratest.phar --version)" = "ParaTest $GITHUB_REF_NAME"
+          test "$(php build/paratest_for_phpstorm.phar vendor/phpunit/phpunit/phpunit --version)" = "ParaTest $GITHUB_REF_NAME"
+
+      - name: "Create draft release with both PHARs"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" build/paratest.phar build/paratest_for_phpstorm.phar --draft --verify-tag --generate-notes
