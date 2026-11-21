@@ -162,3 +162,30 @@ jobs:
       - uses: "ramsey/composer-install@4.0.0"
 
       - run: "vendor/bin/phpstan --memory-limit=512M --ansi --no-progress"
+
+  phar:
+    name: "PHAR smoke tests"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v7"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.4"
+      - uses: "ramsey/composer-install@4.0.0"
+
+      - name: "Build and exercise both PHARs"
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --output box.phar https://github.com/box-project/box/releases/download/4.7.1/box.phar
+          echo 'aedabb38bad96a90868603f118956c3faa662b545c06be66df1b145aba703c0a  box.phar' | sha256sum --check
+          php box.phar compile --config=box.json.dist
+          php box.phar compile --config=box-phpstorm.json.dist
+          php build/paratest.phar --no-configuration --processes=2 --no-coverage test/fixtures/common_results/SuccessTest.php
+          smoke_dir="$(mktemp -d)"
+          cp test/fixtures/common_results/SuccessTest.php "$smoke_dir/SuccessTest.php"
+          curl --fail --silent --show-error --location --output "$smoke_dir/phpunit.phar" https://phar.phpunit.de/phpunit-13.4.7.phar
+          echo 'da5986f40f1408a175421587fdbf9339713b29cf7c9abeef395ee0f78ebc1a49  '"$smoke_dir/phpunit.phar" | sha256sum --check
+          (cd "$smoke_dir" && php "$GITHUB_WORKSPACE/build/paratest_for_phpstorm.phar" "$smoke_dir/phpunit.phar" --no-configuration --processes=2 --no-coverage "$smoke_dir/SuccessTest.php")
+          (cd "$smoke_dir" && php "$GITHUB_WORKSPACE/build/paratest_for_phpstorm.phar" "$smoke_dir/phpunit.phar" --no-configuration --filter testSuccess "$smoke_dir/SuccessTest.php")

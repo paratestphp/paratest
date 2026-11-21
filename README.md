@@ -45,6 +45,8 @@ php paratest_for_phpstorm.phar phpunit.phar --configuration phpunit.xml
 
 Both archives require `zlib`. The CLI uses the project's Composer PHPUnit. The PHPStorm adapter also accepts a standalone PHPUnit PHAR.
 
+Use `paratest.phar` when PHPUnit is available through the project's `vendor/autoload.php`. Use `paratest_for_phpstorm.phar` when the IDE supplies a PHPUnit executable, including a standalone `phpunit.phar`; the adapter uses that executable for parallel runs and filtered reruns.
+
 To build locally, install the Composer dependencies and run `box compile` and `box compile --config=box-phpstorm.json.dist`.
 
 ## Test token

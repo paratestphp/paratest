@@ -49,6 +49,16 @@ final class PhpstormHelperTest extends TestCase
         self::assertSame(['paratest_for_phpstorm.phar', '--configuration', 'phpunit.xml'], array_values($argv));
     }
 
+    public function testPhpunitPharWithSpacesInFilenameIsRecognized(): void
+    {
+        $argv = ['paratest_for_phpstorm.phar', 'C:\\Tools\\phpunit 13.4.7.phar', '--configuration', 'phpunit.xml'];
+
+        $binary = PhpstormHelper::handleArgvFromPhpstorm($argv, 'paratest.phar');
+
+        self::assertSame('paratest.phar', $binary);
+        self::assertSame(['paratest_for_phpstorm.phar', '--configuration', 'phpunit.xml'], array_values($argv));
+    }
+
     public function testPhpunitPharRerunWithoutConfigurationPreservesFilter(): void
     {
         $argv = ['paratest_for_phpstorm.phar', 'phpunit-13.4.7.phar', '--no-configuration', '--filter', 'testOne', 'ExampleTest.php'];

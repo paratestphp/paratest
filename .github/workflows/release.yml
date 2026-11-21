@@ -1,9 +1,9 @@
 name: "Build release PHARs"
 
 on:
-  push:
-    tags:
-      - "v[0-9]*"
+  release:
+    types:
+      - "published"
 
 permissions:
   contents: write
@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: "actions/checkout@v7"
         with:
+          ref: "${{ github.event.release.tag_name }}"
           persist-credentials: false
 
       - uses: "shivammathur/setup-php@v2"
@@ -27,15 +28,27 @@ jobs:
         run: composer install --no-dev --no-interaction --prefer-dist
 
       - name: "Build and check both PHARs"
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
+          set -euo pipefail
           curl --fail --silent --show-error --location --output box.phar https://github.com/box-project/box/releases/download/4.7.1/box.phar
           echo 'aedabb38bad96a90868603f118956c3faa662b545c06be66df1b145aba703c0a  box.phar' | sha256sum --check
           php box.phar compile --config=box.json.dist
           php box.phar compile --config=box-phpstorm.json.dist
-          test "$(php build/paratest.phar --version)" = "ParaTest $GITHUB_REF_NAME"
-          test "$(php build/paratest_for_phpstorm.phar vendor/phpunit/phpunit/phpunit --version)" = "ParaTest $GITHUB_REF_NAME"
+          test "$(php build/paratest.phar --version)" = "ParaTest $RELEASE_TAG"
+          test "$(php build/paratest_for_phpstorm.phar vendor/phpunit/phpunit/phpunit --version)" = "ParaTest $RELEASE_TAG"
+          php -r '$phar = new Phar($argv[1]); foreach (new RecursiveIteratorIterator($phar) as $file) { if (str_contains($file->getPathName(), "/vendor/phpunit/phpunit/")) { exit(1); } }' build/paratest.phar
+          php build/paratest.phar --no-configuration --processes=2 --no-coverage test/fixtures/common_results/SuccessTest.php
+          smoke_dir="$(mktemp -d)"
+          cp test/fixtures/common_results/SuccessTest.php "$smoke_dir/SuccessTest.php"
+          curl --fail --silent --show-error --location --output "$smoke_dir/phpunit.phar" https://phar.phpunit.de/phpunit-13.4.7.phar
+          echo 'da5986f40f1408a175421587fdbf9339713b29cf7c9abeef395ee0f78ebc1a49  '"$smoke_dir/phpunit.phar" | sha256sum --check
+          (cd "$smoke_dir" && php "$GITHUB_WORKSPACE/build/paratest_for_phpstorm.phar" "$smoke_dir/phpunit.phar" --no-configuration --processes=2 --no-coverage "$smoke_dir/SuccessTest.php")
+          (cd "$smoke_dir" && php "$GITHUB_WORKSPACE/build/paratest_for_phpstorm.phar" "$smoke_dir/phpunit.phar" --no-configuration --filter testSuccess "$smoke_dir/SuccessTest.php")
 
-      - name: "Create draft release with both PHARs"
+      - name: "Attach both PHARs to the release"
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" build/paratest.phar build/paratest_for_phpstorm.phar --draft --verify-tag --generate-notes
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" build/paratest.phar build/paratest_for_phpstorm.phar --clobber

@@ -68,7 +68,7 @@ final readonly class PhpstormHelper
                 || $arg === $searchFor . '.phar'
                 || str_ends_with($arg, '/' . $searchFor)
                 || str_ends_with($arg, '/' . $searchFor . '.phar')
-                || ($searchFor === 'phpunit' && preg_match('~(?:^|/)phpunit-[0-9][^/]*\\.phar$~D', $arg) === 1)
+                || ($searchFor === 'phpunit' && preg_match('~(?:^|/)phpunit(?:[-_ ][^/]*)?\\.phar$~Di', $arg) === 1)
             ) {
                 return $key;
             }
