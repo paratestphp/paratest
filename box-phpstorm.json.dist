@@ -30,10 +30,10 @@
     "files": [
         "bin/paratest-phar.php",
         "bin/phar-autoload.php",
-        "bin/paratest-for-phpstorm-phar.php",
+        "bin/paratest_for_phpstorm_phar.php",
         "bin/phpunit-wrapper.php",
         "LICENSE"
     ],
-    "main": "bin/paratest-for-phpstorm-phar.php",
+    "main": "bin/paratest_for_phpstorm_phar.php",
     "output": "build/paratest_for_phpstorm.phar"
 }
