@@ -28,7 +28,7 @@
         "vendor/symfony/string"
     ],
     "files": [
-        "bin/paratest-phar.php",
+        "bin/paratest_phar.php",
         "bin/phar-autoload.php",
         "bin/paratest_for_phpstorm_phar.php",
         "bin/phpunit-wrapper.php",

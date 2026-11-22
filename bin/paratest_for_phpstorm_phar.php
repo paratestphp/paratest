@@ -12,7 +12,7 @@ if (($_SERVER['argv'][1] ?? null) === '--phpunit-wrapper') {
 
 require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Util' . DIRECTORY_SEPARATOR . 'PhpstormHelper.php';
 
-$entrypoint = PhpstormHelper::handleArgvFromPhpstorm($_SERVER['argv'], __DIR__ . DIRECTORY_SEPARATOR . 'paratest-phar.php', $phpunitBinary);
+$entrypoint = PhpstormHelper::handleArgvFromPhpstorm($_SERVER['argv'], __DIR__ . DIRECTORY_SEPARATOR . 'paratest_phar.php', $phpunitBinary);
 $phpunitPhar = str_ends_with(strtolower($phpunitBinary), '.phar') ? $phpunitBinary : null;
 if ($phpunitPhar !== null && $entrypoint === $phpunitPhar) {
     require $phpunitPhar;
