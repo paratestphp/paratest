@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
 use ParaTest\Options;
+use ParaTest\Tests\fixtures\custom_coverage_driver\CustomDriver;
+use ParaTest\Tests\fixtures\custom_coverage_driver\CustomDriverWithFilter;
+use ParaTest\Tests\fixtures\custom_coverage_driver\NonInstantiableCustomDriver;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ResultPrinter;
 use ParaTest\WrapperRunner\ShardDistribution;
@@ -12,6 +15,7 @@ use PHPUnit\Event\Code\TestDox;
 use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\TestData\TestDataCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestStatus\TestStatus;
 use PHPUnit\Logging\TestDox\TestResult as TestDoxTestResult;
 use PHPUnit\Logging\TestDox\TestResultCollection as TestDoxTestResultCollection;
@@ -82,6 +86,33 @@ final class ResultPrinterTest extends TestBase
         $contents      = $this->getStartOutput();
 
         self::assertStringContainsString(sprintf("Runtime:       PHP %s with PCOV %s\n", PHP_VERSION, phpversion('pcov')), $contents);
+    }
+
+    /** @param non-empty-string $driverClass */
+    #[DataProvider('provideCustomCcDrivers')]
+    public function testStartPrintsRuntimeInfosWithCustomCcDriver(string $driverClass, string $expectedRuntimeSuffix): void
+    {
+        $pathToConfig = $this->tmpDir . DIRECTORY_SEPARATOR . 'phpunit-custom-driver.xml';
+        file_put_contents($pathToConfig, sprintf('<phpunit><coverage driver="%s"/></phpunit>', $driverClass));
+
+        $this->printer = new ResultPrinter($this->output, $this->createOptionsFromArgv([
+            '--configuration' => $pathToConfig,
+            '--verbose' => true,
+            '--coverage-text' => 'php://stdout',
+        ]));
+        $contents      = $this->getStartOutput();
+
+        self::assertStringContainsString(sprintf("Runtime:       PHP %s%s\n", PHP_VERSION, $expectedRuntimeSuffix), $contents);
+    }
+
+    /** @return iterable<string, array{non-empty-string, string}> */
+    public static function provideCustomCcDrivers(): iterable
+    {
+        yield 'without constructor arguments' => [CustomDriver::class, ' with CustomDriver 1.2.3'];
+        yield 'with Filter constructor argument' => [CustomDriverWithFilter::class, ' with CustomDriverWithFilter 4.5.6'];
+        yield 'abstract driver' => [NonInstantiableCustomDriver::class, ''];
+        yield 'not a driver' => [stdClass::class, ''];
+        yield 'non-existent class' => ['ParaTest\\NonExistentDriver', ''];
     }
 
     public function testStartPrintsOptionInfoAndConfigurationDetailsIfConfigFilePresent(): void

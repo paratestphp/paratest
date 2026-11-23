@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../../vendor/phpunit/phpunit/phpunit.xsd">
+    <testsuites>
+        <testsuite name="custom_coverage_driver">
+            <file>CoveredTest.php</file>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <file>Covered.php</file>
+        </include>
+    </source>
+    <coverage driver="ParaTest\Tests\fixtures\custom_coverage_driver\CustomDriver"/>
+</phpunit>

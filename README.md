@@ -72,6 +72,15 @@ If you have `xDebug` installed, activating it by the environment variable is eno
 XDEBUG_MODE=coverage vendor/bin/paratest
 ```
 
+### Custom driver
+
+A custom driver configured with PHPUnit's `<coverage driver="...">` attribute is used by every worker process,
+and its coverage is merged as usual. The driver class must be autoloadable in both ParaTest and the workers:
+
+```xml
+<coverage driver="App\Tests\MyCoverageDriver"/>
+```
+
 ## Initial setup for all tests
 
 Because ParaTest runs multiple processes in parallel, each with their own instance of the PHP interpreter,
