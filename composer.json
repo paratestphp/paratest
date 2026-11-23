@@ -54,9 +54,9 @@
         "ext-posix": "*",
         "doctrine/coding-standard": "^14.0.0",
         "phpstan/phpstan": "^2.3.7",
-        "phpstan/phpstan-deprecation-rules": "^2.0.5",
+        "phpstan/phpstan-deprecation-rules": "^2.0.6",
         "phpstan/phpstan-phpunit": "^2.1.2",
-        "phpstan/phpstan-strict-rules": "^2.1.1",
+        "phpstan/phpstan-strict-rules": "^2.1.2",
         "symfony/filesystem": "^7.4.18 || ^8.1.6"
     },
     "autoload": {
