@@ -19,6 +19,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresOperatingSystemFamily;
 use ReflectionProperty;
 use RuntimeException;
+use SebastianBergmann\CodeCoverage\Data\ProcessedCodeCoverageData;
 use SebastianBergmann\CodeCoverage\Report\Facade as CoverageReportFacade;
 use SebastianBergmann\CodeCoverage\Serialization\Unserializer;
 use SebastianBergmann\CodeCoverage\StaticAnalysis\CachingSourceAnalyser;
@@ -29,6 +30,7 @@ use Symfony\Component\Process\Process;
 
 use function array_diff;
 use function array_intersect;
+use function array_keys;
 use function array_merge;
 use function array_reverse;
 use function array_unique;
@@ -664,6 +666,35 @@ final class WrapperRunnerTest extends TestBase
         $glob = glob($this->tmpDir . '/*');
         self::assertNotFalse($glob);
         self::assertCount(0, $glob);
+    }
+
+    public function testCustomCoverageDriverIsUsedByWorkers(): void
+    {
+        // Dedicated cache directory: the static analysis registry is process-wide and keyed by cache directory
+        $this->bareOptions['--configuration']   = $this->fixture('custom_coverage_driver' . DIRECTORY_SEPARATOR . 'phpunit.xml');
+        $this->bareOptions['--coverage-php']    = $this->tmpDir . DIRECTORY_SEPARATOR . uniqid('result_');
+        $this->bareOptions['--cache-directory'] = $this->tmpDir . DIRECTORY_SEPARATOR . 'custom_coverage_driver';
+        $this->bareOptions['--processes']       = '2';
+
+        $runnerResult = $this->runRunner();
+        self::assertSame(RunnerInterface::SUCCESS_EXIT, $runnerResult->exitCode);
+        self::assertStringContainsString('with CustomDriver 1.2.3', $runnerResult->output);
+
+        $coveragePhp = include $this->bareOptions['--coverage-php'];
+        self::assertIsArray($coveragePhp);
+        self::assertArrayHasKey('basePath', $coveragePhp);
+        self::assertSame($this->fixture('custom_coverage_driver'), $coveragePhp['basePath']);
+        self::assertArrayHasKey('codeCoverage', $coveragePhp);
+        $codeCoverage = $coveragePhp['codeCoverage'];
+        self::assertInstanceOf(ProcessedCodeCoverageData::class, $codeCoverage);
+
+        // Only the line reported by CustomDriver, hit by both tests run in separate workers
+        $lineCoverage = $codeCoverage->lineCoverage();
+        self::assertSame(['Covered.php'], array_keys($lineCoverage));
+        self::assertSame([11], array_keys($lineCoverage['Covered.php']));
+        $testsCoveringLine = $lineCoverage['Covered.php'][11];
+        self::assertNotNull($testsCoveringLine);
+        self::assertCount(2, $testsCoveringLine);
     }
 
     public function testResultsAreCorrect(): void

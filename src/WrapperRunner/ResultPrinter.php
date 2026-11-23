@@ -13,6 +13,8 @@ use PHPUnit\TextUI\Output\Printer;
 use PHPUnit\TextUI\Output\SummaryPrinter;
 use PHPUnit\TextUI\Output\TestDox\ResultPrinter as TestDoxResultPrinter;
 use PHPUnit\Util\Color;
+use ReflectionClass;
+use SebastianBergmann\CodeCoverage\Driver\Driver;
 use SebastianBergmann\CodeCoverage\Driver\Granularity;
 use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\Filter;
@@ -30,6 +32,7 @@ use function fread;
 use function fseek;
 use function ftell;
 use function fwrite;
+use function is_subclass_of;
 use function sprintf;
 use function str_repeat;
 use function strlen;
@@ -117,14 +120,10 @@ final class ResultPrinter
         $runtime = 'PHP ' . PHP_VERSION;
 
         if ($this->options->configuration->hasCoverageReport()) {
-            $filter = new Filter();
-            if ($this->options->configuration->pathCoverage()) {
-                $codeCoverageDriver = (new Selector())->select($filter, Granularity::LineBranchAndPath); // @codeCoverageIgnore
-            } else {
-                $codeCoverageDriver = (new Selector())->select($filter, Granularity::Line);
+            $codeCoverageDriver = $this->codeCoverageDriver();
+            if ($codeCoverageDriver !== null) {
+                $runtime .= ' with ' . $codeCoverageDriver->nameAndVersion();
             }
-
-            $runtime .= ' with ' . $codeCoverageDriver->nameAndVersion();
         }
 
         $write('Runtime', $runtime);
@@ -354,5 +353,39 @@ final class ResultPrinter
         fclose($handle);
 
         return $contents;
+    }
+
+    /**
+     * Mirrors the driver selection of {@see \PHPUnit\Runner\CodeCoverage::activate()}, used by the workers.
+     * An invalid custom driver yields null: workers report the misconfiguration as a PHPUnit warning.
+     */
+    private function codeCoverageDriver(): ?Driver
+    {
+        $configuration = $this->options->configuration;
+        $filter        = new Filter();
+
+        if ($configuration->hasCoverageDriver()) {
+            $driverClass = $configuration->coverageDriver();
+            if (! is_subclass_of($driverClass, Driver::class)) {
+                return null;
+            }
+
+            $reflection = new ReflectionClass($driverClass);
+            if (! $reflection->isInstantiable()) {
+                return null;
+            }
+
+            $constructor = $reflection->getConstructor();
+
+            return $constructor !== null && $constructor->getNumberOfRequiredParameters() > 0
+                ? $reflection->newInstance($filter)
+                : $reflection->newInstance();
+        }
+
+        if ($configuration->pathCoverage()) {
+            return (new Selector())->select($filter, Granularity::LineBranchAndPath); // @codeCoverageIgnore
+        }
+
+        return (new Selector())->select($filter, Granularity::Line);
     }
 }
