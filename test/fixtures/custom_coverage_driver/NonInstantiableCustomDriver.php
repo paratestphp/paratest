@@ -6,6 +6,6 @@ namespace ParaTest\Tests\fixtures\custom_coverage_driver;
 
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 
-abstract class AbstractCustomDriver extends Driver
+abstract class NonInstantiableCustomDriver extends Driver
 {
 }

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace ParaTest\Tests\Unit\WrapperRunner;
 
 use ParaTest\Options;
-use ParaTest\Tests\fixtures\custom_coverage_driver\AbstractCustomDriver;
 use ParaTest\Tests\fixtures\custom_coverage_driver\CustomDriver;
 use ParaTest\Tests\fixtures\custom_coverage_driver\CustomDriverWithFilter;
+use ParaTest\Tests\fixtures\custom_coverage_driver\NonInstantiableCustomDriver;
 use ParaTest\Tests\TestBase;
 use ParaTest\WrapperRunner\ResultPrinter;
 use ParaTest\WrapperRunner\ShardDistribution;
@@ -110,7 +110,7 @@ final class ResultPrinterTest extends TestBase
     {
         yield 'without constructor arguments' => [CustomDriver::class, ' with CustomDriver 1.2.3'];
         yield 'with Filter constructor argument' => [CustomDriverWithFilter::class, ' with CustomDriverWithFilter 4.5.6'];
-        yield 'abstract driver' => [AbstractCustomDriver::class, ''];
+        yield 'abstract driver' => [NonInstantiableCustomDriver::class, ''];
         yield 'not a driver' => [stdClass::class, ''];
         yield 'non-existent class' => ['ParaTest\\NonExistentDriver', ''];
     }
