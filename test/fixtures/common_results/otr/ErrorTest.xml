@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<e:events xmlns="https://schemas.opentest4j.org/reporting/core/0.2.0" xmlns:e="https://schemas.opentest4j.org/reporting/events/0.2.0" xmlns:php="https://schema.phpunit.de/otr/php/0.0.1" xmlns:phpunit="https://schema.phpunit.de/otr/phpunit/0.0.1">
+ <infrastructure>
+  <hostName>931720dd8f74</hostName>
+  <userName>code</userName>
+  <operatingSystem>Linux 931720dd8f74 6.17.0-14-generic #14~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Jan 15 15:52:10 UTC 2 x86_64</operatingSystem>
+  <php:phpVersion>8.3.30</php:phpVersion>
+  <php:threadModel>NTS</php:threadModel>
+ </infrastructure>
+ <e:started id="1" name="ParaTest\Tests\fixtures\common_results\ErrorTest" time="2026-02-01T12:13:14.567890Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/ErrorTest.php">
+    <filePosition line="11"/>
+   </fileSource>
+   <phpunit:classSource className="ParaTest\Tests\fixtures\common_results\ErrorTest"/>
+  </sources>
+ </e:started>
+ <e:started id="2" parentId="1" name="testError" time="2026-02-01T12:13:14.567890Z">
+  <sources>
+   <fileSource path="./test/fixtures/common_results/ErrorTest.php">
+    <filePosition line="13"/>
+   </fileSource>
+   <phpunit:methodSource className="ParaTest\Tests\fixtures\common_results\ErrorTest" methodName="testError"/>
+  </sources>
+ </e:started>
+ <e:finished id="2" time="2026-02-01T12:13:14.567890Z">
+  <result status="ERRORED">
+   <reason>Error here!</reason>
+   <phpunit:throwable type="RuntimeException" assertionError="false"><![CDATA[RuntimeException: Error here!
+
+./test/fixtures/common_results/ErrorTest.php:15
+]]></phpunit:throwable>
+  </result>
+ </e:finished>
+ <e:finished id="1" time="2026-02-01T12:13:14.567890Z"/>
+</e:events>
